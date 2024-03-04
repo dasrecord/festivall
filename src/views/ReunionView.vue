@@ -34,6 +34,7 @@
 </template>
 
 <style>
+
 .basic {
   padding: 2rem;
   text-align: center;
