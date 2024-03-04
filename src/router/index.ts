@@ -29,8 +29,8 @@ const router = createRouter({
       component: () => import('../views/ReunionAmenitiesView.vue')     
     },
     {
-      path: '/reunionapplicaiton',
-      name: 'reunionapplicaiton',
+      path: '/reunionapplication',
+      name: 'reunionapplication',
       component: ExternalRedirect,
       props: { url: 'https://dasrecord.typeform.com/to/a65mFuLr' }
     },
