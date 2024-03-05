@@ -13,7 +13,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src=frogImage alt="frog" height="100px" />
+      <img :src="frogImage" alt="frog" height="100px" />
       <br />
     </h1>
     <h2>
@@ -25,28 +25,29 @@ export default {
       DAY PASS - $80 CAD‍ <br />
       25% discount if you pay with bitcoin!‍<br />
       <br />
-      Check Out Our <a href="https://www.instagram.com/p/CqX9uHBL6nE/?igsh=MTY4M2l3MXlraW43bQ==">Custom Sound System‍</a><br />
+      Check Out Our
+      <a href="https://www.instagram.com/p/CqX9uHBL6nE/?igsh=MTY4M2l3MXlraW43bQ=="
+        >Custom Sound System‍</a
+      ><br />
       <br />
       <RouterLink to="/reunionamenities">Click Here</RouterLink>
-        for the Amenities‍<br />
+      for the Amenities‍<br />
       <br />
       <!-- Click Here for the Lineup‍<br />
       <br /> -->
     </h2>
     <h1>
-    <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW
-    </a>
+      Want to perform or volunteer?‍<br />
+      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW </a>
     </h1>
     <h1>
-    <a href="https://dasrecord.typeform.com/to/dyJs6iFd">
-    BUY TICKETS
-    </a>
+      Ready to buy tickets?‍<br />
+      <a href="https://dasrecord.typeform.com/to/dyJs6iFd"> BUY TICKETS </a>
     </h1>
   </div>
 </template>
 
 <style>
-
 .basic {
   padding: 2rem;
   text-align: center;
