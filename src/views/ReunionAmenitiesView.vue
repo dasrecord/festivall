@@ -8,12 +8,12 @@
       AMENITIES & INFO:‍<br />
       - You can park at your campsite‍ <br/>
       - Water available on site but bring your own‍<br/>
-      - Purchasable Meal times<br />
-      - Food available on site<br/>
-      - Cash bar‍<br/>
+      - Food tickets available<br />
+      - Cash bar‍ available<br/>
       - Bitcoin and Lightning accepted<br/>
       - Shared kitchen available‍<br/>
       - Quiet Family Camping Area‍<br/>
+      - Warm showers available‍<br/>
       - Children's Playground‍<br/>
       - Leave pets at home.<br/>
     </h2>
