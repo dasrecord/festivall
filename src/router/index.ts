@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ExternalRedirect from '../components/ExternalRedirect.vue';
 import HomeView from '../views/HomeView.vue'
+import ReunionView from '@/views/ReunionView.vue';
+import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,12 +23,12 @@ const router = createRouter({
     {
       path: '/reunion',
       name: 'reunion',
-      component: () => import('../views/ReunionView.vue')
+      component: ReunionView
     },
     {
       path: '/reunionamenities',
       name: 'reunionamenities',
-      component: () => import('../views/ReunionAmenitiesView.vue')     
+      component: ReunionAmenitiesView
     },
     {
       path: '/reunionapplication',
