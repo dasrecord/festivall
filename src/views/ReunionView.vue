@@ -1,7 +1,19 @@
+<script>
+import FrogImage from '@/assets/images/frog.png'
+
+export default {
+  data() {
+    return {
+      frogImage: FrogImage
+    }
+  }
+}
+</script>
 <template>
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
+      <img :src=frogImage alt="frog" height="100px" />
       <br />
     </h1>
     <h2>
