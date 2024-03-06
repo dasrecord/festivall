@@ -53,6 +53,19 @@ export default {
   text-align: center;
 }
 
+a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  transition: box-shadow 0.4s ease-in-out;
+}
+a:hover {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+
 @media (min-width: 1024px) {
   .basic {
     min-height: 100vh;
