@@ -43,6 +43,12 @@ const router = createRouter({
       props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
     },
     {
+      path: '/munnismeals',
+      name: 'munnismeals',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/fx9c8lFb' }
+    },
+    {
       path: '/reunionlocation',
       name: 'reunionlocation',
       component: ExternalRedirect,
