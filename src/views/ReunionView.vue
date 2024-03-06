@@ -1,10 +1,10 @@
 <script>
-import FrogImage from '@/assets/images/frog.png'
+import frog_image from '@/assets/images/frog.png'
 
 export default {
   data() {
     return {
-      frogImage: FrogImage
+      frogImage: frog_image
     }
   }
 }
@@ -13,7 +13,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" height="100px" />
+      <img :src="frogImage" alt="frog" :style="{ height: '300px' }" />
       <br />
     </h1>
     <h2>

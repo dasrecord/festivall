@@ -1,8 +1,8 @@
 <template>
     <div class="image-slider">
         <img :src="images[currentImage]" alt="Slide image" />
-        <button @click="previousImage">Previous</button>
-        <button @click="nextImage">Next</button>
+        <button @click="previousImage">&laquo;</button>
+        <button @click="nextImage">&raquo;</button>
     </div>
 </template>
 
@@ -34,5 +34,7 @@ export default {
 .image-slider img {
     width: 100%;
     height: auto;
+    display: flex;
+    flex-direction: row;
 }
 </style>
