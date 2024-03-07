@@ -1,7 +1,7 @@
 <template>
     <div class="image-slider">
-        <img :src="images[currentImage]" alt="Slide image" />
         <button @click="previousImage">&laquo;</button>
+        <img :src="images[currentImage]" alt="Slide image" />
         <button @click="nextImage">&raquo;</button>
     </div>
 </template>
@@ -32,9 +32,9 @@ export default {
 
 <style scoped>
 .image-slider img {
-    width: 100%;
+    width: auto;
     height: auto;
-    display: flex;
+    display: inline-block;
     flex-direction: row;
 }
 </style>
