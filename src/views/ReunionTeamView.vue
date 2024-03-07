@@ -189,8 +189,8 @@ img {
 
 @media (min-width: 1024px) {
   .basic {
-    /* min-height: 100vh; */
-    display: flex;
+    min-height: 100vh;
+    display: block;
     flex-direction: column;
     align-items: center;
     justify-content: center;

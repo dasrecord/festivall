@@ -62,9 +62,10 @@ nav a:first-of-type {
 
 @media (min-width: 1024px) {
   header {
-    display: flex;
+    /* display: flex; */
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    justify-items: center;
+    /* padding-right: calc(var(--section-gap) / 2); */
   }
 
   .logo {
@@ -73,12 +74,14 @@ nav a:first-of-type {
 
   header .wrapper {
     display: flex;
+    justify-content: center;
+    text-align: center;
     place-items: flex-start;
     flex-wrap: wrap;
   }
 
   nav {
-    text-align: left;
+    text-align: center;
     margin-left: -1rem;
     font-size: 1rem;
 
