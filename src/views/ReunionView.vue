@@ -13,7 +13,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" :style="{ height: '300px' }" />
+      <img :src="frogImage" alt="frog" :style="{ height: '200px' }" />
       <br />
     </h1>
     <h2>
@@ -50,7 +50,7 @@ export default {
 
 <style>
 .basic {
-  padding: rem;
+  padding: 1rem;
   text-align: center;
 }
 

@@ -45,10 +45,13 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <h1>
-      THE REUNION‍ <br />
-    </h1>
-    <h2>Our festival is a vibrant celebration of culture and community. It brings together people from all walks of life to enjoy music, art, food, and more. We believe in the power of shared experiences to create lasting memories and build strong bonds. Join us for a weekend of fun, laughter, and connection.</h2>
+    <h1>THE REUNION‍ <br /></h1>
+    <h2>
+      Our festival is a vibrant celebration of culture and community. It brings together people from
+      all walks of life to enjoy music, art, food, and more. We believe in the power of shared
+      experiences to create lasting memories and build strong bonds. Join us for a weekend of fun,
+      laughter, and connection.<br /><br/>
+    </h2>
 
     <ImageSlider
       :images="[
@@ -66,8 +69,9 @@ export default {
         talkImage,
         kirkImage,
         audienceImage
-      ]">
-      </ImageSlider>
+      ]"
+    >
+    </ImageSlider>
     <h1>
       Want to perform or volunteer?‍<br />
       <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW </a>
@@ -90,6 +94,7 @@ img {
   display: inline;
   max-width: 500px;
   height: auto;
+  border-radius: 25px;
 }
 
 @media (min-width: 1024px) {
