@@ -27,6 +27,8 @@ export default {
       <br />
       <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.
       <br />
+      <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.
+      <br />
       Check Out Our
       <a href="https://www.instagram.com/p/CqX9uHBL6nE/?igsh=MTY4M2l3MXlraW43bQ=="
         >Custom Sound System‍</a>
@@ -69,7 +71,6 @@ a:hover {
 
 @media (min-width: 1024px) {
   .basic {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;

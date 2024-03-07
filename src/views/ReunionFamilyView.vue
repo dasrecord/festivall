@@ -50,7 +50,7 @@ export default {
       Our festival is a vibrant celebration of culture and community. It brings together people from
       all walks of life to enjoy music, art, food, and more. We believe in the power of shared
       experiences to create lasting memories and build strong bonds. Join us for a weekend of fun,
-      laughter, and connection.<br /><br/>
+      laughter, and connection.<br /><br />
     </h2>
 
     <ImageSlider

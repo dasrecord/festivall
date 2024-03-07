@@ -3,7 +3,8 @@ import ExternalRedirect from '../components/ExternalRedirect.vue';
 import HomeView from '../views/HomeView.vue'
 import ReunionView from '@/views/ReunionView.vue';
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
-import ReunionFamilyView from '@/views/ReunionFamily.vue';
+import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
+import ReunionTeamView from '@/views/ReunionTeamView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +36,12 @@ const router = createRouter({
       path: '/reunionfamily',
       name: 'reunionfamily',
       component: ReunionFamilyView
+    },
+    {
+      path: '/reunionteam',
+      name: 'reunionteam',
+      component: ReunionTeamView
+
     },
     {
       path: '/reunionapplication',
