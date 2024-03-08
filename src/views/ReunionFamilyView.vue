@@ -47,10 +47,11 @@ export default {
   <div class="basic">
     <h1>THE REUNION‍ <br /></h1>
     <h2>
-      Our festival is a vibrant celebration of culture and community. It brings together people from
-      all walks of life to enjoy music, art, food, and more. We believe in the power of shared
-      experiences to create lasting memories and build strong bonds. Join us for a weekend of fun,
-      laughter, and connection.<br /><br />
+      The Reunion is an independent electronic music festival located just outside Saskatoon. We
+      prioritize high quality local acts and support them with a cohesive and multitalented
+      volunteer team. Our custom built sound system and in-house projection mapping team create a
+      premium audio-visual experience for the most discerning of electronic music lovers. We are a
+      family friendly event with an interest in growth, community, and sustainability.<br /><br />
     </h2>
 
     <ImageSlider

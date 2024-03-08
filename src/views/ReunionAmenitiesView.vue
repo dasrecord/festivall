@@ -13,7 +13,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src=frogImage alt="frog" height="100px" />
+      <img :src="frogImage" alt="frog" :style="{ height: '200px' }" />
       <br />
     </h1>
     <h2>
