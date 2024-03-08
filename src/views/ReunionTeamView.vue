@@ -29,7 +29,7 @@ export default {
     <div class="cards">
       <TeamCard>
         <template v-slot:headshot>
-          <img :src="Chris" alt="Chris" />
+          <img v-if="Chris":src="Chris" alt="Chris" />
         </template>
         <template v-slot:name>
           <h2>Chris</h2>
@@ -40,7 +40,7 @@ export default {
       </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img :src="Brandon" alt="Brandon" />
+        <img v-if="Brandon" :src="Brandon" alt="Brandon" />
       </template>
       <template v-slot:name>
         <h2>Brandon</h2>
@@ -73,7 +73,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img :src="Natalie" alt="Natalie" />
+        <img v-if="Natalie":src="Natalie" alt="Natalie" />
       </template>
       <template v-slot:name>
         <h2>Natalie</h2>
@@ -83,15 +83,15 @@ export default {
       </template>
     </TeamCard>
     <TeamCard>
-      <template v-slot:headshot>
-        <img :src="Kayla" alt="Kayla" />
-      </template>
-      <template v-slot:name>
-        <h2>Kayla</h2>
-      </template>
-      <template v-slot:role>
-        <p>Graphic Design & Logos</p>
-      </template>
+        <template v-slot:headshot>
+            <img v-if="Kayla" :src="Kayla" alt="Kayla" />
+        </template>
+        <template v-slot:name>
+            <h2>Kayla</h2>
+        </template>
+        <template v-slot:role>
+            <p>Graphic Design & Logos</p>
+        </template>
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
@@ -117,7 +117,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img :src="Nish" alt="Nish" />
+        <img v-if="Nish":src="Nish" alt="Nish" />
       </template>
       <template v-slot:name>
         <h2>Nish</h2>
@@ -139,7 +139,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img :src="Yvo" alt="Yvo" />
+        <img v-if="Yvo":src="Yvo" alt="Yvo" />
       </template>
       <template v-slot:name>
         <h2>Yvo</h2>
@@ -150,7 +150,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img :src="Andy" alt="Andy" />
+        <img v-if="Andy":src="Andy" alt="Andy" />
       </template>
       <template v-slot:name>
         <h2>Andy</h2>
