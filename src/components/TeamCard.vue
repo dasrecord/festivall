@@ -20,7 +20,10 @@ export default {
 
 <style scoped>
 .team-card {
-    /* Add your styles here */
+    border: 1px solid rgba(121, 188, 255, .25);
+    border-radius: 25px;
+    padding: 1rem;
+    box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
 }
 
 </style>

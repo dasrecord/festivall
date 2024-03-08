@@ -25,7 +25,7 @@ export default {
 <template>
   <div class="basic">
     <h1>THE REUNION‍<br /></h1>
-    Meet Our Festival Team<br />
+    Meet Our Festival Team<br /><br />
     <div class="cards">
       <TeamCard>
         <template v-slot:headshot>
