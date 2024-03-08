@@ -4,6 +4,7 @@ import Prasenjit from '@/assets/images/team/Prasenjit.jpg'
 import Corey from '@/assets/images/team/Corey.jpg'
 import Janicka from '@/assets/images/team/Janicka.jpg'
 import Arthur from '@/assets/images/team/Arthur.jpg'
+import Christina from '@/assets/images/team/Christina.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -15,7 +16,8 @@ export default {
       Prasenjit: Prasenjit,
       Corey: Corey,
       Janicka: Janicka,
-      Arthur: Arthur
+      Arthur: Arthur,
+      Christina: Christina,
     }
   }
 }
