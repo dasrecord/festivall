@@ -2,6 +2,8 @@
 import TeamCard from '@/components/TeamCard.vue'
 import Prasenjit from '@/assets/images/team/Prasenjit.jpg'
 import Corey from '@/assets/images/team/Corey.jpg'
+import Janicka from '@/assets/images/team/Janicka.jpg'
+import Arthur from '@/assets/images/team/Arthur.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -11,7 +13,9 @@ export default {
   data() {
     return {
       Prasenjit: Prasenjit,
-      Corey: Corey
+      Corey: Corey,
+      Janicka: Janicka,
+      Arthur: Arthur
     }
   }
 }
@@ -19,8 +23,19 @@ export default {
 <template>
   <div class="basic">
     <h1>THE REUNION‍<br /></h1>
-    Meet Our Festival Team
+    Meet Our Festival Team<br />
     <div class="cards">
+      <TeamCard>
+        <template v-slot:headshot>
+          <img :src="Chris" alt="Chris" />
+        </template>
+        <template v-slot:name>
+          <h2>Chris</h2>
+        </template>
+        <template v-slot:role>
+          <p>Land & Infrastructure</p>
+        </template>
+      </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
         <img :src="Brandon" alt="Brandon" />
@@ -52,17 +67,6 @@ export default {
       </template>
       <template v-slot:role>
         <p>Artist Changeovers</p>
-      </template>
-    </TeamCard>
-    <TeamCard>
-      <template v-slot:headshot>
-        <img :src="Chris" alt="Chris" />
-      </template>
-      <template v-slot:name>
-        <h2>Chris</h2>
-      </template>
-      <template v-slot:role>
-        <p>Land & Infrastructure</p>
       </template>
     </TeamCard>
     <TeamCard>
