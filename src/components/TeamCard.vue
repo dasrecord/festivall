@@ -26,4 +26,5 @@ export default {
     box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
 }
 
+
 </style>

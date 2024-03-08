@@ -190,7 +190,7 @@ img {
   display: inline;
   max-width: 300px;
   height: auto;
-  border-radius: 25px;
+  border-radius: 15px;
 }
 
 @media (min-width: 1024px) {
