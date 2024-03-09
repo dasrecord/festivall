@@ -5,6 +5,7 @@ import Corey from '@/assets/images/team/Corey.jpg'
 import Janicka from '@/assets/images/team/Janicka.jpg'
 import Arthur from '@/assets/images/team/Arthur.jpg'
 import Christina from '@/assets/images/team/Christina.jpg'
+import Natalie from '@/assets/images/team/Natalie.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -18,6 +19,7 @@ export default {
       Janicka: Janicka,
       Arthur: Arthur,
       Christina: Christina,
+      Natalie: Natalie,
     }
   }
 }
@@ -29,7 +31,7 @@ export default {
     <div class="cards">
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Chris":src="Chris" alt="Chris" />
+          <img v-if="Chris" :src="Chris" alt="Chris" />
         </template>
         <template v-slot:name>
           <h2>Chris</h2>
@@ -73,7 +75,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img v-if="Natalie":src="Natalie" alt="Natalie" />
+        <img v-if="Natalie" :src="Natalie" alt="Natalie" />
       </template>
       <template v-slot:name>
         <h2>Natalie</h2>
@@ -117,7 +119,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img v-if="Nish":src="Nish" alt="Nish" />
+        <img v-if="Nish" :src="Nish" alt="Nish" />
       </template>
       <template v-slot:name>
         <h2>Nish</h2>
@@ -139,7 +141,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img v-if="Yvo":src="Yvo" alt="Yvo" />
+        <img v-if="Yvo" :src="Yvo" alt="Yvo" />
       </template>
       <template v-slot:name>
         <h2>Yvo</h2>
@@ -150,7 +152,7 @@ export default {
     </TeamCard>
     <TeamCard>
       <template v-slot:headshot>
-        <img v-if="Andy":src="Andy" alt="Andy" />
+        <img v-if="Andy" :src="Andy" alt="Andy" />
       </template>
       <template v-slot:name>
         <h2>Andy</h2>
