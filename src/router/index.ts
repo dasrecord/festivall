@@ -72,6 +72,12 @@ const router = createRouter({
       name: 'meetup',
       component: ExternalRedirect,
       props: { url: 'https://calendar.google.com/calendar/u/0/selfsched?sstoken=UU1xZl92cFY2bkNUfGRlZmF1bHR8ZThjN2E5MGJhMGY5MTg3OGM3OTFjYmFkMjg3YmY0NzA' }
+    },
+    {
+      path: '/starcrossed',
+      name: 'starcrossed',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/xHvozB7Y' }
     }
 
   ]
