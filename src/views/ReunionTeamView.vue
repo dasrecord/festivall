@@ -1,5 +1,6 @@
 <script>
 import TeamCard from '@/components/TeamCard.vue'
+import Brandon from '@/assets/images/team/Brandon.jpg'
 import Prasenjit from '@/assets/images/team/Prasenjit.jpg'
 import Corey from '@/assets/images/team/Corey.jpg'
 import Janicka from '@/assets/images/team/Janicka.jpg'
@@ -15,6 +16,7 @@ export default {
   },
   data() {
     return {
+      Brandon: Brandon,
       Prasenjit: Prasenjit,
       Corey: Corey,
       Janicka: Janicka,
