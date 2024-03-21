@@ -56,6 +56,12 @@ const router = createRouter({
       props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
     },
     {
+      path:'/stayconnected',
+      name: 'stayconnected',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/oNXOMH' }
+    },
+    {
       path: '/munnismeals',
       name: 'munnismeals',
       component: ExternalRedirect,
