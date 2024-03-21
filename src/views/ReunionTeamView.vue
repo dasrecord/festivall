@@ -9,6 +9,7 @@ import Arthur from '@/assets/images/team/Arthur.jpg'
 import Christina from '@/assets/images/team/Christina.jpg'
 import Natalie from '@/assets/images/team/Natalie.jpg'
 import Nish from '@/assets/images/team/Nish.jpg'
+import Kayla from '@/assets/images/team/Kayla.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -26,6 +27,7 @@ export default {
       Christina: Christina,
       Natalie: Natalie,
       Nish: Nish,
+      Kayla: Kayla
     }
   }
 }
