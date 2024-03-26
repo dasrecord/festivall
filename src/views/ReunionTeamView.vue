@@ -100,7 +100,7 @@ export default {
             <h2>Kayla</h2>
         </template>
         <template v-slot:role>
-            <p>Graphic Design & Logos</p>
+            <p>Vectors & Logos</p>
         </template>
     </TeamCard>
     <TeamCard>
