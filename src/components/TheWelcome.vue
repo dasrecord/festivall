@@ -6,25 +6,28 @@ import ToolingIcon from './icons/IconTooling.vue'
 import EcosystemIcon from './icons/IconEcosystem.vue'
 import CommunityIcon from './icons/IconCommunity.vue'
 import SupportIcon from './icons/IconSupport.vue'
+import IconFestivall from './icons/IconFestivall.vue'
 </script>
 
 <template>
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon />
+      <IconFestivall />
     </template>
     <template #heading><RouterLink to="/reunion">The Reunion</RouterLink> </template>
     <p>
-      The Reunion is a music festival that takes place in the
-      heart of the Canadian prairies featuring some of the best electronic music DJs and local acts.
+      The Reunion is a music festival that takes place in the heart of the Canadian prairies
+      featuring some of the best electronic music DJs and local acts.
     </p>
   </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon />
+      <IconFestivall />
     </template>
-    <template #heading><a href="https://www.instagram.com/impactfestival_bc/">Impact Festival</a></template>
+    <template #heading
+      ><a href="https://www.instagram.com/impactfestival_bc/">Impact Festival</a></template
+    >
     <p>
       Showcasing the best western Canadian talent, Impact Music Festival based out of Vancouver is a
       must-see event for any electronic music fan.
@@ -33,7 +36,7 @@ import SupportIcon from './icons/IconSupport.vue'
 
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon />
+      <IconFestivall />
     </template>
     <template #heading>Blessed Coast</template>
     <p>
@@ -44,7 +47,7 @@ import SupportIcon from './icons/IconSupport.vue'
 
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon />
+      <IconFestivall />
     </template>
     <template #heading>Das Record</template>
     <p>
@@ -55,7 +58,7 @@ import SupportIcon from './icons/IconSupport.vue'
 
   <WelcomeItem>
     <template #icon>
-      <DocumentationIcon />
+      <IconFestivall />
     </template>
     <template #heading>
       <a href="https://evolvedmusicgroup.com">Evolved Music Group</a>
