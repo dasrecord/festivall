@@ -5,9 +5,8 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
-
     <div class="wrapper">
+      <!-- <img alt="Festivall" class="logo" src="/festivall_emblem.png" /> -->
       <HelloWorld msg="FESTIV-ALL" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -16,7 +15,6 @@ import HelloWorld from './components/HelloWorld.vue'
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <!-- <RouterLink to="/blessed">Blessed Coast</RouterLink> -->
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
-
       </nav>
     </div>
   </header>
@@ -32,7 +30,8 @@ header {
 
 .logo {
   display: block;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 0 10px rgb(0, 128, 255);
 }
 
 nav {
@@ -69,10 +68,11 @@ nav a:first-of-type {
   }
 
   .logo {
-    margin: 0 2rem 0 0;
+    display: block;
+    /* margin: 0 2rem 0 0; */
   }
 
-  header .wrapper {
+  header .wrapper .logo {
     display: flex;
     justify-content: center;
     text-align: center;
