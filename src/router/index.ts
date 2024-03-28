@@ -74,6 +74,13 @@ const router = createRouter({
       props: { url: 'https://goo.gl/maps/rTyyip88oiJygiTU9' }
     },
     {
+      path: '/reunionslack',
+      name: 'reunionslack',
+      component: ExternalRedirect,
+      props: { url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2fjkx8qcn-SoW47rEUYMkzMdxOyiaqtw' }
+
+    },
+    {
       path: '/meetup',
       name: 'meetup',
       component: ExternalRedirect,
