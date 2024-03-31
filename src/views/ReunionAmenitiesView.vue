@@ -21,7 +21,7 @@ export default {
       - You can park at your campsite‍ <br />
       - Water available on site but bring your own‍<br />
       - Food tickets available<br />
-      - Cash bar‍ available<br />
+      <!-- - Cash bar‍ available<br /> -->
       - Bitcoin and Lightning accepted<br />
       - Shared kitchen available‍<br />
       - Quiet Family Camping Area‍<br />
