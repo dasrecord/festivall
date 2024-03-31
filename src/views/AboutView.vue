@@ -1,8 +1,8 @@
 <template>
   <div class="about">
     <h2>
-      The Reunion, Impact Festival, and Blessed Coast are music events that celebrate
-      electronic music across Canada, featuring top Canadian talents. <br />
+      The Reunion, Impact Festival, and Blessed Coast are music events that celebrate electronic
+      music across Canada, featuring top Canadian talents. <br />
       Prasenjit Das, also known as Das Record, is a doctor by day and a DJ and coder by night. His
       live piano and electronic music act has been showcased at these festivals over several years.
       Behind the scenes, he is A&R for Evolved Music Group, an international artist management
@@ -22,7 +22,7 @@
   .about {
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
   }
 }
 </style>

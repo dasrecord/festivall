@@ -22,7 +22,7 @@ import HelloWorld from './components/HelloWorld.vue'
   <RouterView />
 </template>
 
-<style scoped>
+<style>
 header {
   line-height: 1.5;
   max-height: 100vh;
@@ -53,10 +53,11 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
 }
 
 nav a:first-of-type {
-  border: 0;
+  /* border: 0; */
 }
 
 @media (min-width: 1024px) {

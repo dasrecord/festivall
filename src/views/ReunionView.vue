@@ -1,7 +1,10 @@
 <script>
 import frog_image from '@/assets/images/frog.png'
-
+import CalltoAction from '@/components/CalltoAction.vue'
 export default {
+  components: {
+    CalltoAction
+  },
   data() {
     return {
       frogImage: frog_image
@@ -31,7 +34,8 @@ export default {
       <br />
       Check Out Our
       <a href="https://www.instagram.com/p/CqX9uHBL6nE/?igsh=MTY4M2l3MXlraW43bQ=="
-        >Custom Sound System‍</a>
+        >Custom Sound System‍</a
+      >
       <br />
       <RouterLink to="/reunionamenities">Click Here</RouterLink>
       for the Amenities‍<br />
@@ -39,14 +43,7 @@ export default {
       <!-- Click Here for the Lineup‍<br />
       <br /> -->
     </h2>
-    <h1>
-      Want to perform or volunteer?‍<br />
-      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
-    </h1>
-    <h1>
-      Ready to buy tickets?‍<br />
-      <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
-    </h1>
+    <CalltoAction />
   </div>
 </template>
 
@@ -67,7 +64,6 @@ a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
 }
-
 
 @media (min-width: 1024px) {
   .basic {
