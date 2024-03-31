@@ -53,10 +53,12 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  margin: 0.5rem;
 }
 
 nav a:first-of-type {
-  border: 0;
+  /* border: 0; */
 }
 
 @media (min-width: 1024px) {
