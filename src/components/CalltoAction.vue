@@ -5,12 +5,29 @@ export default {
 </script>
 
 <template>
-  <h1>
-    Want to perform or volunteer?‍<br />
-    <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
-  </h1>
-  <h1>
-    Ready to buy tickets?‍<br />
-    <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
-  </h1>
+  <div class="call-to-action">
+    <h1>
+      Want to perform or volunteer?‍<br />
+      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
+    </h1>
+    <h1>
+      Ready to buy tickets?‍<br />
+      <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
+    </h1>
+  </div>
 </template>
+
+<style scoped>
+.call-to-action {
+  text-align: center;
+  border: 3px solid #f0f0f0;
+  border-radius: 30px;
+}
+h1 {
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  border-radius: 25px;
+  padding: 1rem;
+  margin: 1rem;
+  box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
+}
+</style>
