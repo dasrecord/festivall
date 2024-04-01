@@ -54,7 +54,7 @@ export default {
       family friendly event with an interest in growth, community, and sustainability.<br /><br />
     </h2>
 
-    <CarouselComponent :slides="slides" :interval="3000" controls indicators> </CarouselComponent>
+    <CarouselComponent :slides="slides" :interval="30000" controls indicators> </CarouselComponent>
     <CalltoAction />
   </div>
 </template>
@@ -71,7 +71,6 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 25px;
 }
 
 @media (min-width: 1024px) {
