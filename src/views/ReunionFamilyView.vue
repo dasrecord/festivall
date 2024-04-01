@@ -1,10 +1,9 @@
 <script>
-import ImageSlider from '@/components/ImageSlider.vue'
+import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 import arrow_image from '@/assets/images/arrow.jpg'
 import audience_image from '@/assets/images/audience.jpg'
 import costume_image from '@/assets/images/costume.jpg'
 import friends_image from '@/assets/images/friends.jpg'
-import frog_image from '@/assets/images/frog.png'
 import grooving_image from '@/assets/images/grooving.jpg'
 import janicka_image from '@/assets/images/janicka.jpg'
 import jordan_image from '@/assets/images/jordan.jpg'
@@ -16,31 +15,32 @@ import perform_image from '@/assets/images/perform.jpg'
 import talk_image from '@/assets/images/talk.jpg'
 import tribal_image from '@/assets/images/tribal.jpg'
 import vandamage_image from '@/assets/images/vandamage.jpg'
+import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
-    ImageSlider
+    CarouselComponent,
+    CalltoAction
   },
-  data() {
-    return {
-      arrowImage: arrow_image,
-      audienceImage: audience_image,
-      costumeImage: costume_image,
-      friendsImage: friends_image,
-      frogImage: frog_image,
-      groovingImage: grooving_image,
-      janickaImage: janicka_image,
-      jordanImage: jordan_image,
-      kevinImage: kevin_image,
-      kidsImage: kids_image,
-      kirkImage: kirk_image,
-      nightImage: night_image,
-      performImage: perform_image,
-      talkImage: talk_image,
-      tribalImage: tribal_image,
-      vandamageImage: vandamage_image
-    }
-  }
+  data: () => ({
+    slides: [
+      arrow_image,
+      audience_image,
+      costume_image,
+      friends_image,
+      grooving_image,
+      janicka_image,
+      jordan_image,
+      kevin_image,
+      kids_image,
+      kirk_image,
+      night_image,
+      perform_image,
+      talk_image,
+      tribal_image,
+      vandamage_image
+    ]
+  })
 }
 </script>
 <template>
@@ -54,33 +54,8 @@ export default {
       family friendly event with an interest in growth, community, and sustainability.<br /><br />
     </h2>
 
-    <ImageSlider
-      :images="[
-        groovingImage,
-        nightImage,
-        tribalImage,
-        vandamageImage,
-        janickaImage,
-        jordanImage,
-        kevinImage,
-        kidsImage,
-        friendsImage,
-        costumeImage,
-        performImage,
-        talkImage,
-        kirkImage,
-        audienceImage
-      ]"
-    >
-    </ImageSlider>
-    <!-- <h1>
-      Want to perform or volunteer?‍<br />
-      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
-    </h1>
-    <h1>
-      Ready to buy tickets?‍<br />
-      <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
-    </h1> -->
+    <CarouselComponent :slides="slides" :interval="3000" controls indicators> </CarouselComponent>
+    <CalltoAction />
   </div>
 </template>
 
@@ -93,8 +68,9 @@ export default {
 }
 img {
   display: inline;
-  max-width: 500px;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 25px;
 }
 

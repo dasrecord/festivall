@@ -177,7 +177,7 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 .basic {
   padding: 2rem;
   text-align: center;
