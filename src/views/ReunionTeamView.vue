@@ -12,6 +12,7 @@ import Christina from '@/assets/images/team/Christina.jpg'
 import Natalie from '@/assets/images/team/Natalie.jpg'
 import Nish from '@/assets/images/team/Nish.jpg'
 import Kayla from '@/assets/images/team/Kayla.jpg'
+import Yvo from '@/assets/images/team/Yvo.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -30,7 +31,8 @@ export default {
       Christina: Christina,
       Natalie: Natalie,
       Nish: Nish,
-      Kayla: Kayla
+      Kayla: Kayla,
+      Yvo: Yvo
     }
   }
 }
@@ -150,17 +152,6 @@ export default {
           <p>Soundtech</p>
         </template>
       </TeamCard>
-      <!-- <TeamCard>
-        <template v-slot:headshot>
-          <img v-if="Andy" :src="Andy" alt="Andy" />
-        </template>
-        <template v-slot:name>
-          <h2>Andy</h2>
-        </template>
-        <template v-slot:role>
-          <p>Children's Coordinator</p>
-        </template>
-      </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
           <img v-if="Yvo" :src="Yvo" alt="Yvo" />
@@ -170,6 +161,17 @@ export default {
         </template>
         <template v-slot:role>
           <p>Guitar Tech & Soundtech</p>
+        </template>
+      </TeamCard>
+      <!-- <TeamCard>
+        <template v-slot:headshot>
+          <img v-if="Andy" :src="Andy" alt="Andy" />
+        </template>
+        <template v-slot:name>
+          <h2>Andy</h2>
+        </template>
+        <template v-slot:role>
+          <p>Children's Coordinator</p>
         </template>
       </TeamCard> -->
     </div>

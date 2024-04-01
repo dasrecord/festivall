@@ -16,7 +16,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" :style="{ height: '200px' }" />
+      <img :src="frogImage" alt="frog" :style="{ width: '25%' }" />
       <br />
     </h1>
     <h2>
