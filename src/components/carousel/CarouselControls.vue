@@ -15,7 +15,7 @@ export default {
   display: inline-block;
   position: absolute;
   height: 100%;
-  width: 70px;
+  width: 25px;
   /* top: calc(50% - 25px); */
   color: #f3f3f3;
   cursor: pointer;

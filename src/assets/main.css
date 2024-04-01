@@ -32,4 +32,11 @@ a,
     flex-direction: column;
     padding: 3rem;
   }
+  .call-to-action {
+    text-align: center;
+    border: 3px solid #f0f0f0;
+    border-radius: 30px;
+    margin-top: 1rem;
+    width: 60vw;
+  }
 }
