@@ -16,7 +16,7 @@ export default {
   <div class="basic">
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" :style="{ width: '25%' }" />
+      <img :src="frogImage" alt="frog" :style="{ width: '300px' }" />
       <br />
     </h1>
     <h2>
@@ -70,7 +70,6 @@ a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 2rem;
   }
 }
 </style>
