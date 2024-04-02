@@ -23,18 +23,18 @@ export default {
   },
   data() {
     return {
-      Chris: Chris,
-      Brandon: Brandon,
-      Prasenjit: Prasenjit,
-      Corey: Corey,
-      Janicka: Janicka,
-      Arthur: Arthur,
-      Christina: Christina,
-      Natalie: Natalie,
-      Nish: Nish,
-      Kayla: Kayla,
-      Becca: Becca,
-      Yvo: Yvo
+      Chris,
+      Brandon,
+      Prasenjit,
+      Corey,
+      Janicka,
+      Arthur,
+      Christina,
+      Natalie,
+      Nish,
+      Kayla,
+      Becca,
+      Yvo
     }
   }
 }
@@ -42,7 +42,7 @@ export default {
 <template>
   <div class="basic">
     <h1>THE REUNION‍<br /></h1>
-    Meet Our Festival Team<br /><br />
+    <h2>Meet Our Festival Team<br /><br /></h2>
     <div class="cards">
       <TeamCard>
         <template v-slot:headshot>

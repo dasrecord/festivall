@@ -38,14 +38,14 @@ export default {
       love with you, and can't wait for you to experience the power and precision of our sound
       system at our festival.<br /><br />
     </h3>
-    <CarouselComponent :slides="slides" :interval="3000" controls indicators />
+    <CarouselComponent :slides="slides" :interval="3600" controls indicators />
     <CalltoAction />
   </div>
 </template>
 
 <style>
 .basic {
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   align-items: center;
   justify-content: center;
