@@ -43,7 +43,7 @@ export default {
 </template>
 
 <style>
-.basic {
+.basic h2 {
   padding: 1rem;
   text-align: center;
   align-items: center;

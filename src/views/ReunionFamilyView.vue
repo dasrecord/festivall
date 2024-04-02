@@ -45,14 +45,15 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <h1>THE REUNION‍ <br /></h1>
-    <h2>
+    <h1>THE REUNION‍</h1>
+    <h2>About Our Festival</h2>
+    <h3>
       The Reunion is an independent electronic music festival located just outside Saskatoon. We
       prioritize high quality local acts and support them with a cohesive and multitalented
       volunteer team. Our custom built sound system and in-house projection mapping team create a
       premium audio-visual experience for the most discerning of electronic music lovers. We are a
       family friendly event with an interest in growth, community, and sustainability.<br /><br />
-    </h2>
+    </h3>
 
     <CarouselComponent :slides="slides" :interval="3600" controls indicators> </CarouselComponent>
     <CalltoAction />
@@ -60,11 +61,12 @@ export default {
 </template>
 
 <style>
-.basic {
+.basic h2 {
   padding: 1rem;
   text-align: center;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0.5rem;
 }
 img {
   display: inline;
