@@ -16,10 +16,14 @@ export default {
 <template>
   <div class="basic">
     <h1>THE REUNION‍ <br /></h1>
-    <h2>
-      <br />
-    </h2>
-
+    <h2>Soundsystem <br /><br /></h2>
+    <h3>
+      Our festival is proud to present a bespoke soundsystem with custom imported speaker hardware
+      and a meticulously crafted design. Assembled by our in-house team, the rig consists of a pair
+      of horn loaded subwoofers that produce an unparalleled low end. Both the front of house and
+      stage booth monitors are equipped with mid rage drivers that yield a smooth and clear upper
+      register. For artists and listeners alike, the Reunion rig is a truly special sound system.<br /><br />
+    </h3>
     <CarouselComponent :slides="slides" :interval="3000" controls indicators> </CarouselComponent>
     <CalltoAction />
   </div>
