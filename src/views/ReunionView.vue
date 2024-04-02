@@ -26,20 +26,12 @@ export default {
       <br />
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
-      25% discount if you pay with bitcoin!‍<br />
-      <br />
-      <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.
-      <br />
-      <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.
-      <br />
-      Check Out Our
-      <a href="https://www.instagram.com/p/CqX9uHBL6nE/?igsh=MTY4M2l3MXlraW43bQ=="
-        >Custom Sound System‍</a
-      >
-      <br />
+      25% discount if you pay with bitcoin!‍<br /><br />
+      <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.<br />
+      <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.<br />
+      Check Out Our <RouterLink to="/reunionsoundsystem">Sound System‍</RouterLink><br />
       <RouterLink to="/reunionamenities">Click Here</RouterLink>
-      for the Amenities‍<br />
-      <br />
+      for the Amenities‍<br /><br />
       <!-- Click Here for the Lineup‍<br />
       <br /> -->
     </h2>
