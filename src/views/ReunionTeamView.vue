@@ -12,6 +12,7 @@ import Christina from '@/assets/images/team/Christina.jpg'
 import Natalie from '@/assets/images/team/Natalie.jpg'
 import Nish from '@/assets/images/team/Nish.jpg'
 import Kayla from '@/assets/images/team/Kayla.jpg'
+import Becca from '@/assets/images/team/Becca.jpg'
 import Yvo from '@/assets/images/team/Yvo.jpg'
 
 export default {
@@ -32,6 +33,7 @@ export default {
       Natalie: Natalie,
       Nish: Nish,
       Kayla: Kayla,
+      Becca: Becca,
       Yvo: Yvo
     }
   }
@@ -128,6 +130,17 @@ export default {
         </template>
         <template v-slot:role>
           <p>Community Building</p>
+        </template>
+      </TeamCard>
+      <TeamCard>
+        <template v-slot:headshot>
+          <img :src="Becca" alt="Becca" />
+        </template>
+        <template v-slot:name>
+          <h2>Becca</h2>
+        </template>
+        <template v-slot:role>
+          <p>Graphic Design</p>
         </template>
       </TeamCard>
       <TeamCard>

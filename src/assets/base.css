@@ -42,6 +42,9 @@
 
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-2);
+
+  --color-icon: var(--vt-c-white);
+
   --section-gap: 160px;
 }
 
@@ -100,4 +103,6 @@ body {
 
 svg {
   fill: var(--color-icon);
+  stroke: var(--color-icon);
+  stroke-width: 5px;
 }

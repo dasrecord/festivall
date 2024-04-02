@@ -3,14 +3,13 @@
     <slot name="headshot">
       <!-- Default content for headshot -->
     </slot>
-    <slot name="name">
-      <!-- Default content for name -->
-    </slot>
+    <div class="label">
+      <slot name="name">
+        <!-- Default content for name -->
+      </slot>
+    </div>
     <slot name="role">
       <!-- Default content for role -->
-    </slot>
-    <slot name="icon">
-      <IconFestivall style="width: 24px; height: 24px" />
     </slot>
   </div>
 </template>
