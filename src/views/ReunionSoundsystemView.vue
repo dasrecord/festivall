@@ -1,6 +1,16 @@
 <script>
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
-
+import {
+  image1,
+  image2,
+  image3,
+  image4,
+  image5,
+  image6,
+  image7,
+  image8,
+  image9
+} from '@/assets/images/soundsystem'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
@@ -9,7 +19,7 @@ export default {
     CalltoAction
   },
   data: () => ({
-    slides: []
+    slides: [image1, image2, image3, image4, image5, image6, image7, image8, image9]
   })
 }
 </script>
@@ -24,7 +34,7 @@ export default {
       booth monitors are equipped with mid range drivers that yield a smooth and clear upper
       register. For artists and listeners alike, the Reunion rig is a truly special sound system.<br /><br />
     </h3>
-    <!-- <CarouselComponent :slides="slides" :interval="3000" controls indicators /> -->
+    <CarouselComponent :slides="slides" :interval="3000" controls indicators />
     <CalltoAction />
   </div>
 </template>
