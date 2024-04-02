@@ -6,7 +6,6 @@ import HelloWorld from './components/HelloWorld.vue'
 <template>
   <header>
     <div class="wrapper">
-      <!-- <img alt="Festivall" class="logo" src="/festivall_emblem.png" /> -->
       <HelloWorld msg="FESTIV-ALL" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -55,11 +54,6 @@ nav a {
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
   margin: 0.25rem;
-}
-
-nav a:first-of-type {
-  /* border: 0; */
-  /* border: 0; */
 }
 
 @media (min-width: 1024px) {

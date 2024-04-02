@@ -26,7 +26,7 @@ export default {
 }
 h1 {
   border: 1px solid rgba(121, 188, 255, 0.25);
-  border-radius: 25px;
+  border-radius: 20px;
   padding: 1rem;
   margin: 1rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
