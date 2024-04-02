@@ -32,10 +32,4 @@ export default {
   padding: 1rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
 }
-/* .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-} */
 </style>

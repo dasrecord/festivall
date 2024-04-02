@@ -1,11 +1,6 @@
 <!-- eslint-disable vue/valid-attribute-name -->
 <template>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="132.275mm"
-    height="132.275mm"
-    viewBox="0 0 500 500"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
     <path
       id="Selection"
       d="M 125.00,450.00
