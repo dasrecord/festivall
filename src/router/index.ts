@@ -5,6 +5,7 @@ import ReunionView from '@/views/ReunionView.vue';
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
 import ReunionTeamView from '@/views/ReunionTeamView.vue';
+import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       name: 'reunionteam',
       component: ReunionTeamView
 
+    },
+    {
+      path: '/reunionsoundsystem',
+      name: 'reunionsoundsystem',
+      component: ReunionSoundsystemView
     },
     {
       path: '/reunionapplication',

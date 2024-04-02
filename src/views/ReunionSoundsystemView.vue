@@ -1,0 +1,51 @@
+<script>
+import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
+
+import CalltoAction from '@/components/CalltoAction.vue'
+
+export default {
+  components: {
+    CarouselComponent,
+    CalltoAction
+  },
+  data: () => ({
+    slides: []
+  })
+}
+</script>
+<template>
+  <div class="basic">
+    <h1>THE REUNION‍ <br /></h1>
+    <h2>
+      <br />
+    </h2>
+
+    <CarouselComponent :slides="slides" :interval="3000" controls indicators> </CarouselComponent>
+    <CalltoAction />
+  </div>
+</template>
+
+<style>
+.basic {
+  padding: 2rem;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+img {
+  display: inline;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 1024px) {
+  .basic {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+</style>
