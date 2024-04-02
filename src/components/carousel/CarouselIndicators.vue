@@ -22,7 +22,7 @@ export default {
   position: absolute;
   transform: translateX(-50%);
   left: 50%;
-  bottom: 1.5em;
+  bottom: 1em;
   z-index: 2;
 }
 .carousel-indicator-item {
@@ -30,12 +30,12 @@ export default {
   height: 15px;
   border: none;
   background: #fff;
-  opacity: 0.5;
-  margin: 0.2em;
-  border-radius: 50%;
+  opacity: 0.25;
+  margin: 0.2rem;
+  border-radius: 5px;
   cursor: pointer;
 }
 .active {
-  opacity: 1;
+  opacity: 0.75;
 }
 </style>

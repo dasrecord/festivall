@@ -54,7 +54,7 @@ export default {
       family friendly event with an interest in growth, community, and sustainability.<br /><br />
     </h2>
 
-    <CarouselComponent :slides="slides" :interval="3000" controls indicators> </CarouselComponent>
+    <CarouselComponent :slides="slides" :interval="3600" controls indicators> </CarouselComponent>
     <CalltoAction />
   </div>
 </template>
