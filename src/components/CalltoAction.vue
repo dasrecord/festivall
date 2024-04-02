@@ -6,11 +6,11 @@ export default {
 
 <template>
   <div class="call-to-action">
-    <h1>
+    <h1 class="volunteer">
       Want to perform or volunteer?‍<br />
       <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
     </h1>
-    <h1>
+    <h1 class="tickets">
       Ready to buy tickets?‍<br />
       <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
     </h1>
@@ -26,9 +26,16 @@ export default {
 }
 h1 {
   border: 1px solid rgba(121, 188, 255, 0.25);
-  border-radius: 20px;
   padding: 1rem;
   margin: 1rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
+}
+.volunteer {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+.tickets {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 </style>

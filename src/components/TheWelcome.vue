@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
