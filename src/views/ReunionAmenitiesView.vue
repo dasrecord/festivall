@@ -20,21 +20,19 @@ export default {
       <img :src="frogImage" alt="frog" :style="{ width: '300px' }" />
       <br />
     </h1>
-    <h2>
-      AMENITIES & INFO:‍
-      <h3>
-        - You can park at your campsite‍ <br />
-        - Water available on site but bring your own‍<br />
-        - Food tickets available<br />
-        <!-- - Cash bar‍ available<br /> -->
-        - Bitcoin and Lightning accepted<br />
-        - Shared kitchen available‍<br />
-        - Quiet Family Camping Area‍<br />
-        - Warm showers available‍<br />
-        - Children's Playground‍<br />
-        - Leave pets at home.<br />
-      </h3>
-    </h2>
+    <h2>AMENITIES & INFO:‍</h2>
+    <h3>
+      - You can park at your campsite‍ <br />
+      - Water available on site but bring your own‍<br />
+      - Food tickets available<br />
+      <!-- - Cash bar‍ available<br /> -->
+      - Bitcoin and Lightning accepted<br />
+      - Shared kitchen available‍<br />
+      - Quiet Family Camping Area‍<br />
+      - Warm showers available‍<br />
+      - Children's Playground‍<br />
+      - Leave pets at home.<br />
+    </h3>
     <CalltoAction />
   </div>
 </template>
