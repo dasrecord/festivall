@@ -160,8 +160,8 @@ button {
 }
 .qr {
   display: flex;
-  width: 300px;
-  height: 300px;
+  width: 100%;
+  max-height: 300px;
   border: 2px solid white;
   position: relative;
   border-radius: 20px;

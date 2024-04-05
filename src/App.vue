@@ -7,7 +7,7 @@ import HelloWorld from './components/HelloWorld.vue'
   <header>
     <div class="wrapper">
       <HelloWorld msg="FESTIV-ALL" />
-      <nav>
+      <nav v-show="$route.path !== '/reunionticketscanner'">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
