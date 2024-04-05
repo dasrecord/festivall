@@ -6,6 +6,7 @@ import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
 import ReunionTeamView from '@/views/ReunionTeamView.vue';
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
+import TicketScanner from '@/views/TicketScanner.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +61,11 @@ const router = createRouter({
       name: 'reuniontickets',
       component: ExternalRedirect,
       props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
+    },
+    {
+      path: '/reunionticketscanner',
+      name: 'reunionticketscanner',
+      component: TicketScanner
     },
     {
       path:'/stayconnected',

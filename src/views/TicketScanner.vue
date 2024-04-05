@@ -91,7 +91,7 @@ export default {
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Ticket Scanner</button>
 
-    <h2>Scan Result: {{ fullResult }} {{}}</h2>
+    <h3>Scan Result: {{ fullResult }} {{}}</h3>
     <p v-if="this.matchingOrder">
       Matching Order: {{ this.matchingOrder.id_code || this.matchingOrder }}
     </p>
