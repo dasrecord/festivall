@@ -15,12 +15,8 @@
 </template>
 
 <script>
-import IconFestivall from './icons/IconFestivall.vue'
 export default {
-  name: 'TeamCard',
-  components: {
-    IconFestivall
-  }
+  name: 'TeamCard'
 }
 </script>
 

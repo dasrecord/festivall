@@ -95,7 +95,14 @@ export default {
     <p v-if="this.matchingOrder">
       Matching Order: {{ this.matchingOrder.id_code || this.matchingOrder }}
     </p>
-    <p v-if="this.matchingOrder">Status: {{ currentStatus(matchingOrder) }}</p>
+    <p v-if="this.matchingOrder">
+      Status: {{ currentStatus(matchingOrder) }} <br />Name:{{
+        matchingOrder.fullname.replace(/"/g, '')
+      }}
+      <br />Email: {{ matchingOrder.email }} <br />Phone: {{ matchingOrder.phone }} <br />Quantity:
+      {{ matchingOrder.quantity }}
+    </p>
+
     <button
       class="panel-button"
       v-if="matchingOrder && !matchingOrder.checked_in"
