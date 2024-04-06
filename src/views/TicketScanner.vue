@@ -96,11 +96,11 @@ export default {
       Matching Order: {{ this.matchingOrder.id_code || this.matchingOrder }}
     </p>
     <p v-if="this.matchingOrder">
-      Status: {{ currentStatus(matchingOrder) }} <br />Name:{{
-        matchingOrder.fullname.replace(/"/g, '')
-      }}
-      <br />Email: {{ matchingOrder.email }} <br />Phone: {{ matchingOrder.phone }} <br />Quantity:
-      {{ matchingOrder.quantity }}
+      Status: {{ currentStatus(matchingOrder) }} <br />
+      Name: {{ matchingOrder.fullname.replace(/"/g, '') }} <br />
+      Email: {{ matchingOrder.email }} <br />
+      Phone: {{ matchingOrder.phone }} <br />
+      Quantity: {{ matchingOrder.quantity }}
     </p>
 
     <button
