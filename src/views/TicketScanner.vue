@@ -2,10 +2,12 @@
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, doc, updateDoc, getDocs } from 'firebase/firestore'
+import IconFestivall from '@/components/icons/IconFestivall.vue'
 
 export default {
   components: {
-    QrcodeStream
+    QrcodeStream,
+    IconFestivall
   },
   data() {
     return {
@@ -86,10 +88,10 @@ export default {
 </script>
 
 <template>
-  <h1>Ticket Scanner</h1>
+  <h1>Reunion Ticket Scanner</h1>
   <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
   <div class="panel">
-    <button class="refresh-button" @click="refreshPage">Refresh Ticket Scanner</button>
+    <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
 
     <h3>Scan Result: {{ fullResult }} {{}}</h3>
     <p v-if="this.matchingOrder">
@@ -122,7 +124,8 @@ export default {
     <h2>Order Database:</h2>
     <ul>
       <li v-for="order in orders" :key="order.id_code">
-        <p>ID_CODE: {{ order.id_code }}</p>
+        <IconFestivall height="24px" float="right" />
+        <p>ID_Code: {{ order.id_code }}</p>
         <p>Name: {{ order.fullname }}</p>
         <p>Email: {{ order.email }}</p>
         <p>Phone: {{ order.phone }}</p>
@@ -134,15 +137,19 @@ export default {
 </template>
 
 <style scoped>
-h1 {
+h1,
+h2 {
   text-align: center;
 }
 ul {
   padding: 0;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
 }
 li {
+  display: flex;
+  flex-direction: column;
   list-style-type: none;
   border: 1px solid white;
   padding: 10px;
@@ -161,7 +168,7 @@ button {
 .qr {
   display: flex;
   width: 100%;
-  max-height: 300px;
+  max-height: 500px;
   border: 2px solid white;
   position: relative;
   border-radius: 20px;
@@ -171,6 +178,9 @@ button {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: fit-content;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 }
 .refresh-button {
   position: absolute;
