@@ -131,7 +131,7 @@ export default {
     <h2>Order Database:</h2>
     <ul>
       <li v-for="order in orders" :key="order.id_code">
-        <IconFestivall height="24px" float="right" />
+        <IconFestivall height="24px" />
         <p>ID_Code: {{ order.id_code }}</p>
         <p>Name: {{ order.fullname }}</p>
         <p>Email: {{ order.email }}</p>
@@ -149,26 +149,11 @@ h1,
 h2 {
   text-align: center;
 }
-ul {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-}
-li {
-  display: flex;
-  flex-direction: column;
-  list-style-type: none;
-  border: 1px solid white;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 20px;
-}
 button {
   border: 1px solid rgba(121, 188, 255, 0.25);
   border-radius: 25px;
   padding: 1rem;
-  box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
   position: relative;
   background-color: var(--q-color-primary);
   color: var(--q-color-white);
@@ -187,13 +172,29 @@ button {
   display: flex;
   flex-direction: column;
   height: fit-content;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  padding: 30px;
+  margin-bottom: 2rem;
 }
 .refresh-button {
   position: absolute;
-  right: 0;
+  right: 30px;
   width: auto;
   max-width: 150px;
+}
+ul {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+li {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
+  padding: 30px;
+  margin: 10px;
+  border-radius: 20px;
 }
 </style>
