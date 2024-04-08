@@ -139,7 +139,7 @@ export default {
       Check Out
     </button>
   </div>
-  <div>
+  <div class="at-a-glance">
     <h2>At A Glance</h2>
     <ul>
       <li>
@@ -211,6 +211,11 @@ button {
   right: 30px;
   width: auto;
   max-width: 150px;
+}
+.panel-button {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
 }
 ul {
   padding: 0;
