@@ -78,16 +78,16 @@ export default {
     async checkIn(order) {
       const orderRef = doc(this.db, 'orders', order.id_code)
       await updateDoc(orderRef, {
-        checked_in: true
+        checked_in: 'true'
       })
-      order.checked_in = true
+      order.checked_in = 'true'
     },
     async checkOut(order) {
       const orderRef = doc(this.db, 'orders', order.id_code)
       await updateDoc(orderRef, {
-        checked_in: false
+        checked_in: 'false'
       })
-      order.checked_in = false
+      order.checked_in = 'false'
     },
     refreshPage() {
       window.location.reload()
@@ -104,7 +104,7 @@ export default {
 
     <h3>
       Scan Result:<br />
-      {{ fullResult }}
+      {{ fullResult }}<br /><br />
     </h3>
     <p v-if="matchingOrder && typeof matchingOrder === 'string'">
       {{ matchingOrder }}
@@ -113,23 +113,27 @@ export default {
       Matching Order: {{ matchingOrder.id_code }}
     </p>
     <p v-if="matchingOrder && typeof matchingOrder === 'object'">
-      Status: {{ currentStatus(matchingOrder) }} <br />
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
-      Phone: {{ matchingOrder.phone }} <br />
-      Quantity: {{ matchingOrder.quantity }}
+      Phone: {{ matchingOrder.phone }} <br /><br />
+      Quantity: {{ matchingOrder.quantity }}<br />
+      Paid: {{ paidStatus(matchingOrder) }} <br />
+      Status: {{ currentStatus(matchingOrder) }} <br /><br />
     </p>
-
     <button
       class="panel-button"
-      v-if="matchingOrder && typeof matchingOrder === 'object' && !matchingOrder.checked_in"
+      v-if="
+        matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in === 'false'
+      "
       @click="checkIn(matchingOrder)"
     >
       Check In
     </button>
     <button
       class="panel-button"
-      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in"
+      v-if="
+        matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in === 'true'
+      "
       @click="checkOut(matchingOrder)"
     >
       Check Out
@@ -162,7 +166,7 @@ h2 {
   text-align: center;
 }
 p {
-  font-size: 0.8rem;
+  font-size: 12px;
 }
 button {
   border: 1px solid rgba(121, 188, 255, 0.25);
