@@ -102,7 +102,10 @@ export default {
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
 
-    <h3>Scan Result: {{ fullResult }}</h3>
+    <h3>
+      Scan Result:<br />
+      {{ fullResult }}
+    </h3>
     <p v-if="matchingOrder && typeof matchingOrder === 'string'">
       {{ matchingOrder }}
     </p>
@@ -136,7 +139,7 @@ export default {
     <h2>Order Database:</h2>
     <ul>
       <li v-for="order in orders" :key="order.id_code" class="order">
-        <!-- <div><IconFestivall height="32px" />ESTIV-ALL</div> -->
+        <div><IconFestivall height="32px" /></div>
         <div>
           <p>ID_Code: {{ order.id_code }}</p>
           <p>Name: {{ order.fullname }}</p>
@@ -157,6 +160,9 @@ export default {
 h1,
 h2 {
   text-align: center;
+}
+p {
+  font-size: 0.8rem;
 }
 button {
   border: 1px solid rgba(121, 188, 255, 0.25);
