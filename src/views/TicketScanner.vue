@@ -139,6 +139,18 @@ export default {
       Check Out
     </button>
   </div>
+  <div>
+    <h2>At A Glance</h2>
+    <ul>
+      <li>
+        <p>Total Orders: {{ orders.length }}</p>
+        <p>Checked In: {{ orders.filter((order) => order.checked_in === 'true').length }}</p>
+        <p>Not Checked In: {{ orders.filter((order) => order.checked_in === 'false').length }}</p>
+        <p>Paid: {{ orders.filter((order) => order.paid === 'true').length }}</p>
+        <p>Not Paid: {{ orders.filter((order) => order.paid === 'false').length }}</p>
+      </li>
+    </ul>
+  </div>
   <div class="database">
     <h2>Order Database:</h2>
     <ul>
@@ -204,7 +216,7 @@ ul {
   padding: 0;
   display: flex;
   flex-direction: column;
-  /* flex-wrap: wrap; */
+  flex-wrap: wrap;
 }
 li {
   display: flex;
