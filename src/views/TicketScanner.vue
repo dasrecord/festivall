@@ -49,14 +49,16 @@ export default {
     },
     onDetect(result) {
       this.fullResult = result[0].rawValue
-      this.scanResult = this.fullResult.split('_')[0]
-      const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
-      if (matchingOrder) {
-        this.matchingOrder = matchingOrder
-        console.log('Order found:', this.matchingOrder)
-      } else {
-        this.matchingOrder = 'No Matching Order Found'
-        console.log('Order not found:', this.matchingOrder)
+      if (typeof this.fullResult === 'string' && this.fullResult.includes('_')) {
+        this.scanResult = this.fullResult.split('_')[0]
+        const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
+        if (matchingOrder) {
+          this.matchingOrder = matchingOrder
+          console.log('Order found:', this.matchingOrder)
+        } else {
+          this.matchingOrder = 'No Matching Order Found'
+          console.log('Order not found:', this.matchingOrder)
+        }
       }
     },
     currentStatus(order) {
@@ -100,13 +102,16 @@ export default {
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
 
-    <h3>Scan Result: {{ fullResult }} {{}}</h3>
-    <p v-if="this.matchingOrder">
-      Matching Order: {{ this.matchingOrder.id_code || this.matchingOrder }}
+    <h3>Scan Result: {{ fullResult }}</h3>
+    <p v-if="matchingOrder && typeof matchingOrder === 'string'">
+      {{ matchingOrder }}
     </p>
-    <p v-if="this.matchingOrder">
+    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+      Matching Order: {{ matchingOrder.id_code }}
+    </p>
+    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
       Status: {{ currentStatus(matchingOrder) }} <br />
-      Name: {{ matchingOrder.fullname.replace(/"/g, '') }} <br />
+      Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br />
       Quantity: {{ matchingOrder.quantity }}
@@ -114,14 +119,14 @@ export default {
 
     <button
       class="panel-button"
-      v-if="matchingOrder && !matchingOrder.checked_in"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && !matchingOrder.checked_in"
       @click="checkIn(matchingOrder)"
     >
       Check In
     </button>
     <button
       class="panel-button"
-      v-if="matchingOrder && matchingOrder.checked_in"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in"
       @click="checkOut(matchingOrder)"
     >
       Check Out
@@ -130,15 +135,19 @@ export default {
   <div class="database">
     <h2>Order Database:</h2>
     <ul>
-      <li v-for="order in orders" :key="order.id_code">
-        <IconFestivall height="24px" />
-        <p>ID_Code: {{ order.id_code }}</p>
-        <p>Name: {{ order.fullname }}</p>
-        <p>Email: {{ order.email }}</p>
-        <p>Phone: {{ order.phone }}</p>
-        <p>Quantity: {{ order.quantity }}</p>
-        <p>Paid: {{ paidStatus(order) }}</p>
-        <p>Status: {{ currentStatus(order) }}</p>
+      <li v-for="order in orders" :key="order.id_code" class="order">
+        <!-- <div><IconFestivall height="32px" />ESTIV-ALL</div> -->
+        <div>
+          <p>ID_Code: {{ order.id_code }}</p>
+          <p>Name: {{ order.fullname }}</p>
+          <p>Email: {{ order.email }}</p>
+          <p>Phone: {{ order.phone }}</p>
+        </div>
+        <div class="order-status">
+          <p>Quantity: {{ order.quantity }}</p>
+          <p>Paid: {{ paidStatus(order) }}</p>
+          <p>Status: {{ currentStatus(order) }}</p>
+        </div>
       </li>
     </ul>
   </div>
@@ -185,16 +194,24 @@ ul {
   padding: 0;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 li {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   list-style-type: none;
   border: 1px solid rgba(121, 188, 255, 0.25);
   box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
   padding: 30px;
-  margin: 10px;
+  margin: 5px;
   border-radius: 20px;
+}
+.order {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-status {
+  align-self: flex-start;
 }
 </style>
