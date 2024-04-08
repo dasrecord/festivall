@@ -1,7 +1,7 @@
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, doc, updateDoc, getDocs } from 'firebase/firestore'
+import { getFirestore, collection, doc, updateDoc, getDocs, or } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 
 export default {
@@ -61,9 +61,16 @@ export default {
     },
     currentStatus(order) {
       if (order.checked_in) {
-        return 'Checked In'
+        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
       } else {
         return 'Not Checked In'
+      }
+    },
+    paidStatus(order) {
+      if (order.paid) {
+        return order.paid === 'true' ? 'Paid' : 'Not Paid'
+      } else {
+        return 'Not Paid'
       }
     },
     async checkIn(order) {
@@ -130,6 +137,7 @@ export default {
         <p>Email: {{ order.email }}</p>
         <p>Phone: {{ order.phone }}</p>
         <p>Quantity: {{ order.quantity }}</p>
+        <p>Paid: {{ paidStatus(order) }}</p>
         <p>Status: {{ currentStatus(order) }}</p>
       </li>
     </ul>
