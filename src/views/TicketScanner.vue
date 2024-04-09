@@ -1,8 +1,9 @@
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, doc, updateDoc, getDocs, or } from 'firebase/firestore'
+import { getFirestore, collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
+import { auth } from '@/main'
 
 export default {
   components: {
@@ -21,13 +22,12 @@ export default {
   created: async function () {
     try {
       const firebaseConfig = {
-        apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
-        authDomain: import.meta.env.VITE_APP_FIREBASE_AUTH_DOMAIN,
-        projectId: import.meta.env.VITE_APP_FIREBASE_PROJECT_ID,
-        storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
-        appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
-        measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID
+        apiKey: auth.currentUser.apiKey,
+        authDomain: auth.currentUser.authDomain,
+        projectId: auth.currentUser.projectId,
+        storageBucket: auth.currentUser.storageBucket,
+        messagingSenderId: auth.currentUser.messagingSenderId,
+        appId: auth.currentUser.appId
       }
 
       const app = initializeApp(firebaseConfig)
@@ -212,11 +212,7 @@ button {
   width: auto;
   max-width: 150px;
 }
-.panel-button {
-  width: 100%;
-  max-width: 150px;
-  margin: 0 auto;
-}
+
 ul {
   padding: 0;
   display: flex;

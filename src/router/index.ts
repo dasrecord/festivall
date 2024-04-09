@@ -6,7 +6,10 @@ import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
 import ReunionTeamView from '@/views/ReunionTeamView.vue';
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
+import ReunionLoginView from '@/views/ReunionLoginView.vue';
 import TicketScanner from '@/views/TicketScanner.vue';
+import { auth } from '../main';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,9 +66,24 @@ const router = createRouter({
       props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
     },
     {
+      path: '/login',
+      name: 'login',
+      component: ReunionLoginView
+    },
+    {
       path: '/reunionticketscanner',
-      name: 'reunionticketscanner',
-      component: TicketScanner
+      component: TicketScanner,
+      beforeEnter: (to, from, next) => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // User is signed in, let them proceed
+            next(TicketScanner);
+          } else {
+            // No user is signed in, redirect to login
+            next('/reunionlogin');
+          }
+        });
+      }
     },
     {
       path:'/stayconnected',
