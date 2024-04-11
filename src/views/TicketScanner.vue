@@ -15,7 +15,8 @@ export default {
       fullResult: null,
       scanResult: null,
       orders: [],
-      matchingOrder: null
+      matchingOrder: null,
+      showAll: false
     }
   },
   created: async function () {
@@ -178,8 +179,15 @@ export default {
   </div>
   <div class="database">
     <h2>Order Database</h2>
+    <button @click="showAll = !showAll">
+      Show {{ showAll ? 'Not Checked In' : 'All' }} Orders
+    </button>
     <ul>
-      <li v-for="order in orders" :key="order.id_code" class="order">
+      <li
+        v-for="order in showAll ? orders : orders.filter((order) => order.checked_in === 'false')"
+        :key="order.id_code"
+        class="order"
+      >
         <div>
           <IconFestivall height="24px" />
           <h2>{{ order.id_code }}</h2>

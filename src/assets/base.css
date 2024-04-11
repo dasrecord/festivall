@@ -106,3 +106,9 @@ svg {
   stroke: var(--color-icon);
   stroke-width: 5px;
 }
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
