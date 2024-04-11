@@ -102,10 +102,10 @@ export default {
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
 
-    <h4>
+    <h3>
       Scan Result:<br />
       {{ fullResult }}<br /><br />
-    </h4>
+    </h3>
     <p v-if="matchingOrder && typeof matchingOrder === 'string'">
       {{ matchingOrder }}
     </p>
@@ -140,53 +140,53 @@ export default {
     </button>
   </div>
   <div class="at-a-glance">
-    <h3>At A Glance</h3>
+    <h2>At A Glance</h2>
     <ul>
       <li>
         <div>
           <h4>Total Orders</h4>
-          <h3>
+          <h2>
             {{ orders.length }}
-          </h3>
-        </div>
-        <div>
-          <h4>Checked In</h4>
-          <h3>
-            {{ orders.filter((order) => order.checked_in === 'true').length }}
-          </h3>
-        </div>
-        <div>
-          <h4>Not Checked In</h4>
-          <h3>
-            {{ orders.filter((order) => order.checked_in === 'false').length }}
-          </h3>
+          </h2>
         </div>
         <div>
           <h4>Paid</h4>
-          <h3>
+          <h2>
             {{ orders.filter((order) => order.paid === 'true').length }}
-          </h3>
+          </h2>
         </div>
         <div>
           <h4>Not Paid</h4>
-          <h3>
+          <h2>
             {{ orders.filter((order) => order.paid === 'false').length }}
-          </h3>
+          </h2>
+        </div>
+        <div>
+          <h4>Checked In</h4>
+          <h2>
+            {{ orders.filter((order) => order.checked_in === 'true').length }}
+          </h2>
+        </div>
+        <div>
+          <h4>Not Checked In</h4>
+          <h2>
+            {{ orders.filter((order) => order.checked_in === 'false').length }}
+          </h2>
         </div>
       </li>
     </ul>
   </div>
   <div class="database">
-    <h3>Order Database</h3>
+    <h2>Order Database</h2>
     <ul>
       <li v-for="order in orders" :key="order.id_code" class="order">
         <div>
           <IconFestivall height="24px" />
-          <h3>{{ order.id_code }}</h3>
+          <h2>{{ order.id_code }}</h2>
         </div>
 
         <div>
-          <h3>{{ order.fullname }}</h3>
+          <h2>{{ order.fullname }}</h2>
           <p>{{ order.email }}</p>
           <p>{{ order.phone }}</p>
         </div>
@@ -202,7 +202,7 @@ export default {
 
 <style scoped>
 h1,
-h3 {
+h2 {
   text-align: center;
 }
 p {
@@ -246,7 +246,7 @@ button {
   margin: 0 auto;
 }
 .at-a-glance {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 ul {
   padding: 0;
