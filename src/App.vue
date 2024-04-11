@@ -4,7 +4,7 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header>
+  <header v-show="$route.path !== '/reunionticketscanner'">
     <div class="wrapper">
       <HelloWorld msg="FESTIV-ALL" />
       <nav v-show="$route.path !== '/reunionticketscanner'">

@@ -102,10 +102,10 @@ export default {
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
 
-    <h3>
+    <h4>
       Scan Result:<br />
       {{ fullResult }}<br /><br />
-    </h3>
+    </h4>
     <p v-if="matchingOrder && typeof matchingOrder === 'string'">
       {{ matchingOrder }}
     </p>
@@ -140,53 +140,53 @@ export default {
     </button>
   </div>
   <div class="at-a-glance">
-    <h2>At A Glance</h2>
+    <h3>At A Glance</h3>
     <ul>
       <li>
         <div>
-          <h3>Total Orders</h3>
-          <h2>
+          <h4>Total Orders</h4>
+          <h3>
             {{ orders.length }}
-          </h2>
+          </h3>
         </div>
         <div>
-          <h3>Checked In</h3>
-          <h2>
+          <h4>Checked In</h4>
+          <h3>
             {{ orders.filter((order) => order.checked_in === 'true').length }}
-          </h2>
+          </h3>
         </div>
         <div>
-          <h3>Not Checked In</h3>
-          <h2>
+          <h4>Not Checked In</h4>
+          <h3>
             {{ orders.filter((order) => order.checked_in === 'false').length }}
-          </h2>
+          </h3>
         </div>
         <div>
-          <h3>Paid</h3>
-          <h2>
+          <h4>Paid</h4>
+          <h3>
             {{ orders.filter((order) => order.paid === 'true').length }}
-          </h2>
+          </h3>
         </div>
         <div>
-          <h3>Not Paid</h3>
-          <h2>
+          <h4>Not Paid</h4>
+          <h3>
             {{ orders.filter((order) => order.paid === 'false').length }}
-          </h2>
+          </h3>
         </div>
       </li>
     </ul>
   </div>
   <div class="database">
-    <h2>Order Database</h2>
+    <h3>Order Database</h3>
     <ul>
       <li v-for="order in orders" :key="order.id_code" class="order">
         <div>
           <IconFestivall height="24px" />
-          <h2>{{ order.id_code }}</h2>
+          <h3>{{ order.id_code }}</h3>
         </div>
 
         <div>
-          <h2>{{ order.fullname }}</h2>
+          <h3>{{ order.fullname }}</h3>
           <p>{{ order.email }}</p>
           <p>{{ order.phone }}</p>
         </div>
@@ -202,7 +202,7 @@ export default {
 
 <style scoped>
 h1,
-h2 {
+h3 {
   text-align: center;
 }
 p {
