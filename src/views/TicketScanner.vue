@@ -143,11 +143,26 @@ export default {
     <h2>At A Glance</h2>
     <ul>
       <li>
-        <p>Total Orders: {{ orders.length }}</p>
-        <p>Checked In: {{ orders.filter((order) => order.checked_in === 'true').length }}</p>
-        <p>Not Checked In: {{ orders.filter((order) => order.checked_in === 'false').length }}</p>
-        <p>Paid: {{ orders.filter((order) => order.paid === 'true').length }}</p>
-        <p>Not Paid: {{ orders.filter((order) => order.paid === 'false').length }}</p>
+        <div>
+          <p>Total Orders</p>
+          {{ orders.length }}
+        </div>
+        <div>
+          <p>Checked In</p>
+          {{ orders.filter((order) => order.checked_in === 'true').length }}
+        </div>
+        <div>
+          <p>Not Checked In</p>
+          {{ orders.filter((order) => order.checked_in === 'false').length }}
+        </div>
+        <div>
+          <p>Paid</p>
+          {{ orders.filter((order) => order.paid === 'true').length }}
+        </div>
+        <div>
+          <p>Not Paid:</p>
+          {{ orders.filter((order) => order.paid === 'false').length }}
+        </div>
       </li>
     </ul>
   </div>
@@ -192,7 +207,7 @@ button {
 .qr {
   display: flex;
   width: 100%;
-  max-height: 500px;
+  max-height: 400px;
   border: 2px solid white;
   position: relative;
   border-radius: 20px;
@@ -217,6 +232,9 @@ button {
   max-width: 150px;
   margin: 0 auto;
 }
+.at-a-glance {
+  margin-bottom: 2rem;
+}
 ul {
   padding: 0;
   display: flex;
@@ -226,19 +244,17 @@ ul {
 li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  text-align: center;
   list-style-type: none;
   border: 1px solid rgba(121, 188, 255, 0.25);
   box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
-  padding: 30px;
+  padding: 10px;
   margin: 5px;
   border-radius: 20px;
 }
 .order {
   display: flex;
   justify-content: space-between;
-}
-
-.order-status {
-  align-self: flex-start;
 }
 </style>
