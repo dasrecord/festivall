@@ -144,43 +144,56 @@ export default {
     <ul>
       <li>
         <div>
-          <p>Total Orders</p>
-          {{ orders.length }}
+          <h3>Total Orders</h3>
+          <h2>
+            {{ orders.length }}
+          </h2>
         </div>
         <div>
-          <p>Checked In</p>
-          {{ orders.filter((order) => order.checked_in === 'true').length }}
+          <h3>Checked In</h3>
+          <h2>
+            {{ orders.filter((order) => order.checked_in === 'true').length }}
+          </h2>
         </div>
         <div>
-          <p>Not Checked In</p>
-          {{ orders.filter((order) => order.checked_in === 'false').length }}
+          <h3>Not Checked In</h3>
+          <h2>
+            {{ orders.filter((order) => order.checked_in === 'false').length }}
+          </h2>
         </div>
         <div>
-          <p>Paid</p>
-          {{ orders.filter((order) => order.paid === 'true').length }}
+          <h3>Paid</h3>
+          <h2>
+            {{ orders.filter((order) => order.paid === 'true').length }}
+          </h2>
         </div>
         <div>
-          <p>Not Paid:</p>
-          {{ orders.filter((order) => order.paid === 'false').length }}
+          <h3>Not Paid</h3>
+          <h2>
+            {{ orders.filter((order) => order.paid === 'false').length }}
+          </h2>
         </div>
       </li>
     </ul>
   </div>
   <div class="database">
-    <h2>Order Database:</h2>
+    <h2>Order Database</h2>
     <ul>
       <li v-for="order in orders" :key="order.id_code" class="order">
-        <div><IconFestivall height="32px" /></div>
         <div>
-          <p>ID_Code: {{ order.id_code }}</p>
-          <p>Name: {{ order.fullname }}</p>
-          <p>Email: {{ order.email }}</p>
-          <p>Phone: {{ order.phone }}</p>
+          <IconFestivall height="24px" />
+          <h2>{{ order.id_code }}</h2>
+        </div>
+
+        <div>
+          <h2>{{ order.fullname }}</h2>
+          <p>{{ order.email }}</p>
+          <p>{{ order.phone }}</p>
         </div>
         <div class="order-status">
-          <p>Quantity: {{ order.quantity }}</p>
-          <p>Paid: {{ paidStatus(order) }}</p>
-          <p>Status: {{ currentStatus(order) }}</p>
+          <h4>Admit {{ order.quantity }}</h4>
+          <h4>{{ paidStatus(order) }}</h4>
+          <h4>{{ currentStatus(order) }}</h4>
         </div>
       </li>
     </ul>
@@ -255,6 +268,6 @@ li {
 }
 .order {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 </style>
