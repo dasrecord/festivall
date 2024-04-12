@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <h3>
-      {{ daysLeft }} d<br />{{ hoursLeft }} h<br />{{ minutesLeft }} m<br />{{
-        secondsLeft
-      }}
-      s<br />{{ millisecondsLeft }} ms<br />LEFT UNTIL
-    </h3>
+  <div class="countdowntimer">
+    <div class="unit">{{ daysLeft }} d<br /></div>
+    <div class="unit">{{ hoursLeft }} h<br /></div>
+    <div class="unit">{{ minutesLeft }} m<br /></div>
+    <div class="unit">{{ secondsLeft }} s<br /></div>
+    <div class="unit">{{ millisecondsLeft }} ms<br /></div>
+    LEFT UNTIL
   </div>
 </template>
 
@@ -53,5 +53,15 @@ export default {
   }
 }
 </script>
+<style scoped>
+.countdowntimer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-<style scoped></style>
+.countdowntimer .unit {
+  margin: 0 0.5em;
+}
+</style>
