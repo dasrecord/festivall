@@ -2,10 +2,12 @@
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import FrogImage from '@/assets/images/frog.png'
 import CalltoAction from '@/components/CalltoAction.vue'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 
 export default {
   components: {
     CountdownTimer,
+    DetailsPanel,
     CalltoAction
   },
   data() {
@@ -38,6 +40,7 @@ export default {
         - Leave pets at home.<br />
       </h3>
     </h2>
+    <DetailsPanel />
     <CalltoAction />
   </div>
 </template>

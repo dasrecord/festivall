@@ -1,6 +1,7 @@
 <script>
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import TeamCard from '@/components/TeamCard.vue'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 import Chris from '@/assets/images/team/Chris.jpg'
@@ -21,6 +22,7 @@ export default {
   components: {
     CountdownTimer,
     TeamCard,
+    DetailsPanel,
     CalltoAction
   },
   data() {
@@ -191,6 +193,7 @@ export default {
         </template>
       </TeamCard> -->
     </div>
+    <DetailsPanel />
     <CalltoAction />
   </div>
 </template>

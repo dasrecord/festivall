@@ -12,12 +12,14 @@ import {
   image8,
   image9
 } from '@/assets/images/soundsystem'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
     CountdownTimer,
     CarouselComponent,
+    DetailsPanel,
     CalltoAction
   },
   data: () => ({
@@ -41,6 +43,7 @@ export default {
       to experience the power and precision of our sound system at our festival.<br /><br />
     </h3>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators />
+    <DetailsPanel />
     <CalltoAction />
   </div>
 </template>

@@ -16,12 +16,14 @@ import perform_image from '@/assets/images/perform.jpg'
 import talk_image from '@/assets/images/talk.jpg'
 import tribal_image from '@/assets/images/tribal.jpg'
 import vandamage_image from '@/assets/images/vandamage.jpg'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
     CountdownTimer,
     CarouselComponent,
+    DetailsPanel,
     CalltoAction
   },
   data: () => ({
@@ -59,6 +61,7 @@ export default {
     </h3>
 
     <CarouselComponent :slides="slides" :interval="3600" controls indicators> </CarouselComponent>
+    <DetailsPanel />
     <CalltoAction />
   </div>
 </template>

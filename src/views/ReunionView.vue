@@ -42,8 +42,8 @@ export default {
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
       25% discount if you pay with bitcoin!‍<br /><br />
-      <DetailsPanel />
     </h2>
+    <DetailsPanel />
   </div>
   <CalltoAction />
 </template>
