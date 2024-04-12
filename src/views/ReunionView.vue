@@ -1,16 +1,27 @@
 <script>
+import CountDownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
 import CalltoAction from '@/components/CalltoAction.vue'
-import CountDownTimer from '@/components/CountdownTimer.vue'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 
 export default {
   components: {
+    CountDownTimer,
     CalltoAction,
-    CountDownTimer
+    DetailsPanel
   },
   data() {
     return {
-      frogImage: frog_image
+      frogImage: frog_image,
+      clickCount: 0
+    }
+  },
+  methods: {
+    handleClick() {
+      this.clickCount++
+      if (this.clickCount === 21) {
+        this.$router.push('/reunionticketscanner')
+      }
     }
   }
 }
@@ -20,27 +31,21 @@ export default {
     <CountDownTimer />
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" :style="{ width: '300px' }" />
+      <img :src="frogImage" alt="frog" :style="{ width: '300px' }" @click="handleClick" />
       <br />
     </h1>
     <h2>
-      Aug 30 - Sept 2, 2024 <br />
-      30 min from Saskatoon <br />
+      AUG 30th - SEPT 2nd, 2024 <br />
+      30 min from Saskatoon <br /><br />
       MUSIC - DANCING - CAMPING‍ <br />
-      <br />
+      FAMILY - FRIENDS - FOOD‍ <br /><br />
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
       25% discount if you pay with bitcoin!‍<br /><br />
-      <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.<br />
-      <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.<br />
-      Check Out Our <RouterLink to="/reunionsoundsystem">Sound System‍</RouterLink><br />
-      <RouterLink to="/reunionamenities">Click Here</RouterLink>
-      for the Amenities‍<br /><br />
-      <!-- Click Here for the Lineup‍<br />
-      <br /> -->
+      <DetailsPanel />
     </h2>
-    <CalltoAction />
   </div>
+  <CalltoAction />
 </template>
 
 <style>
