@@ -1,9 +1,11 @@
 <script>
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import FrogImage from '@/assets/images/frog.png'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
+    CountdownTimer,
     CalltoAction
   },
   data() {
@@ -15,6 +17,7 @@ export default {
 </script>
 <template>
   <div class="basic">
+    <CountdownTimer />
     <h1>
       THE REUNION‍ <br />
       <img :src="frogImage" alt="frog" :style="{ width: '300px' }" />

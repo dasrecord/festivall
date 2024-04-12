@@ -1,4 +1,5 @@
 <script>
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 import {
   image1,
@@ -15,6 +16,7 @@ import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
+    CountdownTimer,
     CarouselComponent,
     CalltoAction
   },
@@ -25,6 +27,7 @@ export default {
 </script>
 <template>
   <div class="basic">
+    <CountdownTimer />
     <h1>THE REUNION‍</h1>
     <h2>Soundsystem <br /></h2>
     <h3>

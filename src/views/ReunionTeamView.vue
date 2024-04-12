@@ -1,4 +1,5 @@
 <script>
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import TeamCard from '@/components/TeamCard.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
@@ -18,6 +19,7 @@ import Yvo from '@/assets/images/team/Yvo.jpg'
 export default {
   name: 'ReunionTeamView',
   components: {
+    CountdownTimer,
     TeamCard,
     CalltoAction
   },
@@ -41,6 +43,7 @@ export default {
 </script>
 <template>
   <div class="basic">
+    <CountdownTimer />
     <h1>THE REUNION‍<br /></h1>
     <h2>Meet Our Festival Team<br /></h2>
     <div class="cards">

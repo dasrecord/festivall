@@ -1,4 +1,5 @@
 <script>
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 import arrow_image from '@/assets/images/arrow.jpg'
 import audience_image from '@/assets/images/audience.jpg'
@@ -19,6 +20,7 @@ import CalltoAction from '@/components/CalltoAction.vue'
 
 export default {
   components: {
+    CountdownTimer,
     CarouselComponent,
     CalltoAction
   },
@@ -45,6 +47,7 @@ export default {
 </script>
 <template>
   <div class="basic">
+    <CountdownTimer />
     <h1>THE REUNION‍</h1>
     <h2>About Our Festival</h2>
     <h3>
