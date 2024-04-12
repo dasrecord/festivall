@@ -1,7 +1,7 @@
 <template>
   <div class="countdowntimer">
     <div class="unit">{{ daysLeft }}</div>
-    <div>&nbsp;&nbsp;d</div>
+    <div>&nbsp;d</div>
     <div class="unit">{{ hoursLeft }}</div>
     <div>h</div>
     <div class="unit">{{ minutesLeft }}</div>
@@ -9,7 +9,7 @@
     <div class="unit">{{ secondsLeft }}</div>
     <div>s</div>
     <div class="unit">{{ millisecondsLeft }}</div>
-    <div>&nbsp;&nbsp;ms</div>
+    <div>&nbsp;ms</div>
 
     <div>&nbsp;&nbsp;&nbsp;LEFT UNTIL</div>
   </div>
@@ -78,7 +78,8 @@ export default {
 .countdowntimer .unit {
   display: flex;
   flex-direction: row;
-  margin-left: 15px;
+  margin-left: 10px;
   width: 20px;
+  justify-content: center;
 }
 </style>
