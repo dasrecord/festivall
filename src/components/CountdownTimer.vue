@@ -1,11 +1,17 @@
 <template>
   <div class="countdowntimer">
-    <div class="unit">{{ daysLeft }} d<br /></div>
-    <div class="unit">{{ hoursLeft }} h<br /></div>
-    <div class="unit">{{ minutesLeft }} m<br /></div>
-    <div class="unit">{{ secondsLeft }} s<br /></div>
-    <div class="unit">{{ millisecondsLeft }} ms<br /></div>
-    LEFT UNTIL
+    <div class="unit">{{ daysLeft }}</div>
+    <div>&nbsp;&nbsp;d</div>
+    <div class="unit">{{ hoursLeft }}</div>
+    <div>h</div>
+    <div class="unit">{{ minutesLeft }}</div>
+    <div>m</div>
+    <div class="unit">{{ secondsLeft }}</div>
+    <div>s</div>
+    <div class="unit">{{ millisecondsLeft }}</div>
+    <div>&nbsp;&nbsp;ms</div>
+
+    <div>&nbsp;&nbsp;&nbsp;LEFT UNTIL</div>
   </div>
 </template>
 
@@ -41,8 +47,10 @@ export default {
       diffInMilliseconds -= minutes * (1000 * 60)
 
       const seconds = Math.floor(diffInMilliseconds / 1000)
+      diffInMilliseconds -= seconds * 1000
 
-      const milliseconds = diffInMilliseconds - seconds * 1000
+      let milliseconds = diffInMilliseconds.toString()
+      milliseconds = milliseconds.padStart(3, '0')
 
       this.daysLeft = days
       this.hoursLeft = hours
@@ -56,12 +64,21 @@ export default {
 <style scoped>
 .countdowntimer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-radius: 20px;
 }
 
 .countdowntimer .unit {
-  margin: 0 0.5em;
+  display: flex;
+  flex-direction: row;
+  margin-left: 15px;
+  width: 20px;
 }
 </style>
