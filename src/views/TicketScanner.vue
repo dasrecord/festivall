@@ -118,7 +118,7 @@ export default {
 </script>
 
 <template>
-  <h1>Reunion Ticket Scanner</h1>
+  <h1>REUNION 2024 TICKET SCANNER</h1>
   <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
