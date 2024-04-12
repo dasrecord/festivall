@@ -257,14 +257,16 @@ button {
   display: flex;
   flex-direction: column;
   height: fit-content;
-  padding: 30px;
-  margin-bottom: 2rem;
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
+  padding: 10px;
+  margin: 1rem;
+  border-radius: 20px;
 }
 .refresh-button {
   position: absolute;
-  right: 30px;
-  width: auto;
-  max-width: 150px;
+  right: 1rem;
+  top: 1rem;
 }
 .panel-button {
   width: 100%;
@@ -272,13 +274,21 @@ button {
   margin: 0 auto;
 }
 .at-a-glance {
-  margin-bottom: 1rem;
+  margin: 1rem;
+}
+.database {
+  display: flex;
+  flex-direction: column;
+}
+.database button {
+  margin: 0 auto;
 }
 ul {
   padding: 0;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  width: 100%;
 }
 li {
   display: flex;
