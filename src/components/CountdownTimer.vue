@@ -1,9 +1,11 @@
 <template>
   <div>
-    <p>
-      {{ daysLeft }} days, {{ hoursLeft }} hours, {{ minutesLeft }} minutes, and
-      {{ secondsLeft }} seconds {{ millisecondsLeft }} milliseconds left until
-    </p>
+    <h3>
+      {{ daysLeft }} d<br />{{ hoursLeft }} h<br />{{ minutesLeft }} m<br />{{
+        secondsLeft
+      }}
+      s<br />{{ millisecondsLeft }} ms<br />LEFT UNTIL
+    </h3>
   </div>
 </template>
 
