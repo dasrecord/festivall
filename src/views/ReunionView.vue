@@ -46,6 +46,7 @@ export default {
       FAMILY - FRIENDS - FOOD‍ <br /><br />
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
+      MEAL PLANS - $20 CAD/DAY<br />
       25% discount if you pay with bitcoin!‍<br /><br />
     </h2>
     <DetailsPanel />
