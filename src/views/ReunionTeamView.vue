@@ -200,7 +200,7 @@ export default {
 
 <style scoped>
 .basic {
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   align-items: center;
   justify-content: center;

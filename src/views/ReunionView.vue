@@ -31,7 +31,12 @@ export default {
     <CountDownTimer />
     <h1>
       THE REUNION‍ <br />
-      <img :src="frogImage" alt="frog" :style="{ width: '300px' }" @click="handleClick" />
+      <img
+        :src="frogImage"
+        alt="frog"
+        :style="{ height: '150px', width: '150px' }"
+        @click="handleClick"
+      />
       <br />
     </h1>
     <h2>

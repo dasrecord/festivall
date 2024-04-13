@@ -11,7 +11,7 @@
     <div class="unit">{{ millisecondsLeft }}</div>
     <div>&nbsp;ms</div>
 
-    <div>&nbsp;&nbsp;&nbsp;LEFT UNTIL</div>
+    <div>&nbsp;&nbsp;&nbsp;UNTIL</div>
   </div>
 </template>
 
@@ -66,8 +66,6 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
-
   border: 1px solid rgba(121, 188, 255, 0.25);
   box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
   padding: 0.5rem;
@@ -77,7 +75,7 @@ export default {
 
 .countdowntimer .unit {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   margin-left: 10px;
   width: 20px;
   justify-content: center;

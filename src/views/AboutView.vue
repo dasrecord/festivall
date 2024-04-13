@@ -6,8 +6,8 @@
       Prasenjit Das, also known as Das Record, is a doctor by day and a DJ and coder by night. His
       live piano and electronic music act has been showcased at these festivals over several years.
       Behind the scenes, he is A&R for Evolved Music Group, an international artist management
-      agency and music firm, supports artists with A&R and publishing consultants across Canada, the
-      US, and Europe.
+      agency and music firm, that supports artists with A&R and publishing consultants across
+      Canada, the US, and Europe.
     </h2>
   </div>
 </template>
@@ -22,7 +22,8 @@
   .about {
     min-height: 100vh;
     display: flex;
-    /* align-items: center; */
+    flex-direction: column;
+    width: 60vw;
   }
 }
 </style>
