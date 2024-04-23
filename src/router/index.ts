@@ -6,7 +6,8 @@ import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
 import ReunionTeamView from '@/views/ReunionTeamView.vue';
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
-import TicketScanner from '@/views/TicketScanner.vue';
+import TicketScanner from '@/views/TicketScannerView.vue';
+import MealScanner from '@/views/MealScannerView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +67,11 @@ const router = createRouter({
       path: '/reunionticketscanner',
       name: 'reunionticketscanner',
       component: TicketScanner
+    },
+    {
+      path: '/reunionmealscanner',
+      name: 'reunionmealscanner',
+      component: MealScanner
     },
     {
       path:'/stayconnected',
