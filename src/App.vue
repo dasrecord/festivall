@@ -4,10 +4,10 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header v-show="$route.path !== '/reunionticketscanner'">
+  <header v-show="$route.path !== '/reunionticketscanner' && $route.path !== '/reunionmealscanner'">
     <div class="wrapper">
       <HelloWorld msg="FESTIV-ALL" />
-      <nav v-show="$route.path !== '/reunionticketscanner'">
+      <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>

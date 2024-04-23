@@ -1,7 +1,7 @@
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, doc, updateDoc, getDocs, or } from 'firebase/firestore'
+import { getFirestore, collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 
 export default {
