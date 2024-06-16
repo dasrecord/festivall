@@ -16,6 +16,7 @@ import Nish from '@/assets/images/team/Nish.jpg'
 import Kayla from '@/assets/images/team/Kayla.jpg'
 import Becca from '@/assets/images/team/Becca.jpg'
 import Yvo from '@/assets/images/team/Yvo.jpg'
+import Angela from '@/assets/images/team/Angela.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -38,7 +39,8 @@ export default {
       Nish,
       Kayla,
       Becca,
-      Yvo
+      Yvo,
+      Angela
     }
   }
 }
@@ -179,6 +181,17 @@ export default {
         </template>
         <template v-slot:role>
           <p>Guitar Tech & Soundtech</p>
+        </template>
+      </TeamCard>
+      <TeamCard>
+        <template v-slot:headshot>
+          <img v-if="Angela" :src="Angela" alt="Angela" />
+        </template>
+        <template v-slot:name>
+          <h2>Angela</h2>
+        </template>
+        <template v-slot:role>
+          <p>Food Coordinator</p>
         </template>
       </TeamCard>
       <!-- <TeamCard>
