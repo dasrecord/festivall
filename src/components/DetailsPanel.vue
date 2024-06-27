@@ -5,7 +5,7 @@
     Check Out Our <RouterLink to="/reunionsoundsystem">Custom Sound System‍</RouterLink><br />
     <RouterLink to="/reunionamenities">Click Here</RouterLink>
     for the Amenities‍<br />
-    <!-- <RouterLink to="/reunionartists">Click Here</RouterLink> for the Lineup‍<br /> -->
+    <RouterLink to="/reunionartists">Click Here</RouterLink> for the Lineup‍<br />
   </h2>
 </template>
 
