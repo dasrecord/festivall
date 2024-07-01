@@ -17,6 +17,7 @@ import Kayla from '@/assets/images/team/Kayla.jpg'
 import Becca from '@/assets/images/team/Becca.jpg'
 import Yvo from '@/assets/images/team/Yvo.jpg'
 import Angela from '@/assets/images/team/Angela.jpg'
+import Andy from '@/assets/images/team/Andy.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -40,7 +41,8 @@ export default {
       Kayla,
       Becca,
       Yvo,
-      Angela
+      Angela,
+      Andy
     }
   }
 }
@@ -194,7 +196,7 @@ export default {
           <p>Food Coordinator</p>
         </template>
       </TeamCard>
-      <!-- <TeamCard>
+      <TeamCard>
         <template v-slot:headshot>
           <img v-if="Andy" :src="Andy" alt="Andy" />
         </template>
@@ -204,7 +206,7 @@ export default {
         <template v-slot:role>
           <p>Children's Coordinator</p>
         </template>
-      </TeamCard> -->
+      </TeamCard>
     </div>
     <DetailsPanel />
     <CalltoAction />
