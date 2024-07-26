@@ -63,6 +63,12 @@ const router = createRouter({
       props: { url: 'https://calendar.google.com/calendar/u/0/embed?src=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96@group.calendar.google.com&ctz=Regina&dates=20240830/20240902&mode=agenda&wkst=6' }
     },
     {
+      path: '/reunionmassage',
+      name: 'reunionmassage',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/XxsV389I'}
+    },
+    {
       path: '/reuniontickets',
       name: 'reuniontickets',
       component: ExternalRedirect,
