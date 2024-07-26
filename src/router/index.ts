@@ -101,7 +101,7 @@ const router = createRouter({
       path: '/reunionslack',
       name: 'reunionslack',
       component: ExternalRedirect,
-      props: { url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2fjkx8qcn-SoW47rEUYMkzMdxOyiaqtw' }
+      props: { url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2n9v17aud-yUWqZQBLj~zUlS9A4AngNA' }
 
     },
     {
@@ -115,6 +115,12 @@ const router = createRouter({
       name: 'starcrossed',
       component: ExternalRedirect,
       props: { url: 'https://dasrecord.typeform.com/to/xHvozB7Y' }
+    },
+    {
+      path: '/partyinthepark',
+      name: 'partyinthepark',
+      component: ExternalRedirect,
+      props: { url: 'https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTJpbWVmNWY5YzhwbmtuaGg5Z2M0MWNiYjAgOWRiMTJlZGFlOTI0MWZmMDlmZTFlM2RiYWU4MTJkYmJjNjVhZWFkZWU5M2NkY2FjNTc1MjFmNmY4OGMyN2M5NkBn&tmsrc=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96%40group.calendar.google.com' }
     }
 
   ]
