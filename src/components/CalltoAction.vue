@@ -7,8 +7,12 @@ export default {
 <template>
   <div class="call-to-action">
     <h1 class="volunteer">
-      Want to perform or volunteer?‍<br />
+      Want to volunteer?‍<br />
       <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
+    </h1>
+    <h1>
+      Want to know who's performing?<br />
+      <RouterLink to="/reunionartists">CHECK THE LINEUP</RouterLink><br />
     </h1>
     <h1 class="tickets">
       Ready to buy tickets?‍<br />
