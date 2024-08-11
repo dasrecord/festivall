@@ -148,7 +148,7 @@ export default {
       "
       @click="decrementMealTickets(matchingOrder, 1)"
     >
-      Use Meal Ticket
+      Redeem 1 Meal Ticket
     </button>
   </div>
   <div class="at-a-glance">
@@ -185,6 +185,12 @@ export default {
             {{ orders.filter((order) => order.checked_in === 'false').length }}
           </h2>
         </div>
+        <div>
+          <h4>Meal Tickets:</h4>
+          <h2>
+            {{ orders.reduce((sum, order) => sum + parseInt(order.meal_tickets_remaining, 10), 0) }}
+          </h2>
+        </div>
       </li>
     </ul>
   </div>
@@ -211,6 +217,7 @@ export default {
           <h4>Admit {{ order.quantity }}</h4>
           <h4>{{ paidStatus(order) }}</h4>
           <h4>{{ currentStatus(order) }}</h4>
+          <h4>Meal Tickets {{ order.meal_tickets_remaining }}</h4>
         </div>
       </li>
     </ul>
