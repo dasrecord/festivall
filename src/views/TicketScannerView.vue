@@ -137,7 +137,7 @@ export default {
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br /><br />
-      Quantity: {{ matchingOrder.quantity }}<br />
+      Admit: {{ matchingOrder.quantity }}<br />
       Paid: {{ paidStatus(matchingOrder) }} <br />
       Status: {{ currentStatus(matchingOrder) }} <br /><br />
     </p>
