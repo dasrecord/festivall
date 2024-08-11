@@ -200,7 +200,7 @@ export default {
   <div class="database">
     <h2>Order Database</h2>
     <button @click="toggleView">
-      Show
+      Show Me
       {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
       Orders
     </button>

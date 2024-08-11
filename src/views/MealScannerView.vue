@@ -23,10 +23,9 @@ export default {
     filteredOrders() {
       if (this.filter === 'all') {
         return this.orders
-      } else if (this.filter === 'checkedIn') {
-        return this.orders.filter((order) => order.checked_in === 'true')
-      } else {
-        return this.orders.filter((order) => order.checked_in === 'false')
+      } else this.filter === 'mealTickets'
+      {
+        return this.orders.filter((order) => order.meal_tickets_remaining > 0)
       }
     }
   },
@@ -103,11 +102,11 @@ export default {
     },
     toggleView() {
       if (this.filter === 'all') {
-        this.filter = 'checkedIn'
-      } else if (this.filter === 'checkedIn') {
-        this.filter = 'notCheckedIn'
-      } else {
+        this.filter = 'mealTickets'
+      } else if (this.filter === 'mealTickets') {
         this.filter = 'all'
+      } else {
+        this.filter = 'mealTickets'
       }
     }
   }
@@ -197,8 +196,8 @@ export default {
   <div class="database">
     <h2>Order Database</h2>
     <button @click="toggleView">
-      Show
-      {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
+      Show Me
+      {{ filter === 'all' ? 'Meal Ticket' : filter === 'mealTickets' ? 'All' : 'All' }}
       Orders
     </button>
     <ul>
