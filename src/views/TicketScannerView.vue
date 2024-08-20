@@ -137,7 +137,7 @@ export default {
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br /><br />
-      Quantity: {{ matchingOrder.quantity }}<br />
+      Admit: {{ matchingOrder.quantity }}<br />
       Paid: {{ paidStatus(matchingOrder) }} <br />
       Status: {{ currentStatus(matchingOrder) }} <br /><br />
     </p>
@@ -200,7 +200,7 @@ export default {
   <div class="database">
     <h2>Order Database</h2>
     <button @click="toggleView">
-      Show
+      Show Me
       {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
       Orders
     </button>

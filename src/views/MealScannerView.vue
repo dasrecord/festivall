@@ -23,10 +23,9 @@ export default {
     filteredOrders() {
       if (this.filter === 'all') {
         return this.orders
-      } else if (this.filter === 'checkedIn') {
-        return this.orders.filter((order) => order.checked_in === 'true')
-      } else {
-        return this.orders.filter((order) => order.checked_in === 'false')
+      } else this.filter === 'mealTickets'
+      {
+        return this.orders.filter((order) => order.meal_tickets_remaining > 0)
       }
     }
   },
@@ -103,11 +102,11 @@ export default {
     },
     toggleView() {
       if (this.filter === 'all') {
-        this.filter = 'checkedIn'
-      } else if (this.filter === 'checkedIn') {
-        this.filter = 'notCheckedIn'
-      } else {
+        this.filter = 'mealTickets'
+      } else if (this.filter === 'mealTickets') {
         this.filter = 'all'
+      } else {
+        this.filter = 'mealTickets'
       }
     }
   }
@@ -134,7 +133,7 @@ export default {
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br /><br />
-      Quantity: {{ matchingOrder.quantity }}<br />
+      Admit: {{ matchingOrder.quantity }}<br />
       Paid: {{ paidStatus(matchingOrder) }} <br />
       Status: {{ currentStatus(matchingOrder) }} <br />
       Meal Tickets Remaining: {{ matchingOrder.meal_tickets_remaining }} <br /><br />
@@ -148,7 +147,7 @@ export default {
       "
       @click="decrementMealTickets(matchingOrder, 1)"
     >
-      Use Meal Ticket
+      Redeem 1 Meal Ticket
     </button>
   </div>
   <div class="at-a-glance">
@@ -185,14 +184,20 @@ export default {
             {{ orders.filter((order) => order.checked_in === 'false').length }}
           </h2>
         </div>
+        <div>
+          <h4>Meal Tickets:</h4>
+          <h2>
+            {{ orders.reduce((sum, order) => sum + parseInt(order.meal_tickets_remaining, 10), 0) }}
+          </h2>
+        </div>
       </li>
     </ul>
   </div>
   <div class="database">
     <h2>Order Database</h2>
     <button @click="toggleView">
-      Show
-      {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
+      Show Me
+      {{ filter === 'all' ? 'Meal Ticket' : filter === 'mealTickets' ? 'All' : 'All' }}
       Orders
     </button>
     <ul>
@@ -211,6 +216,7 @@ export default {
           <h4>Admit {{ order.quantity }}</h4>
           <h4>{{ paidStatus(order) }}</h4>
           <h4>{{ currentStatus(order) }}</h4>
+          <h4>Meal Tickets {{ order.meal_tickets_remaining }}</h4>
         </div>
       </li>
     </ul>
