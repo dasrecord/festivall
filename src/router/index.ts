@@ -118,6 +118,12 @@ const router = createRouter({
 
     },
     {
+      path: '/reunionreceipttracker',
+      name: 'reunionreceipttracker',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/dOYM3jhk' }
+    },
+    {
       path: '/meetup',
       name: 'meetup',
       component: ExternalRedirect,
