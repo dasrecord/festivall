@@ -14,6 +14,10 @@ export default {
       Want to know who's performing?<br />
       <RouterLink to="/reunionartists">CHECK THE LINEUP</RouterLink><br />
     </h1>
+    <h1 class ="contact">
+      Want to contact us?<br />
+      <RouterLink to="/contactus">CONTACT US</RouterLink><br />
+    </h1>
     <h1 class="tickets">
       Ready to buy tickets?‍<br />
       <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
