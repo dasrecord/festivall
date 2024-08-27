@@ -16,7 +16,7 @@ export default {
     </h1>
     <h1 class="contact">
       Have something to say?<br />
-      <RouterLink to="/contactus">CONTACT US</RouterLink><br />
+      <RouterLink to="/reunioncontact">CONTACT US</RouterLink><br />
     </h1>
     <h1 class="tickets">
       Ready to buy tickets?‍<br />
