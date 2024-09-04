@@ -18,7 +18,7 @@ import Becca from '@/assets/images/team/Becca.jpg'
 import Yvo from '@/assets/images/team/Yvo.jpg'
 import Angela from '@/assets/images/team/Angela.jpg'
 import Andy from '@/assets/images/team/Andy.jpg'
-import Brandon_C from '@/assets/images/team/Brandon_C.jpg'
+import Brandon_and_Liam from '@/assets/images/team/Brandon_and_Liam.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -44,7 +44,7 @@ export default {
       Yvo,
       Angela,
       Andy,
-      Brandon_C
+      Brandon_and_Liam
     }
   }
 }
@@ -75,17 +75,6 @@ export default {
         </template>
         <template v-slot:role>
           <p>Construction & Bookings</p>
-        </template>
-      </TeamCard>
-      <TeamCard>
-        <template v-slot:headshot>
-          <img :src="Brandon_C" alt="Brandon_C" />
-        </template>
-        <template v-slot:name>
-          <h2>Brandon C.</h2>
-        </template>
-        <template v-slot:role>
-          <p>Construction</p>
         </template>
       </TeamCard>
       <TeamCard>
@@ -141,6 +130,17 @@ export default {
         </template>
         <template v-slot:role>
           <p>Decorations & Vibe</p>
+        </template>
+      </TeamCard>
+      <TeamCard>
+        <template v-slot:headshot>
+          <img :src="Brandon_and_Liam" alt="Brandon_and_Liam" />
+        </template>
+        <template v-slot:name>
+          <h2>Brandon and Liam</h2>
+        </template>
+        <template v-slot:role>
+          <p>Construction</p>
         </template>
       </TeamCard>
       <TeamCard>

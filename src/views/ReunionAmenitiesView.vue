@@ -28,15 +28,19 @@ export default {
     <h2>
       AMENITIES & INFO:‍
       <h3>
-        - You can park at your campsite‍ <br />
-        - Water available on site but bring your own‍<br />
-        - Food tickets available<br />
-        <!-- - Cash bar‍ available<br /> -->
+        - In house ticketing system‍<br />
+        - Campsite‍ parking <br />
+        - Water available on site‍<br />
+        - Scannable meal tickets<br />
         - Bitcoin and Lightning accepted<br />
         - Shared kitchen available‍<br />
-        - Quiet Family Camping Area‍<br />
+        - Quiet family camping Area‍<br />
         - Warm showers available‍<br />
+        - Custom sound system‍<br />
+        - Projection mapped visuals‍<br />
+        - Wading pool‍ to cool off<br />
         - Children's Playground‍<br />
+        - Nerf gun battle arena‍<br />
         - Leave pets at home.<br />
       </h3>
     </h2>

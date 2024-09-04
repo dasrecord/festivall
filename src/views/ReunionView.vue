@@ -39,7 +39,7 @@ export default {
       />
       <br />
     </h1>
-    <h2>
+    <!-- <h2>
       AUG 30th - SEPT 2nd, 2024 <br />
       30 min from Saskatoon <br /><br />
       MUSIC - DANCING - CAMPING‍ <br />
@@ -48,7 +48,7 @@ export default {
       DAY PASS - $80 CAD‍ <br />
       MEAL PLANS - $20 CAD/DAY<br />
       25% discount if you pay with bitcoin!‍<br /><br />
-    </h2>
+    </h2> -->
     <DetailsPanel />
   </div>
   <CalltoAction />

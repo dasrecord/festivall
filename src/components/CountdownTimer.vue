@@ -33,7 +33,7 @@ export default {
   methods: {
     updateCountdown() {
       const now = new Date()
-      const targetDate = new Date(now.getFullYear(), 7, 30) // August 30th of the current year
+      const targetDate = new Date(now.getFullYear() + 1, 7, 29) // August 29th of the next year
 
       let diffInMilliseconds = targetDate - now
 
