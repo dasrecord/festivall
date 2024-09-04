@@ -133,7 +133,7 @@ const router = createRouter({
       path: '/meetup',
       name: 'meetup',
       component: ExternalRedirect,
-      props: { url: 'https://calendar.google.com/calendar/u/0/selfsched?sstoken=UU1xZl92cFY2bkNUfGRlZmF1bHR8ZThjN2E5MGJhMGY5MTg3OGM3OTFjYmFkMjg3YmY0NzA' }
+      props: { url: 'https://calendar.app.google/sFArBBC9xjq8oBaU6' }
     },
     {
       path: '/starcrossed',
