@@ -32,6 +32,7 @@ export default {
     <h1>
       THE REUNION‍ <br />
       <img
+        class="frog"
         :src="frogImage"
         alt="frog"
         :style="{ height: '150px', width: '150px' }"
@@ -54,10 +55,12 @@ export default {
   <CalltoAction />
 </template>
 
-<style>
+<style scoped>
 .basic {
-  padding: 1rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* padding: 1rem; */
 }
 
 a {
@@ -76,6 +79,13 @@ a:hover {
   .basic {
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    justify-items: flex-start;
+    align-items: center;
+  }
+  .frog {
+    display: flex;
+    justify-self: center;
     align-items: center;
   }
 }
