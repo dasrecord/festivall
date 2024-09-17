@@ -1,10 +1,10 @@
 <template>
   <h2>
-    <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.<br />
-    <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.<br />
-    Check Out Our <RouterLink to="/reunionsoundsystem">Custom Sound System‍</RouterLink><br />
+    <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.<br /><br />
+    <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.<br /><br />
+    Check Out Our <RouterLink to="/reunionsoundsystem">Custom Sound System‍</RouterLink><br /><br />
     <RouterLink to="/reunionamenities">Click Here</RouterLink>
-    for the Amenities‍<br />
+    for the Amenities‍<br /><br />
   </h2>
 </template>
 
@@ -13,3 +13,9 @@ export default {
   name: 'DetailsPanel'
 }
 </script>
+
+<style scoped>
+* {
+  margin-top: 2rem;
+}
+</style>

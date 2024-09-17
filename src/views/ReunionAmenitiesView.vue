@@ -34,7 +34,7 @@ export default {
         - Scannable meal tickets<br />
         - Bitcoin and Lightning accepted<br />
         - Shared kitchen available‍<br />
-        - Quiet family camping Area‍<br />
+        - Quiet family camping area‍<br />
         - Warm showers available‍<br />
         - Custom sound system‍<br />
         - Projection mapped visuals‍<br />
