@@ -8,25 +8,26 @@ export default {
   <div class="call-to-action">
     <!-- <h1 class="volunteer">
       Want to volunteer?‍<br />
-      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
+      <a href="">APPLY NOW</a>
     </h1> -->
     <!-- <h1 class="lineup">
       Want to know who's performing?<br />
-      <RouterLink to="/reunionartists">CHECK THE LINEUP</RouterLink><br />
+      <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
     <h1 class="contact">
-      Coming Soon! <br />
-      <!-- <RouterLink to="/blessedcoastcontact">CONTACT US</RouterLink><br /> -->
+      Have something to say? <br />
+      <a href="mailto:blessedcoastfestival@protonmail.com">CONTACT US</a>
     </h1>
     <!-- <h1 class="tickets">
       Ready to buy tickets?‍<br />
-      <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
+      <a href="">BUY TICKETS</a>
     </h1> -->
   </div>
 </template>
 
 <style scoped>
 .call-to-action {
+  width: 100%;
   text-align: center;
   border: 3px solid #f0f0f0;
   border-radius: 30px;

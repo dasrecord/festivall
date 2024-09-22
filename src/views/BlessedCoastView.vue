@@ -1,5 +1,5 @@
 <script>
-import wolf_image from '@/assets/images/wolf2.jpeg'
+import wolf_image from '@/assets/images/wolf2.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 export default {
@@ -16,9 +16,10 @@ export default {
 <template>
   <div class="basic">
     <h1>THE BLESSED COAST <br /></h1>
+    Coming soon...<br />
     <img class="wolf" :src="wolfImage" alt="wolf" />
+    <BlessedCoastCalltoAction />
   </div>
-  <BlessedCoastCalltoAction />
 </template>
 
 <style scoped>
@@ -37,6 +38,7 @@ img {
   width: 100%;
   height: auto;
   border-radius: 25px;
+  margin-top: 1rem;
 }
 a {
   display: inline-block;
