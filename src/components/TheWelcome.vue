@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 </script>
@@ -8,10 +9,22 @@ import IconFestivall from './icons/IconFestivall.vue'
     <template #icon>
       <IconFestivall />
     </template>
-    <template #heading><RouterLink to="/reunion">The Reunion</RouterLink> </template>
+    <template #heading><RouterLink to="/reunion">The Reunion</RouterLink></template>
     <p>
       The Reunion is a music festival that takes place in the heart of the Canadian prairies<br />
       featuring some of the best electronic music DJs and local acts.
+    </p>
+  </WelcomeItem>
+
+  <WelcomeItem>
+    <template #icon>
+      <IconFestivall />
+    </template>
+    <template #heading><RouterLink to="/blessedcoast">Blessed Coast</RouterLink></template>
+
+    <p>
+      A music festival that takes place in beautiful British Columbia,<br />
+      Blessed Coast Festival is a celebration of electronic music and art.
     </p>
   </WelcomeItem>
 
@@ -25,17 +38,6 @@ import IconFestivall from './icons/IconFestivall.vue'
     <p>
       Showcasing the best western Canadian talent, Impact Music Festival based out of Vancouver,<br />is
       a must-see event for any electronic music fan.
-    </p>
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <IconFestivall />
-    </template>
-    <template #heading>Blessed Coast</template>
-    <p>
-      A music festival that takes place in beautiful British Columbia,<br />
-      Blessed Coast Festival is a celebration of electronic music and art.
     </p>
   </WelcomeItem>
 
