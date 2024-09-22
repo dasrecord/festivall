@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ExternalRedirect from '../components/ExternalRedirect.vue';
 import HomeView from '../views/HomeView.vue'
+import BlessedCoastView from '@/views/BlessedCoastView.vue';
 import ReunionView from '@/views/ReunionView.vue';
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
@@ -24,6 +25,11 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/blessedcoast',
+      name: 'blessedcoast',
+      component: BlessedCoastView
     },
     {
       path: '/reunion',

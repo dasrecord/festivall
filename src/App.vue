@@ -4,15 +4,21 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <header v-show="$route.path !== '/reunionticketscanner' && $route.path !== '/reunionmealscanner'">
+  <header
+    v-show="
+      $route.path !== '/reunionticketscanner' &&
+      $route.path !== '/reunionmealscanner' &&
+      $route.path !== '/blessedcoast'
+    "
+  >
     <div class="wrapper">
       <HelloWorld msg="FESTIV-ALL" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
+        <RouterLink to="/blessedcoast">Blessed Coast</RouterLink>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
-        <!-- <RouterLink to="/blessed">Blessed Coast</RouterLink> -->
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
       </nav>
     </div>
