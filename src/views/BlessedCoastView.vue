@@ -1,5 +1,5 @@
 <script>
-import wolf_image from '@/assets/images/blessed_coast_coming_soon.jpg'
+import wolf_image from '@/assets/images/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 export default {
@@ -33,7 +33,6 @@ h1 {
   text-align: center;
 }
 img {
-  width: 100%;
   border-radius: 25px;
 }
 a {
