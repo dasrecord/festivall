@@ -14,6 +14,10 @@ export default {
       Want to know who's performing?<br />
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
+    <h1 class="watch-this">
+      Want to know more about us?<br />
+      <a href="https://youtu.be/1m7-O6Xq6EQ?si=jt3PbhdhyHf-x7L8">WATCH THIS</a>
+    </h1>
     <h1 class="contact">
       Have something to say? <br />
       <a href="mailto:blessedcoastfestival@protonmail.com">CONTACT US</a>
@@ -41,7 +45,7 @@ h1 {
 }
 .volunteer,
 .lineup,
-.contact {
+.watch-this {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
