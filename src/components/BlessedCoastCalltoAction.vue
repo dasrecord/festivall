@@ -40,11 +40,12 @@ export default {
   margin-top: 1rem;
   font-family: 'amandine', sans-serif;
   font-weight: 700;
+  font-size: 75%;
 }
 h1 {
-  border: 1px solid rgba(121, 188, 255, 0.25);
-  padding: 1rem;
-  margin: 1rem;
+  border: 1px solid #79bcff40;
+  padding: 0.5rem;
+  margin: 0.5rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
 }
 .volunteer,
