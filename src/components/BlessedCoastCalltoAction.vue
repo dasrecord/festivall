@@ -16,7 +16,7 @@ export default {
     </h1> -->
     <h1 class="watch-this">
       Want to know more about us?<br />
-      <a href="https://youtu.be/1m7-O6Xq6EQ?si=jt3PbhdhyHf-x7L8">WATCH THIS</a>
+      <a href="https://www.youtube.com/watch?v=1m7-O6Xq6EQ">WATCH THIS</a>
     </h1>
     <h1 class="contact">
       Have something to say? <br />
