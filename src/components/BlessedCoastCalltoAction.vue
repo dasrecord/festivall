@@ -30,12 +30,16 @@ export default {
 </template>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+
 .call-to-action {
   width: 100%;
   text-align: center;
   border: 3px solid #f0f0f0;
   border-radius: 30px;
   margin-top: 1rem;
+  font-family: 'amandine', sans-serif;
+  font-weight: 700;
 }
 h1 {
   border: 1px solid rgba(121, 188, 255, 0.25);
