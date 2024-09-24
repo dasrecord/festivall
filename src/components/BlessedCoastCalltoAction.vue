@@ -14,10 +14,10 @@ export default {
       Want to know who's performing?<br />
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
-    <h1 class="watch-this">
+    <!-- <h1 class="watch-this">
       Want to know more about us?<br />
-      <a href="https://www.youtube.com/watch?v=1m7-O6Xq6EQ">WATCH THIS</a>
-    </h1>
+      <a href="https://youtu.be/x7OlE-qvZms">WATCH THIS</a>
+    </h1> -->
     <h1 class="contact">
       Have something to say? <br />
       <a href="mailto:blessedcoastfestival@protonmail.com">CONTACT US</a>
@@ -40,7 +40,6 @@ export default {
   margin-top: 1rem;
   font-family: 'amandine', sans-serif;
   font-weight: 700;
-  font-size: 75%;
 }
 h1 {
   border: 1px solid #79bcff40;
@@ -50,7 +49,7 @@ h1 {
 }
 .volunteer,
 .lineup,
-.watch-this {
+.contact {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }

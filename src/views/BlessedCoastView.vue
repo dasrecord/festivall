@@ -16,6 +16,20 @@ export default {
 <template>
   <div class="basic">
     <img class="wolf" :src="wolfImage" alt="wolf" />
+    <div class="video">
+      <div class="video-wrapper">
+        <iframe
+          width="100%"
+          height="300"
+          src="https://www.youtube.com/embed/x7OlE-qvZms?si=zXu__l3U05-20ODD"
+          title="Blessed Coast Trailer"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
     <BlessedCoastCalltoAction />
   </div>
 </template>
@@ -45,6 +59,21 @@ a {
 a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
+}
+
+.video {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.video-wrapper {
+  overflow: hidden;
+  border-radius: 25px;
+}
+
+.video-wrapper iframe {
+  display: block;
+  width: 100%;
 }
 
 @media (min-width: 1024px) {
