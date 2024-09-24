@@ -1,5 +1,5 @@
 <script>
-import wolf_image from '@/assets/images/blessed_coast_festival_coming_soon.jpg'
+import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 export default {
