@@ -1,4 +1,9 @@
 <template>
+  <HelloWorld msg="Blessed Coast" />
+  <div class="controls">
+    <button @click="loadApplicants('artist')">Artist Dashboard</button>
+    <button @click="loadApplicants('workshop')">Workshop Dashboard</button>
+  </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in applicants" :key="applicant.id" class="applicant">
@@ -13,7 +18,12 @@
 </template>
 
 <script>
+import HelloWorld from './HelloWorld.vue'
+
 export default {
+  components: {
+    HelloWorld
+  },
   data() {
     return {
       applicants: [],
@@ -21,35 +31,53 @@ export default {
     }
   },
   mounted() {
-    fetch('src/data/applicants/artist_raw.json')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText)
-        }
-        return response.json()
-      })
-      .then((data) => {
-        console.log('Fetched data:', data) // Log the fetched data
-        // Sort applicants by whether they have a URL
-        this.applicants = data.sort((a, b) => {
-          if (a.url && !b.url) return -1
-          if (!a.url && b.url) return 1
-          return 0
-        })
-      })
-      .catch((error) => {
-        console.error('There was a problem with the fetch operation:', error)
-      })
+    // fetch('src/data/applicants/artist_raw.json')
+    //   .then((response) => {
+    //     if (!response.ok) {
+    //       throw new Error('Network response was not ok ' + response.statusText)
+    //     }
+    //     return response.json()
+    //   })
+    //   .then((data) => {
+    //     console.log('Fetched data:', data) // Log the fetched data
+    //     // Sort applicants by whether they have a URL
+    //     this.applicants = data.sort((a, b) => {
+    //       if (a.url && !b.url) return -1
+    //       if (!a.url && b.url) return 1
+    //       return 0
+    //     })
+    //   })
+    //   .catch((error) => {
+    //     console.error('There was a problem with the fetch operation:', error)
+    //   })
   },
-  methods: {}
+  methods: {
+    loadApplicants(type) {
+      fetch(`src/data/applicants/${type}_raw.json`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText)
+          }
+          return response.json()
+        })
+        .then((data) => {
+          console.log('Fetched data:', data) // Log the fetched data
+          // Sort applicants by whether they have a URL
+          this.applicants = data.sort((a, b) => {
+            if (a.url && !b.url) return -1
+            if (!a.url && b.url) return 1
+            return 0
+          })
+        })
+        .catch((error) => {
+          console.error('There was a problem with the fetch operation:', error)
+        })
+    }
+  }
 }
 </script>
 
 <style scoped>
-.dashboard-panel {
-  padding: 5px;
-}
-
 .controls {
   margin-bottom: 20px;
 }

@@ -8,7 +8,8 @@ import HelloWorld from './components/HelloWorld.vue'
     v-show="
       $route.path !== '/reunionticketscanner' &&
       $route.path !== '/reunionmealscanner' &&
-      $route.path !== '/blessedcoast'
+      $route.path !== '/blessedcoast' &&
+      $route.path !== '/blessedcoastdashboard'
     "
   >
     <div class="wrapper">

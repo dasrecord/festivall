@@ -21,23 +21,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   /* color: #2c3e50; */
-  margin-top: 60px;
 }
 
 .dashboard-panel {
   background-color: #232323;
   border-radius: 8px;
-  padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-panel h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
 }
 
 .dashboard-panel p {
-  font-size: 16px;
   color: #666;
 }
 </style>
