@@ -18,7 +18,7 @@ export default {
     <img class="wolf" :src="wolfImage" alt="wolf" />
     <div class="video">
       <div class="video-wrapper">
-        <iframe
+        <!-- <iframe
           width="100%"
           height="300"
           src="https://www.youtube.com/embed/x7OlE-qvZms?si=zXu__l3U05-20ODD"
@@ -27,6 +27,16 @@ export default {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen
+        ></iframe> -->
+        <iframe
+          src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
+          width="560"
+          height="295"
+          style="border: none; overflow: hidden"
+          scrolling="no"
+          frameborder="0"
+          allowfullscreen="true"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
         ></iframe>
       </div>
     </div>
@@ -54,6 +64,7 @@ img {
   border-radius: 25px;
   position: relative;
   z-index: 1;
+  margin-top: 1rem;
 }
 .video-wrapper iframe {
   display: block;
