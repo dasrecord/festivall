@@ -10,11 +10,12 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "convert-to-json": "node ./scripts/convert-to-json.js"
   },
   "dependencies": {
+    "csv-parser": "^3.0.0",
     "firebase": "^10.10.0",
-    "papaparse": "^5.4.1",
     "vite-plugin-string": "^1.2.3",
     "vue": "^3.4.15",
     "vue-qrcode-reader": "^5.5.3",

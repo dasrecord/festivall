@@ -25,7 +25,7 @@ export default {
 }
 
 .dashboard-panel {
-  background-color: #f5f5f5;
+  background-color: #232323;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

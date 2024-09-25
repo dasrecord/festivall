@@ -1,47 +1,48 @@
 <template>
   <div class="dashboard-panel">
-    <div class="applicants">
-      <div v-for="(applicant, index) in applicants" :key="index" class="applicant-card">
-        <h3>{{ applicant[0] }}</h3>
-        <p>{{ applicant[1] }}</p>
-        <p>{{ applicant[2] }}</p>
+    <div class="controls">
+      <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
+    </div>
+    <div class="applicants" :style="{ transform: `scale(${scale})` }">
+      <div v-for="applicant in applicants" :key="applicant.id" class="applicant">
+        <h3>{{ applicant.act_name }}</h3>
+        <p>{{ applicant.bio }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Papa from 'papaparse'
-import csvContent from '@/data/applicants/artist_leads.csv'
-
 export default {
-  name: 'DashboardPanel',
   data() {
     return {
-      applicants: []
+      applicants: [],
+      scale: 1
     }
   },
   mounted() {
-    console.log('CSV Content:', csvContent) // Debugging log
-    this.parseCSV(csvContent)
+    fetch('src/data/applicants/artist_raw.json')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText)
+        }
+        return response.json()
+      })
+      .then((data) => {
+        console.log('Fetched data:', data) // Log the fetched data
+        this.applicants = data
+      })
+      .catch((error) => {
+        console.error('There was a problem with the fetch operation:', error)
+      })
   },
   methods: {
-    parseCSV(text) {
-      console.log('Parsing CSV with PapaParse...') // Debugging log
-      Papa.parse(text, {
-        header: false,
-        skipEmptyLines: true,
-        complete: (results) => {
-          console.log('Parsed Data:', results.data) // Debugging log
-          if (results.data.length === 0) {
-            console.warn('Parsed data is empty. Check the CSV format.')
-          }
-          this.applicants = results.data
-        },
-        error: (error) => {
-          console.error('Error parsing CSV:', error)
-        }
-      })
+    zoomIn() {
+      this.scale += 0.1
+    },
+    zoomOut() {
+      if (this.scale > 0.1) this.scale -= 0.1
     }
   }
 }
@@ -52,14 +53,20 @@ export default {
   padding: 20px;
 }
 
-.applicants {
-  display: flex;
-  flex-direction: column;
+.controls {
+  margin-bottom: 20px;
 }
 
-.applicant-card {
+.applicants {
+  display: flex;
+  flex-wrap: wrap;
+  transition: transform 0.3s ease;
+}
+
+.applicant {
   border: 1px solid #ccc;
   padding: 10px;
-  margin: 10px 0;
+  margin: 10px;
+  width: 200px;
 }
 </style>
