@@ -55,6 +55,7 @@ img {
   border-radius: 25px;
 }
 .video {
+  width: 100%;
   border-radius: 25px;
   position: relative;
   z-index: 1;
