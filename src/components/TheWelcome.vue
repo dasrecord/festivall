@@ -45,6 +45,16 @@ import IconFestivall from './icons/IconFestivall.vue'
     <template #icon>
       <IconFestivall />
     </template>
+    <template #heading
+      ><RouterLink to="/synergystic">Synergystic Entertainment</RouterLink></template
+    >
+    <p>A production company that specializes in electronic music events and festivals.</p>
+  </WelcomeItem>
+
+  <WelcomeItem>
+    <template #icon>
+      <IconFestivall />
+    </template>
     <template #heading>Das Record</template>
     <p>
       A doctor by day and a DJ and coder by night,<br />
@@ -52,7 +62,6 @@ import IconFestivall from './icons/IconFestivall.vue'
       Canada.
     </p>
   </WelcomeItem>
-
   <WelcomeItem>
     <template #icon>
       <IconFestivall />

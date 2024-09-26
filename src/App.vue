@@ -8,7 +8,8 @@ import HelloWorld from './components/HelloWorld.vue'
     v-show="
       $route.path !== '/reunionticketscanner' &&
       $route.path !== '/reunionmealscanner' &&
-      $route.path !== '/blessedcoast'
+      $route.path !== '/blessedcoast' &&
+      $route.path !== '/synergystic'
     "
   >
     <div class="wrapper">
@@ -18,6 +19,7 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/blessedcoast">Blessed Coast</RouterLink>
+        <RouterLink to="/synergystic">Synergystic</RouterLink>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
       </nav>
