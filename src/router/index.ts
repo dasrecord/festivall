@@ -32,6 +32,12 @@ const router = createRouter({
       component: BlessedCoastView
     },
     {
+      path: '/blessedcoastapplication',
+      name: 'blessedcoastapplication',
+      component: ExternalRedirect,
+      props: { url: 'https://dasrecord.typeform.com/to/XumI03Tm' }
+    },
+    {
       path: '/reunion',
       name: 'reunion',
       component: ReunionView
