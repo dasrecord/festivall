@@ -9,9 +9,6 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    string({
-      include: '**/*.csv' // Corrected to handle CSV files
-    })
   ],
   resolve: {
     alias: {
