@@ -15,7 +15,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -27,16 +27,17 @@ export default {
   background-color: #232323;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 10px;
 }
 
 .dashboard-panel h1 {
   color: #fff;
-  font-size: 24px;
   font-weight: 600;
   margin: 0;
   padding: 20px;
-  text-align: center;
+  text-align: justify;
   text-transform: uppercase;
+  height: 25px;
 }
 
 .dashboard-panel p {

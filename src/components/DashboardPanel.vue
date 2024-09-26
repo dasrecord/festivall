@@ -102,6 +102,7 @@ button {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
   transition: transform 0.3s ease;
 }
 
@@ -124,8 +125,10 @@ button {
 }
 
 .applicant:hover {
-  transform: scale(5);
+  padding: 5px 10px;
+  transform: scale(3);
   z-index: 10;
+  font-size: 60%;
 }
 
 .applicant-content {
