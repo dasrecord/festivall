@@ -8,9 +8,13 @@
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in applicants" :key="applicant.id" class="applicant">
         <div class="applicant-content">
-          <h2>{{ applicant.act_name }}</h2>
-          <h4 v-if="applicant.url"><a :href="applicant.url" target="_blank">Link</a></h4>
-          <p>{{ applicant.bio }}</p>
+          <h2>
+            <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
+              applicant.act_name
+            }}</a>
+            <span v-else>{{ applicant.act_name }}</span>
+          </h2>
+          <h4>{{ applicant.bio }}</h4>
           <br />
           <p>{{ applicant.rates }}</p>
         </div>
@@ -32,27 +36,7 @@ export default {
       scale: 1
     }
   },
-  mounted() {
-    fetch('src/data/applicants/artist_raw.json')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText)
-        }
-        return response.json()
-      })
-      .then((data) => {
-        console.log('Fetched data:', data) // Log the fetched data
-        // Sort applicants by whether they have a URL
-        this.applicants = data.sort((a, b) => {
-          if (a.url && !b.url) return -1
-          if (!a.url && b.url) return 1
-          return 0
-        })
-      })
-      .catch((error) => {
-        console.error('There was a problem with the fetch operation:', error)
-      })
-  },
+  mounted() {},
   methods: {
     loadApplicants(type) {
       fetch(`src/data/applicants/${type}_raw.json`)
@@ -97,13 +81,18 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
+button:hover {
+  background-color: #2c3e50;
+}
+
 .applicants {
   font-size: 80%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease-in;
 }
 
 .applicant {
@@ -116,9 +105,9 @@ button {
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 0.3s ease,
+    transform 0.5s ease-in,
     width 0.3s ease,
-    height 0.3s ease;
+    height 0.5s ease;
   background-color: #1f1e22;
   position: relative;
   transform-origin: center center;
@@ -126,9 +115,16 @@ button {
 
 .applicant:hover {
   padding: 5px 10px;
-  transform: scale(3);
+  transform: scale(6);
   z-index: 10;
-  font-size: 60%;
+  font-size: 50%;
+}
+.applicant h4 {
+  /* display: none; */
+}
+.applicant:hover p {
+  display: block;
+  text-align: left;
 }
 
 .applicant-content {
