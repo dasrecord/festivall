@@ -30,6 +30,13 @@ export default {
 }
 
 .dashboard-panel h1 {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .dashboard-panel p {
