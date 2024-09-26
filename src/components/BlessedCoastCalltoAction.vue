@@ -14,6 +14,10 @@ export default {
       Want to know who's performing?<br />
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
+    <!-- <h1 class="watch-this">
+      Want to know more about us?<br />
+      <a href="https://youtu.be/x7OlE-qvZms">WATCH THIS</a>
+    </h1> -->
     <h1 class="contact">
       Have something to say? <br />
       <a href="mailto:blessedcoastfestival@protonmail.com">CONTACT US</a>
@@ -26,17 +30,21 @@ export default {
 </template>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+
 .call-to-action {
   width: 100%;
   text-align: center;
   border: 3px solid #f0f0f0;
   border-radius: 30px;
   margin-top: 1rem;
+  font-family: 'amandine', sans-serif;
+  font-weight: 700;
 }
 h1 {
-  border: 1px solid rgba(121, 188, 255, 0.25);
-  padding: 1rem;
-  margin: 1rem;
+  border: 1px solid #79bcff40;
+  padding: 0.5rem;
+  margin: 0.5rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
 }
 .volunteer,

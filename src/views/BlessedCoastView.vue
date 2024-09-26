@@ -1,5 +1,5 @@
 <script>
-import wolf_image from '@/assets/images/wolf2.jpg'
+import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 export default {
@@ -15,9 +15,31 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <h1>THE BLESSED COAST <br /></h1>
-    Coming soon...<br />
     <img class="wolf" :src="wolfImage" alt="wolf" />
+    <div class="video">
+      <div class="video-wrapper">
+        <!-- <iframe
+          width="100%"
+          height="300"
+          src="https://www.youtube.com/embed/x7OlE-qvZms?si=zXu__l3U05-20ODD"
+          title="Blessed Coast Trailer"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe> -->
+        <iframe
+          src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
+          width="100%"
+          height="300"
+          style="border: none; overflow: hidden"
+          scrolling="no"
+          frameborder="0"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
+      </div>
+    </div>
     <BlessedCoastCalltoAction />
   </div>
 </template>
@@ -29,41 +51,28 @@ export default {
   justify-content: flex-start;
   align-items: center;
 }
-h1 {
-  font-size: 2rem;
-  color: white;
-  text-align: center;
-}
 img {
-  width: 100%;
-  height: auto;
   border-radius: 25px;
+}
+.video {
+  width: 100%;
+  border-radius: 25px;
+  position: relative;
+  z-index: 1;
+}
+.video-wrapper {
+  overflow: hidden;
+  border-radius: 25px;
+  position: relative;
+  z-index: 1;
   margin-top: 1rem;
 }
-a {
-  display: inline-block;
-  padding: 0.5rem 0.5rem;
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  transition: box-shadow 0.4s ease-in-out;
-}
-a:hover {
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  color: white;
-}
-
-@media (min-width: 1024px) {
-  .basic {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    justify-items: flex-start;
-    align-items: center;
-  }
-  .frog {
-    display: flex;
-    justify-self: center;
-    align-items: center;
-  }
+.video-wrapper iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 </style>

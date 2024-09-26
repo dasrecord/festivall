@@ -23,8 +23,8 @@ import IconFestivall from './icons/IconFestivall.vue'
     <template #heading><RouterLink to="/blessedcoast">Blessed Coast</RouterLink></template>
 
     <p>
-      A music festival that takes place in beautiful British Columbia,<br />
-      Blessed Coast Festival is a celebration of electronic music and art.
+      Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.<br />
+      Multi-cultural, family friendly, music, yoga with inspired artists, teachers & workshops.
     </p>
   </WelcomeItem>
 
