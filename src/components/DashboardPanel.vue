@@ -87,7 +87,6 @@ button:hover {
 }
 
 .applicants {
-  font-size: 80%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -95,6 +94,10 @@ button:hover {
   transition: transform 0.3s ease-in;
 }
 
+.applicants p {
+  display: none;
+  font-size: 50%;
+}
 .applicant {
   border: 1px solid #ccc;
   width: 100px;
@@ -117,11 +120,9 @@ button:hover {
   padding: 5px 10px;
   transform: scale(6);
   z-index: 10;
-  font-size: 50%;
+  font-size: 20%;
 }
-.applicant h4 {
-  /* display: none; */
-}
+
 .applicant:hover p {
   display: block;
   text-align: left;
