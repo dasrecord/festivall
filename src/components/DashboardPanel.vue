@@ -14,7 +14,7 @@
             }}</a>
             <span v-else>{{ applicant.act_name }}</span>
           </h2>
-          <h4>{{ applicant.bio }}</h4>
+          <p>{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
         </div>
@@ -91,24 +91,21 @@ button:hover {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  transition: transform 0.3s ease-in;
+  transition: transform 0.3s ease;
+  padding: 1rem 1rem;
 }
 
-.applicants p {
-  display: none;
-  font-size: 50%;
-}
 .applicant {
   border: 1px solid #ccc;
-  width: 100px;
-  height: 50px;
+  width: 150px;
+  height: 150px;
   margin: 5px;
-  border-radius: 5px;
+  border-radius: 50%;
   overflow: hidden;
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 0.5s ease-in,
+    transform 0.3s ease,
     width 0.3s ease,
     height 0.5s ease;
   background-color: #1f1e22;
@@ -116,29 +113,42 @@ button:hover {
   transform-origin: center center;
 }
 
-.applicant:hover {
-  padding: 5px 10px;
-  transform: scale(6);
-  z-index: 10;
-  font-size: 20%;
+.applicant p {
+  display: none;
+}
+.applicant h2 {
+  justify-content: center;
 }
 
+.applicant:hover {
+  padding: 3px 3px;
+  transform: scale(3);
+  z-index: 2;
+  font-size: 30%;
+}
+
+.applicant:hover h2 {
+  font-size: 6px;
+  padding: 5px;
+}
 .applicant:hover p {
   display: block;
   text-align: left;
+  font-size: 6px;
 }
 
 .applicant-content {
   width: auto;
   height: 100%;
   overflow: auto;
+  padding: 10px;
 }
 
 .applicant-content::-webkit-scrollbar {
   display: none;
 }
 
-.applicant-content {
-  scrollbar-width: none;
+.applicant-content:hover {
+  scrollbar-width: thin;
 }
 </style>
