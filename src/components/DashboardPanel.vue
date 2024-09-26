@@ -91,26 +91,27 @@ button:hover {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  transition: transform 0.3s ease;
+  align-items: center;
+  transition: transform 0s ease-in;
   padding: 1rem 1rem;
 }
 
 .applicant {
-  border: 1px solid #ccc;
+  border: 1px solid #5e5e5e;
   width: 150px;
   height: 150px;
   margin: 5px;
-  border-radius: 50%;
+  border-radius: 15px;
   overflow: hidden;
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 0.3s ease,
-    width 0.3s ease,
-    height 0.5s ease;
+    transform 750ms ease-in,
+    width 1750s ease-in,
+    height 750ms ease-in;
   background-color: #1f1e22;
   position: relative;
-  transform-origin: center center;
+  transform-origin: center top;
 }
 
 .applicant p {
@@ -121,9 +122,9 @@ button:hover {
 }
 
 .applicant:hover {
+  transform: scale(4);
+  z-index: 10;
   padding: 3px 3px;
-  transform: scale(3);
-  z-index: 2;
   font-size: 30%;
 }
 
@@ -141,7 +142,9 @@ button:hover {
   width: auto;
   height: 100%;
   overflow: auto;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .applicant-content::-webkit-scrollbar {
@@ -149,6 +152,8 @@ button:hover {
 }
 
 .applicant-content:hover {
+  justify-content: flex-start;
+  padding: 0px 10px;
   scrollbar-width: thin;
 }
 </style>

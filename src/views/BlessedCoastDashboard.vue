@@ -16,13 +16,6 @@ export default {
 </script>
 
 <style scoped>
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  /* color: #2c3e50; */
-}
-
 .dashboard-panel {
   background-color: #232323;
   border-radius: 8px;
