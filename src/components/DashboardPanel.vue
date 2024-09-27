@@ -1,8 +1,9 @@
 <template>
   <HelloWorld msg="Blessed Coast" />
+  <div><h2>Dashboard Panel</h2></div>
   <div class="controls">
-    <button @click="loadApplicants('artist')">Artists</button>
-    <button @click="loadApplicants('workshop')">Workshops</button>
+    <button @click="loadApplicants('artist')">Past Artist Applicants</button>
+    <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -14,7 +15,7 @@
             }}</a>
             <span v-else>{{ applicant.act_name }}</span>
           </h2>
-          <p>{{ applicant.bio }}</p>
+          <!-- <p>{{ applicant.bio }}</p> -->
           <br />
           <p>{{ applicant.rates }}</p>
         </div>
@@ -92,14 +93,14 @@ button:hover {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  transition: transform 0s ease-in;
+  transition: transform 2s ease-in;
   padding: 1rem 1rem;
 }
 
 .applicant {
   border: 1px solid #5e5e5e;
   width: 150px;
-  height: 150px;
+  height: 100px;
   margin: 5px;
   border-radius: 15px;
   overflow: hidden;
