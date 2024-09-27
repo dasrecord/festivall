@@ -4,6 +4,7 @@
   <div class="controls">
     <button @click="loadApplicants('artist')">Past Artist Applicants</button>
     <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
+    <button @click="loadApplicants('impact_leads')">Impact Leads</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -13,11 +14,18 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.act_name }}</span>
+            <span v-else>{{ applicant.first_name }} {{ applicant.last_name }}</span>
+            <span v-else
+              >{{ applicant.full_name }}<br />
+              <p>{{ applicant.applicant_type }}</p></span
+            >
           </h2>
-          <!-- <p>{{ applicant.bio }}</p> -->
+          <p>{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
+          <p>
+            <a :href="'mailto:' + applicant.email">{{ applicant.email }}</a>
+          </p>
         </div>
       </div>
     </div>
