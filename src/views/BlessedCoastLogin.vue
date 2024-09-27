@@ -1,17 +1,6 @@
-<template>
-  <div id="login-container">
-    <h2>Login</h2>
-    <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="Email" required />
-      <input type="password" v-model="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-  </div>
-</template>
-
 <script>
 import { ref } from 'vue'
-import { auth } from '/firebase.js' // Adjusted import path
+import { festivall_auth } from '../firebase.js'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
 export default {
@@ -21,7 +10,7 @@ export default {
     const password = ref('')
 
     const login = () => {
-      signInWithEmailAndPassword(auth, email.value, password.value)
+      signInWithEmailAndPassword(festivall_auth, email.value, password.value)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user
@@ -44,6 +33,17 @@ export default {
 }
 </script>
 
+<template>
+  <div id="login-container">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <input type="email" v-model="email" placeholder="Email" required />
+      <input type="password" v-model="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</template>
+
 <style scoped>
 #login-container {
   height: 100px;
@@ -52,25 +52,5 @@ export default {
   justify-content: space-around;
   align-items: center;
   margin-top: 50px;
-}
-h2 {
-  margin-bottom: 20px;
-}
-input,
-button {
-  display: flex;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
 }
 </style>
