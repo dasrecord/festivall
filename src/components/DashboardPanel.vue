@@ -14,9 +14,8 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.first_name }} {{ applicant.last_name }}</span>
             <span v-else
-              >{{ applicant.full_name }}<br />
+              >{{ applicant.first_name }} {{ applicant.last_name }} {{ applicant.full_name }}<br />
               <p>{{ applicant.applicant_type }}</p></span
             >
           </h2>
