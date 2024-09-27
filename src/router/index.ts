@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ExternalRedirect from '../components/ExternalRedirect.vue';
 import HomeView from '../views/HomeView.vue'
-import BlessedCoastView from '@/views/BlessedCoastView.vue';
 import ReunionView from '@/views/ReunionView.vue';
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
@@ -9,6 +8,8 @@ import ReunionTeamView from '@/views/ReunionTeamView.vue';
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
 import TicketScanner from '@/views/TicketScannerView.vue';
 import MealScanner from '@/views/MealScannerView.vue';
+import BlessedCoastView from '@/views/BlessedCoastView.vue';
+import BlessedCoastLogin from '@/views/BlessedCoastLogin.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,11 @@ const router = createRouter({
       path: '/blessedcoast',
       name: 'blessedcoast',
       component: BlessedCoastView
+    },
+    {
+      path: '/blessedcoastlogin',
+      name: 'blessedcoastlogin',
+      component: BlessedCoastLogin,
     },
     {
       path: '/reunion',
