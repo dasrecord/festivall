@@ -30,6 +30,8 @@ export default {
         ></iframe> -->
         <iframe
           src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
+          width="100%"
+          height="300"
           style="border: none; overflow: hidden"
           scrolling="no"
           frameborder="0"
@@ -68,7 +70,6 @@ img {
 .video-wrapper iframe {
   display: block;
   width: 100%;
-  height: 500px;
   position: relative;
   z-index: 1;
   pointer-events: auto;
