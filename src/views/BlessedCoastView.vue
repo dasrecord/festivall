@@ -1,6 +1,20 @@
 <script>
 import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
+import { useHead } from '@vueuse/head'
+useHead({
+  title: 'BLESSED COAST FESTIVAL',
+  meta: [
+    {
+      name: 'description',
+      content: 'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
+    },
+    {
+      name: 'keywords',
+      content: 'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
+    }
+  ]
+})
 
 export default {
   components: {
