@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Festiv-All',
+  meta: [
+    {
+      name: 'description',
+      content: 'Festiv-All is a festival hub for Impact, Evolved, Blessed Coast, and Reunion'
+    },
+    {
+      name: 'keywords',
+      content: 'Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, hub'
+    }
+  ]
+})
 </script>
 
 <template>
