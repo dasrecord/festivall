@@ -4,15 +4,15 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'Festiv-All',
+  title: 'BLESSED COAST FESTIVAL',
   meta: [
     {
       name: 'description',
-      content: 'Festiv-All is a festival hub for Impact, Evolved, Blessed Coast, and Reunion'
+      content: 'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
     },
     {
       name: 'keywords',
-      content: 'Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, hub'
+      content: 'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
     }
   ]
 })
