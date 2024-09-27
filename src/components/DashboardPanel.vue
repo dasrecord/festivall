@@ -1,6 +1,6 @@
 <template>
   <HelloWorld msg="Blessed Coast" />
-  <div><h2>Dashboard Panel</h2></div>
+  <div><h2>Scouting Dashboard</h2></div>
   <div class="controls">
     <button @click="loadApplicants('artist')">Past Artist Applicants</button>
     <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
@@ -101,26 +101,26 @@ button:hover {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  transition: transform 2s ease-in;
+  transition: transform 50ms ease-in;
   padding: 1rem 1rem;
 }
 
 .applicant {
   border: 1px solid #5e5e5e;
   width: 150px;
-  height: 100px;
-  margin: 5px;
-  border-radius: 15px;
+  height: 150px;
+  margin: 1px;
+  border-radius: 10px;
   overflow: hidden;
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 750ms ease-in,
-    width 1750s ease-in,
-    height 750ms ease-in;
+    transform 750ms ease-in-out,
+    width 750s ease-in-out,
+    height 750ms ease-in-out;
   background-color: #1f1e22;
   position: relative;
-  transform-origin: center top;
+  transform-origin: center center;
 }
 
 .applicant p {
@@ -131,7 +131,7 @@ button:hover {
 }
 
 .applicant:hover {
-  transform: scale(4);
+  transform: scale(2.5);
   z-index: 10;
   padding: 3px 3px;
   font-size: 30%;
@@ -152,6 +152,7 @@ button:hover {
   height: 100%;
   overflow: auto;
   display: flex;
+  flex-basis: shrink;
   flex-direction: column;
   justify-content: center;
 }
