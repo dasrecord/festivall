@@ -1,6 +1,15 @@
 <template>
   <div class="basic">
     <h1>THE BLESSED COAST</h1>
+    <h3>
+      Blessed Coast is a boutique family friendly festival with limited capacity, featuring local
+      talent and showcasing the most inspired yoga teachers and facilitators from the Lower Mainland
+      and the Sea to Sky. It is opened and closed with a ceremony lead by local Indigenous Elders
+      and in its second year is a largely renewable energy powered event with a zero-waste, leave no
+      trace philosophy, a no drugs and alcohol policy and even a bike and solar powered green energy
+      stage in our family fair area of the festival which also hosts vendors, artisans and cuisine
+      from around the world.
+    </h3>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
 
     <DetailsPanel>
@@ -51,10 +60,12 @@ export default {
 }
 </script>
 
-<style>
-.basic,
-h2 {
-  padding: 1rem;
+<style scoped>
+.basic {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1rem;
   text-align: center;
 }
 </style>

@@ -4,7 +4,6 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'BLESSED COAST FESTIVAL',
   meta: [
     {
       name: 'description',
@@ -24,7 +23,8 @@ useHead({
       $route.path !== '/reunionticketscanner' &&
       $route.path !== '/reunionmealscanner' &&
       $route.path !== '/blessedcoast' &&
-      $route.path !== '/blessedcoastdashboard'
+      $route.path !== '/blessedcoastdashboard' &&
+      $route.path !== '/blessedcoastfamily'
     "
   >
     <div class="wrapper">
