@@ -9,14 +9,19 @@ import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
 import TicketScanner from '@/views/TicketScannerView.vue';
 import MealScanner from '@/views/MealScannerView.vue';
 import BlessedCoastView from '@/views/BlessedCoastView.vue';
-import BlessedCoastLogin from '@/views/BlessedCoastLogin.vue';
 import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue';
+import FestivallLogin from '@/views/LoginView.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/login',
+    name: 'festivall-login',
+    component: FestivallLogin
   },
   {
     path: '/about',
@@ -27,11 +32,6 @@ const routes = [
     path: '/blessedcoast',
     name: 'blessedcoast',
     component: BlessedCoastView
-  },
-  {
-    path: '/blessedcoastlogin',
-    name: 'blessedcoastlogin',
-    component: BlessedCoastLogin
   },
   {
     path: '/blessedcoastdashboard',
@@ -103,12 +103,14 @@ const routes = [
   {
     path: '/reunionticketscanner',
     name: 'reunionticketscanner',
-    component: TicketScanner
+    component: TicketScanner,
+    meta: { requiresAuth: true }
   },
   {
     path: '/reunionmealscanner',
     name: 'reunionmealscanner',
-    component: MealScanner
+    component: MealScanner,
+    meta: { requiresAuth: true }
   },
   {
     path: '/stayconnected',
@@ -171,7 +173,7 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('user');
 
   if (requiresAuth && !isAuthenticated) {
-    next({ path: '/blessedcoastlogin', query: { redirect: to.fullPath } });
+    next({ path: '/login', query: { redirect: to.fullPath } });
   } else {
     next();
   }
