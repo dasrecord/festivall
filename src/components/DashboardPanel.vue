@@ -108,18 +108,19 @@ button:hover {
   border: 1px solid #5e5e5e;
   width: 150px;
   height: 150px;
-  margin: 1px;
+  margin: 10px;
   border-radius: 10px;
   overflow: hidden;
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 750ms ease-in-out,
+    transform 750ms ease,
     width 750s ease-in-out,
     height 750ms ease-in-out;
   background-color: #1f1e22;
   position: relative;
   transform-origin: center center;
+  box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
 }
 
 .applicant p {

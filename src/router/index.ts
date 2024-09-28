@@ -10,6 +10,7 @@ import TicketScanner from '@/views/TicketScannerView.vue';
 import MealScanner from '@/views/MealScannerView.vue';
 import BlessedCoastView from '@/views/BlessedCoastView.vue';
 import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue';
+import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,11 @@ const router = createRouter({
       path: '/blessedcoast',
       name: 'blessedcoast',
       component: BlessedCoastView
+    },
+    {
+      path: '/blessedcoastfamily',
+      name: 'blessedcoastfamily',
+      component: BlessedCoastFamilyView
     },
     {
       path: '/blessedcoastdashboard',

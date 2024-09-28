@@ -3,12 +3,14 @@ import CountDownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
 import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
+import { RouterLink } from 'vue-router'
 
 export default {
   components: {
     CountDownTimer,
     CalltoAction,
-    DetailsPanel
+    DetailsPanel,
+    RouterLink
   },
   data() {
     return {
@@ -50,7 +52,20 @@ export default {
       MEAL PLANS - $20 CAD/DAY<br />
       25% discount if you pay with bitcoin!‍<br /><br />
     </h2> -->
-    <DetailsPanel />
+    <DetailsPanel>
+      <template #link1>
+        <router-link to="/reunionfamily">Learn more</router-link>
+      </template>
+      <template #link2>
+        <router-link to="/reunionteam">Meet the team</router-link>
+      </template>
+      <template #link3>
+        <router-link to="/reunionsoundsystem">custom soundsystem.</router-link>
+      </template>
+      <template #link4>
+        <router-link to="/reunionamenities">amenities.</router-link>
+      </template>
+    </DetailsPanel>
   </div>
   <CalltoAction />
 </template>

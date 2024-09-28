@@ -7,8 +7,8 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 export default {
   components: {
     CountdownTimer,
-    DetailsPanel,
-    CalltoAction
+    CalltoAction,
+    DetailsPanel
   },
   data() {
     return {
@@ -44,7 +44,20 @@ export default {
         - Leave pets at home.<br />
       </h3>
     </h2>
-    <DetailsPanel />
+    <DetailsPanel>
+      <template #link1>
+        <router-link to="/reunionfamily">Learn more</router-link>
+      </template>
+      <template #link2>
+        <router-link to="/reunionteam">Meet the team</router-link>
+      </template>
+      <template #link3>
+        <router-link to="/reunionsoundsystem">custom soundsystem.</router-link>
+      </template>
+      <template #link4>
+        <router-link to="/reunionamenities">amenities.</router-link>
+      </template>
+    </DetailsPanel>
     <CalltoAction />
   </div>
 </template>
