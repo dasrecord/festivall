@@ -1,5 +1,6 @@
 <script>
 import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { festivall_auth } from '../firebase.js'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
@@ -8,6 +9,8 @@ export default {
   setup() {
     const email = ref('')
     const password = ref('')
+    const router = useRouter()
+    const route = useRoute()
 
     const login = () => {
       signInWithEmailAndPassword(festivall_auth, email.value, password.value)
@@ -15,6 +18,10 @@ export default {
           // Signed in
           const user = userCredential.user
           console.log('User signed in:', user)
+          localStorage.setItem('user', JSON.stringify(user))
+          const redirect = route.query.redirect
+          router.push(redirect)
+
           // Redirect or show authenticated content
         })
         .catch((error) => {
