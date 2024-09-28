@@ -1,7 +1,7 @@
 <template>
   <h2>Login</h2>
   <div id="login-container">
-    <p>You are currently {{ status }}</p>
+    <p>You are currently {{ status }}.</p>
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
       <input type="password" v-model="password" placeholder="Password" required />
@@ -33,6 +33,7 @@ export default {
           // Signed in
           const user = userCredential.user
           console.log('User signed in:', user)
+          console.log('User email:', user.email)
 
           // Check if localStorage is available
           if (typeof localStorage !== 'undefined') {
@@ -117,6 +118,7 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 1rem 0;
 }
 button {
   display: inline-block;
