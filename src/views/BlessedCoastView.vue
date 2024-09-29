@@ -75,7 +75,6 @@ img {
 }
 .iframe-container iframe {
   width: 100%;
-  height: 450px;
   border-radius: 25px;
 }
 </style>
