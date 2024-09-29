@@ -37,7 +37,7 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 // Dynamically import all images from the @/assets/images directory
-const images = import.meta.glob('@/assets/images/blessed/family/*.jpg')
+const images = import.meta.glob('@/assets/images/blessed/bc_past_performers/*.jpg')
 
 export default {
   components: {
