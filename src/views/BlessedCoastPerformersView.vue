@@ -2,10 +2,12 @@
   <div class="basic">
     <h1>THE BLESSED COAST</h1>
     <h3>
-      Welcome to the Blessed Coast Performers showcase. Here, we celebrate the incredible talent
-      that has graced our stages over the years. From emerging artists to established acts, our
-      festival has been a platform for a diverse range of performers who have left an indelible mark
-      on our community.
+      Welcome to the Blessed Coast Performers showcase.<br />
+      Here, we celebrate the incredible talent that has graced our stages over the years. From
+      emerging artists to established acts, our festival has been a platform for a diverse range of
+      performers who have left an indelible mark on our community. Join us in honoring their
+      contributions and reliving the magic they brought to our festival. We look forward to many
+      more years of unforgettable performances.
     </h3>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
 
