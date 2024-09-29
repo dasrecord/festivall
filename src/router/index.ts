@@ -11,6 +11,7 @@ import MealScanner from '@/views/MealScannerView.vue';
 import BlessedCoastView from '@/views/BlessedCoastView.vue';
 import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue';
 import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue';
+import BlessedCoastPerformersView from '@/views/BlessedCoastPerformersView.vue';
 
 
 const routes = [
@@ -36,6 +37,11 @@ const routes = [
     path: '/blessedcoastfamily',
     name: 'blessedcoastfamily',
     component: BlessedCoastFamilyView
+  },
+  {
+    path: '/blessedcoastperformers',
+    name: 'blessedcoastperformers',
+    component: BlessedCoastPerformersView
   },
   {
     path: '/blessedcoastdashboard',

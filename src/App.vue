@@ -24,7 +24,8 @@ useHead({
       $route.path !== '/reunionmealscanner' &&
       $route.path !== '/blessedcoast' &&
       $route.path !== '/blessedcoastdashboard' &&
-      $route.path !== '/blessedcoastfamily'
+      $route.path !== '/blessedcoastfamily' &&
+      $route.path !== '/blessedcoastperformers'
     "
   >
     <div class="wrapper">

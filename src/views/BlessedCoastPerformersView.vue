@@ -2,13 +2,10 @@
   <div class="basic">
     <h1>THE BLESSED COAST</h1>
     <h3>
-      Blessed Coast is a boutique family friendly festival with limited capacity, featuring local
-      talent and showcasing the most inspired yoga teachers and facilitators from the Lower Mainland
-      and the Sea to Sky. It is opened and closed with a ceremony lead by local Indigenous Elders
-      and in its second year is a largely renewable energy powered event with a zero-waste, leave no
-      trace philosophy, a no drugs and alcohol policy and even a bike and solar powered green energy
-      stage in our family fair area of the festival which also hosts vendors, artisans and cuisine
-      from around the world.
+      Welcome to the Blessed Coast Performers showcase. Here, we celebrate the incredible talent
+      that has graced our stages over the years. From emerging artists to established acts, our
+      festival has been a platform for a diverse range of performers who have left an indelible mark
+      on our community.
     </h3>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
 
@@ -37,7 +34,7 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 // Dynamically import all images from the @/assets/images directory
-const images = import.meta.glob('@/assets/images/blessed/bc_the_early_years/*.jpg')
+const images = import.meta.glob('@/assets/images/blessed/bc_past_performers/*.jpg')
 
 export default {
   components: {
