@@ -50,6 +50,8 @@ export default {
       <div class="video-wrapper">
         <div class="iframe-container">
           <iframe
+            width="560"
+            height="315"
             src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
             title="Blessed Coast Trailer"
             frameborder="0"
@@ -76,12 +78,10 @@ img {
 }
 .video {
   width: 100%;
-
   position: relative;
   z-index: 1;
 }
 .video-wrapper {
-  overflow: hidden;
   position: relative;
   z-index: 1;
   margin-top: 1rem;
@@ -90,14 +90,9 @@ img {
   overflow: hidden;
   margin-top: 1rem;
 }
-.iframe-container {
-  overflow: hidden;
-}
-.iframe-container iframe {
 .iframe-container iframe {
   width: 100%;
-  height: 300px;
-  /* height: 100%; */
+  height: 500px;
   border-radius: 25px;
 }
 </style>

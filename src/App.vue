@@ -4,20 +4,6 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  meta: [
-    {
-      name: 'description',
-      content: 'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
-    },
-    {
-      name: 'keywords',
-      content: 'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
-    }
-  ]
-})
-import { useHead } from '@vueuse/head'
-
-useHead({
   title: 'BLESSED COAST FESTIVAL',
   meta: [
     {

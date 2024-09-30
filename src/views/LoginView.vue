@@ -18,7 +18,7 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { festivall_auth } from '@/firebase' // Adjust the import path as needed
 
 export default {
-  name: 'LoginView',
+  name: 'FestivallLogin',
   setup() {
     const email = ref('')
     const password = ref('')
@@ -45,7 +45,7 @@ export default {
           }
 
           // Check if redirect query parameter exists
-          const redirect = route.query.redirect || '/'
+          const redirect = route.query.redirect || '/blessedcoastdashboard'
           router.push(redirect)
 
           // Redirect or show authenticated content
@@ -72,7 +72,7 @@ export default {
           }
 
           // Redirect to login page or home page
-          router.push('/')
+          router.push('/login')
         })
         .catch((error) => {
           console.error('Error signing out:', error)
