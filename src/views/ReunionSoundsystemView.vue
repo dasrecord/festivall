@@ -51,7 +51,7 @@ export default {
         <router-link to="/reunionteam">Meet the team</router-link>
       </template>
       <template #link3>
-        <router-link to="/reunionsoundsystem">custom soundsystem.</router-link>
+        <router-link to="/reunionsoundsystem">our custom soundsystem.</router-link>
       </template>
       <template #link4>
         <router-link to="/reunionamenities">amenities.</router-link>

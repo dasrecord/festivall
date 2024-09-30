@@ -10,7 +10,6 @@
       more years of unforgettable performances.
     </h3>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
-
     <DetailsPanel>
       <template #link1>
         <router-link to="/blessedcoastfamily">Learn more</router-link>
@@ -18,8 +17,15 @@
       <template #link2>
         <router-link to="#">Explore</router-link>
       </template>
-      <template #link3>
-        <router-link to="/blessedcoastperformers">past performers.</router-link>
+      <template #link3
+        >our performers from: <br /><br />
+        <router-link to="/blessedcoast2015performers">2015</router-link><br />
+
+        <router-link to="/blessedcoast2016performers">2016</router-link><br. /><br />
+
+        <router-link to="/blessedcoast2017performers">2017</router-link><br. /><br />
+
+        <router-link to="/blessedcoast2018performers">2018</router-link><br. />
       </template>
       <template #link4>
         <router-link to="#">amenities.</router-link>
@@ -36,7 +42,7 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 // Dynamically import all images from the @/assets/images directory
-const images = import.meta.glob('@/assets/images/blessed/bc_past_performers/*.jpg')
+const images = import.meta.glob('@/assets/images/blessed/bc_past_performers/2016/*.jpg')
 
 export default {
   components: {
