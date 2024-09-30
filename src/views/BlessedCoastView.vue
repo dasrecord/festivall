@@ -17,10 +17,26 @@ useHead({
 })
 
 export default {
+  name: 'BlessedCoastView',
   components: {
     BlessedCoastCalltoAction
   },
-  data() {
+  setup() {
+    useHead({
+      meta: [
+        {
+          name: 'description',
+          content:
+            'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
+        },
+        {
+          name: 'keywords',
+          content:
+            'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
+        }
+      ]
+    })
+
     return {
       wolfImage: wolf_image
     }
@@ -72,9 +88,16 @@ img {
 }
 .iframe-container {
   overflow: hidden;
+  margin-top: 1rem;
+}
+.iframe-container {
+  overflow: hidden;
 }
 .iframe-container iframe {
+.iframe-container iframe {
   width: 100%;
+  height: 300px;
+  /* height: 100%; */
   border-radius: 25px;
 }
 </style>

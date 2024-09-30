@@ -1,8 +1,10 @@
 <template>
   <HelloWorld msg="Blessed Coast" />
+  <div><h2>Scouting Dashboard</h2></div>
   <div class="controls">
-    <button @click="loadApplicants('artist')">Artists</button>
-    <button @click="loadApplicants('workshop')">Workshops</button>
+    <button @click="loadApplicants('artist')">Past Artist Applicants</button>
+    <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
+    <button @click="loadApplicants('impact_leads')">Impact Leads</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -12,11 +14,17 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.act_name }}</span>
+            <span v-else
+              >{{ applicant.first_name }} {{ applicant.last_name }} {{ applicant.full_name }}<br />
+              <p>{{ applicant.applicant_type }}</p></span
+            >
           </h2>
           <p>{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
+          <p>
+            <a :href="'mailto:' + applicant.email">{{ applicant.email }}</a>
+          </p>
         </div>
       </div>
     </div>
@@ -92,7 +100,7 @@ button:hover {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  transition: transform 0s ease-in;
+  transition: transform 50ms ease-in;
   padding: 1rem 1rem;
 }
 
@@ -100,18 +108,19 @@ button:hover {
   border: 1px solid #5e5e5e;
   width: 150px;
   height: 150px;
-  margin: 5px;
-  border-radius: 15px;
+  margin: 10px;
+  border-radius: 10px;
   overflow: hidden;
   white-space: wrap;
   text-overflow: ellipsis;
   transition:
-    transform 750ms ease-in,
-    width 1750s ease-in,
-    height 750ms ease-in;
+    transform 750ms ease,
+    width 750s ease-in-out,
+    height 750ms ease-in-out;
   background-color: #1f1e22;
   position: relative;
-  transform-origin: center top;
+  transform-origin: center center;
+  box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
 }
 
 .applicant p {
@@ -122,7 +131,7 @@ button:hover {
 }
 
 .applicant:hover {
-  transform: scale(4);
+  transform: scale(2.5);
   z-index: 10;
   padding: 3px 3px;
   font-size: 30%;
@@ -143,6 +152,7 @@ button:hover {
   height: 100%;
   overflow: auto;
   display: flex;
+  flex-basis: shrink;
   flex-direction: column;
   justify-content: center;
 }

@@ -221,7 +221,20 @@ export default {
         </template>
       </TeamCard>
     </div>
-    <DetailsPanel />
+    <DetailsPanel>
+      <template #link1>
+        <router-link to="/reunionfamily">Learn more</router-link>
+      </template>
+      <template #link2>
+        <router-link to="/reunionteam">Meet the team</router-link>
+      </template>
+      <template #link3>
+        <router-link to="/reunionsoundsystem">custom soundsystem.</router-link>
+      </template>
+      <template #link4>
+        <router-link to="/reunionamenities">amenities.</router-link>
+      </template>
+    </DetailsPanel>
     <CalltoAction />
   </div>
 </template>

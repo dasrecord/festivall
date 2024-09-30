@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import ExternalRedirect from '../components/ExternalRedirect.vue';
-import HomeView from '../views/HomeView.vue';
+import HomeView from '../views/HomeView.vue'
 import ReunionView from '@/views/ReunionView.vue';
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
@@ -10,7 +10,9 @@ import TicketScanner from '@/views/TicketScannerView.vue';
 import MealScanner from '@/views/MealScannerView.vue';
 import BlessedCoastView from '@/views/BlessedCoastView.vue';
 import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue';
-import FestivallLogin from '@/views/LoginView.vue';
+import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue';
+import BlessedCoastPerformersView from '@/views/BlessedCoastPerformersView.vue';
+
 
 const routes = [
   {
@@ -19,13 +21,11 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/login',
-    name: 'festivall-login',
-    component: FestivallLogin
-  },
-  {
     path: '/about',
     name: 'about',
+    // route level code-splitting
+    // this generates a separate chunk (About.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
     component: () => import('../views/AboutView.vue')
   },
   {
@@ -34,10 +34,19 @@ const routes = [
     component: BlessedCoastView
   },
   {
+    path: '/blessedcoastfamily',
+    name: 'blessedcoastfamily',
+    component: BlessedCoastFamilyView
+  },
+  {
+    path: '/blessedcoastperformers',
+    name: 'blessedcoastperformers',
+    component: BlessedCoastPerformersView
+  },
+  {
     path: '/blessedcoastdashboard',
     name: 'blessedcoastdashboard',
-    component: BlessedCoastDashboard,
-    meta: { requiresAuth: true }
+    component: BlessedCoastDashboard
   },
   {
     path: '/reunion',
@@ -58,6 +67,7 @@ const routes = [
     path: '/reunionteam',
     name: 'reunionteam',
     component: ReunionTeamView
+
   },
   {
     path: '/reunionsoundsystem',
@@ -87,12 +97,13 @@ const routes = [
     name: 'chooseyourvisuals',
     component: ExternalRedirect,
     props: { url: 'https://dasrecord.typeform.com/to/IkweNol1' }
+
   },
   {
     path: '/reunionmassage',
     name: 'reunionmassage',
     component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/XxsV389I' }
+    props: { url: 'https://dasrecord.typeform.com/to/XxsV389I'}
   },
   {
     path: '/reuniontickets',
@@ -103,17 +114,15 @@ const routes = [
   {
     path: '/reunionticketscanner',
     name: 'reunionticketscanner',
-    component: TicketScanner,
-    meta: { requiresAuth: true }
+    component: TicketScanner
   },
   {
     path: '/reunionmealscanner',
     name: 'reunionmealscanner',
-    component: MealScanner,
-    meta: { requiresAuth: true }
+    component: MealScanner
   },
   {
-    path: '/stayconnected',
+    path:'/stayconnected',
     name: 'stayconnected',
     component: ExternalRedirect,
     props: { url: 'https://dasrecord.typeform.com/to/oNXOMH' }
@@ -135,6 +144,7 @@ const routes = [
     name: 'reunionslack',
     component: ExternalRedirect,
     props: { url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2n9v17aud-yUWqZQBLj~zUlS9A4AngNA' }
+
   },
   {
     path: '/reunionreceipttracker',
@@ -160,23 +170,12 @@ const routes = [
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTJpbWVmNWY5YzhwbmtuaGg5Z2M0MWNiYjAgOWRiMTJlZGFlOTI0MWZmMDlmZTFlM2RiYWU4MTJkYmJjNjVhZWFkZWU5M2NkY2FjNTc1MjFmNmY4OGMyN2M5NkBn&tmsrc=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96%40group.calendar.google.com' }
   }
-];
+
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
-});
+})
 
-// Navigation guard to check for authentication
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = !!localStorage.getItem('user');
-
-  if (requiresAuth && !isAuthenticated) {
-    next({ path: '/login', query: { redirect: to.fullPath } });
-  } else {
-    next();
-  }
-});
-
-export default router;
+export default router

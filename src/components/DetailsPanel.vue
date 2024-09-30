@@ -1,11 +1,12 @@
 <template>
-  <h2>
-    <RouterLink to="/reunionfamily">Learn More</RouterLink> about our festival.<br /><br />
-    <RouterLink to="/reunionteam">Meet the Team</RouterLink> behind the scenes.<br /><br />
-    Check Out Our <RouterLink to="/reunionsoundsystem">Custom Sound System‍</RouterLink><br /><br />
-    <RouterLink to="/reunionamenities">Click Here</RouterLink>
-    for the Amenities‍<br /><br />
-  </h2>
+  <div>
+    <h2>
+      <slot name="link1"></slot> about our festival.<br /><br />
+      <slot name="link2"></slot> behind the scenes.<br /><br />
+      Check out our <slot name="link3"></slot><br /><br />
+      Click here for the <slot name="link4"></slot><br /><br />
+    </h2>
+  </div>
 </template>
 
 <script>
@@ -15,7 +16,5 @@ export default {
 </script>
 
 <style scoped>
-* {
-  margin-top: 2rem;
-}
+/* add styles */
 </style>
