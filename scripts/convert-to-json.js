@@ -5,8 +5,8 @@ import csv from 'csv-parser';
 // Define the input and output file paths
 const file = "artist";
 
-const csvFilePath = path.join(process.cwd(), `src/data/applicants/${file}_raw.csv`);
-const jsonFilePath = path.join(process.cwd(), `src/data/applicants/${file}_raw.json`);
+const csvFilePath = path.join(process.cwd(), `public/data/applicants/${file}_raw.csv`);
+const jsonFilePath = path.join(process.cwd(), `public/data/applicants/${file}_raw.json`);
 
 const results = [];
 

@@ -25,7 +25,6 @@ export default {
     const status = ref('logged out')
     const isUserLoggedIn = ref(false)
     const router = useRouter()
-    const route = useRoute()
 
     const login = () => {
       signInWithEmailAndPassword(festivall_auth, email.value, password.value)
