@@ -2,19 +2,6 @@
 import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import { useHead } from '@vueuse/head'
-useHead({
-  title: 'BLESSED COAST FESTIVAL',
-  meta: [
-    {
-      name: 'description',
-      content: 'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
-    },
-    {
-      name: 'keywords',
-      content: 'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
-    }
-  ]
-})
 
 export default {
   name: 'BlessedCoastView',
@@ -23,6 +10,7 @@ export default {
   },
   setup() {
     useHead({
+      title: 'BLESSED COAST FESTIVAL',
       meta: [
         {
           name: 'description',
@@ -43,6 +31,7 @@ export default {
   }
 }
 </script>
+
 <template>
   <div class="basic">
     <img class="wolf" :src="wolfImage" alt="wolf" />
@@ -50,8 +39,6 @@ export default {
       <div class="video-wrapper">
         <div class="iframe-container">
           <iframe
-            width="560"
-            height="315"
             src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
             title="Blessed Coast Trailer"
             frameborder="0"
@@ -87,12 +74,21 @@ img {
   margin-top: 1rem;
 }
 .iframe-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
   overflow: hidden;
-  margin-top: 1rem;
+  border-radius: 25px;
 }
 .iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 500px;
-  border-radius: 25px;
+  height: 100%;
+  border: 0;
+  border-radius: 25px; /* Apply border radius to iframe */
+  box-shadow: 0 0 0 9999px rgb(0, 0, 0) inset; /* Ensure the border radius is applied */
 }
 </style>

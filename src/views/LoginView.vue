@@ -72,7 +72,7 @@ export default {
           }
 
           // Redirect to login page or home page
-          router.push('/login')
+          router.push(route.query.redirect || '/login')
         })
         .catch((error) => {
           console.error('Error signing out:', error)
