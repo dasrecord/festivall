@@ -43,12 +43,7 @@ export default {
           } else {
             console.warn('localStorage is not available.')
           }
-
-          // Check if redirect query parameter exists
-          const redirect = route.query.redirect || '/blessedcoastdashboard'
-          router.push(redirect)
-
-          // Redirect or show authenticated content
+          router.push('/blessedcoastdashboard')
         })
         .catch((error) => {
           const errorCode = error.code
@@ -72,7 +67,7 @@ export default {
           }
 
           // Redirect to login page or home page
-          router.push(route.query.redirect || '/login')
+          router.push('/login')
         })
         .catch((error) => {
           console.error('Error signing out:', error)
