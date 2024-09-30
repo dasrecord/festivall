@@ -26,7 +26,11 @@ useHead({
       $route.path !== '/blessedcoast' &&
       $route.path !== '/blessedcoastdashboard' &&
       $route.path !== '/blessedcoastfamily' &&
-      $route.path !== '/blessedcoastperformers'
+      $route.path !== '/blessedcoastperformers' &&
+      $route.path !== '/blessedcoast2015performers' &&
+      $route.path !== '/blessedcoast2016performers' &&
+      $route.path !== '/blessedcoast2017performers' &&
+      $route.path !== '/blessedcoast2018performers'
     "
   >
     <div class="wrapper">
