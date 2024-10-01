@@ -9,13 +9,14 @@
       contributions and reliving the magic they brought to our festival. We look forward to many
       more years of unforgettable performances.
     </h3>
+    <h2>2016 PERFORMERS</h2>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
     <DetailsPanel>
       <template #link1>
         <router-link to="/blessedcoastfamily">Learn more</router-link>
       </template>
       <template #link2>
-        <router-link to="#">Explore</router-link>
+        <router-link to="/synergistic">Explore</router-link>
       </template>
       <template #link3
         >our performers from: <br /><br />
@@ -73,6 +74,7 @@ export default {
   margin: 1rem;
   text-align: center;
 }
+
 .carousel {
   margin-top: 1rem;
 }
