@@ -16,6 +16,7 @@ import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersVi
 import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue';
 import BlessedCoast2017PerformersView from '@/views/BlessedCoast2017PerformersView.vue';
 import BlessedCoast2018PerformersView from '@/views/BlessedCoast2018PerformersView.vue';
+import SynergisticView from '@/views/SynergisticView.vue';
 
 
 const routes = [
@@ -189,6 +190,11 @@ const routes = [
     name: 'partyinthepark',
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTJpbWVmNWY5YzhwbmtuaGg5Z2M0MWNiYjAgOWRiMTJlZGFlOTI0MWZmMDlmZTFlM2RiYWU4MTJkYmJjNjVhZWFkZWU5M2NkY2FjNTc1MjFmNmY4OGMyN2M5NkBn&tmsrc=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96%40group.calendar.google.com' }
+  },
+  {
+    path: '/synergistic',
+    name: 'synergistic',
+    component: SynergisticView
   }
 ];
 

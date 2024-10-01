@@ -16,7 +16,7 @@
         <router-link to="/blessedcoastfamily">Learn more</router-link>
       </template>
       <template #link2>
-        <router-link to="#">Explore</router-link>
+        <router-link to="/synergistic">Explore</router-link>
       </template>
       <template #link3
         >our performers from: <br /><br />

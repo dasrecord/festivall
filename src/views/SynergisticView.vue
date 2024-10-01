@@ -2,10 +2,12 @@
 import synergistic_image from '@/assets/images/synergistic/synergistic_square_2.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
+import DetailsPanel from '@/components/DetailsPanel.vue'
 
 export default {
   components: {
     HelloWorld,
+    DetailsPanel,
     BlessedCoastCalltoAction
   },
   data() {
@@ -16,13 +18,31 @@ export default {
 }
 </script>
 <template>
-  <HelloWorld msg="Synergistic Entertainment" />
-  <h2>
-    Synergistic is a BC based promoter that assembles the team for the Blessed Coast Festival.
-  </h2>
-
   <div class="basic">
+    <HelloWorld msg="Synergistic Entertainment" />
+    <h2>Synergistic is a BC based promoter that assembles the team for Blessed Coast.</h2>
     <img class="img" :src="splashImage" alt="synergistic" />
+    <DetailsPanel>
+      <template #link1>
+        <router-link to="/blessedcoastfamily">Learn more</router-link>
+      </template>
+      <template #link2>
+        <router-link to="/synergistic">Explore</router-link>
+      </template>
+      <template #link3
+        >our performers from: <br /><br />
+        <router-link to="/blessedcoast2015performers">2015</router-link><br />
+
+        <router-link to="/blessedcoast2016performers">2016</router-link><br. /><br />
+
+        <router-link to="/blessedcoast2017performers">2017</router-link><br. /><br />
+
+        <router-link to="/blessedcoast2018performers">2018</router-link><br. />
+      </template>
+      <template #link4>
+        <router-link to="#">amenities.</router-link>
+      </template>
+    </DetailsPanel>
   </div>
   <BlessedCoastCalltoAction />
 </template>
@@ -42,13 +62,7 @@ h1 {
 img {
   border-radius: 25px;
 }
-a {
-  display: inline-block;
-  padding: 0.5rem 0.5rem;
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  transition: box-shadow 0.4s ease-in-out;
-}
+
 a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
