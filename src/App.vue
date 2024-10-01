@@ -9,7 +9,7 @@ import HelloWorld from './components/HelloWorld.vue'
       $route.path !== '/reunionticketscanner' &&
       $route.path !== '/reunionmealscanner' &&
       $route.path !== '/blessedcoast' &&
-      $route.path !== '/synergystic'
+      $route.path !== '/synergistic'
     "
   >
     <div class="wrapper">

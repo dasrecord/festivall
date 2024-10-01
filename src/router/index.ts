@@ -9,7 +9,7 @@ import ReunionTeamView from '@/views/ReunionTeamView.vue';
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
 import TicketScanner from '@/views/TicketScannerView.vue';
 import MealScanner from '@/views/MealScannerView.vue';
-import SynergysticView from '@/views/SynergysticView.vue';
+import SynergisticView from '@/views/SynergisticView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -149,9 +149,9 @@ const router = createRouter({
       props: { url: 'https://dasrecord.typeform.com/to/xHvozB7Y' }
     },
     {
-      path: '/synergystic',
-      name: 'synergystic',
-      component: SynergysticView
+      path: '/synergistic',
+      name: 'synergistic',
+      component: SynergisticView
     },
     {
       path: '/partyinthepark',

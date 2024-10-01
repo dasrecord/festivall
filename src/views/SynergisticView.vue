@@ -1,5 +1,5 @@
 <script>
-import synergystic_image from '@/assets/images/synergystic/synergystic_square_1.jpg'
+import synergistic_image from '@/assets/images/synergistic/synergistic_square_2.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
 
@@ -10,15 +10,19 @@ export default {
   },
   data() {
     return {
-      splashImage: synergystic_image
+      splashImage: synergistic_image
     }
   }
 }
 </script>
 <template>
-  <HelloWorld msg="Synergystic Entertainment" />
+  <HelloWorld msg="Synergistic Entertainment" />
+  <h2>
+    Synergistic is a BC based promoter that assembles the team for the Blessed Coast Festival.
+  </h2>
+
   <div class="basic">
-    <img class="wolf" :src="splashImage" alt="wolf" />
+    <img class="img" :src="splashImage" alt="synergistic" />
   </div>
   <BlessedCoastCalltoAction />
 </template>
