@@ -30,7 +30,8 @@ useHead({
       $route.path !== '/blessedcoast2015performers' &&
       $route.path !== '/blessedcoast2016performers' &&
       $route.path !== '/blessedcoast2017performers' &&
-      $route.path !== '/blessedcoast2018performers'
+      $route.path !== '/blessedcoast2018performers' &&
+      $route.path !== '/synergistic'
     "
   >
     <div class="wrapper">
@@ -40,6 +41,7 @@ useHead({
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/blessedcoast">Blessed Coast</RouterLink>
+        <RouterLink to="/synergystic">Synergystic</RouterLink>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
       </nav>
