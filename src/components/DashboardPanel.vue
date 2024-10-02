@@ -8,6 +8,8 @@
   </div>
   <div class="filters">
     <button @click="filterbyActType('Artist')">Artists</button>
+    <button @click="filterbyActType('Musician')">Musicians</button>
+    <button @click="filterbyActType('Dancer')">Dancer</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
