@@ -22,11 +22,11 @@
         >our performers from: <br /><br />
         <router-link to="/blessedcoast2015performers">2015</router-link><br />
 
-        <router-link to="/blessed2016performers">2016</router-link><br. /><br />
+        <router-link to="/blessedcoast2016performers">2016</router-link><br. /><br />
 
-        <router-link to="/blessed2017performers">2017</router-link><br. /><br />
+        <router-link to="/blessedcoast2017performers">2017</router-link><br. /><br />
 
-        <router-link to="/blessed2018performers">2018</router-link><br. />
+        <router-link to="/blessedcoast2018performers">2018</router-link><br. />
       </template>
       <template #link4>
         <router-link to="#">amenities.</router-link>
