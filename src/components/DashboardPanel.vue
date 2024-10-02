@@ -6,6 +6,9 @@
     <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
     <button @click="loadApplicants('impact_leads')">Impact Leads</button>
   </div>
+  <div class="filters">
+    <button @click="filterbyType('bio')">bio</button>
+  </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in applicants" :key="applicant.id" class="applicant">
@@ -66,6 +69,9 @@ export default {
         .catch((error) => {
           console.error('There was a problem with the fetch operation:', error)
         })
+    },
+    filterbyType(type) {
+      return this.applicants.filter((applicant) => applicant.applicant_type === type)
     }
   }
 }
