@@ -7,11 +7,11 @@
     <button @click="loadApplicants('impact_leads')">Impact Leads</button>
   </div>
   <div class="filters">
-    <button @click="filterbyType('bio')">bio</button>
+    <button @click="filterbyActType('Artist')">Artists</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
-      <div v-for="applicant in applicants" :key="applicant.id" class="applicant">
+      <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
         <div class="applicant-content">
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       applicants: [],
+      filteredApplicants: [],
       scale: 1
     }
   },
@@ -65,13 +66,14 @@ export default {
             if (!a.url && b.url) return 1
             return 0
           })
+          this.filteredApplicants = this.applicants // Initialize filteredApplicants
         })
         .catch((error) => {
           console.error('There was a problem with the fetch operation:', error)
         })
     },
-    filterbyType(type) {
-      return this.applicants.filter((applicant) => applicant.applicant_type === type)
+    filterbyActType(type) {
+      this.filteredApplicants = this.applicants.filter((applicant) => applicant.act_type === type)
     }
   }
 }
