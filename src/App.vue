@@ -41,7 +41,7 @@ useHead({
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/blessedcoast">Blessed Coast</RouterLink>
-        <RouterLink to="/synergystic">Synergystic</RouterLink>
+        <RouterLink to="/synergistic">Synergistic</RouterLink>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
       </nav>
