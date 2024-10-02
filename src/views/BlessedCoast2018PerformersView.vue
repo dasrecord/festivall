@@ -96,4 +96,19 @@ export default {
 .carousel-indicators {
   display: none;
 }
+h1 {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+}
+img {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  width: 100%;
+  border-radius: 25px;
+}
+
+a:hover {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  color: white;
+}
 </style>

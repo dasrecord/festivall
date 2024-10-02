@@ -41,6 +41,9 @@ export default {
   font-family: 'amandine', sans-serif;
   font-weight: 700;
 }
+.call-to-action a {
+  border-radius: 10px;
+}
 h1 {
   border: 1px solid #79bcff40;
   padding: 0.5rem;

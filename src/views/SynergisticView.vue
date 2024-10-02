@@ -20,7 +20,10 @@ export default {
 <template>
   <div class="basic">
     <HelloWorld msg="Synergistic Entertainment" />
-    <h2>Synergistic is a BC based promoter that assembles the team for Blessed Coast.</h2>
+    <h2>
+      Synergistic is a BC based promoter that is assembling the team for<br />
+      <RouterLink to="/blessedcoastfamily">Blessed Coast 2025</RouterLink>
+    </h2>
     <img class="img" :src="splashImage" alt="synergistic" />
     <DetailsPanel>
       <template #link1>
@@ -48,6 +51,11 @@ export default {
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 .basic {
   display: flex;
   flex-direction: column;
@@ -60,6 +68,8 @@ h1 {
   text-align: center;
 }
 img {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  width: 100%;
   border-radius: 25px;
 }
 

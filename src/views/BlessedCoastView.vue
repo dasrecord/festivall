@@ -91,4 +91,19 @@ img {
   border-radius: 25px; /* Apply border radius to iframe */
   box-shadow: 0 0 0 9999px rgb(0, 0, 0) inset; /* Ensure the border radius is applied */
 }
+h1 {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+}
+img {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  width: 100%;
+  border-radius: 25px;
+}
+
+a:hover {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  color: white;
+}
 </style>
