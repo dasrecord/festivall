@@ -1,5 +1,5 @@
 <script>
-import synergistic_image from '@/assets/images/synergistic/synergistic_square_2.jpg'
+import synergistic_image from '@/assets/images/synergistic/se_logo_and_emblem.png'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'

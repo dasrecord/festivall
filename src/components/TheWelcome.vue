@@ -46,7 +46,7 @@ import IconFestivall from './icons/IconFestivall.vue'
       <IconFestivall />
     </template>
     <template #heading
-      ><RouterLink to="/synergystic">Synergystic Entertainment</RouterLink></template
+      ><RouterLink to="/synergistic">Synergystic Entertainment</RouterLink></template
     >
     <p>A production company that specializes in electronic music events and festivals.</p>
   </WelcomeItem>
