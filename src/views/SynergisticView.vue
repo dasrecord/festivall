@@ -21,6 +21,9 @@ export default {
   <div class="basic">
     <HelloWorld msg="Synergistic Entertainment" />
     <h2>Synergistic is a BC based promoter that assembles the team for Blessed Coast.</h2>
+    <p>Synergistic was founded in YYYY. It is a ...</p>
+    <p>Click here for our <a href="https://festivall.ca">events</a>.</p><br>
+
     <img class="img" :src="splashImage" alt="synergistic" />
     <DetailsPanel>
       <template #link1>
@@ -49,6 +52,7 @@ export default {
 
 <style scoped>
 .basic {
+  font-family: "amandine";
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -59,6 +63,7 @@ h1 {
   color: white;
   text-align: center;
 }
+
 img {
   border-radius: 25px;
 }
@@ -67,6 +72,7 @@ a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
 }
+
 
 @media (min-width: 1024px) {
   .basic {
