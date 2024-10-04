@@ -1,23 +1,22 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import ExternalRedirect from '../components/ExternalRedirect.vue';
-import HomeView from '../views/HomeView.vue';
-import ReunionView from '@/views/ReunionView.vue';
-import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue';
-import ReunionFamilyView from '@/views/ReunionFamilyView.vue';
-import ReunionTeamView from '@/views/ReunionTeamView.vue';
-import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue';
-import TicketScanner from '@/views/TicketScannerView.vue';
-import MealScanner from '@/views/MealScannerView.vue';
-import BlessedCoastView from '@/views/BlessedCoastView.vue';
-import FestivallLogin from '@/views/LoginView.vue';
-import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue';
-import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue';
-import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersView.vue';
-import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue';
-import BlessedCoast2017PerformersView from '@/views/BlessedCoast2017PerformersView.vue';
-import BlessedCoast2018PerformersView from '@/views/BlessedCoast2018PerformersView.vue';
-import SynergisticView from '@/views/SynergisticView.vue';
-
+import { createRouter, createWebHistory } from 'vue-router'
+import ExternalRedirect from '../components/ExternalRedirect.vue'
+import HomeView from '../views/HomeView.vue'
+import ReunionView from '@/views/ReunionView.vue'
+import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
+import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
+import ReunionTeamView from '@/views/ReunionTeamView.vue'
+import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
+import TicketScanner from '@/views/TicketScannerView.vue'
+import MealScanner from '@/views/MealScannerView.vue'
+import BlessedCoastView from '@/views/BlessedCoastView.vue'
+import FestivallLogin from '@/views/LoginView.vue'
+import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue'
+import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue'
+import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersView.vue'
+import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue'
+import BlessedCoast2017PerformersView from '@/views/BlessedCoast2017PerformersView.vue'
+import BlessedCoast2018PerformersView from '@/views/BlessedCoast2018PerformersView.vue'
+import SynergisticView from '@/views/SynergisticView.vue'
 
 const routes = [
   {
@@ -60,11 +59,11 @@ const routes = [
     name: 'blessedcoast2018performers',
     component: BlessedCoast2018PerformersView
   },
-  
+
   {
     path: '/login',
     name: 'login',
-    component: FestivallLogin,
+    component: FestivallLogin
   },
   {
     path: '/blessedcoastdashboard',
@@ -107,7 +106,9 @@ const routes = [
     path: '/reunionartists',
     name: 'reunionartists',
     component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/embed?src=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96@group.calendar.google.com&ctz=Regina&dates=20240830/20240902&mode=agenda&wkst=6' }
+    props: {
+      url: 'https://calendar.google.com/calendar/u/0/embed?src=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96@group.calendar.google.com&ctz=Regina&dates=20240830/20240902&mode=agenda&wkst=6'
+    }
   },
   {
     path: '/reunioncontact',
@@ -165,7 +166,9 @@ const routes = [
     path: '/reunionslack',
     name: 'reunionslack',
     component: ExternalRedirect,
-    props: { url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2n9v17aud-yUWqZQBLj~zUlS9A4AngNA' }
+    props: {
+      url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2n9v17aud-yUWqZQBLj~zUlS9A4AngNA'
+    }
   },
   {
     path: '/reunionreceipttracker',
@@ -189,30 +192,32 @@ const routes = [
     path: '/partyinthepark',
     name: 'partyinthepark',
     component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTJpbWVmNWY5YzhwbmtuaGg5Z2M0MWNiYjAgOWRiMTJlZGFlOTI0MWZmMDlmZTFlM2RiYWU4MTJkYmJjNjVhZWFkZWU5M2NkY2FjNTc1MjFmNmY4OGMyN2M5NkBn&tmsrc=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96%40group.calendar.google.com' }
+    props: {
+      url: 'https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTJpbWVmNWY5YzhwbmtuaGg5Z2M0MWNiYjAgOWRiMTJlZGFlOTI0MWZmMDlmZTFlM2RiYWU4MTJkYmJjNjVhZWFkZWU5M2NkY2FjNTc1MjFmNmY4OGMyN2M5NkBn&tmsrc=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96%40group.calendar.google.com'
+    }
   },
   {
     path: '/synergistic',
     name: 'synergistic',
     component: SynergisticView
   }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
-});
+})
 
 // Navigation guard to check for authentication
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = !!localStorage.getItem('user');
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const isAuthenticated = !!localStorage.getItem('user')
 
   if (requiresAuth && !isAuthenticated) {
-    next({ path: '/login', query: { redirect: to.fullPath } });
+    next({ path: '/login', query: { redirect: to.fullPath } })
   } else {
-    next();
+    next()
   }
-});
+})
 
-export default router;
+export default router
