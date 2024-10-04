@@ -6,15 +6,15 @@ export default {
 
 <template>
   <div class="call-to-action">
-    <h1 class="volunteer">
+    <!-- <h1 class="volunteer">
       Want to get involved?<br />
       <a href="https://dasrecord.typeform.com/to/XumI03Tm">APPLY NOW</a>
-    </h1>
+    </h1> -->
     <!-- <h1 class="lineup">
       Want to know who's performing?<br />
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
-    <h1 class="watch-this">
+    <h1 class="know-more">
       Want to know more about us?<br />
       <RouterLink to="/blessedcoastfamily">CLICK HERE</RouterLink>
     </h1>
@@ -50,6 +50,8 @@ h1 {
   margin: 0.5rem;
   box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
 }
+
+.know-more,
 .volunteer,
 .lineup {
   border-top-left-radius: 20px;
