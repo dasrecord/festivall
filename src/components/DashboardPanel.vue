@@ -6,10 +6,14 @@
     <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
     <button @click="loadApplicants('impact_leads')">Impact Leads</button>
   </div>
+  <h2>Filter By</h2>
   <div class="filters">
     <button @click="filterbyActType('Artist')">Artists</button>
     <button @click="filterbyActType('Musician')">Musicians</button>
     <button @click="filterbyActType('Dancer')">Dancer</button>
+    <button @click="filterbyActType('Workshop')">Workshops</button>
+    <button @click="filterbyActType('DJ')">DJs</button>
+    <button @click="filterbyActType('Art Vendor')">Art Vendor</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -17,7 +21,7 @@
         <div class="applicant-content">
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
-              applicant.act_name
+              applicant.full_name
             }}</a>
             <span v-else
               >{{ applicant.first_name }} {{ applicant.last_name }} {{ applicant.full_name }}<br />
@@ -75,7 +79,9 @@ export default {
         })
     },
     filterbyActType(type) {
-      this.filteredApplicants = this.applicants.filter((applicant) => applicant.act_type === type)
+      this.filteredApplicants = this.applicants.filter(
+        (applicant) => applicant.applicant_type === type
+      )
     }
   }
 }
@@ -83,6 +89,15 @@ export default {
 
 <style scoped>
 .controls {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.filters {
+  display: flex;
+  flex-direction: column;
+
   margin-bottom: 20px;
   display: flex;
   flex-direction: row;
