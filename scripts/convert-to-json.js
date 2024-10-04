@@ -3,10 +3,10 @@ import path from 'path';
 import csv from 'csv-parser';
 
 // Define the input and output file paths
-const file = "impact_leads";
+const file = "impact";
 
-const csvFilePath = path.join(process.cwd(), `public/data/applicants/${file}_raw.csv`);
-const jsonFilePath = path.join(process.cwd(), `public/data/applicants/${file}_raw.json`);
+const csvFilePath = path.join(process.cwd(), `public/data/applicants/${file}.csv`);
+const jsonFilePath = path.join(process.cwd(), `public/data/applicants/${file}.json`);
 
 const results = [];
 

@@ -2,18 +2,17 @@
   <HelloWorld msg="Blessed Coast" />
   <div><h2>Scouting Dashboard</h2></div>
   <div class="controls">
-    <button @click="loadApplicants('artist')">Past Artist Applicants</button>
-    <button @click="loadApplicants('workshop')">Past Workshops Applicants</button>
-    <button @click="loadApplicants('impact_leads')">Impact Leads</button>
+    <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
+    <button @click="loadApplicants('impact')">Impact Leads</button>
   </div>
   <h2>Filter By</h2>
   <div class="filters">
     <button @click="filterbyActType('Artist')">Artists</button>
     <button @click="filterbyActType('Musician')">Musicians</button>
-    <button @click="filterbyActType('Dancer')">Dancer</button>
+    <button @click="filterbyActType('Dancer')">Dancers</button>
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
-    <button @click="filterbyActType('Art Vendor')">Art Vendor</button>
+    <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
   </div>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -21,12 +20,9 @@
         <div class="applicant-content">
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
-              applicant.full_name
-            }}</a>
-            <span v-else
-              >{{ applicant.first_name }} {{ applicant.last_name }} {{ applicant.full_name }}<br />
-              <p>{{ applicant.applicant_type }}</p></span
-            >
+              applicant.act_name
+            }}</a
+            ><span v-else>{{ applicant.act_name }}</span>
           </h2>
           <p>{{ applicant.bio }}</p>
           <br />
@@ -57,7 +53,7 @@ export default {
   mounted() {},
   methods: {
     loadApplicants(type) {
-      fetch(`/data/applicants/${type}_raw.json`)
+      fetch(`/data/applicants/${type}.json`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText)
