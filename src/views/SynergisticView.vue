@@ -22,7 +22,7 @@ export default {
     <HelloWorld msg="Synergistic Entertainment" />
     <h2>
       Synergistic is a BC based promoter that is assembling the team for<br />
-      <RouterLink to="/blessedcoastfamily">Blessed Coast 2025</RouterLink>
+      <RouterLink to="/blessedcoast">Blessed Coast 2025</RouterLink>
     </h2>
     <img class="img" :src="splashImage" alt="synergistic" />
     <DetailsPanel>

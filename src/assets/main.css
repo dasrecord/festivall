@@ -30,7 +30,7 @@ a,
   #app {
     display: flex;
     flex-direction: column;
-    padding: 3rem;
+    padding: 1rem;
   }
   .call-to-action {
     text-align: center;

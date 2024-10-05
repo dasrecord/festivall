@@ -66,7 +66,6 @@ export default {
 .basic {
   padding: 2rem;
   text-align: center;
-  max-height: 50px;
 }
 
 @media (min-width: 1024px) {

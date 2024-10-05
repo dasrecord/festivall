@@ -16,7 +16,13 @@ export default {
 </script>
 
 <style scoped>
+#app {
+  padding: 0rem;
+  max-width: none;
+}
+
 .dashboard-panel {
+  width: 100vw;
   background-color: #232323;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
