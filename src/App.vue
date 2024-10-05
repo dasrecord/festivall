@@ -19,21 +19,7 @@ useHead({
 </script>
 
 <template>
-  <header
-    v-show="
-      $route.path !== '/reunionticketscanner' &&
-      $route.path !== '/reunionmealscanner' &&
-      $route.path !== '/blessedcoast' &&
-      $route.path !== '/blessedcoastdashboard' &&
-      $route.path !== '/blessedcoastfamily' &&
-      $route.path !== '/blessedcoastperformers' &&
-      $route.path !== '/blessedcoast2015performers' &&
-      $route.path !== '/blessedcoast2016performers' &&
-      $route.path !== '/blessedcoast2017performers' &&
-      $route.path !== '/blessedcoast2018performers' &&
-      $route.path !== '/synergistic'
-    "
-  >
+  <header v-show="$route.meta.showHeader">
     <div class="wrapper">
       <HelloWorld msg="FESTIV-ALL" />
       <nav>
