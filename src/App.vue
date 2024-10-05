@@ -74,7 +74,8 @@ nav a {
 
 @media (min-width: 1024px) {
   header {
-    /* display: flex; */
+    display: flex;
+    flex-direction: column;
     place-items: center;
     justify-items: center;
     /* padding-right: calc(var(--section-gap) / 2); */
@@ -82,7 +83,7 @@ nav a {
 
   .logo {
     display: block;
-    /* margin: 0 2rem 0 0; */
+    margin: 0 2rem 0 0;
   }
 
   header .wrapper .logo {

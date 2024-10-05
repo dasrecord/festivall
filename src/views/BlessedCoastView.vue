@@ -1,5 +1,4 @@
 <script>
-import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import { useHead } from '@vueuse/head'
 
@@ -25,16 +24,14 @@ export default {
       ]
     })
 
-    return {
-      wolfImage: wolf_image
-    }
+    return {}
   }
 }
 </script>
 
 <template>
+  <div class="background-container"></div>
   <div class="basic">
-    <img class="wolf" :src="wolfImage" alt="wolf" />
     <div class="video">
       <div class="video-wrapper">
         <div class="iframe-container">
@@ -54,11 +51,30 @@ export default {
 </template>
 
 <style scoped>
-.basic {
+.background-container {
+  background-image: url('/src/assets/images/blessed/bc_coming_soon_wide.png');
+  background-size: cover; /* Adjusts the background image to cover the entire container */
+  background-position: center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents the background image from repeating */
+  min-height: 100vh; /* Ensures the container covers the entire viewport height */
+  width: 100vw;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+}
+.basic {
+  position: relative;
+  top: 100vh; /* Matches the height of the background image */
+}
+.call-to-action {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 img {
   border-radius: 25px;
@@ -71,7 +87,6 @@ img {
 .video-wrapper {
   position: relative;
   z-index: 1;
-  margin-top: 1rem;
 }
 .iframe-container {
   position: relative;
