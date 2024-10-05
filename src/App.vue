@@ -102,4 +102,7 @@ nav a {
     margin-top: 1rem;
   }
 }
+.blessed-font {
+  font-family: 'amandine', sans-serif;
+}
 </style>

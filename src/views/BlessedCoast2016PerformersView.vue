@@ -1,5 +1,5 @@
 <template>
-  <div class="basic">
+  <div class="basic" :class="{ 'blessed-font': $route.meta.blessedFont }">
     <h1>THE BLESSED COAST</h1>
     <h3>
       Welcome to the Blessed Coast Performers showcase.<br />

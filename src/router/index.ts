@@ -39,27 +39,32 @@ const routes = [
   {
     path: '/blessedcoastfamily',
     name: 'blessedcoastfamily',
-    component: BlessedCoastFamilyView
+    component: BlessedCoastFamilyView,
+    meta: { blessedFont: true }
   },
   {
     path: '/blessedcoast2015performers',
     name: 'blessedcoast2015performers',
-    component: BlessedCoast2015PerformersView
+    component: BlessedCoast2015PerformersView,
+    meta: { blessedFont: true }
   },
   {
     path: '/blessedcoast2016performers',
     name: 'blessedcoast2016performers',
-    component: BlessedCoast2016PerformersView
+    component: BlessedCoast2016PerformersView,
+    meta: { blessedFont: true }
   },
   {
     path: '/blessedcoast2017performers',
     name: 'blessedcoast2017performers',
-    component: BlessedCoast2017PerformersView
+    component: BlessedCoast2017PerformersView,
+    meta: { blessedFont: true }
   },
   {
     path: '/blessedcoast2018performers',
     name: 'blessedcoast2018performers',
-    component: BlessedCoast2018PerformersView
+    component: BlessedCoast2018PerformersView,
+    meta: { blessedFont: true }
   },
 
   {

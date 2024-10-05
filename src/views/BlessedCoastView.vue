@@ -78,7 +78,7 @@ export default {
   margin-top: 1rem;
   font-family: 'amandine', sans-serif;
   font-weight: 700;
-}
+}w
 img {
   border-radius: 25px;
 }
