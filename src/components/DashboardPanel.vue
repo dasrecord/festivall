@@ -84,7 +84,7 @@ export default {
       )
     },
     loadEmailTemplate() {
-      fetch('/src/assets/email_templates/artist_request_template.txt')
+      fetch('/email_templates/artist_request_template.txt')
         .then((response) => response.text())
         .then((text) => {
           this.emailBody = text
