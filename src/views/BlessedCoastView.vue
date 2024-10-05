@@ -72,9 +72,12 @@ export default {
 }
 .call-to-action {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  text-align: center;
+  border: 3px solid #f0f0f0;
+  border-radius: 30px;
+  margin-top: 1rem;
+  font-family: 'amandine', sans-serif;
+  font-weight: 700;
 }
 img {
   border-radius: 25px;

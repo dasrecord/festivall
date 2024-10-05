@@ -45,10 +45,15 @@ export default {
   border-radius: 10px;
 }
 h1 {
+  font-size: 18px;
   border: 1px solid #79bcff40;
   padding: 0.5rem;
   margin: 0.5rem;
   box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
+}
+h1 a {
+  font-size: 24px;
+  text-decoration: none;
 }
 
 .know-more,
