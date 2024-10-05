@@ -28,7 +28,7 @@
           <br />
           <p>{{ applicant.rates }}</p>
           <p>
-            <a :href="'mailto:' + applicant.email">{{ applicant.email }}</a>
+            <a :href="generateMailtoLink(applicant.email)">{{ applicant.email }}</a>
           </p>
         </div>
       </div>
@@ -47,8 +47,12 @@ export default {
     return {
       applicants: [],
       filteredApplicants: [],
-      scale: 1
+      scale: 1,
+      emailBody: ''
     }
+  },
+  created() {
+    this.loadEmailTemplate()
   },
   mounted() {},
   methods: {
@@ -78,6 +82,21 @@ export default {
       this.filteredApplicants = this.applicants.filter(
         (applicant) => applicant.applicant_type === type
       )
+    },
+    loadEmailTemplate() {
+      fetch('/src/assets/email_templates/artist_request_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          this.emailBody = text
+        })
+        .catch((error) => {
+          console.error('Error loading email template:', error)
+        })
+    },
+    generateMailtoLink(email) {
+      const subject = encodeURIComponent('Your Subject Here')
+      const body = encodeURIComponent(this.emailBody)
+      return `mailto:${email}?subject=${subject}&body=${body}`
     }
   }
 }
