@@ -15,6 +15,7 @@
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
   </div>
   <div class="dashboard-panel">
+    <h2>Current View <br />{{ filteredApplicants.length }}</h2>
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
         <div class="applicant-content">
