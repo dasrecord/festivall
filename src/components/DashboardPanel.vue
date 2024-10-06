@@ -13,6 +13,7 @@
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
+    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
   </div>
   <div class="dashboard-panel">
     <h2>Current View <br />{{ filteredApplicants.length }}</h2>
@@ -26,6 +27,12 @@
             ><span v-else>{{ applicant.act_name }}</span>
           </h2>
           <p>{{ applicant.bio }}</p>
+          <br />
+          <p>
+            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url">
+              LISTEN TO A MIX/TRACK
+            </a>
+          </p>
           <br />
           <p>{{ applicant.rates }}</p>
           <p>
@@ -83,6 +90,9 @@ export default {
       this.filteredApplicants = this.applicants.filter(
         (applicant) => applicant.applicant_type === type
       )
+    },
+    filterbyProperty(property, value) {
+      this.filteredApplicants = this.applicants.filter((applicant) => applicant[property] !== value)
     },
     loadEmailTemplate() {
       fetch('/email_templates/artist_request_template.txt')
