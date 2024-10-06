@@ -66,11 +66,10 @@ import IconFestivall from './icons/IconFestivall.vue'
     <template #icon>
       <IconFestivall />
     </template>
-    <template #heading>Das Record</template>
+    <template #heading><RouterLink to="/dasrecord">Das Record</RouterLink></template>
     <p>
-      A doctor by day and a DJ and coder by night,<br />
-      Das Record is a live piano and electronic music act and performs at music festivals accross
-      Canada.
+      A medical doctor by day and a DJ/musician/coder by night,<br />
+      Das Record is a live piano and electronic music act and runs music festivals accross Canada.
     </p>
   </WelcomeItem>
   <WelcomeItem>

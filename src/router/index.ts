@@ -69,6 +69,19 @@ const routes = [
     meta: { showHeader: true }
   },
   {
+    path: '/dasrecord',
+    name :'dasrecord',
+    component: ExternalRedirect,
+    props: { url: 'https://festivall.webflow.io/das-record' }
+  },
+  {
+    path: '/howitallworks',
+    name : 'howitallworks',
+    component: ExternalRedirect,
+    props: { url: 'https://docs.google.com/drawings/d/1HT9VhiBSHEqSnQuH8m_NmaijO5sl8W91U-P3bqyY_HM/edit?usp=sharing' }
+
+  },
+  {
     path: '/login',
     name: 'login',
     component: FestivallLogin
