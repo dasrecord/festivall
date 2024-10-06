@@ -29,7 +29,7 @@
           <br />
           <p>{{ applicant.rates }}</p>
           <p>
-            <a :href="generateMailtoLink(applicant.email)">{{ applicant.email }}</a>
+            <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
           </p>
         </div>
       </div>
@@ -142,7 +142,7 @@ button:hover {
   justify-content: center;
   align-items: center;
   transition: transform 50ms ease-in;
-  padding: 1rem 1rem;
+  padding: 0.5rem 0.5rem;
 }
 
 .applicant {
