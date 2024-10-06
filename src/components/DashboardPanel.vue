@@ -26,17 +26,18 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.full_name }}</span>
+            <span v-else>{{ applicant.email.split('@')[0] }}</span
+            ><br />
           </h2>
-          <p>{{ applicant.bio }}</p>
-          <br />
-          <p>{{ applicant.rates }}</p>
-          <br />
           <p>
-            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url">
+            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               LISTEN TO A MIX/TRACK
             </a>
           </p>
+          <p id="bio">{{ applicant.bio }}</p>
+          <br />
+          <p>{{ applicant.rates }}</p>
+          <br />
           <br />
           <p>
             <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
@@ -48,12 +49,8 @@
 </template>
 
 <script>
-import HelloWorld from './HelloWorld.vue'
-
 export default {
-  components: {
-    HelloWorld
-  },
+  components: {},
   data() {
     return {
       applicants: [],
@@ -197,8 +194,10 @@ button:hover {
   padding: 5px;
 }
 .applicant:hover p {
-  display: block;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
   font-size: 6px;
 }
 
@@ -207,9 +206,14 @@ button:hover {
   height: 100%;
   overflow: auto;
   display: flex;
-  flex-basis: shrink;
   flex-direction: column;
   justify-content: center;
+}
+
+#bio {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
 .applicant-content::-webkit-scrollbar {
