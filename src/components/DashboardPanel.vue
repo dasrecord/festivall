@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld msg="Blessed Coast" />
+  <!-- <HelloWorld msg="Blessed Coast" /> -->
   <div><h2>Scouting Dashboard</h2></div>
   <div class="controls">
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
@@ -14,6 +14,8 @@
     <button @click="filterbyActType('DJ')">DJs</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
     <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
+    <button @click="filterbyProperty('willing', '')">Willing</button>
+    <button @click="filterbyProperty('url', '')">URL</button>
   </div>
   <div class="dashboard-panel">
     <h2>Current View <br />{{ filteredApplicants.length }}</h2>
@@ -23,10 +25,12 @@
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
-            }}</a
-            ><span v-else>{{ applicant.act_name }}</span>
+            }}</a>
+            <span v-else>{{ applicant.full_name }}</span>
           </h2>
           <p>{{ applicant.bio }}</p>
+          <br />
+          <p>{{ applicant.rates }}</p>
           <br />
           <p>
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url">
@@ -34,7 +38,6 @@
             </a>
           </p>
           <br />
-          <p>{{ applicant.rates }}</p>
           <p>
             <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
           </p>
@@ -132,7 +135,7 @@ export default {
 
 button {
   width: 100px;
-  padding: 10px;
+  padding: 5px;
   border: none;
   border-radius: 10px;
   background-color: #1f1e22;
@@ -146,6 +149,7 @@ button:hover {
 }
 
 .applicants {
+  font-size: 1rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -156,7 +160,7 @@ button:hover {
 }
 
 .applicant {
-  border: 1px solid #5e5e5e;
+  border: 3px solid #2c3e50;
   width: 150px;
   height: 150px;
   margin: 10px;
