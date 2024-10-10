@@ -1,6 +1,8 @@
 <template>
-  <HelloWorld msg="Blessed Coast" />
-  <div><h2>Scouting Dashboard</h2></div>
+  <div class="banner">
+    <IconFestivall style="width: 50px; height: 50px" />
+    <HelloWorld msg="SCOUTING DASHBORAD" />
+  </div>
   <div class="controls">
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact Leads</button>
@@ -38,10 +40,12 @@
 
 <script>
 import HelloWorld from './HelloWorld.vue'
+import IconFestivall from './icons/IconFestivall.vue'
 
 export default {
   components: {
-    HelloWorld
+    HelloWorld,
+    IconFestivall
   },
   data() {
     return {
@@ -84,8 +88,14 @@ export default {
 </script>
 
 <style scoped>
+.banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .controls {
-  margin-bottom: 20px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -107,6 +117,7 @@ button {
   border-radius: 10px;
   background-color: #1f1e22;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -128,7 +139,7 @@ button:hover {
 .applicant {
   border: 1px solid #5e5e5e;
   width: 150px;
-  height: 150px;
+  height: 80px;
   margin: 10px;
   border-radius: 10px;
   overflow: hidden;
