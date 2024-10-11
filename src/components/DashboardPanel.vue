@@ -93,6 +93,12 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #1f1e22;
+  z-index: 25;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
 }
 
 .controls {
@@ -103,11 +109,10 @@ export default {
 .filters {
   display: flex;
   flex-direction: column;
-
-  margin-bottom: 20px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  gap: 2px;
 }
 
 button {
