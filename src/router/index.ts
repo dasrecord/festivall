@@ -23,18 +23,18 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/about',
     name: 'about',
     component: () => import('../views/AboutView.vue'),
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/blessedcoast',
     name: 'blessedcoast',
-    component: BlessedCoastView,
+    component: BlessedCoastView
   },
   {
     path: '/blessedcoastfamily',
@@ -77,31 +77,31 @@ const routes = [
     path: '/reunion',
     name: 'reunion',
     component: ReunionView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/reunionamenities',
     name: 'reunionamenities',
     component: ReunionAmenitiesView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/reunionfamily',
     name: 'reunionfamily',
     component: ReunionFamilyView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/reunionteam',
     name: 'reunionteam',
     component: ReunionTeamView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/reunionsoundsystem',
     name: 'reunionsoundsystem',
     component: ReunionSoundsystemView,
-    meta : {showHeader: true}
+    meta: { showHeader: true }
   },
   {
     path: '/reunionapplication',
