@@ -3,7 +3,9 @@
     <IconFestivall style="width: 50px; height: 50px" />
     <HelloWorld msg="SCOUTING DASHBORAD" />
   </div>
+
   <div class="controls">
+    <h2>Choose Talent Pool</h2>
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact Leads</button>
   </div>
@@ -16,6 +18,9 @@
     <button @click="filterbyActType('DJ')">DJs</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
   </div>
+  <h2>Applicants with URLS will appear at the top.</h2>
+  <h2>Hover over an applicant for more information.</h2>
+  <h2>Click on an applicant for one-click booking template.</h2>
   <div class="dashboard-panel">
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
@@ -103,7 +108,7 @@ export default {
 
 .controls {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
 }
 .filters {
@@ -116,8 +121,8 @@ export default {
 }
 
 button {
-  width: 100px;
-  padding: 10px;
+  width: auto;
+  padding: 20px 10px;
   border: none;
   border-radius: 10px;
   background-color: #1f1e22;
@@ -176,7 +181,7 @@ button:hover {
 
 .applicant:hover h2 {
   font-size: 6px;
-  padding: 5px;
+  /* padding: 5px; */
 }
 .applicant:hover p {
   display: block;
