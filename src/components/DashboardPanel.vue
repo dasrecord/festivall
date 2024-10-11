@@ -7,7 +7,7 @@
   <div class="controls">
     <h2>Talent Pool</h2>
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
-    <button @click="loadApplicants('impact')">Impact Leads</button>
+    <button @click="loadApplicants('impact')">Impact</button>
   </div>
   <h2>Filter By</h2>
   <div class="filters">
@@ -44,7 +44,7 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.email.split('@')[0] }}</span
+            <span v-else>{{ applicant.full_name || applicant.email.split('@')[0] }}</span
             ><br />
           </h2>
           <p>
