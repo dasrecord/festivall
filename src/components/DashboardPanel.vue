@@ -8,6 +8,7 @@
     <h2>Talent Pool</h2>
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact</button>
+    <button @click="loadApplicants('cream_collective')">Cream Collective</button>
   </div>
   <h2>Filter By</h2>
   <div class="filters">
@@ -16,11 +17,11 @@
     <button @click="filterbyActType('Dancer')">Dancers</button>
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
+    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyActType('Volunteer')">Volunteers</button>
     <button @click="filterbyActType('Vendor')">Vendors</button>
     <button @click="filterbyActType('Promoter')">Promoters</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
-    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyProperty('willing', '')">Willing</button>
     <button @click="filterbyProperty('url', '')">URL</button>
     <button @click="filterbyProperty('build_crew', '')">Build Crew</button>
@@ -47,7 +48,9 @@
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
             }}</a>
-            <span v-else>{{ applicant.full_name || applicant.email.split('@')[0] }}</span
+            <span v-else>{{
+              applicant.full_name || applicant.act_name || applicant.email.split('@')[0]
+            }}</span
             ><br />
           </h2>
           <p>
@@ -55,6 +58,7 @@
               LISTEN TO A MIX/TRACK
             </a>
           </p>
+          <p v-if="applicant.region">{{ applicant.region }}</p>
           <p id="bio">{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>

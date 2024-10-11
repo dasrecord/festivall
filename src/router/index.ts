@@ -10,7 +10,7 @@ import TicketScanner from '@/views/TicketScannerView.vue'
 import MealScanner from '@/views/MealScannerView.vue'
 import BlessedCoastView from '@/views/BlessedCoastView.vue'
 import FestivallLogin from '@/views/LoginView.vue'
-import BlessedCoastDashboard from '@/views/BlessedCoastDashboard.vue'
+import Dashboard from '@/views/FestivallDashboard.vue'
 import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue'
 import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersView.vue'
 import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue'
@@ -68,9 +68,9 @@ const routes = [
     component: FestivallLogin
   },
   {
-    path: '/blessedcoastdashboard',
-    name: 'blessedcoastdashboard',
-    component: BlessedCoastDashboard,
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
     meta: { requiresAuth: true }
   },
   {
