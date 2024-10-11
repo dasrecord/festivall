@@ -17,25 +17,37 @@
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
+    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
+    <button @click="filterbyProperty('willing', '')">Willing</button>
+    <button @click="filterbyProperty('url', '')">URL</button>
   </div>
   <h2>Applicants with URLS will appear at the top.</h2>
   <h2>Hover over an applicant for more information.</h2>
   <h2>Click on an applicant for one-click booking template.</h2>
   <div class="dashboard-panel">
+    <h2>Current View <br />{{ filteredApplicants.length }}</h2>
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
         <div class="applicant-content">
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
               applicant.act_name
-            }}</a
-            ><span v-else>{{ applicant.act_name }}</span>
+            }}</a>
+            <span v-else>{{ applicant.email.split('@')[0] }}</span
+            ><br />
           </h2>
-          <p>{{ applicant.bio }}</p>
+          <p>
+            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
+              LISTEN TO A MIX/TRACK
+            </a>
+          </p>
+          <p id="bio">{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
+          <br />
+          <br />
           <p>
-            <a :href="'mailto:' + applicant.email">{{ applicant.email }}</a>
+            <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
           </p>
         </div>
       </div>
@@ -56,8 +68,12 @@ export default {
     return {
       applicants: [],
       filteredApplicants: [],
-      scale: 1
+      scale: 1,
+      emailBody: ''
     }
+  },
+  created() {
+    this.loadEmailTemplate()
   },
   mounted() {},
   methods: {
@@ -87,6 +103,24 @@ export default {
       this.filteredApplicants = this.applicants.filter(
         (applicant) => applicant.applicant_type === type
       )
+    },
+    filterbyProperty(property, value) {
+      this.filteredApplicants = this.applicants.filter((applicant) => applicant[property] !== value)
+    },
+    loadEmailTemplate() {
+      fetch('/email_templates/artist_request_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          this.emailBody = text
+        })
+        .catch((error) => {
+          console.error('Error loading email template:', error)
+        })
+    },
+    generateMailtoLink(email) {
+      const subject = encodeURIComponent('Your Subject Here')
+      const body = encodeURIComponent(this.emailBody)
+      return `mailto:${email}?subject=${subject}&body=${body}`
     }
   }
 }
@@ -137,17 +171,18 @@ button:hover {
 }
 
 .applicants {
+  font-size: 1rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   transition: transform 50ms ease-in;
-  padding: 1rem 1rem;
+  padding: 0.5rem 0.5rem;
 }
 
 .applicant {
-  border: 1px solid #5e5e5e;
+  border: 3px solid #2c3e50;
   width: 150px;
   height: 80px;
   margin: 10px;
@@ -184,8 +219,10 @@ button:hover {
   /* padding: 5px; */
 }
 .applicant:hover p {
-  display: block;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
   font-size: 6px;
 }
 
@@ -194,9 +231,14 @@ button:hover {
   height: 100%;
   overflow: auto;
   display: flex;
-  flex-basis: shrink;
   flex-direction: column;
   justify-content: center;
+}
+
+#bio {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
 .applicant-content::-webkit-scrollbar {
