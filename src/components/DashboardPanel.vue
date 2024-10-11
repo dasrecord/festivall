@@ -16,6 +16,9 @@
     <button @click="filterbyActType('Dancer')">Dancers</button>
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
+    <button @click="filterbyActType('Volunteer')">Volunteers</button>
+    <button @click="filterbyActType('Vendor')">Vendors</button>
+    <button @click="filterbyActType('Promoter')">Promoters</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
     <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyProperty('willing', '')">Willing</button>
@@ -160,15 +163,14 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  flex-grow: 1;
   justify-content: center;
   gap: 2px;
 }
 
 button {
   width: auto;
-  padding: 20px 10px;
-  border: none;
+  padding: 0.5rem 0.5rem;
+
   border-radius: 10px;
   background-color: #1f1e22;
   color: white;
