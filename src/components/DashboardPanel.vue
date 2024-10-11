@@ -5,7 +5,7 @@
   </div>
 
   <div class="controls">
-    <h2>Choose Talent Pool</h2>
+    <h2>Talent Pool</h2>
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact Leads</button>
   </div>
@@ -20,10 +20,21 @@
     <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyProperty('willing', '')">Willing</button>
     <button @click="filterbyProperty('url', '')">URL</button>
+    <button @click="filterbyProperty('build_crew', '')">Build Crew</button>
+    <button @click="filterbyProperty('kitchen_crew', '')">Kitchen Crew</button>
+    <button @click="filterbyProperty('security', '')">Security</button>
+    <button @click="filterbyProperty('first_aid', '')">First Aid</button>
+    <button @click="filterbyProperty('front_gat', '')">Front Gate</button>
+    <button @click="filterbyProperty('parking_attendant', '')">Parking Attendant</button>
+    <button @click="filterbyProperty('front_of_house', '')">Front of House</button>
+    <button @click="filterbyProperty('stage_tech', '')">Stage Tech</button>
+    <button @click="filterbyProperty('hospitality', '')">Hospitality</button>
+    <button @click="filterbyProperty('green_team', '')">Green Team</button>
+    <button @click="filterbyProperty('childrens_area', '')">Children's Area</button>
+    <button @click="filterbyProperty('merch_table', '')">Merch Table</button>
+    <button @click="filterbyProperty('float_crew', '')">Float Crew</button>
+    <button @click="filterbyProperty('cleanup_crew', '')">Cleanup Crew</button>
   </div>
-  <h2>Applicants with URLS will appear at the top.</h2>
-  <h2>Hover over an applicant for more information.</h2>
-  <h2>Click on an applicant for one-click booking template.</h2>
   <div class="dashboard-panel">
     <h2>Current View <br />{{ filteredApplicants.length }}</h2>
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
@@ -147,10 +158,10 @@ export default {
 }
 .filters {
   display: flex;
-  flex-direction: column;
-  display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: center;
   gap: 2px;
 }
 
@@ -182,9 +193,9 @@ button:hover {
 }
 
 .applicant {
-  border: 3px solid #2c3e50;
+  border: 3px solid #7097be;
   width: 150px;
-  height: 80px;
+  height: 150px;
   margin: 10px;
   border-radius: 10px;
   overflow: hidden;
@@ -216,7 +227,7 @@ button:hover {
 
 .applicant:hover h2 {
   font-size: 6px;
-  /* padding: 5px; */
+  padding: 5px;
 }
 .applicant:hover p {
   display: flex;
