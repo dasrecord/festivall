@@ -9,6 +9,7 @@
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact</button>
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
+    <button @click="loadApplicants('rapture')">Rapture</button>
   </div>
   <h2>Filter By</h2>
   <div class="filters">
@@ -17,11 +18,21 @@
     <button @click="filterbyActType('Dancer')">Dancers</button>
     <button @click="filterbyActType('Workshop')">Workshops</button>
     <button @click="filterbyActType('DJ')">DJs</button>
-    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyActType('Volunteer')">Volunteers</button>
     <button @click="filterbyActType('Vendor')">Vendors</button>
     <button @click="filterbyActType('Promoter')">Promoters</button>
     <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
+    <button @click="filterbyActType('Event Manager')">Event Manager</button>
+    <button @click="filterbyActType('A&R')">A&R</button>
+    <button @click="filterbyActType('Accounts Manager')">Accounts Manager</button>
+    <button @click="filterbyActType('Marketing')">Marketing</button>
+    <button @click="filterbyActType('Operations Manager')">Operations Manager</button>
+    <button @click="filterbyActType('Market Analyst')">Market Analyst</button>
+    <button @click="filterbyActType('Social Media')">Social Media</button>
+    <button @click="filterbyActType('UX')">UX</button>
+    <button @click="filterbyActType('Web Dev')">Web Dev</button>
+
+    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
     <button @click="filterbyProperty('willing', '')">Willing</button>
     <button @click="filterbyProperty('url', '')">URL</button>
     <button @click="filterbyProperty('build_crew', '')">Build Crew</button>
@@ -46,7 +57,7 @@
         <div class="applicant-content">
           <h2>
             <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
-              applicant.act_name
+              applicant.act_name || applicant.full_name
             }}</a>
             <span v-else>{{
               applicant.full_name || applicant.act_name || applicant.email.split('@')[0]

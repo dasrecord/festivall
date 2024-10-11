@@ -3,7 +3,7 @@ import path from 'path';
 import csv from 'csv-parser';
 
 // Define the input and output file paths
-const file = "cream_collective";
+const file = "rapture";
 
 const csvFilePath = path.join(process.cwd(), `public/data/applicants/${file}.csv`);
 const jsonFilePath = path.join(process.cwd(), `public/data/applicants/${file}.json`);
