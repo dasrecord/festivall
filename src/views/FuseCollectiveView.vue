@@ -17,16 +17,18 @@ export default {
       <img class="fuse" :src="fuse_image" alt="fuse" :style="{ height: '150px', width: '150px' }" />
       <br />
     </h1>
-    <h2 class="description">Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists, and
+    <h2 class="description">
+      Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists, and
       promoters<br />
-      all coming together to create and support new growth in the scene.</h2>
+      all coming together to create and support new growth in the scene.
+    </h2>
     <iframe
       width="100%"
       height="450"
       scrolling="no"
       frameborder="no"
       allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/68926512&color=%23000000&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"
+      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/68926512&color=%23000000&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true&visual=true"
     ></iframe>
     <div
       style="
