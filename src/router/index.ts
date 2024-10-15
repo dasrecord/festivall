@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ExternalRedirect from '../components/ExternalRedirect.vue'
 import HomeView from '../views/HomeView.vue'
+import FuseCollectiveView from '@/views/FuseCollectiveView.vue'
 import ReunionView from '@/views/ReunionView.vue'
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
@@ -61,7 +62,12 @@ const routes = [
     name: 'blessedcoast2018performers',
     component: BlessedCoast2018PerformersView
   },
-
+  {
+    path: '/fusecollective', 
+    name: 'fusecollective',
+    component: FuseCollectiveView,
+    meta: { showHeader: true }
+  },
   {
     path: '/login',
     name: 'login',
