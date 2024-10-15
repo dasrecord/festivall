@@ -1,7 +1,7 @@
 <template>
   <div class="banner">
     <IconFestivall style="width: 50px; height: 50px" />
-    <HelloWorld msg="SCOUTING DASHBORAD" />
+    <HelloWorld msg="SCOUTING DASHBOARD" />
   </div>
 
   <div class="controls">
@@ -11,58 +11,32 @@
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
     <button @click="loadApplicants('rapture')">Rapture</button>
   </div>
+
   <h2>Filter By</h2>
   <div class="filters">
-    <button @click="filterbyActType('Artist')">Artists</button>
-    <button @click="filterbyActType('Musician')">Musicians</button>
-    <button @click="filterbyActType('Dancer')">Dancers</button>
-    <button @click="filterbyActType('Workshop')">Workshops</button>
-    <button @click="filterbyActType('DJ')">DJs</button>
-    <button @click="filterbyActType('Volunteer')">Volunteers</button>
-    <button @click="filterbyActType('Vendor')">Vendors</button>
-    <button @click="filterbyActType('Promoter')">Promoters</button>
-    <button @click="filterbyActType('Art Vendor')">Art Vendors</button>
-    <button @click="filterbyActType('Event Manager')">Event Manager</button>
-    <button @click="filterbyActType('A&R')">A&R</button>
-    <button @click="filterbyActType('Accounts Manager')">Accounts Manager</button>
-    <button @click="filterbyActType('Marketing')">Marketing</button>
-    <button @click="filterbyActType('Operations Manager')">Operations Manager</button>
-    <button @click="filterbyActType('Market Analyst')">Market Analyst</button>
-    <button @click="filterbyActType('Social Media')">Social Media</button>
-    <button @click="filterbyActType('UX')">UX</button>
-    <button @click="filterbyActType('Web Dev')">Web Dev</button>
-
-    <button @click="filterbyProperty('mix_track_url', '')">Mixes</button>
-    <button @click="filterbyProperty('willing', '')">Willing</button>
-    <button @click="filterbyProperty('url', '')">URL</button>
-    <button @click="filterbyProperty('build_crew', '')">Build Crew</button>
-    <button @click="filterbyProperty('kitchen_crew', '')">Kitchen Crew</button>
-    <button @click="filterbyProperty('security', '')">Security</button>
-    <button @click="filterbyProperty('first_aid', '')">First Aid</button>
-    <button @click="filterbyProperty('front_gat', '')">Front Gate</button>
-    <button @click="filterbyProperty('parking_attendant', '')">Parking Attendant</button>
-    <button @click="filterbyProperty('front_of_house', '')">Front of House</button>
-    <button @click="filterbyProperty('stage_tech', '')">Stage Tech</button>
-    <button @click="filterbyProperty('hospitality', '')">Hospitality</button>
-    <button @click="filterbyProperty('green_team', '')">Green Team</button>
-    <button @click="filterbyProperty('childrens_area', '')">Children's Area</button>
-    <button @click="filterbyProperty('merch_table', '')">Merch Table</button>
-    <button @click="filterbyProperty('float_crew', '')">Float Crew</button>
-    <button @click="filterbyProperty('cleanup_crew', '')">Cleanup Crew</button>
+    <button
+      v-for="filter in relevantFilters"
+      :key="filter.property"
+      @click="applyFilter(filter.property, filter.value)"
+    >
+      {{ filter.label }}
+    </button>
+    <button @click="clearFilters">Clear Filters</button>
   </div>
+
   <div class="dashboard-panel">
     <h2>Current View <br />{{ filteredApplicants.length }}</h2>
     <div class="applicants" :style="{ transform: `scale(${scale})` }">
       <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
         <div class="applicant-content">
           <h2>
-            <a v-if="applicant.url" :href="applicant.url" target="_blank">{{
-              applicant.act_name || applicant.full_name
-            }}</a>
-            <span v-else>{{
-              applicant.full_name || applicant.act_name || applicant.email.split('@')[0]
-            }}</span
-            ><br />
+            <a v-if="applicant.url" :href="applicant.url" target="_blank">
+              {{ applicant.act_name || applicant.full_name }}
+            </a>
+            <span v-else>
+              {{ applicant.full_name || applicant.act_name || applicant.email.split('@')[0] }}
+            </span>
+            <br />
           </h2>
           <p>
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
@@ -70,7 +44,7 @@
             </a>
           </p>
           <p v-if="applicant.region">{{ applicant.region }}</p>
-          <p id="bio">{{ applicant.bio }}</p>
+          <p id="bio">{{ applicant.bio || applicant.selling_points }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
           <br />
@@ -98,13 +72,63 @@ export default {
       applicants: [],
       filteredApplicants: [],
       scale: 1,
-      emailBody: ''
+      emailBody: '',
+      filters: [
+        { property: 'applicant_type', value: 'Artist', label: 'Artists' },
+        { property: 'applicant_type', value: 'Musician', label: 'Musicians' },
+        { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
+        { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
+        { property: 'applicant_type', value: 'DJ', label: 'DJs' },
+        { property: 'applicant_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter' },
+        { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
+        { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
+        { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
+        { property: 'applicant_type', value: 'Art Vendor', label: 'Art Vendors' },
+        { property: 'applicant_type', value: 'Event Manager', label: 'Event Manager' },
+        { property: 'applicant_type', value: 'A&R', label: 'A&R' },
+        { property: 'applicant_type', value: 'Accounts Manager', label: 'Accounts Manager' },
+        { property: 'applicant_type', value: 'Marketing', label: 'Marketing' },
+        { property: 'applicant_type', value: 'Operations Manager', label: 'Operations Manager' },
+        { property: 'applicant_type', value: 'Market Analyst', label: 'Market Analyst' },
+        { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
+        { property: 'applicant_type', value: 'UX', label: 'UX' },
+        { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
+        { property: 'mix_track_url', value: '', label: 'Mixes' },
+        { property: 'producer_dj', value: 'Producer/DJ', label: 'Producer/DJs' },
+        { property: 'willing', value: '', label: 'Willing' },
+        { property: 'url', value: '', label: 'URL' },
+        { property: 'build_crew', value: '', label: 'Build Crew' },
+        { property: 'kitchen_crew', value: '', label: 'Kitchen Crew' },
+        { property: 'security', value: '', label: 'Security' },
+        { property: 'first_aid', value: '', label: 'First Aid' },
+        { property: 'front_gate', value: '', label: 'Front Gate' },
+        { property: 'parking_attendant', value: '', label: 'Parking Attendant' },
+        { property: 'front_of_house', value: '', label: 'Front of House' },
+        { property: 'stage_tech', value: '', label: 'Stage Tech' },
+        { property: 'hospitality', value: '', label: 'Hospitality' },
+        { property: 'green_team', value: '', label: 'Green Team' },
+        { property: 'childrens_area', value: '', label: "Children's Area" },
+        { property: 'merch_table', value: '', label: 'Merch Table' },
+        { property: 'float_crew', value: '', label: 'Float Crew' },
+        { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' }
+      ]
+    }
+  },
+  computed: {
+    relevantFilters() {
+      return this.filters.filter((filter) => {
+        return this.applicants.some((applicant) => {
+          if (filter.value === '') {
+            return applicant[filter.property] !== undefined && applicant[filter.property] !== ''
+          }
+          return applicant[filter.property] === filter.value
+        })
+      })
     }
   },
   created() {
     this.loadEmailTemplate()
   },
-  mounted() {},
   methods: {
     loadApplicants(type) {
       fetch(`/data/applicants/${type}.json`)
@@ -128,13 +152,11 @@ export default {
           console.error('There was a problem with the fetch operation:', error)
         })
     },
-    filterbyActType(type) {
-      this.filteredApplicants = this.applicants.filter(
-        (applicant) => applicant.applicant_type === type
-      )
+    applyFilter(property, value) {
+      this.filteredApplicants = this.applicants.filter((applicant) => applicant[property] === value)
     },
-    filterbyProperty(property, value) {
-      this.filteredApplicants = this.applicants.filter((applicant) => applicant[property] !== value)
+    clearFilters() {
+      this.filteredApplicants = this.applicants
     },
     loadEmailTemplate() {
       fetch('/email_templates/artist_request_template.txt')
