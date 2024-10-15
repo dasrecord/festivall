@@ -15,6 +15,17 @@ import IconFestivall from './icons/IconFestivall.vue'
       featuring some of the best electronic music DJs and local acts.
     </p>
   </WelcomeItem>
+  <WelcomeItem>
+    <template #icon>
+      <IconFestivall />
+    </template>
+    <template #heading><RouterLink to="/fusecollective">Fuse Collective</RouterLink></template>
+    <p>
+      Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists, and
+      promoters<br />
+      all coming together to create and support new growth in the scene.
+    </p>
+  </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
