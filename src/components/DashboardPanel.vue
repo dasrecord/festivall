@@ -44,7 +44,7 @@
             </a>
           </p>
           <p v-if="applicant.region">{{ applicant.region }}</p>
-          <p id="bio">{{ applicant.bio || applicant.selling_points }}</p>
+          <p id="bio">{{ applicant.bio }}</p>
           <br />
           <p>{{ applicant.rates }}</p>
           <br />
@@ -79,7 +79,6 @@ export default {
         { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
         { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
         { property: 'applicant_type', value: 'DJ', label: 'DJs' },
-        { property: 'applicant_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter' },
         { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
         { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
         { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
@@ -93,8 +92,7 @@ export default {
         { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
         { property: 'applicant_type', value: 'UX', label: 'UX' },
         { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
-        { property: 'mix_track_url', value: '', label: 'Mixes' },
-        { property: 'producer_dj', value: 'Producer/DJ', label: 'Producer/DJs' },
+        { property: 'mix_track_url', value: '', label: 'Mix/Track' },
         { property: 'willing', value: '', label: 'Willing' },
         { property: 'url', value: '', label: 'URL' },
         { property: 'build_crew', value: '', label: 'Build Crew' },
@@ -153,7 +151,12 @@ export default {
         })
     },
     applyFilter(property, value) {
-      this.filteredApplicants = this.applicants.filter((applicant) => applicant[property] === value)
+      this.filteredApplicants = this.applicants.filter((applicant) => {
+        if (value === '') {
+          return applicant[property] !== undefined && applicant[property] !== ''
+        }
+        return applicant[property] === value
+      })
     },
     clearFilters() {
       this.filteredApplicants = this.applicants
