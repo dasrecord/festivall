@@ -10,6 +10,7 @@
     <button @click="loadApplicants('impact')">Impact</button>
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
     <button @click="loadApplicants('rapture')">Rapture</button>
+    <button @click="loadApplicants('partywell')">PartyWell</button>
   </div>
 
   <h2>Filter By</h2>
@@ -92,6 +93,7 @@ export default {
         { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
         { property: 'applicant_type', value: 'UX', label: 'UX' },
         { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
+        { property: 'applicant_type', value: 'Customer', label: 'Customer' },
         { property: 'mix_track_url', value: '', label: 'Mix/Track' },
         { property: 'willing', value: '', label: 'Willing' },
         { property: 'url', value: '', label: 'URL' },
