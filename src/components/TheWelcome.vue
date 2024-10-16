@@ -100,5 +100,14 @@ import IconFestivall from './icons/IconFestivall.vue'
 }
 
 .container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>
