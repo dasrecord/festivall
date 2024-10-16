@@ -21,8 +21,15 @@
   align-items: center;
   text-align: center;
   position: relative;
+  border: 1px solid rgb(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem 0.5rem;
 }
-
+.item:hover {
+  border: 1px solid rgba(255, 255, 255, 0.245.5);
+  box-shadow: 0 0 10px 0 rgba(0, 128, 255, 1);
+  transition: all 0.3s ease;
+}
 .details {
   flex: 1;
 }

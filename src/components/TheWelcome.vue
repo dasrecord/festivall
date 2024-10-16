@@ -34,7 +34,7 @@ import IconFestivall from './icons/IconFestivall.vue'
       <template #heading><RouterLink to="/blessedcoast">Blessed Coast</RouterLink></template>
 
       <template #description>
-        Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.<br />
+        Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.
         Multi-cultural, family friendly, music, yoga with inspired artists, teachers & workshops.
       </template>
     </WelcomeItem>
@@ -47,8 +47,8 @@ import IconFestivall from './icons/IconFestivall.vue'
         ><a href="https://www.instagram.com/impactfestival_bc/">Impact Festival</a></template
       >
       <template #description>
-        Showcasing the best western Canadian talent, Impact Music Festival based out of
-        Vancouver,<br />is a must-see event for any electronic music fan.
+        Showcasing the best western Canadian talent, Impact Music Festival based out of Vancouver,
+        is a must-see event for any electronic music fan.
       </template>
     </WelcomeItem>
 
