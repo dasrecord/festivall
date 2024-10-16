@@ -12,7 +12,7 @@ import IconFestivall from './icons/IconFestivall.vue'
       </template>
       <template #heading><RouterLink to="/reunion">The Reunion</RouterLink></template>
       <template #description>
-        The Reunion is a music festival that takes place in the heart of the Canadian prairies<br />
+        The Reunion is a music festival that takes place in the heart of the Canadian prairies
         featuring some of the best electronic music DJs and local acts.
       </template>
     </WelcomeItem>
@@ -23,8 +23,7 @@ import IconFestivall from './icons/IconFestivall.vue'
       <template #heading><RouterLink to="/fusecollective">Fuse Collective</RouterLink></template>
       <template #description>
         Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists,
-        and promoters<br />
-        all coming together to create and support new growth in the scene.
+        and promoters all coming together to create and support new growth in the scene.
       </template>
     </WelcomeItem>
 
@@ -71,8 +70,8 @@ import IconFestivall from './icons/IconFestivall.vue'
       </template>
       <template #heading><RouterLink to="/dasrecord">Das Record</RouterLink></template>
       <template #description>
-        A medical doctor by day and a DJ/musician/coder by night,<br />
-        Das Record is a live piano and electronic music act and runs music festivals accross Canada.
+        A medical doctor by day and a DJ/musician/coder by night, Das Record is a live piano and
+        electronic music act and runs music festivals accross Canada.
       </template>
     </WelcomeItem>
     <WelcomeItem>
@@ -83,8 +82,8 @@ import IconFestivall from './icons/IconFestivall.vue'
         <a href="https://evolvedmusicgroup.com">Evolved Music Group</a>
       </template>
       <template #description>
-        An international artist management agency and music firm<br />
-        with A&R and publishing consultants with personel in Canada, the US, and Europe.
+        An international artist management agency and music firm with A&R and publishing consultants
+        with personel in Canada, the US, and Europe.
       </template>
     </WelcomeItem>
   </div>
