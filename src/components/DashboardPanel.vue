@@ -4,8 +4,8 @@
     <HelloWorld msg="SCOUTING DASHBOARD" />
   </div>
 
+  <h2>Talent Pool</h2>
   <div class="controls">
-    <h2>Talent Pool</h2>
     <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
     <button @click="loadApplicants('impact')">Impact</button>
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
@@ -197,9 +197,8 @@ export default {
 }
 
 .controls {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 }
 .filters {
   display: flex;
@@ -237,7 +236,7 @@ button:hover {
 }
 
 .applicant {
-  border: 3px solid #7097be;
+  border: 2px solid #7097be;
   width: 150px;
   height: 150px;
   margin: 10px;
@@ -257,13 +256,18 @@ button:hover {
 
 .applicant p {
   display: none;
+  /* transform: scale(0.8);
+  opacity: 0.2; */
 }
 .applicant h2 {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .applicant:hover {
-  transform: scale(2.5);
+  transform: scale(2);
   z-index: 10;
   padding: 3px 3px;
   font-size: 30%;
@@ -283,7 +287,7 @@ button:hover {
 
 .applicant-content {
   width: auto;
-  height: 100%;
+  /* height: 100%; */
   overflow: auto;
   display: flex;
   flex-direction: column;
