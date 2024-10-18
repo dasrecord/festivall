@@ -54,17 +54,12 @@ h3 {
   .item {
     margin-top: 0;
     flex-direction: column;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    text-align: left;
-    padding-left: 1rem;
-    padding-bottom: 2rem;
   }
 
   i {
     top: calc(50% - 25px);
     left: -26px;
-    position: absolute;
+
     background: var(--color-background);
     border-radius: 8px;
     width: 24px;
