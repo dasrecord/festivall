@@ -13,7 +13,7 @@ export default {
 <template>
   <div class="basic">
     <h1>
-      FUSE COLLECTIVE <br />
+      <!-- FUSE COLLECTIVE <br /> -->
       <img class="fuse" :src="fuse_image" alt="fuse" :style="{ height: '150px', width: '150px' }" />
       <br />
     </h1>
