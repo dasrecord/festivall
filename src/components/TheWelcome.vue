@@ -86,6 +86,16 @@ import IconFestivall from './icons/IconFestivall.vue'
         with personel in Canada, the US, and Europe.
       </template>
     </WelcomeItem>
+    <WelcomeItem>
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading><RouterLink to="/dashboard">Admin Dashboard</RouterLink></template>
+      <template #description>
+        A members only area where you can scout new talent, book artists, and manage your event
+        roster.
+      </template>
+    </WelcomeItem>
   </div>
 </template>
 
