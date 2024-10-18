@@ -12,7 +12,7 @@ export default {
   },
   data() {
     return {
-      splashImage: synergistic_image
+      synergistic_image: synergistic_image
     }
   }
 }
@@ -24,7 +24,12 @@ export default {
       Synergistic is a BC based promoter that is assembling the team for<br />
       <RouterLink to="/blessedcoast">Blessed Coast 2025</RouterLink>
     </h2>
-    <img class="img" :src="splashImage" alt="synergistic" />
+    <img
+      class="img"
+      :src="synergistic_image"
+      alt="synergistic"
+      :style="{ height: '350px', width: '350px' }"
+    />
     <DetailsPanel>
       <template #link1>
         <router-link to="/blessedcoastfamily">Learn more</router-link>
