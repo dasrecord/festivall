@@ -1,11 +1,22 @@
 <script>
 import fuse_image from '@/assets/images/fuse_collective/fuse_collective.jpg'
+import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
+
+const images = import.meta.glob('@/assets/images/fuse_collective/playbills/*.jpg')
 
 export default {
-  components: {},
+  components: { CarouselComponent },
   data() {
     return {
-      fuse_image: fuse_image
+      fuse_image: fuse_image,
+      slides: []
+    }
+  },
+  async created() {
+    // Load all images
+    for (const path in images) {
+      const image = await images[path]()
+      this.slides.push(image.default)
     }
   }
 }
@@ -24,51 +35,14 @@ export default {
     </h2>
     <iframe
       width="100%"
-      height="450"
+      height="200"
       scrolling="no"
       frameborder="no"
       allow="autoplay"
       src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/68926512&color=%23000000&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true&visual=true"
     ></iframe>
-    <div
-      style="
-        font-size: 10px;
-        color: #cccccc;
-        line-break: anywhere;
-        word-break: normal;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-family:
-          Interstate,
-          Lucida Grande,
-          Lucida Sans Unicode,
-          Lucida Sans,
-          Garuda,
-          Verdana,
-          Tahoma,
-          sans-serif;
-        font-weight: 100;
-      "
-    >
-      <a
-        href="https://soundcloud.com/fusecollective"
-        title="FUSE COLLECTIVE"
-        target="_blank"
-        style="color: #cccccc; text-decoration: none"
-        >FUSE COLLECTIVE</a
-      >
-      ·
-      <a
-        href="https://soundcloud.com/fusecollective/lifted2012finale"
-        title='FuseCollective.ca :: "Lifted" Loft Sessions 4 :: W/ EMILIO DEL CANTO Live @ Lydias Loft :: 11.24.&#x27;12'
-        target="_blank"
-        style="color: #cccccc; text-decoration: none"
-        >FuseCollective.ca :: &quot;Lifted&quot; Loft Sessions 4 :: W/ EMILIO DEL CANTO Live @
-        Lydias Loft :: 11.24.&#x27;12</a
-      >
-    </div>
   </div>
+  <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
   <CalltoAction />
 </template>
 
