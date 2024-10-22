@@ -9,6 +9,9 @@
       </h3>
     </div>
     <slot name="description"></slot>
+    <div class="logo">
+      <slot name="logo"></slot>
+    </div>
   </div>
 </template>
 
@@ -48,6 +51,12 @@ h3 {
   font-weight: 500;
   margin-bottom: 0.4rem;
   color: var(--color-heading);
+}
+
+.logo {
+  border: none;
+  box-shadow: none;
+  height: 100px;
 }
 
 @media (min-width: 1024px) {
