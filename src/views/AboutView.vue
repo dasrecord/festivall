@@ -9,13 +9,36 @@
       agency and music firm, that supports artists with A&R and publishing consultants across
       Canada, the US, and Europe.
     </h2>
+    <div class="playbills">
+      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+    </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const images = import.meta.glob('../assets/images/das_record/playbills/*.*')
+const imageList = ref([])
+
+onMounted(async () => {
+  const imagePaths = Object.keys(images)
+  imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
+
+  for (const path of imagePaths) {
+    const module = await images[path]()
+    imageList.value.push(module.default)
+  }
+})
+</script>
 
 <style>
 .about {
   padding: 2rem;
   text-align: center;
+}
+.playbills {
+  padding: 2rem;
 }
 
 @media (min-width: 1024px) {
@@ -24,6 +47,9 @@
     display: flex;
     flex-direction: column;
     width: 60vw;
+  }
+  .playbills {
+    padding: 3rem;
   }
 }
 </style>
