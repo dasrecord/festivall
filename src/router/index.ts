@@ -93,6 +93,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/nye',
+    name: 'nye',
+    component: ExternalRedirect,
+    props: { url: 'https://dasrecord.typeform.com/to/dX5LAsHg' }
+  },
+  {
     path: '/reunion',
     name: 'reunion',
     component: ReunionView,
