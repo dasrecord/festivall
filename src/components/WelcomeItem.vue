@@ -26,7 +26,7 @@
   position: relative;
   border: 1px solid rgb(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 1rem 0.5rem;
+  padding: 1rem 1rem;
 }
 .item:hover {
   border: 1px solid rgba(255, 255, 255, 0.245.5);
@@ -41,8 +41,8 @@ i {
   display: flex;
   place-items: center;
   place-content: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   color: var(--color-text);
 }
 

@@ -4,7 +4,7 @@ import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 import frog from '../assets/images/frog.png'
 import fuse_logo from '../assets/images/fuse_logo_white.png'
-import blessed_coast_logo from '../assets/images/blessed_coast_logo_white.png'
+import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
 import das_record_logo from '../assets/images/das_record_logo_white.png'
@@ -52,7 +52,7 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
       </template>
 
       <template #logo>
-        <img :src="blessed_coast_logo" alt="blessed_coast_logo" class="blessed-coast-logo" />
+        <img :src="blessed_coast_emblem" alt="blessed_coast_emblem" class="blessed-coast-emblem" />
       </template>
     </WelcomeItem>
 
@@ -155,7 +155,8 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
   height: 75%;
   margin-top: 1rem;
 }
-.blessed-coast-logo {
+.blessed-coast-emblem {
+  height: 80%;
 }
 .impact-logo {
   height: 50%;
