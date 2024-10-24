@@ -1,9 +1,20 @@
 <template>
   <div>
-    <h1>Calendar Events</h1>
+    <h1>Artist Lineup</h1>
+    <p>Friday</p>
     <CalendarModule
       :startDate="new Date('2024-08-30T14:00:00')"
       :endDate="new Date('2024-08-31T02:00:00')"
+    />
+    <p>Saturday</p>
+    <CalendarModule
+      :startDate="new Date('2024-08-31T14:00:00')"
+      :endDate="new Date('2024-09-01T02:00:00')"
+    />
+    <p>Sunday</p>
+    <CalendarModule
+      :startDate="new Date('2024-09-01T14:00:00')"
+      :endDate="new Date('2024-09-02T02:00:00')"
     />
   </div>
 </template>

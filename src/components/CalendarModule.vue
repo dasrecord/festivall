@@ -1,6 +1,5 @@
 <template>
   <div class="ics-viewer">
-    <h2>Events</h2>
     <ul v-if="filteredEvents.length">
       <li v-for="(event, index) in filteredEvents" :key="index">
         <p>{{ event.startDate.toLocaleTimeString() }}</p>
