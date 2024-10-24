@@ -2,7 +2,7 @@
   <div class="ics-viewer">
     <ul v-if="filteredEvents.length">
       <li v-for="(event, index) in filteredEvents" :key="index">
-        <p>{{ event.startDate.toLocaleTimeString() }}</p>
+        <p>{{ event.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</p>
         <h3>{{ event.summary }}</h3>
         <!-- <p><strong>Start:</strong> {{ formatDate(event.startDate) }}</p>
         <p><strong>End:</strong> {{ formatDate(event.endDate) }}</p>
@@ -56,8 +56,8 @@ const parseIcsData = (data) => {
     const event = new ICAL.Event(vevent)
     return {
       summary: event.summary,
-      startDate: event.startDate.toJSDate(),
-      endDate: event.endDate.toJSDate(),
+      startDate: new Date(event.startDate.toJSDate()),
+      endDate: new Date(event.endDate.toJSDate()),
       description: event.description
     }
   })
