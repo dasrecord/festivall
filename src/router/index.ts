@@ -17,7 +17,9 @@ import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersVi
 import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue'
 import BlessedCoast2017PerformersView from '@/views/BlessedCoast2017PerformersView.vue'
 import BlessedCoast2018PerformersView from '@/views/BlessedCoast2018PerformersView.vue'
+import BlessedCoastLineupView from '@/views/BlessedCoastLineupView.vue'
 import SynergisticView from '@/views/SynergisticView.vue'
+
 
 const routes = [
   {
@@ -61,6 +63,11 @@ const routes = [
     path: '/blessedcoast2018performers',
     name: 'blessedcoast2018performers',
     component: BlessedCoast2018PerformersView
+  },
+  {
+    path: '/blessedcoastlineup',
+    name: 'blessedcoastlineup',
+    component: BlessedCoastLineupView
   },
   {
     path: '/fusecollective', 
