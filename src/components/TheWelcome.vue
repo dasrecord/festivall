@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router'
 import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
-import frog from '../assets/images/frog.png'
+import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import fuse_logo from '../assets/images/fuse_logo_white.png'
 import blessed_coast_logo from '../assets/images/blessed_coast_logo_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
@@ -23,7 +23,7 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
         featuring some of the best electronic music DJs and local acts.
       </template>
       <template #logo>
-        <img :src="frog" alt="frog" class="frog-image" />
+        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       </template>
     </WelcomeItem>
     <WelcomeItem>
@@ -148,7 +148,8 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
   align-items: center;
   text-align: center;
 }
-.frog-image {
+.reunion-emblem {
+  height: 75%;
   margin-top: 1rem;
 }
 .fuse-logo {

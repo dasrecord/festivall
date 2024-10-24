@@ -4,9 +4,6 @@
       <li v-for="(event, index) in filteredEvents" :key="index">
         <p>{{ event.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</p>
         <h3>{{ event.summary }}</h3>
-        <!-- <p><strong>Start:</strong> {{ formatDate(event.startDate) }}</p>
-        <p><strong>End:</strong> {{ formatDate(event.endDate) }}</p>
-        <p><strong>Description:</strong> {{ event.description }}</p> -->
       </li>
     </ul>
     <p v-else>No events found for the selected date range.</p>
@@ -85,15 +82,20 @@ watch(
 
 <style scoped>
 .ics-viewer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .ics-viewer ul {
   list-style-type: none;
   padding: 0;
 }
 .ics-viewer li {
+  width: 600px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
 }
 </style>
