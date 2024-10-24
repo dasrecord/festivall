@@ -1,21 +1,34 @@
 <template>
   <div class="ics-viewer">
     <h2>Events</h2>
-    <ul v-if="events.length">
-      <li v-for="(event, index) in events" :key="index">
+    <ul v-if="filteredEvents.length">
+      <li v-for="(event, index) in filteredEvents" :key="index">
+        <p>{{ event.startDate.toLocaleTimeString() }}</p>
         <h3>{{ event.summary }}</h3>
-        <p><strong>Start:</strong> {{ formatDate(event.startDate) }}</p>
+        <!-- <p><strong>Start:</strong> {{ formatDate(event.startDate) }}</p>
         <p><strong>End:</strong> {{ formatDate(event.endDate) }}</p>
-        <p><strong>Description:</strong> {{ event.description }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p> -->
       </li>
     </ul>
-    <p v-else>Loading events...</p>
+    <p v-else>No events found for the selected date range.</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ICAL from 'ical.js'
+import { defineProps } from 'vue'
+
+const props = defineProps({
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: true
+  }
+})
 
 const events = ref([])
 
@@ -47,9 +60,13 @@ const parseIcsData = (data) => {
   })
 }
 
-const formatDate = (date) => {
-  return date.toLocaleString()
-}
+const filteredEvents = computed(() => {
+  return events.value
+    .filter((event) => {
+      return event.startDate >= props.startDate && event.endDate <= props.endDate
+    })
+    .sort((a, b) => a.startDate - b.startDate) // Sort events by start date
+})
 
 onMounted(() => {
   fetchIcsFile()
@@ -58,16 +75,15 @@ onMounted(() => {
 
 <style scoped>
 .ics-viewer {
-  padding: 1rem;
 }
 .ics-viewer ul {
   list-style-type: none;
   padding: 0;
 }
 .ics-viewer li {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 5px;
 }
 </style>
