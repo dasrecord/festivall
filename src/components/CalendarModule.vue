@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import ICAL from 'ical.js'
 import { defineProps } from 'vue'
 
@@ -26,14 +26,18 @@ const props = defineProps({
   endDate: {
     type: Date,
     required: true
+  },
+  filePath: {
+    type: String,
+    required: true
   }
 })
 
 const events = ref([])
 
-const fetchIcsFile = async () => {
+const fetchIcsFile = async (filePath) => {
   try {
-    const response = await fetch('/data/calendars/reunion_artist_calendar.ics')
+    const response = await fetch(filePath)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
@@ -68,8 +72,15 @@ const filteredEvents = computed(() => {
 })
 
 onMounted(() => {
-  fetchIcsFile()
+  fetchIcsFile(props.filePath)
 })
+
+watch(
+  () => props.filePath,
+  (newFilePath) => {
+    fetchIcsFile(newFilePath)
+  }
+)
 </script>
 
 <style scoped>
