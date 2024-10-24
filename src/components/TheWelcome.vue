@@ -9,6 +9,7 @@ import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
 import das_record_logo from '../assets/images/das_record_logo_white.png'
 import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.png'
+import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 </script>
 
 <template>
@@ -124,6 +125,9 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
         A members only area where you can scout new talent, book artists, and manage your event
         roster.
       </template>
+      <template #logo>
+        <img :src="festivall_emblem_white" alt="festivall" class="festivall-emblem" />
+      </template>
     </WelcomeItem>
   </div>
 </template>
@@ -172,6 +176,9 @@ import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.pn
 }
 .evolved-classic-logo {
   height: 75%;
+  margin-top: 1rem;
+}
+.festivall-emblem {
   margin-top: 1rem;
 }
 </style>
