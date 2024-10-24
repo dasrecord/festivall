@@ -16,8 +16,8 @@
     <p>Sunday</p>
     <CalendarModule
       filePath="/data/calendars/reunion_artist_calendar.ics"
-      :startDate="new Date('2024-09-01T14:00:00')"
-      :endDate="new Date('2024-09-02T02:00:00')"
+      :startDate="new Date('2024-09-01T14:00')"
+      :endDate="new Date('2024-09-02T02:00')"
     />
   </div>
 </template>
