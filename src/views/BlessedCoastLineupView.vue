@@ -1,7 +1,10 @@
 <template>
   <div>
     <h1>Calendar Events</h1>
-    <CalendarModule />
+    <CalendarModule
+      :startDate="new Date('2024-08-30T14:00:00')"
+      :endDate="new Date('2024-08-31T02:00:00')"
+    />
   </div>
 </template>
 
