@@ -6,26 +6,26 @@
       <p>Friday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_totem_stage_calendar.ics"
-        :startDate="new Date('2024-08-01T14:00:00')"
-        :endDate="new Date('2024-08-02T02:00:00')"
+        :startDate="new Date('2025-08-01T12:00:00')"
+        :endDate="new Date('2025-08-02T02:00:00')"
       />
       <p>Saturday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_totem_stage_calendar.ics"
-        :startDate="new Date('2024-08-02T14:00:00')"
-        :endDate="new Date('2024-09-03T02:00:00')"
+        :startDate="new Date('2025-08-02T14:00:00')"
+        :endDate="new Date('2025-09-03T02:00:00')"
       />
       <p>Sunday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_totem_stage_calendar.ics"
-        :startDate="new Date('2024-08-03T14:00')"
-        :endDate="new Date('2024-08-04T02:00')"
+        :startDate="new Date('2025-08-03T14:00')"
+        :endDate="new Date('2025-08-04T02:00')"
       />
       <p>Monday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_totem_stage_calendar.ics"
-        :startDate="new Date('2024-08-04T14:00')"
-        :endDate="new Date('2024-08-05T02:00')"
+        :startDate="new Date('2025-08-04T14:00')"
+        :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
     <div class="dojo-stage">
@@ -33,26 +33,26 @@
       <p>Friday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_dojo_stage_calendar.ics"
-        :startDate="new Date('2024-08-01T14:00:00')"
-        :endDate="new Date('2024-08-02T02:00:00')"
+        :startDate="new Date('2025-08-01T12:00:00')"
+        :endDate="new Date('2025-08-02T02:00:00')"
       />
       <p>Saturday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_dojo_stage_calendar.ics"
-        :startDate="new Date('2024-08-02T14:00:00')"
-        :endDate="new Date('2024-09-03T02:00:00')"
+        :startDate="new Date('2025-08-02T14:00:00')"
+        :endDate="new Date('2025-09-03T02:00:00')"
       />
       <p>Sunday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_dojo_stage_calendar.ics"
-        :startDate="new Date('2024-08-03T14:00')"
-        :endDate="new Date('2024-08-04T02:00')"
+        :startDate="new Date('2025-08-03T14:00')"
+        :endDate="new Date('2025-08-04T02:00')"
       />
       <p>Monday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_dojo_stage_calendar.ics"
-        :startDate="new Date('2024-08-04T14:00')"
-        :endDate="new Date('2024-08-05T02:00')"
+        :startDate="new Date('2025-08-04T14:00')"
+        :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
     <div class="yoga-temple">
@@ -60,26 +60,26 @@
       <p>Friday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_yoga_temple_calendar.ics"
-        :startDate="new Date('2024-08-01T14:00:00')"
-        :endDate="new Date('2024-08-02T02:00:00')"
+        :startDate="new Date('2025-08-01T14:00:00')"
+        :endDate="new Date('2025-08-02T02:00:00')"
       />
       <p>Saturday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_yoga_temple_calendar.ics"
-        :startDate="new Date('2024-08-02T14:00:00')"
-        :endDate="new Date('2024-09-03T02:00:00')"
+        :startDate="new Date('2025-08-02T14:00:00')"
+        :endDate="new Date('2025-09-03T02:00:00')"
       />
       <p>Sunday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_yoga_temple_calendar.ics"
-        :startDate="new Date('2024-08-03T14:00')"
-        :endDate="new Date('2024-08-04T02:00')"
+        :startDate="new Date('2025-08-03T14:00')"
+        :endDate="new Date('2025-08-04T02:00')"
       />
       <p>Monday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_yoga_temple_calendar.ics"
-        :startDate="new Date('2024-08-04T14:00')"
-        :endDate="new Date('2024-08-05T02:00')"
+        :startDate="new Date('2025-08-04T14:00')"
+        :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
     <div class="workshop-space">
@@ -87,26 +87,26 @@
       <p>Friday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_workshop_space_calendar.ics"
-        :startDate="new Date('2024-08-01T14:00:00')"
-        :endDate="new Date('2024-08-02T02:00:00')"
+        :startDate="new Date('2025-08-01T14:00:00')"
+        :endDate="new Date('2025-08-02T02:00:00')"
       />
       <p>Saturday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_workshop_space_calendar.ics"
-        :startDate="new Date('2024-08-02T14:00:00')"
-        :endDate="new Date('2024-09-03T02:00:00')"
+        :startDate="new Date('2025-08-02T14:00:00')"
+        :endDate="new Date('2025-09-03T02:00:00')"
       />
       <p>Sunday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_workshop_space_calendar.ics"
-        :startDate="new Date('2024-08-03T14:00')"
-        :endDate="new Date('2024-08-04T02:00')"
+        :startDate="new Date('2025-08-03T14:00')"
+        :endDate="new Date('2025-08-04T02:00')"
       />
       <p>Monday</p>
       <CalendarModule
         filePath="/data/calendars/blessed_coast_workshop_space_calendar.ics"
-        :startDate="new Date('2024-08-04T14:00')"
-        :endDate="new Date('2024-08-05T02:00')"
+        :startDate="new Date('2025-08-04T14:00')"
+        :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
   </div>
@@ -121,13 +121,16 @@ import HelloWorld from '@/components/HelloWorld.vue'
 * {
   /* border: 1px solid lime; */
 }
+@import url('https://use.typekit.net/yay7cee.css');
+
 .basic {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
+  font-family: amandine, sans-serif;
 }
-h1 {
-}
+
 p {
   font-weight: bold;
 }

@@ -4,6 +4,7 @@
       <li v-for="(event, index) in filteredEvents" :key="index">
         <p>{{ event.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</p>
         <h3>{{ event.summary }}</h3>
+        <p>{{ event.description }}</p>
       </li>
     </ul>
     <p v-else>No events found for the selected date range.</p>
