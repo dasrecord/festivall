@@ -7,6 +7,7 @@ import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
 import ReunionTeamView from '@/views/ReunionTeamView.vue'
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
+import ReunionLineupView from '@/views/ReunionLineupView.vue'
 import TicketScanner from '@/views/TicketScannerView.vue'
 import MealScanner from '@/views/MealScannerView.vue'
 import BlessedCoastView from '@/views/BlessedCoastView.vue'
@@ -142,12 +143,9 @@ const routes = [
     props: { url: 'https://dasrecord.typeform.com/to/a65mFuLr' }
   },
   {
-    path: '/reunionartists',
-    name: 'reunionartists',
-    component: ExternalRedirect,
-    props: {
-      url: 'https://calendar.google.com/calendar/u/0/embed?src=9db12edae9241ff09fe1e3dbae812dbbc65aeadee93cdcac57521f6f88c27c96@group.calendar.google.com&ctz=Regina&dates=20240830/20240902&mode=agenda&wkst=6'
-    }
+    path: '/reunionlineup',
+    name: 'reunionlineup',
+    component: ReunionLineupView
   },
   {
     path: '/reunioncontact',

@@ -126,20 +126,22 @@ import HelloWorld from '@/components/HelloWorld.vue'
   flex-direction: row;
   align-items: center;
 }
+h1 {
+}
 p {
   font-weight: bold;
 }
 .totem-stage {
-  background-color: #5484ed;
+  background-color: #4285f4;
 }
 
 .dojo-stage {
-  background-color: #ffb878;
+  background-color: #f4511e;
 }
 .yoga-temple {
-  background-color: #dbadff;
+  background-color: #8e24aa;
 }
 .workshop-space {
-  background-color: #fbd75b;
+  background-color: #0b8043;
 }
 </style>
