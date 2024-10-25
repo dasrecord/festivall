@@ -1,100 +1,127 @@
-<script>
-import synergistic_image from '@/assets/images/synergistic/se_logo_and_emblem.png'
-import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
-import HelloWorld from '@/components/HelloWorld.vue'
-import DetailsPanel from '@/components/DetailsPanel.vue'
+<template>
+  <div class="container">
+    <div class="video-section">
+      <video autoplay muted loop>
+        <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div class="form-section">
+      <form @submit.prevent="submitForm">
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" id="name" v-model="form.name" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="form.email" required />
+        </div>
+        <div>
+          <label for="enquiry">Enquiry:</label>
+          <select id="enquiry" v-model="form.enquiry" required>
+            <option disabled value="">Please select one</option>
+            <option>Event Production</option>
+            <option>Consultation</option>
+            <option>Partnerships</option>
+          </select>
+        </div>
+        <div>
+          <label for="message">Message:</label>
+          <textarea id="message" v-model="form.message" required></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</template>
 
+<script>
 export default {
-  components: {
-    HelloWorld,
-    DetailsPanel,
-    BlessedCoastCalltoAction
-  },
   data() {
     return {
-      synergistic_image: synergistic_image
+      form: {
+        name: '',
+        email: '',
+        message: ''
+      }
+    }
+  },
+  methods: {
+    submitForm() {
+      // Handle form submission
+      console.log(this.form)
     }
   }
 }
 </script>
-<template>
-  <div class="basic">
-    <HelloWorld msg="Synergistic Entertainment" />
-    <h2>
-      Synergistic is a BC based promoter that is assembling the team for<br />
-      <RouterLink to="/blessedcoast">Blessed Coast 2025</RouterLink>
-    </h2>
-    <img
-      class="img"
-      :src="synergistic_image"
-      alt="synergistic"
-      :style="{ height: '350px', width: '350px' }"
-    />
-    <DetailsPanel>
-      <template #link1>
-        <router-link to="/blessedcoastfamily">Learn more</router-link>
-      </template>
-      <template #link2>
-        <router-link to="/synergistic">Explore</router-link>
-      </template>
-      <template #link3
-        >our performers from: <br /><br />
-        <router-link to="/blessedcoast2015performers">2015</router-link><br />
-
-        <router-link to="/blessedcoast2016performers">2016</router-link><br. /><br />
-
-        <router-link to="/blessedcoast2017performers">2017</router-link><br. /><br />
-
-        <router-link to="/blessedcoast2018performers">2018</router-link><br. />
-      </template>
-      <template #link4>
-        <router-link to="#">amenities.</router-link>
-      </template>
-    </DetailsPanel>
-  </div>
-  <BlessedCoastCalltoAction />
-</template>
 
 <style scoped>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  /* border: 1px solid lime; */
 }
-.basic {
+.container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  height: 97vh;
+}
+
+.video-section {
+  display: flex;
   align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
-h1 {
-  font-size: 2rem;
-  color: white;
-  text-align: center;
-}
-img {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+.form-section {
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  border-radius: 25px;
+  background-color: rgba(0, 0, 0, 0.888);
+  z-index: 1;
+  padding: 2rem;
 }
 
-a:hover {
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+input,
+select,
+textarea {
+  display: block;
+  width: 60%;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px 0px 10px 0px;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border: 2px solid #ffffff;
+  background-color: rgb(0, 0, 0);
   color: white;
 }
+input:hover,
+textarea:hover,
+select:hover {
+  background-color: rgba(255, 255, 255, 0.242);
+  color: rgb(0, 0, 0);
+}
 
-@media (min-width: 1024px) {
-  .basic {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    justify-items: flex-start;
-    align-items: center;
+video {
+  max-height: 100%;
+}
+
+@media (min-width: 768px) {
+  .container {
+    display: grid;
   }
-  .frog {
-    display: flex;
-    justify-self: center;
-    align-items: center;
+
+  .video-section {
+    order: 2;
+    flex: 1;
+  }
+
+  .form-section {
+    background-color: rgba(0, 0, 0, 0.888);
   }
 }
 </style>
