@@ -6,7 +6,11 @@
         Your browser does not support the video tag.
       </video>
     </div>
+
     <div class="form-section">
+      <div class="emblem">
+        <img src="/src/assets/images/synergistic_logo_white.png" alt="Synergistic Emblem" />
+      </div>
       <form @submit.prevent="submitForm">
         <div>
           <label for="name">Name:</label>
@@ -108,6 +112,9 @@ select:hover {
 
 video {
   max-height: 100%;
+}
+.emblem {
+  width: 300px;
 }
 
 @media (min-width: 768px) {
