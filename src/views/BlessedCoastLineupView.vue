@@ -1,7 +1,14 @@
 <template>
   <HelloWorld msg="Blessed Coast 2025 Lineup"></HelloWorld>
   <div class="basic">
-    <div class="totem-stage">
+    <div class="controls">
+      <button class="totem-stage" @click="toggleStage('totemstage')">Totem Stage</button>
+      <button class="dojo-stage" @click="toggleStage('dojostage')">Dojo Stage</button>
+      <button class="yoga-temple" @click="toggleStage('yogatemple')">Yoga Temple</button>
+      <button class="workshop-space" @click="toggleStage('workshopspace')">Workshop Space</button>
+    </div>
+
+    <div v-if="stages.totemstage" class="totem-stage">
       <h1>Totem Stage</h1>
       <p>Friday</p>
       <CalendarModule
@@ -28,7 +35,7 @@
         :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
-    <div class="dojo-stage">
+    <div v-if="stages.dojostage" class="dojo-stage">
       <h1>Dojo Stage</h1>
       <p>Friday</p>
       <CalendarModule
@@ -55,7 +62,7 @@
         :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
-    <div class="yoga-temple">
+    <div v-if="stages.yogatemple" class="yoga-temple">
       <h1>Yoga Temple</h1>
       <p>Friday</p>
       <CalendarModule
@@ -82,7 +89,7 @@
         :endDate="new Date('2025-08-05T02:00')"
       />
     </div>
-    <div class="workshop-space">
+    <div v-if="stages.workshopspace" class="workshop-space">
       <h1>Workshop Space</h1>
       <p>Friday</p>
       <CalendarModule
@@ -113,15 +120,28 @@
 </template>
 
 <script setup>
+import { reactive } from 'vue'
 import CalendarModule from '@/components/CalendarModule.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
+
+const stages = reactive({
+  totemstage: false,
+  dojostage: false,
+  yogatemple: false,
+  workshopspace: false
+})
+
+function toggleStage(stage) {
+  stages[stage] = !stages[stage]
+}
 </script>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+
 * {
   /* border: 1px solid lime; */
 }
-@import url('https://use.typekit.net/yay7cee.css');
 
 .basic {
   display: flex;
@@ -133,6 +153,9 @@ import HelloWorld from '@/components/HelloWorld.vue'
 
 p {
   font-weight: bold;
+}
+.controls {
+  display: inline;
 }
 .totem-stage {
   background-color: #4285f4;
