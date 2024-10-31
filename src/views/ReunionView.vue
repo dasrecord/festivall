@@ -1,6 +1,7 @@
 <script>
 // import CountDownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
+import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'
@@ -15,6 +16,7 @@ export default {
   data() {
     return {
       frogImage: frog_image,
+      reunion_emblem: reunion_emblem,
       clickCount: 0
     }
   },
@@ -32,7 +34,13 @@ export default {
   <!-- <CountDownTimer /> -->
   <div class="basic">
     <h1>
-      THE REUNION‍ <br />
+      <!-- THE REUNION‍ <br /> -->
+      <img
+        :src="reunion_emblem"
+        alt="reunion"
+        class="reunion-emblem"
+        :style="{ height: '100px', width: 'auto', padding: '0.5rem' }"
+      />
       <img
         class="frog"
         :src="frogImage"
