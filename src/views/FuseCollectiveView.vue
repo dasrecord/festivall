@@ -1,5 +1,5 @@
 <script>
-import fuse_image from '@/assets/images/fuse_collective/fuse_collective.jpg'
+import fuse_image from '@/assets/images/fuse_logo_white.png'
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 
 const images = import.meta.glob('@/assets/images/fuse_collective/playbills/*.jpg')
@@ -25,7 +25,7 @@ export default {
   <div class="basic">
     <h1>
       <!-- FUSE COLLECTIVE <br /> -->
-      <img class="fuse" :src="fuse_image" alt="fuse" :style="{ height: '150px', width: '150px' }" />
+      <img class="fuse" :src="fuse_image" alt="fuse" />
       <br />
     </h1>
     <h2 class="description">
