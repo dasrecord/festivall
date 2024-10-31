@@ -1,5 +1,6 @@
 <script>
 import synergistic_image from '@/assets/images/synergistic/se_logo_and_emblem.png'
+import synergistic_logo_white from '@/assets/images/synergistic_logo_white.png'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
@@ -12,20 +13,27 @@ export default {
   },
   data() {
     return {
-      synergistic_image: synergistic_image
+      synergistic_image: synergistic_image,
+      synergistic_logo_white: synergistic_logo_white
     }
   }
 }
 </script>
 <template>
   <div class="basic">
-    <HelloWorld msg="Synergistic Entertainment" />
+    <!-- <HelloWorld msg="Synergistic Entertainment" /> -->
+    <img
+      class="emblem"
+      :src="synergistic_logo_white"
+      alt="synergistic"
+      :style="{ height: '100px', width: 'auto', padding: '0.5rem' }"
+    />
     <h2>
       Synergistic is a BC based promoter that is assembling the team for<br />
       <RouterLink to="/blessedcoast">Blessed Coast 2025</RouterLink>
     </h2>
     <img
-      class="img"
+      class="synergistic"
       :src="synergistic_image"
       alt="synergistic"
       :style="{ height: '350px', width: '350px' }"
@@ -72,7 +80,7 @@ h1 {
   color: white;
   text-align: center;
 }
-img {
+.synergistic {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   width: 100%;
   border-radius: 25px;
