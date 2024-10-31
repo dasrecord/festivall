@@ -153,7 +153,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .reunion-emblem {
-  height: 75%;
+  height: 60%;
   margin-top: 1rem;
 }
 .fuse-logo {
@@ -161,7 +161,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   margin-top: 1rem;
 }
 .blessed-coast-emblem {
-  height: 80%;
+  height: 75%;
 }
 .impact-logo {
   height: 50%;
