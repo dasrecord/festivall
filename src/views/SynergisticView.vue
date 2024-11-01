@@ -153,6 +153,9 @@ video {
 .logo {
   width: 300px;
 }
+img {
+  box-shadow: none;
+}
 
 @media (min-width: 768px) {
   .container {
