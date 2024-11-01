@@ -8,10 +8,10 @@
     </div>
 
     <div class="form-section">
-      <div class="emblem">
-        <img src="/src/assets/images/synergistic_logo_white.png" alt="Synergistic Emblem" />
+      <div class="logo">
+        <img src="/src/assets/images/synergistic_logo_white.png" alt="Synergistic Logo" />
       </div>
-      <form @submit.prevent="submitForm">
+      <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
           <input type="text" id="name" v-model="form.name" required />
@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -51,9 +53,43 @@ export default {
     }
   },
   methods: {
-    submitForm() {
-      // Handle form submission
-      console.log(this.form)
+    async sendtorelay() {
+      const slackPayload = {
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*Name:* ${this.form.name}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*Email:* ${this.form.email}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*Message:* ${this.form.message}`
+            }
+          }
+        ]
+      }
+
+      try {
+        const response = await axios.post('https://relayproxy.vercel.app/slack', slackPayload, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        console.log('Form submitted successfully:', response.data)
+      } catch (error) {
+        console.error('Error submitting form:', error)
+      }
     }
   }
 }
@@ -94,6 +130,7 @@ textarea {
   margin: 5px 0;
   background-color: rgb(0, 0, 0);
   border-radius: 10px 0px 10px 0px;
+  color: white;
 }
 input:focus,
 textarea:focus,
@@ -113,7 +150,7 @@ select:hover {
 video {
   max-height: 100%;
 }
-.emblem {
+.logo {
   width: 300px;
 }
 
@@ -128,7 +165,7 @@ video {
   }
 
   .form-section {
-    background-color: rgba(0, 0, 0, 0.888);
+    background-color: rgba(0, 0, 0, 0.555);
   }
 }
 </style>
