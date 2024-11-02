@@ -81,14 +81,23 @@ export default {
       }
 
       try {
-        const response = await axios.post('https://relayproxy.vercel.app/slack', slackPayload, {
-          headers: {
-            'Content-Type': 'application/json'
+        const response = await axios.post(
+          'https://relayproxy.vercel.app/slack', // Use the actual endpoint URL
+          slackPayload,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
+        alert('Form submitted successfully!')
+        this.form.name = ''
+        this.form.email = ''
+        this.form.message = ''
         console.log('Form submitted successfully:', response.data)
       } catch (error) {
         console.error('Error submitting form:', error)
+        alert('Error submitting form. Please try again.')
       }
     }
   }
