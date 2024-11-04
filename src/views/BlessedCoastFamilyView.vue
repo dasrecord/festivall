@@ -66,7 +66,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 @import url('https://use.typekit.net/yay7cee.css');
 
 .basic {
