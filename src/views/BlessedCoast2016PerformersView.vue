@@ -29,7 +29,7 @@
         <router-link to="/blessedcoast2018performers">2018</router-link><br. />
       </template>
       <template #link4>
-        <router-link to="#">amenities.</router-link>
+        <router-link to="/blessedcoastamenities">amenities.</router-link>
       </template>
     </DetailsPanel>
     <BlessedCoastCalltoAction />

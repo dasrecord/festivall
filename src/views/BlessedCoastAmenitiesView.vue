@@ -4,40 +4,61 @@
   <div class="amenities">
     <h2>What to expect:</h2>
     <ul>
+      <li>multiple stages</li>
       <li>yoga classes</li>
-      <li>camping</li>
-      <li>parking</li>
-      <li>charging stations</li>
-      <li>workshops</li>
-      <li>music</li>
-      <li>shuttle service</li>
+      <li>many workshops</li>
+      <li>outdoor camping</li>
+      <li>limited parking</li>
+      <li>musical performances</li>
+      <li>food vendors</li>
+      <li>art installations</li>
+      <li>portable restrooms</li>
+      <li>videogame arcade</li>
+      <li>children's area</li>
     </ul>
     <h2>What to bring:</h2>
     <ul>
+      <li>positive vibes</li>
       <li>potable water</li>
       <li>sunscreen</li>
       <li>hat</li>
-      <li>water bottle</li>
       <li>camping gear</li>
       <li>toiletries</li>
-      <li>positive vibes</li>
+      <li>flashlight</li>
+      <li>first aid kit</li>
+      <li>reusable utensils</li>
+      <li>snacks</li>
     </ul>
-    <RouterLink to="/blessedcoastlineup"> <h2>CLICK HERE TO SEE THE LINEUP</h2></RouterLink>
+    <h2>Available for Purchase:</h2>
+    <ul>
+      <li>shuttle service</li>
+      <li>charging stations</li>
+      <li>glamping packages</li>
+    </ul>
+    <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUP</RouterLink>
+    <BlessedCoastCalltoAction></BlessedCoastCalltoAction>
   </div>
 </template>
 
 <script>
 import HelloWorld from '@/components/HelloWorld.vue'
+import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 
 export default {
   name: 'BlessedCoastAmenitiesView',
   components: {
-    HelloWorld
+    HelloWorld,
+    BlessedCoastCalltoAction
   }
 }
 </script>
 
 <style scoped>
+.amenities {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 ul {
   padding: 0;
   display: grid;
