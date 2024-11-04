@@ -55,11 +55,10 @@ export default {
 
 <style scoped>
 .amenities {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  text-align: center;
 }
 ul {
+  margin-bottom: 2rem;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
