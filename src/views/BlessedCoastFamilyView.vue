@@ -67,7 +67,10 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+
 .basic {
+  font-family: 'amandine', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;

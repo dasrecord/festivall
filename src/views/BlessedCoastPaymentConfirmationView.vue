@@ -20,7 +20,10 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+
 .payment-confirmation {
+  font-family: 'amandine', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;

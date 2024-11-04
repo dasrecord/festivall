@@ -1,7 +1,7 @@
 <template>
   <HelloWorld msg="Blessed Coast 2025"></HelloWorld>
-  <h1>Amenities</h1>
   <div class="amenities">
+    <h1>Amenities</h1>
     <h2>What to expect:</h2>
     <ul>
       <li>multiple stages</li>
@@ -58,11 +58,9 @@ export default {
 
 <style scoped>
 @import url('https://use.typekit.net/yay7cee.css');
-* {
-  font-family: 'amandine', sans-serif;
-}
 
 .amenities {
+  font-family: 'amandine', sans-serif;
   text-align: center;
 }
 ul {

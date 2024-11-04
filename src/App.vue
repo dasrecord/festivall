@@ -38,7 +38,7 @@ useHead({
   <RouterView />
 </template>
 
-<style>
+<style scoped>
 header {
   line-height: 1.3;
   max-height: 100vh;
