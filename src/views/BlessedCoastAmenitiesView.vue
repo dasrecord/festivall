@@ -39,12 +39,13 @@ export default {
 
 <style scoped>
 ul {
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   list-style-type: none;
 }
 li {
-  padding: 1rem;
+  padding: 0.25rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   display: flex;
