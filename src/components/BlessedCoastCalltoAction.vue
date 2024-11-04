@@ -22,15 +22,18 @@ export default {
       Have something to say? <br />
       <a href="mailto:info@blessedcoast.ca">CONTACT US</a>
     </h1>
-    <!-- <h1 class="tickets">
+    <h1 class="tickets">
       Ready to buy tickets?‍<br />
-      <a href="">BUY TICKETS</a>
-    </h1> -->
+    
+      <a href="https://buy.stripe.com/dR65nkdbBdjz5Ms145">BUY TICKETS</a>
+    </h1>
   </div>
 </template>
 
 <style scoped>
 @import url('https://use.typekit.net/yay7cee.css');
+
+
 
 .call-to-action {
   width: 100%;
@@ -58,8 +61,7 @@ h1 {
   border-top-right-radius: 20px;
 }
 
-.tickets,
-.contact {
+.tickets {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }

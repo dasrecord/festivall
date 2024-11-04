@@ -154,8 +154,9 @@ function toggleStage(stage) {
 p {
   font-weight: bold;
 }
-.controls {
+.controls * {
   display: inline;
+  color: white;
 }
 .totem-stage {
   background-color: #4285f4;
