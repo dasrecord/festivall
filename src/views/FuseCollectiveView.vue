@@ -35,14 +35,14 @@ export default {
     </h2>
     <iframe
       width="100%"
-      height="200"
+      height="300"
       scrolling="no"
       frameborder="no"
       allow="autoplay"
       src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/68926512&color=%23000000&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true&visual=true"
     ></iframe>
+    <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
   </div>
-  <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
   <CalltoAction />
 </template>
 
@@ -64,6 +64,9 @@ a {
 a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
+}
+.fuse {
+  width: 50%;
 }
 
 @media (min-width: 1024px) {
