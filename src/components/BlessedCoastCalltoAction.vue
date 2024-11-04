@@ -24,16 +24,14 @@ export default {
     </h1>
     <h1 class="tickets">
       Ready to buy tickets?‍<br />
-    
-      <a href="https://buy.stripe.com/dR65nkdbBdjz5Ms145">BUY TICKETS</a>
+      <a href="https://buy.stripe.com/test_6oEcPS5VedmqbyUcMM">BUY TEST TICKETS</a>
+      <!-- <a href="https://buy.stripe.com/dR65nkdbBdjz5Ms145">BUY TICKETS</a> -->
     </h1>
   </div>
 </template>
 
 <style scoped>
 @import url('https://use.typekit.net/yay7cee.css');
-
-
 
 .call-to-action {
   width: 100%;

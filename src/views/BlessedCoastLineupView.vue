@@ -140,6 +140,7 @@ function toggleStage(stage) {
 @import url('https://use.typekit.net/yay7cee.css');
 
 * {
+  font-family: amandine, sans-serif;
   /* border: 1px solid lime; */
 }
 

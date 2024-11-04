@@ -35,9 +35,12 @@
       <li>charging stations</li>
       <li>glamping packages</li>
     </ul>
-    <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUP</RouterLink>
-    <BlessedCoastCalltoAction></BlessedCoastCalltoAction>
+    <div class="options">
+      <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUP</RouterLink><br />
+      <RouterLink to="#">CLICK HERE TO DOWNLOAD MAP</RouterLink>
+    </div>
   </div>
+  <BlessedCoastCalltoAction />
 </template>
 
 <script>
@@ -54,6 +57,11 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://use.typekit.net/yay7cee.css');
+* {
+  font-family: 'amandine', sans-serif;
+}
+
 .amenities {
   text-align: center;
 }
@@ -61,7 +69,7 @@ ul {
   margin-bottom: 2rem;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   list-style-type: none;
 }
 li {
@@ -70,5 +78,14 @@ li {
   border-radius: 10px;
   display: flex;
   justify-content: center;
+}
+.options {
+  display: flex;
+  justify-content: space-around;
+}
+
+a {
+  padding: 1rem;
+  border-radius: 5px;
 }
 </style>
