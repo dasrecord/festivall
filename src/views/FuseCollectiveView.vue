@@ -47,10 +47,11 @@ export default {
 </template>
 
 <style scoped>
-.basic {
+basic {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  justify-items: flex-start;
   align-items: center;
 }
 
