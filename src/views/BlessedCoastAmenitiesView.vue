@@ -6,15 +6,16 @@
     <ul>
       <li>multiple stages</li>
       <li>yoga classes</li>
-      <li>many workshops</li>
+      <li>workshops</li>
       <li>outdoor camping</li>
       <li>limited parking</li>
       <li>musical performances</li>
+      <li>spoken word</li>
       <li>food vendors</li>
       <li>art installations</li>
       <li>portable restrooms</li>
-      <li>videogame arcade</li>
       <li>children's area</li>
+      <li>videogame arcade</li>
     </ul>
     <h2>What to bring:</h2>
     <ul>
@@ -34,6 +35,9 @@
       <li>shuttle service</li>
       <li>charging stations</li>
       <li>glamping packages</li>
+      <li>food and beverages</li>
+      <li>massage therapy</li>
+      <li>cash or bitcoin</li>
     </ul>
     <div class="options">
       <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUP</RouterLink><br />
