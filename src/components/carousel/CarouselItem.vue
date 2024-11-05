@@ -49,4 +49,8 @@ export default {
 .slide-out-leave-to {
   transform: translateX(-100%);
 }
+img {
+  background-color: black;
+  object-fit: contain;
+}
 </style>

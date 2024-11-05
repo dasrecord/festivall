@@ -19,6 +19,7 @@ export default {
 
 <style scoped>
 .carousel-indicators {
+  display: none;
   position: absolute;
   transform: translateX(-50%);
   left: 50%;
