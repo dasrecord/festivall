@@ -1,6 +1,6 @@
 <template>
-  <HelloWorld msg="Blessed Coast 2025"></HelloWorld>
   <div class="amenities">
+    <HelloWorld msg="Blessed Coast 2025"></HelloWorld>
     <h1>Amenities</h1>
     <h2>What to expect:</h2>
     <ul>
