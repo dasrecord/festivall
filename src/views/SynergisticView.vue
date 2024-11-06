@@ -2,15 +2,18 @@
   <div class="container">
     <div class="video-section">
       <video autoplay muted loop>
-        <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" />
+        <!-- <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" /> -->
+        <source src="/src/assets/videos/synergistic/syn_galaxy.mp4" type="video/mp4" />
+        <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
+        <!-- <source src="/src/assets/videos/synergistic/syn_vortex.mp4" type="video/mp4" /> -->
         Your browser does not support the video tag.
       </video>
-    </div>
-
-    <div class="form-section">
       <div class="logo">
         <img src="/src/assets/images/synergistic_logo_white.png" alt="Synergistic Logo" />
       </div>
+    </div>
+
+    <div class="form-section">
       <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
@@ -108,10 +111,11 @@ export default {
 * {
   /* border: 1px solid lime; */
 }
+
 .container {
   display: flex;
   flex-direction: column;
-  height: 97vh;
+  /* height: 96vh; */
 }
 
 .video-section {
@@ -120,10 +124,12 @@ export default {
   justify-content: center;
   overflow-x: hidden;
   overflow-y: hidden;
+  margin: -1rem;
 }
 .form-section {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.888);
   z-index: 1;
@@ -134,7 +140,7 @@ input,
 select,
 textarea {
   display: block;
-  width: 60%;
+  width: 100%;
   padding: 10px;
   margin: 5px 0;
   background-color: rgb(0, 0, 0);
@@ -160,24 +166,26 @@ video {
   max-height: 100%;
 }
 .logo {
-  width: 300px;
+  position: absolute;
+  width: 600px;
 }
 img {
   box-shadow: none;
 }
 
 @media (min-width: 768px) {
-  .container {
-    display: grid;
-  }
-
-  .video-section {
-    order: 2;
-    flex: 1;
-  }
-
   .form-section {
-    background-color: rgba(0, 0, 0, 0.555);
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 300px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.888);
+    z-index: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 </style>
