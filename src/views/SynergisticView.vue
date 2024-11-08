@@ -17,11 +17,11 @@
       <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
-          <input type="text" id="name" v-model="form.name" required />
+          <input type="text" id="name" v-model="form.name" required autocomplete="off" />
         </div>
         <div>
           <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+          <input type="email" id="email" v-model="form.email" required autocomplete="off" />
         </div>
         <div>
           <label for="enquiry">Enquiry:</label>
@@ -93,7 +93,7 @@ export default {
             }
           }
         )
-        alert('Form submitted successfully!')
+        alert('Your message was received successfully!')
         this.form.name = ''
         this.form.email = ''
         this.form.message = ''
@@ -111,11 +111,10 @@ export default {
 * {
   /* border: 1px solid lime; */
 }
-
 .container {
   display: flex;
   flex-direction: column;
-  /* height: 96vh; */
+  height: 96vh;
 }
 
 .video-section {
@@ -155,6 +154,7 @@ select:focus {
   background-color: rgb(0, 0, 0);
   color: white;
 }
+
 input:hover,
 textarea:hover,
 select:hover {
