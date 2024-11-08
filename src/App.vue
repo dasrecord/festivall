@@ -47,7 +47,7 @@ header {
 .logo {
   display: block;
   margin: 0 auto 1rem auto;
-  box-shadow: 0 0 10px rgb(0, 128, 255);
+  /* box-shadow: 0 0 10px rgb(0, 128, 255); */
 }
 
 nav {
