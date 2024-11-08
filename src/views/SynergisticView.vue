@@ -4,8 +4,8 @@
       <video autoplay muted loop>
         <!-- <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" /> -->
         <source src="/src/assets/videos/synergistic/syn_galaxy.mp4" type="video/mp4" />
-        <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
         <!-- <source src="/src/assets/videos/synergistic/syn_vortex.mp4" type="video/mp4" /> -->
+        <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
         Your browser does not support the video tag.
       </video>
       <div class="logo">
