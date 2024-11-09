@@ -40,8 +40,12 @@ onMounted(async () => {
 .playbills {
   display: grid;
   grid-template-columns: repeat(2, 2fr);
+  gap: 0.5rem;
 }
 
+img {
+  border-radius: 15px;
+}
 @media (min-width: 1024px) {
   .about {
     display: flex;

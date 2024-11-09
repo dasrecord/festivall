@@ -51,6 +51,8 @@ header {
 }
 
 nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   width: 100%;
   font-size: 16px;
   text-align: center;
@@ -67,9 +69,11 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0 1rem;
+  padding: 0.5rem 1rem;
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
+
+  border-radius: 8px;
   margin: 0.25rem;
 }
 
@@ -95,6 +99,7 @@ nav a {
   }
 
   nav {
+    display: flex;
     text-align: center;
     font-size: 1rem;
 
