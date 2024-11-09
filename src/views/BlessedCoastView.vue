@@ -1,12 +1,14 @@
 <script>
 import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useHead } from '@vueuse/head'
 
 export default {
   name: 'BlessedCoastView',
   components: {
-    BlessedCoastCalltoAction
+    BlessedCoastCalltoAction,
+    CountdownTimer
   },
   setup() {
     useHead({
@@ -33,6 +35,7 @@ export default {
 </script>
 
 <template>
+  <!-- <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="1" /> -->
   <div class="basic">
     <img class="wolf" :src="wolfImage" alt="wolf" />
     <div class="video">

@@ -19,7 +19,7 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <CountdownTimer />
+    <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
     <h1>
       THE REUNION‍ <br />
       <img :src="frogImage" alt="frog" :style="{ width: '300px' }" />
@@ -64,7 +64,6 @@ export default {
 
 <style scoped>
 .basic {
-  padding: 2rem;
   text-align: center;
 }
 

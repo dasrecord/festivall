@@ -17,6 +17,20 @@
 
 <script>
 export default {
+  props: {
+    targetYear: {
+      type: Number,
+      required: true
+    },
+    targetMonth: {
+      type: Number,
+      required: true
+    },
+    targetDay: {
+      type: Number,
+      required: true
+    }
+  },
   data() {
     return {
       daysLeft: 0,
@@ -33,7 +47,7 @@ export default {
   methods: {
     updateCountdown() {
       const now = new Date()
-      const targetDate = new Date(now.getFullYear() + 1, 7, 29) // August 29th of the next year
+      const targetDate = new Date(this.targetYear, this.targetMonth - 1, this.targetDay) // Use props for target date
 
       let diffInMilliseconds = targetDate - now
 
