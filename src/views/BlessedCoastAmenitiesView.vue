@@ -40,10 +40,10 @@
       <li>cash or bitcoin</li>
     </ul>
     <div class="options">
-      <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUPS</RouterLink>
-      <RouterLink to="#">CLICK HERE TO PURCHASE EXTRAS</RouterLink>
-      <RouterLink to="#">CLICK HERE FOR DIRECTIONS</RouterLink>
-      <RouterLink to="#">CLICK HERE TO DOWNLOAD MAP</RouterLink>
+      <RouterLink to="/blessedcoastlineup">VIEW LINEUPS</RouterLink>
+      <RouterLink to="#">PURCHASE EXTRAS</RouterLink>
+      <RouterLink to="#">GET DIRECTIONS</RouterLink>
+      <RouterLink to="#">DOWNLOAD MAP</RouterLink>
     </div>
   </div>
   <BlessedCoastCalltoAction />
@@ -74,6 +74,7 @@ ul {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
   list-style-type: none;
 }
 li {
@@ -81,7 +82,10 @@ li {
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
   display: flex;
+  padding: 0.3rem;
+
   justify-content: center;
+  background: radial-gradient(circle, rgba(0, 0, 0), rgba(0, 128, 255, 0.1));
 }
 .options {
   /* display: flex; */
@@ -94,7 +98,7 @@ li {
 a {
   padding: 1rem;
   border: 1px solid white;
-  border-radius: 15px;
+  border-radius: 10px;
   font-size: 16pt;
 }
 
