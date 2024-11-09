@@ -29,7 +29,7 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <CountdownTimer />
+    <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
     <h1>THE REUNION‍</h1>
     <h2>Soundsystem <br /></h2>
     <h3>
