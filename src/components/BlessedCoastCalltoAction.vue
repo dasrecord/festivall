@@ -22,11 +22,10 @@ export default {
       Have something to say? <br />
       <a href="mailto:info@blessedcoast.ca">CONTACT US</a>
     </h1>
-    <h1 class="tickets">
+    <!-- <h1 class="tickets">
       Ready to buy tickets?‍<br />
-      <a href="https://buy.stripe.com/test_6oEcPS5VedmqbyUcMM">BUY TEST TICKETS</a>
-      <!-- <a href="https://buy.stripe.com/dR65nkdbBdjz5Ms145">BUY TICKETS</a> -->
-    </h1>
+      <a href="">BUY TICKETS</a>
+    </h1> -->
   </div>
 </template>
 
@@ -59,7 +58,8 @@ h1 {
   border-top-right-radius: 20px;
 }
 
-.tickets {
+.tickets,
+.contact {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }

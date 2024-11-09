@@ -1,4 +1,5 @@
 <template>
+  <img :src="BlessedCoastComingSoon" alt="Blessed Coast Coming Soon" />
   <div class="payment-confirmation">
     <h1>Thank you for your payment!</h1>
     <h2>Your QR Code will be sent to your email inbox.</h2>
@@ -10,11 +11,16 @@
 
 <script>
 import HelloWorld from '@/components/HelloWorld.vue'
-
+import BlessedCoastComingSoon from '@/assets/images/blessed/bc_wolf_square.png'
 export default {
   name: 'BlessedCoastPaymentConfirmationView',
   components: {
     HelloWorld
+  },
+  data() {
+    return {
+      BlessedCoastComingSoon
+    }
   }
 }
 </script>
@@ -29,9 +35,29 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 2rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 50px;
+  padding: 2rem;
+  z-index: 0;
+  border-radius: 15px;
 }
 
 .payment-details p {
   margin: 5px 0;
+}
+
+img {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+
+  z-index: -1;
+}
+a {
+  color: white;
+  border-radius: 15px;
+}
+a:hover {
+  color: white;
 }
 </style>

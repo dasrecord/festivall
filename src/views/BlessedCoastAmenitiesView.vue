@@ -40,7 +40,7 @@
       <li>cash or bitcoin</li>
     </ul>
     <div class="options">
-      <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUP</RouterLink><br />
+      <RouterLink to="/blessedcoastlineup">CLICK HERE TO SEE THE LINEUPS</RouterLink><br />
       <RouterLink to="#">CLICK HERE TO DOWNLOAD MAP</RouterLink>
     </div>
   </div>
@@ -89,5 +89,10 @@ li {
 a {
   padding: 1rem;
   border-radius: 5px;
+  font-size: large;
+}
+
+a:hover {
+  color: white;
 }
 </style>
