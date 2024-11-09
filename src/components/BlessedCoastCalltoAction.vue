@@ -15,7 +15,7 @@ export default {
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
     <h1 class="know-more">
-      Want to know more about us?<br />
+      Want to know more?<br />
       <RouterLink to="/blessedcoastfamily">CLICK HERE</RouterLink>
     </h1>
     <h1 class="contact">
@@ -65,5 +65,12 @@ h1 {
 .tickets {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+}
+
+a {
+  font-weight: 700;
+}
+a:hover {
+  color: white;
 }
 </style>
