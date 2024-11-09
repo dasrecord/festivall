@@ -34,7 +34,7 @@
   transition: all 0.3s ease;
 }
 .details {
-  flex: 1;
+  font-size: 18px;
 }
 
 i {
