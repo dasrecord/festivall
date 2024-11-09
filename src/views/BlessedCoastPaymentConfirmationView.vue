@@ -40,6 +40,7 @@ export default {
   padding: 2rem;
   z-index: 0;
   border-radius: 15px;
+  height: 90vh;
 }
 
 .payment-details p {
@@ -56,6 +57,7 @@ img {
 a {
   color: white;
   border-radius: 15px;
+  font-size: 20px;
 }
 a:hover {
   color: white;

@@ -83,9 +83,9 @@ li {
   border-radius: 10px;
   display: flex;
   padding: 0.3rem;
-
   justify-content: center;
   background: radial-gradient(circle, rgba(0, 0, 0), rgba(0, 128, 255, 0.1));
+  font-weight: 700;
 }
 .options {
   /* display: flex; */
@@ -99,7 +99,8 @@ a {
   padding: 1rem;
   border: 1px solid white;
   border-radius: 10px;
-  font-size: 16pt;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 a:hover {
