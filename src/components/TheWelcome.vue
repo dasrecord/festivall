@@ -160,7 +160,13 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 
 .reunion-emblem {
+<<<<<<< HEAD
   height: 40px;
+=======
+  height: 60%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+>>>>>>> c35262c (improve emblem padding)
 }
 .fuse-logo {
   height: 60px;
@@ -172,7 +178,13 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   height: 50px;
 }
 .synergistic-logo {
+<<<<<<< HEAD
   height: 50px;
+=======
+  height: 60%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+>>>>>>> c35262c (improve emblem padding)
 }
 .das-record-logo {
   height: 100px;
