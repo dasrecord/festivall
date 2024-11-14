@@ -167,8 +167,13 @@ video {
 }
 .logo {
   position: absolute;
-  width: 500px;
+  width: 66vw;
+  top: 50%;
 }
+button {
+  width: 100%;
+}
+
 img {
   box-shadow: none;
 }
@@ -186,6 +191,13 @@ img {
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  .logo {
+    position: absolute;
+    width: 500px;
+    top: 50%;
+    left: 65%;
+    transform: translate(-50%, -50%);
   }
 }
 </style>
