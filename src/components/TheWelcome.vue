@@ -153,7 +153,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .reunion-emblem {
-  height: 60%;
+  height: 40%;
   margin-top: 1rem;
 }
 .fuse-logo {
@@ -168,7 +168,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   margin-top: 1rem;
 }
 .synergistic-logo {
-  height: 60%;
+  height: 40%;
   margin-top: 1rem;
 }
 .das-record-logo {
