@@ -110,8 +110,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #description>
         An international artist management agency and music firm with A&R and publishing consultants
-        with personel in Canada, the US, and Europe.
-      </template>
+        with personel in Canada, the US, and Europe.</template
+      >
       <template #logo>
         <img :src="evolved_classic_logo" alt="evolved_classic_logo" class="evolved-classic-logo" />
       </template>
@@ -139,6 +139,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  border: 1px solid lime;
 }
 
 .container {
@@ -153,32 +154,27 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .reunion-emblem {
-  height: 40%;
-  margin-top: 1rem;
+  height: 40px;
 }
 .fuse-logo {
-  height: 75%;
-  margin-top: 1rem;
+  height: 75px;
 }
 .blessed-coast-emblem {
-  height: 75%;
+  height: 75px;
 }
 .impact-logo {
-  height: 50%;
-  margin-top: 1rem;
+  height: 50px;
 }
 .synergistic-logo {
-  height: 40%;
-  margin-top: 1rem;
+  height: 40px;
 }
 .das-record-logo {
-  margin-top: 1rem;
+  height: 100px;
 }
 .evolved-classic-logo {
   height: 75%;
-  margin-top: 1rem;
 }
 .festivall-emblem {
-  margin-top: 1rem;
+  height: 100px;
 }
 </style>

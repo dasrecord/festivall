@@ -1,5 +1,5 @@
 <script>
-// import CountDownTimer from '@/components/CountdownTimer.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import CalltoAction from '@/components/CalltoAction.vue'
@@ -8,7 +8,7 @@ import { RouterLink } from 'vue-router'
 
 export default {
   components: {
-    // CountDownTimer,
+    CountdownTimer,
     CalltoAction,
     DetailsPanel,
     RouterLink
@@ -31,25 +31,17 @@ export default {
 }
 </script>
 <template>
-  <!-- <CountDownTimer /> -->
   <div class="basic">
-    <h1>
-      <!-- THE REUNION‍ <br /> -->
-      <img
-        :src="reunion_emblem"
-        alt="reunion"
-        class="reunion-emblem"
-        :style="{ height: '100px', width: 'auto', padding: '0.5rem' }"
-      />
-      <img
-        class="frog"
-        :src="frogImage"
-        alt="frog"
-        :style="{ height: '150px', width: '150px' }"
-        @click="handleClick"
-      />
-      <br />
-    </h1>
+    <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
+    <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+    <img
+      class="frog"
+      :src="frogImage"
+      alt="frog"
+      :style="{ height: '150px', width: '150px' }"
+      @click="handleClick"
+    />
+
     <!-- <h2>
       AUG 29th - SEPT 1st, 2025 <br />
       30 min from Saskatoon <br /><br />
@@ -80,10 +72,10 @@ export default {
 
 <style scoped>
 .basic {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  padding: 1rem;
+  text-align: center;
   align-items: center;
+  justify-content: center;
 }
 
 a {
@@ -96,6 +88,11 @@ a {
 a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
+}
+.reunion-emblem {
+  width: 100%;
+  max-width: 500px;
+  margin: 1rem 0;
 }
 
 @media (min-width: 1024px) {
