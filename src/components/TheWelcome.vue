@@ -14,7 +14,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 
 <template>
   <div class="container">
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -27,7 +27,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       </template>
     </WelcomeItem>
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -41,7 +41,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
     </WelcomeItem>
 
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -57,7 +57,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
     </WelcomeItem>
 
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -73,7 +73,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
     </WelcomeItem>
 
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -88,7 +88,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
     </WelcomeItem>
 
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -101,7 +101,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         <img :src="das_record_logo" alt="das_record_logo" class="das-record-logo" />
       </template>
     </WelcomeItem>
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -116,7 +116,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         <img :src="evolved_classic_logo" alt="evolved_classic_logo" class="evolved-classic-logo" />
       </template>
     </WelcomeItem>
-    <WelcomeItem>
+    <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
@@ -139,7 +139,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: 1px solid lime;
+  /* border: 1px solid lime; */
 }
 
 .container {
@@ -153,11 +153,17 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   align-items: center;
   text-align: center;
 }
+.welcome-item {
+  height: 300px;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 3fr;
+}
+
 .reunion-emblem {
   height: 40px;
 }
 .fuse-logo {
-  height: 75px;
+  height: 60px;
 }
 .blessed-coast-emblem {
   height: 75px;
@@ -166,13 +172,13 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   height: 50px;
 }
 .synergistic-logo {
-  height: 40px;
+  height: 50px;
 }
 .das-record-logo {
   height: 100px;
 }
 .evolved-classic-logo {
-  height: 75%;
+  height: 80px;
 }
 .festivall-emblem {
   height: 100px;
