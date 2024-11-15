@@ -34,7 +34,7 @@
   transition: all 0.3s ease;
 }
 .details {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 i {
@@ -56,7 +56,8 @@ i {
 .logo {
   border: none;
   box-shadow: none;
-  height: 100px;
+  margin-top: 1rem;
+  /* height: 60px; */
 }
 
 @media (min-width: 1024px) {
