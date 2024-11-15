@@ -38,9 +38,7 @@
 }
 
 i {
-  display: flex;
-  place-items: center;
-  place-content: center;
+  justify-self: center;
   width: 32px;
   height: 32px;
   color: var(--color-text);
