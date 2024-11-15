@@ -1,6 +1,7 @@
 <template>
   <img :src="BlessedCoastComingSoon" alt="Blessed Coast Coming Soon" />
   <div class="payment-confirmation">
+    <img :src="BlessedCoastEmblem" alt="Blessed Coast Emblem" class="logo" />
     <h1>Thank you for your payment!</h1>
     <h2>Your QR Code will be sent to your email inbox.</h2>
     <h2>We look forward to seeing you at</h2>
@@ -12,6 +13,7 @@
 <script>
 import HelloWorld from '@/components/HelloWorld.vue'
 import BlessedCoastComingSoon from '@/assets/images/blessed/bc_wolf_square.png'
+import BlessedCoastEmblem from '@/assets/images/blessed_coast_emblem_white.png'
 export default {
   name: 'BlessedCoastPaymentConfirmationView',
   components: {
@@ -19,7 +21,8 @@ export default {
   },
   data() {
     return {
-      BlessedCoastComingSoon
+      BlessedCoastComingSoon,
+      BlessedCoastEmblem
     }
   }
 }
@@ -47,17 +50,22 @@ export default {
   margin: 5px 0;
 }
 
-img {
+img:not(.logo) {
   position: absolute;
   top: 0%;
   right: 0%;
 
   z-index: -1;
 }
+.logo {
+  height: auto;
+}
 a {
   color: white;
   border-radius: 15px;
   font-size: 20px;
+  border: 1px solid white;
+  padding: 10px;
 }
 a:hover {
   color: white;
