@@ -1,6 +1,7 @@
 <template>
-  <HelloWorld msg="Blessed Coast 2025 Lineup"></HelloWorld>
   <div class="basic">
+    <HelloWorld msg="Blessed Coast 2025"></HelloWorld>
+    <h1>Lineup</h1>
     <div class="controls">
       <button class="totem-stage" @click="toggleStage('totemstage')">Totem Stage</button>
       <button class="dojo-stage" @click="toggleStage('dojostage')">Dojo Stage</button>
