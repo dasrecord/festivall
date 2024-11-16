@@ -161,31 +161,38 @@ p {
 
 .lineups {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  align-content: left;
   justify-content: center;
-  margin: 1rem;
-  padding: 1rem;
+  /* margin: 1rem; */
+  /* padding: 1rem; */
   z-index: 0;
+  gap: 1rem;
 }
 .totem-stage {
   background-color: #4285f4;
+  border-radius: 10px;
 }
 
 .dojo-stage {
   background-color: #f4511e;
+  border-radius: 10px;
 }
 .yoga-temple {
   background-color: #8e24aa;
+  border-radius: 10px;
 }
 .workshop-space {
   background-color: #0b8043;
+  border-radius: 10px;
 }
 
 button {
   padding: 1rem;
   margin: 1rem;
-  border-radius: 5px;
+  border-radius: 10px;
   font-size: large;
   color: white;
 }
