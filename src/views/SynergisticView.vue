@@ -78,14 +78,14 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Message:* ${this.form.message}`
+              text: `*Enquiry:* ${this.form.enquiry}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Enquiry:* ${this.form.enquiry}`
+              text: `*Message:* ${this.form.message}`
             }
           }
         ]
