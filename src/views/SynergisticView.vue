@@ -51,7 +51,8 @@ export default {
       form: {
         name: '',
         email: '',
-        message: ''
+        message: '',
+        enquiry: ''
       }
     }
   },
@@ -79,6 +80,13 @@ export default {
               type: 'mrkdwn',
               text: `*Message:* ${this.form.message}`
             }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*Enquiry:* ${this.form.enquiry}`
+            }
           }
         ]
       }
@@ -97,6 +105,7 @@ export default {
         this.form.name = ''
         this.form.email = ''
         this.form.message = ''
+        this.form.enquiry = ''
         console.log('Form submitted successfully:', response.data)
       } catch (error) {
         console.error('Error submitting form:', error)
