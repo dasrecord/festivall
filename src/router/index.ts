@@ -84,7 +84,7 @@ const routes = [
   },
   {
     path: '/das-record',
-    name :'dasrecord',
+    name :'das-record',
     component: ExternalRedirect,
     props: { url: 'https://festivall.webflow.io/das-record' }
   },
