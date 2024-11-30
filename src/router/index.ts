@@ -36,6 +36,12 @@ const routes = [
     meta: { showHeader: true }
   },
   {
+    path: '/bitcoinmeetup',
+    name: 'bitcoinmeetup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.app.google/18VPBcwYU6HLcpL98' }
+  },
+  {
     path: '/blessedcoast',
     name: 'blessedcoast',
     component: BlessedCoastView
@@ -220,12 +226,6 @@ const routes = [
     name: 'reunionreceipttracker',
     component: ExternalRedirect,
     props: { url: 'https://dasrecord.typeform.com/to/dOYM3jhk' }
-  },
-  {
-    path: '/meetup',
-    name: 'meetup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.app.google/sFArBBC9xjq8oBaU6' }
   },
   {
     path: '/starcrossed',
