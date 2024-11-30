@@ -4,11 +4,11 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'BLESSED COAST FESTIVAL',
+  title: 'FESTIVALL',
   meta: [
     {
       name: 'description',
-      content: 'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
+      content: 'Home of the best Canadian grassroots electronic music festivals.'
     },
     {
       name: 'keywords',
