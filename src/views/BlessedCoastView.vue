@@ -1,8 +1,9 @@
 <script>
-import wolf_image from '@/assets/images/blessed/blessed_coast_festival_coming_soon.jpg'
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useHead } from '@vueuse/head'
+import { ref, onMounted } from 'vue'
+const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
 
 export default {
   name: 'BlessedCoastView',
@@ -27,86 +28,83 @@ export default {
       ]
     })
 
+    const imageList = ref([])
+
+    onMounted(async () => {
+      const imagePaths = Object.keys(images)
+      imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
+
+      for (const path of imagePaths) {
+        const module = await images[path]()
+        imageList.value.push(module.default)
+      }
+    })
+
     return {
-      wolfImage: wolf_image
+      imageList
     }
   }
 }
 </script>
 
 <template>
-  <!-- <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="1" /> -->
   <div class="basic">
-    <img class="wolf" :src="wolfImage" alt="wolf" />
-    <div class="video">
-      <div class="video-wrapper">
-        <div class="iframe-container">
-          <iframe
-            src="https://www.facebook.com/plugins/video.php?height=295&href=https%3A%2F%2Fwww.facebook.com%2Fblessedfestivalbc%2Fvideos%2F862716683897140%2F&show_text=false&width=560&t=0"
-            title="Blessed Coast Trailer"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
-        </div>
-      </div>
+    <h1>Blessed Coast Festival</h1>
+    <!-- <video width="320" height="240" controls>
+      <source src="path_to_your_video.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video> -->
+    <!-- <img :src="mushroomImage" alt="mushroom" /> -->
+    <p>
+      Blessed Coast is a Celebration of Coastal Arts and Culture taking place in Squamish, BC on the
+      traditional, ancestral and unceded territory of the Coast Salish peoples – Skwxwú7mesh
+      (Squamish), Tsleil-Waututh & Musqueam First Nations.
+    </p>
+    <div class="landing_page_images">
+      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
     </div>
     <BlessedCoastCalltoAction />
   </div>
 </template>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+  font-family: Amandine, sans-serif;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .basic {
+  padding: -1rem;
+  margin: -1rem;
+  background-color: #ae9def;
+  color: #531a4a;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-}
-img {
-  border-radius: 25px;
-}
-.video {
-  width: 100%;
-  position: relative;
-  z-index: 1;
-}
-.video-wrapper {
-  position: relative;
-  z-index: 1;
-  margin-top: 1rem;
-}
-.iframe-container {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
-  border-radius: 25px;
-}
-.iframe-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 25px; /* Apply border radius to iframe */
-  box-shadow: 0 0 0 9999px rgb(0, 0, 0) inset; /* Ensure the border radius is applied */
+  width: 100vw;
 }
 h1 {
   font-size: 2rem;
-  color: white;
-  text-align: center;
+  font-weight: 700;
+  margin: 1rem;
+  color: #531a4a;
+}
+p {
+  font-family: Helvetica, sans-serif;
+  font-size: 1rem;
+  color: #531a4a;
+}
+.landing_page_images {
+  display: grid;
+  gap: 5px;
+  padding: 1rem;
+  grid-template-columns: repeat(3, 1fr);
 }
 img {
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  width: 100%;
-  border-radius: 25px;
-}
-
-a:hover {
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  color: white;
+  border-radius: 5px;
 }
 </style>
