@@ -128,6 +128,7 @@ export default {
 .responsive-video {
   width: 100%;
   height: auto;
+  border-radius: 10px;
 }
 h1 {
   font-size: 2rem;
@@ -148,7 +149,7 @@ p {
   grid-template-columns: repeat(3, 1fr);
 }
 img {
-  border-radius: 5px;
+  border-radius: 10px;
 }
 a {
   border-radius: 10px;
