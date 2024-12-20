@@ -4,6 +4,7 @@ import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useHead } from '@vueuse/head'
 import { ref, onMounted } from 'vue'
 const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
+const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
 
 export default {
   name: 'BlessedCoastView',
@@ -29,6 +30,7 @@ export default {
     })
 
     const imageList = ref([])
+    const videoSrc = ref('')
 
     onMounted(async () => {
       const imagePaths = Object.keys(images)
@@ -38,10 +40,13 @@ export default {
         const module = await images[path]()
         imageList.value.push(module.default)
       }
+      const videoModule = await video
+      videoSrc.value = videoModule.default
     })
 
     return {
-      imageList
+      imageList,
+      videoSrc
     }
   }
 }
@@ -50,16 +55,14 @@ export default {
 <template>
   <div class="basic">
     <h1>Blessed Coast Festival</h1>
-    <!-- <video width="320" height="240" controls>
-      <source src="path_to_your_video.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video> -->
-    <!-- <img :src="mushroomImage" alt="mushroom" /> -->
     <p>
       Blessed Coast is a Celebration of Coastal Arts and Culture taking place in Squamish, BC on the
       traditional, ancestral and unceded territory of the Coast Salish peoples – Skwxwú7mesh
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
+    <video controls :src="videoSrc" class="responsive-video">
+      Your browser does not support the video tag.
+    </video>
     <div class="landing_page_images">
       <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
     </div>
@@ -71,9 +74,10 @@ export default {
 * {
   box-sizing: border-box;
   font-family: Amandine, sans-serif;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
+  max-width: 100vw !important;
 }
 
 .basic {
@@ -85,7 +89,11 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 100vw;
+  width: 100%;
+}
+.responsive-video {
+  width: 100%;
+  height: auto;
 }
 h1 {
   font-size: 2rem;
