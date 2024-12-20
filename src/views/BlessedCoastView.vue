@@ -1,6 +1,9 @@
 <script>
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import IconFacebook from '@/components/icons/IconFacebook.vue'
+import IconInstagram from '@/components/icons/IconInstagram.vue'
+
 import { useHead } from '@vueuse/head'
 import { ref, onMounted } from 'vue'
 const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
@@ -10,7 +13,9 @@ export default {
   name: 'BlessedCoastView',
   components: {
     BlessedCoastCalltoAction,
-    CountdownTimer
+    CountdownTimer,
+    IconFacebook,
+    IconInstagram
   },
   setup() {
     useHead({
@@ -55,6 +60,22 @@ export default {
 <template>
   <div class="basic">
     <h1>Blessed Coast Festival</h1>
+    <div class="socials">
+      <a
+        href="https://www.facebook.com/blessedfestivalbc/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconFacebook class="icon" />
+      </a>
+      <a
+        href="https://www.instagram.com/blessedcoastfestivalbc/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconInstagram class="icon" />
+      </a>
+    </div>
     <p>
       Blessed Coast is a Celebration of Coastal Arts and Culture taking place in Squamish, BC on the
       traditional, ancestral and unceded territory of the Coast Salish peoples – Skwxwú7mesh
@@ -76,8 +97,21 @@ export default {
   font-family: Amandine, sans-serif;
   display: flex;
   flex-direction: column;
-  padding: 0 !important;
+  /* padding: 0 !important; */
   max-width: 100vw !important;
+}
+.socials {
+  display: flex;
+  flex-direction: row;
+  margin-top: -1rem;
+}
+.icon {
+  width: 32px;
+  height: 32px;
+  fill: #531a4a;
+  stroke: #531a4a;
+  stroke-width: 1px;
+  margin: 0.5rem;
 }
 
 .basic {
@@ -115,5 +149,11 @@ p {
 }
 img {
   border-radius: 5px;
+}
+a {
+  border-radius: 10px;
+}
+a:hover {
+  background-color: white;
 }
 </style>
