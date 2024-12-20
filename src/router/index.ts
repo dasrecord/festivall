@@ -13,11 +13,6 @@ import MealScanner from '@/views/MealScannerView.vue'
 import BlessedCoastView from '@/views/BlessedCoastView.vue'
 import FestivallLogin from '@/views/LoginView.vue'
 import Dashboard from '@/views/FestivallDashboard.vue'
-import BlessedCoastFamilyView from '@/views/BlessedCoastFamilyView.vue'
-import BlessedCoast2015PerformersView from '@/views/BlessedCoast2015PerformersView.vue'
-import BlessedCoast2016PerformersView from '@/views/BlessedCoast2016PerformersView.vue'
-import BlessedCoast2017PerformersView from '@/views/BlessedCoast2017PerformersView.vue'
-import BlessedCoast2018PerformersView from '@/views/BlessedCoast2018PerformersView.vue'
 import BlessedCoastLineupView from '@/views/BlessedCoastLineupView.vue'
 import SynergisticView from '@/views/SynergisticView.vue'
 
@@ -45,31 +40,6 @@ const routes = [
     path: '/blessedcoast',
     name: 'blessedcoast',
     component: BlessedCoastView
-  },
-  {
-    path: '/blessedcoastfamily',
-    name: 'blessedcoastfamily',
-    component: BlessedCoastFamilyView
-  },
-  {
-    path: '/blessedcoast2015performers',
-    name: 'blessedcoast2015performers',
-    component: BlessedCoast2015PerformersView
-  },
-  {
-    path: '/blessedcoast2016performers',
-    name: 'blessedcoast2016performers',
-    component: BlessedCoast2016PerformersView
-  },
-  {
-    path: '/blessedcoast2017performers',
-    name: 'blessedcoast2017performers',
-    component: BlessedCoast2017PerformersView
-  },
-  {
-    path: '/blessedcoast2018performers',
-    name: 'blessedcoast2018performers',
-    component: BlessedCoast2018PerformersView
   },
   {
     path: '/blessedcoastlineup',
