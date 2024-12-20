@@ -30,25 +30,31 @@ export default {
 </template>
 
 <style scoped>
+/* Light BG #d1c8f4 Dark BG: #ae9def Dark Font: #531a4a80 Light Font: #531a4a */
 @import url('https://use.typekit.net/yay7cee.css');
 
 .call-to-action {
   width: 100%;
   text-align: center;
-  border: 3px solid #f0f0f0;
+  border: 3px solid #531a4a;
   border-radius: 30px;
   margin-top: 1rem;
   font-family: 'amandine', sans-serif;
   font-weight: 700;
 }
 .call-to-action a {
+  color: #531a4a;
   border-radius: 10px;
 }
+.call-to-action a:hover {
+  background-color: #531a4a;
+  color: #d1c8f4;
+}
 h1 {
-  border: 1px solid #79bcff40;
+  border: 1px solid #531a4a80;
   padding: 0.5rem;
   margin: 0.5rem;
-  box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 25px #531a4a;
 }
 
 .know-more,

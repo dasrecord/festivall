@@ -160,39 +160,19 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 
 .reunion-emblem {
-<<<<<<< HEAD
-  height: 40px;
-=======
-  height: 60%;
-  margin-top: 1rem;
-  padding: 0.6rem;
->>>>>>> c35262c (improve emblem padding)
 }
 .fuse-logo {
-  height: 60px;
 }
 .blessed-coast-emblem {
-  height: 75px;
 }
 .impact-logo {
-  height: 50px;
 }
 .synergistic-logo {
-<<<<<<< HEAD
-  height: 50px;
-=======
-  height: 60%;
-  margin-top: 1rem;
-  padding: 0.6rem;
->>>>>>> c35262c (improve emblem padding)
 }
 .das-record-logo {
-  height: 100px;
 }
 .evolved-classic-logo {
-  height: 80px;
 }
 .festivall-emblem {
-  height: 100px;
 }
 </style>
