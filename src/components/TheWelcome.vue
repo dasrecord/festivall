@@ -145,8 +145,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 .container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.5rem;
+  /* padding: 1rem; */
   margin: 0 auto;
   max-width: 1200px;
   justify-content: center;
@@ -154,25 +154,33 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .welcome-item {
-  height: 300px;
+  height: 400px;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 3fr;
 }
 
 .reunion-emblem {
+  width: 350px;
 }
 .fuse-logo {
+  width: 250px;
 }
 .blessed-coast-emblem {
+  width: 300px;
 }
 .impact-logo {
+  width: 300px;
 }
 .synergistic-logo {
+  width: 350px;
 }
 .das-record-logo {
+  width: 250px;
 }
 .evolved-classic-logo {
+  width: 300px;
 }
 .festivall-emblem {
+  width: 150px;
 }
 </style>
