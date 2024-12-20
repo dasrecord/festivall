@@ -15,8 +15,8 @@ export default {
       <RouterLink to="">CHECK THE LINEUP</RouterLink><br />
     </h1> -->
     <h1 class="know-more">
-      Want to know more?<br />
-      <RouterLink to="/blessedcoastfamily">CLICK HERE</RouterLink>
+      Want to get involved?<br />
+      <RouterLink to="#">APPLICATIONS COMING SOON</RouterLink>
     </h1>
     <h1 class="contact">
       Have something to say? <br />

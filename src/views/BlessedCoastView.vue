@@ -106,6 +106,7 @@ p {
   font-size: 1rem;
   color: #531a4a;
 }
+
 .landing_page_images {
   display: grid;
   gap: 5px;
