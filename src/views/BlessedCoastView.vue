@@ -110,12 +110,11 @@ export default {
   height: 32px;
   fill: #531a4a;
   stroke: #531a4a;
-  stroke-width: 1px;
+  stroke-width: 0;
   margin: 0.5rem;
 }
 
 .basic {
-  /* padding: -1rem; */
   /* margin: -1rem; */
   background-color: #ae9def;
   color: #531a4a;
@@ -131,14 +130,14 @@ export default {
   border-radius: 10px;
 }
 h1 {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 700;
   margin: 1rem;
   color: #531a4a;
 }
 p {
   font-family: Helvetica, sans-serif;
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #531a4a;
 }
 
@@ -156,5 +155,23 @@ a {
 }
 a:hover {
   background-color: white;
+}
+@media (max-width: 768px) {
+  .basic {
+    font-size: 1.5rem;
+  }
+  .landing_page_images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+  h1 {
+    font-size: 3rem;
+  }
+  p {
+    font-size: 1rem;
+  }
 }
 </style>
