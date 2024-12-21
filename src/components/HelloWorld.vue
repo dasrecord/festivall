@@ -1,12 +1,14 @@
 <script setup lang="ts">
 defineProps<{
   msg: string
+  color: string
 }>()
 </script>
 
 <template>
   <div class="greetings">
-    <h1 class="blue">{{ msg }}</h1>
+    <h1 :style="{ color: color }">{{ msg }}</h1>
+
     <!-- <h3>...home of the best Canadian grassroots electronic music festivals...</h3> -->
   </div>
 </template>

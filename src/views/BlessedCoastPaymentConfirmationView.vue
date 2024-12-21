@@ -1,11 +1,11 @@
 <template>
-  <img :src="BlessedCoastComingSoon" alt="Blessed Coast Coming Soon" />
+  <!-- <img :src="BlessedCoastComingSoon" alt="Blessed Coast Coming Soon" /> -->
   <div class="payment-confirmation">
     <img :src="BlessedCoastEmblem" alt="Blessed Coast Emblem" class="logo" />
     <h1>Thank you for your payment!</h1>
     <h2>Your QR Code will be sent to your email inbox.</h2>
     <h2>We look forward to seeing you at</h2>
-    <HelloWorld msg="Blessed Coast 2025" />
+    <HelloWorld msg="Blessed Coast 2025" color="white" />
     <RouterLink to="/blessedcoastamenities"> <h2>CLICK HERE TO PLAN YOUR FESTIVAL</h2></RouterLink>
   </div>
 </template>
@@ -38,7 +38,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 2rem;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #531a4ae3;
   border-radius: 50px;
   padding: 2rem;
   z-index: 0;
@@ -61,13 +61,15 @@ img:not(.logo) {
   height: auto;
 }
 a {
-  color: white;
+  background-color: white;
+  color: #531a4a;
   border-radius: 15px;
   font-size: 20px;
   border: 1px solid white;
   padding: 10px;
 }
 a:hover {
+  background-color: #531a4a;
   color: white;
 }
 </style>

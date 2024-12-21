@@ -66,10 +66,16 @@ export default {
 @import url('https://use.typekit.net/yay7cee.css');
 
 .amenities {
+  color: #531a4a;
+  background-color: #ae9def;
   font-family: 'amandine', sans-serif;
   text-align: center;
 }
+h2 {
+  font-family: 'Helvetica', sans-serif;
+}
 ul {
+  font-family: 'Helvetica', sans-serif;
   margin-bottom: 2rem;
   padding: 0;
   display: grid;
@@ -79,12 +85,13 @@ ul {
 }
 li {
   padding: 0.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid #531a4a80;
+  color: #531a4a;
   border-radius: 10px;
   display: flex;
   padding: 0.3rem;
   justify-content: center;
-  background: radial-gradient(circle, rgba(0, 0, 0), rgba(0, 128, 255, 0.1));
+  background: radial-gradient(circle, #d1c8f4(0, 0, 0), rgba(0, 128, 255, 0.1));
   font-weight: 700;
 }
 .options {
@@ -96,14 +103,16 @@ li {
 }
 
 a {
+  color: #531a4a;
   padding: 1rem;
-  border: 1px solid white;
+  border: 1px solid #531a4a;
   border-radius: 10px;
   font-size: 24px;
   font-weight: 700;
 }
 
 a:hover {
+  background-color: #531a4a;
   color: white;
 }
 </style>
