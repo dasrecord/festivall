@@ -9,9 +9,9 @@
       agency and music firm, that supports artists with A&R and publishing consultants across
       Canada, the US, and Europe.
     </h2>
-  </div>
-  <div class="playbills">
-    <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+    <div class="playbills">
+      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+    </div>
   </div>
 </template>
 
@@ -34,7 +34,7 @@ onMounted(async () => {
 
 <style scoped>
 .about {
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 .playbills {
