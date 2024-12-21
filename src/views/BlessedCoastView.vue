@@ -97,7 +97,7 @@ export default {
   font-family: Amandine, sans-serif;
   display: flex;
   flex-direction: column;
-  /* padding: 0 !important; */
+  justify-content: center;
   max-width: 100vw !important;
 }
 .socials {
@@ -116,7 +116,9 @@ export default {
 
 .basic {
   padding: -1rem;
-  margin: -1rem;
+
+  margin: 0 auto;
+  /* margin: -1rem; */
   background-color: #ae9def;
   color: #531a4a;
   display: flex;
@@ -129,9 +131,9 @@ export default {
   width: 100%;
   height: auto;
   border-radius: 10px;
+  margin-bottom: 1rem;
 }
 h1 {
-  font-size: 2rem;
   font-weight: 700;
   margin: 1rem;
   color: #531a4a;
@@ -144,12 +146,12 @@ p {
 
 .landing_page_images {
   display: grid;
-  gap: 5px;
-  padding: 1rem;
+  /* padding: 1rem; */
   grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 img {
-  border-radius: 10px;
+  border-radius: 5px;
 }
 a {
   border-radius: 10px;
