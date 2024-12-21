@@ -115,8 +115,8 @@ export default {
 }
 
 .basic {
-  padding: -1rem;
-  margin: -1rem;
+  /* padding: -1rem; */
+  /* margin: -1rem; */
   background-color: #ae9def;
   color: #531a4a;
   display: flex;
