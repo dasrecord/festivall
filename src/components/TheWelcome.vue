@@ -154,9 +154,9 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .welcome-item {
-  height: 400px;
+  height: 300px;
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr 3fr;
+  grid-template-rows: 0.5fr 0.5fr 0.5fr 5fr;
 }
 
 .reunion-emblem {
@@ -175,7 +175,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   width: 350px;
 }
 .das-record-logo {
-  width: 250px;
+  width: 200px;
 }
 .evolved-classic-logo {
   width: 300px;
