@@ -34,23 +34,23 @@ onMounted(async () => {
     <h3 class="upcoming-shows">
       <h2>UPCOMING SHOWS</h2>
       <div class="event">
-        <h3>SPRING FLING</h3>
-        <p>DATE</p>
+        <h3>SPRING</h3>
+        <p>T.B.A.</p>
       </div>
       <br />
       <div class="event">
-        <h3>SUMMER JAM</h3>
-        <p>DATE</p>
+        <h3>SUMMER</h3>
+        <p>T.B.A.</p>
       </div>
       <br />
       <div class="event">
-        <h3>FALL MIXER</h3>
-        <p>DATE</p>
+        <h3>FALL</h3>
+        <p>T.B.A.</p>
       </div>
       <br />
       <div class="event">
-        <h3>WINTER FORMAL</h3>
-        <p>DATE</p>
+        <h3>WINTER</h3>
+        <p>T.B.A.</p>
       </div>
     </h3>
     <div class="playbills">
@@ -74,6 +74,16 @@ onMounted(async () => {
   flex-direction: row;
   justify-content: space-around;
 }
+
+.upcoming-shows,
+.event {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .playbills {
   display: grid;
   grid-template-columns: repeat(3, 2fr);
