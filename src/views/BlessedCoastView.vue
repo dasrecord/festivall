@@ -76,7 +76,11 @@ export default {
         <IconInstagram class="icon" />
       </a>
     </div>
-    <p>Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC</p>
+    <p>
+      Blessed Coast is a Celebration of Coastal Arts and Culture taking place in Squamish, BC on the
+      traditional, ancestral and unceded territory of the Coast Salish peoples - Skwxwú7mesh
+      (Squamish), Tsleil-Waututh & Musqueam First Nations.
+    </p>
     <video controls :src="videoSrc" class="responsive-video">
       Your browser does not support the video tag.
     </video>
