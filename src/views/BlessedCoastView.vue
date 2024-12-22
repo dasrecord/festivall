@@ -128,6 +128,7 @@ export default {
   width: 100%;
   height: auto;
   border-radius: 10px;
+  margin-bottom: 1rem;
 }
 h1 {
   font-size: 3rem;
@@ -143,8 +144,7 @@ p {
 
 .landing_page_images {
   display: grid;
-  gap: 5px;
-  padding: 1rem;
+  gap: 10px;
   grid-template-columns: repeat(3, 1fr);
 }
 img {

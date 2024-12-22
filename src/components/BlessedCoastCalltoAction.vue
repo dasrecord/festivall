@@ -40,11 +40,13 @@ export default {
   border-radius: 30px;
   margin-top: 1rem;
   font-family: 'amandine', sans-serif;
+  font-size: 1rem;
   font-weight: 700;
 }
 .call-to-action a {
   color: #531a4a;
   border-radius: 10px;
+  font-weight: 700;
 }
 .call-to-action a:hover {
   background-color: #531a4a;
