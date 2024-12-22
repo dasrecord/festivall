@@ -35,7 +35,7 @@ export default {
     })
 
     const imageList = ref([])
-    const videoSrc = ref('')
+    const enlargedImage = ref(null)
 
     onMounted(async () => {
       const imagePaths = Object.keys(images)
@@ -45,19 +45,26 @@ export default {
         const module = await images[path]()
         imageList.value.push(module.default)
       }
+
       const videoModule = await video
       videoSrc.value = videoModule.default
     })
 
+    const toggleEnlarge = (index) => {
+      enlargedImage.value = enlargedImage.value === index ? null : index
+    }
+
     return {
       imageList,
-      videoSrc
+      enlargedImage,
+      toggleEnlarge
     }
   }
 }
 </script>
 
 <template>
+  <!-- <CountdownTimer target-year="2025" target-month="08" target-day="01" /> -->
   <div class="basic">
     <h1>Blessed Coast Festival</h1>
     <div class="socials">
@@ -85,7 +92,14 @@ export default {
       Your browser does not support the video tag.
     </video>
     <div class="landing_page_images">
-      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+      <img
+        v-for="(image, index) in imageList"
+        :key="index"
+        :src="image"
+        :class="{ enlarged: enlargedImage === index }"
+        @click="toggleEnlarge(index)"
+        alt="playbill"
+      />
     </div>
     <BlessedCoastCalltoAction />
   </div>
@@ -100,6 +114,7 @@ export default {
   /* padding: 0 !important; */
   max-width: 100vw !important;
 }
+
 .socials {
   display: flex;
   flex-direction: row;
@@ -147,9 +162,19 @@ p {
   gap: 10px;
   grid-template-columns: repeat(3, 1fr);
 }
-img {
+.landing_page_images img {
   border-radius: 10px;
+
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
 }
+
+.landing_page_images img.enlarged {
+  transform: scale(2);
+  z-index: 10;
+  position: relative;
+}
+  
 a {
   border-radius: 10px;
 }
