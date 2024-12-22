@@ -161,19 +161,19 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 
 .reunion-emblem {
-  width: 350px;
+  width: 100%;
 }
 .fuse-logo {
-  width: 250px;
+  width: 100%;
 }
 .blessed-coast-emblem {
-  width: 300px;
+  width: 100%;
 }
 .impact-logo {
-  width: 300px;
+  width: 100%;
 }
 .synergistic-logo {
-  width: 350px;
+  width: 100%;
 }
 .das-record-logo {
   width: 200px;
