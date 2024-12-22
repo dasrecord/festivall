@@ -41,7 +41,7 @@
 </template>
 <script>
 import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
-import CountdownTimer from '@/components/CountdownTimer.vue'
+// import CountdownTimer from '@/components/CountdownTimer.vue'
 import IconFacebook from '@/components/icons/IconFacebook.vue'
 import IconInstagram from '@/components/icons/IconInstagram.vue'
 
@@ -54,7 +54,7 @@ export default {
   name: 'BlessedCoastView',
   components: {
     BlessedCoastCalltoAction,
-    CountdownTimer,
+    // CountdownTimer,e
     IconFacebook,
     IconInstagram
   },
