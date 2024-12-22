@@ -78,7 +78,7 @@ export default {
     </div>
     <p>
       Blessed Coast is a Celebration of Coastal Arts and Culture taking place in Squamish, BC on the
-      traditional, ancestral and unceded territory of the Coast Salish peoples – Skwxwú7mesh
+      traditional, ancestral and unceded territory of the Coast Salish peoples - Skwxwú7mesh
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
     <video controls :src="videoSrc" class="responsive-video">
