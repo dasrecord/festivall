@@ -7,7 +7,7 @@ import fuse_logo from '../assets/images/fuse_logo_white.png'
 import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
-import das_record_logo from '../assets/images/das_record_logo_white.png'
+import das_record_logo from '../assets/images/das_record_logo_white_edited.png'
 import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.png'
 import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 </script>
@@ -161,27 +161,27 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 
 .reunion-emblem {
-  width: 100%;
+  width: 90%;
 }
 .fuse-logo {
-  width: 100%;
+  width: 50%;
 }
 .blessed-coast-emblem {
   width: 100%;
 }
 .impact-logo {
-  width: 100%;
+  width: 70%;
 }
 .synergistic-logo {
-  width: 100%;
+  width: 90%;
 }
 .das-record-logo {
-  width: 200px;
+  width: 210px;
 }
 .evolved-classic-logo {
-  width: 300px;
+  width: 280px;
 }
 .festivall-emblem {
-  width: 150px;
+  width: 50%;
 }
 </style>
