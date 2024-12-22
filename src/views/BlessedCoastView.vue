@@ -1,68 +1,3 @@
-<script>
-import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
-import CountdownTimer from '@/components/CountdownTimer.vue'
-import IconFacebook from '@/components/icons/IconFacebook.vue'
-import IconInstagram from '@/components/icons/IconInstagram.vue'
-
-import { useHead } from '@vueuse/head'
-import { ref, onMounted } from 'vue'
-const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
-const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
-
-export default {
-  name: 'BlessedCoastView',
-  components: {
-    BlessedCoastCalltoAction,
-    CountdownTimer,
-    IconFacebook,
-    IconInstagram
-  },
-  setup() {
-    useHead({
-      title: 'BLESSED COAST FESTIVAL',
-      meta: [
-        {
-          name: 'description',
-          content:
-            'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
-        },
-        {
-          name: 'keywords',
-          content:
-            'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
-        }
-      ]
-    })
-
-    const imageList = ref([])
-    const enlargedImage = ref(null)
-
-    onMounted(async () => {
-      const imagePaths = Object.keys(images)
-      imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
-
-      for (const path of imagePaths) {
-        const module = await images[path]()
-        imageList.value.push(module.default)
-      }
-
-      const videoModule = await video
-      videoSrc.value = videoModule.default
-    })
-
-    const toggleEnlarge = (index) => {
-      enlargedImage.value = enlargedImage.value === index ? null : index
-    }
-
-    return {
-      imageList,
-      enlargedImage,
-      toggleEnlarge
-    }
-  }
-}
-</script>
-
 <template>
   <!-- <CountdownTimer target-year="2025" target-month="08" target-day="01" /> -->
   <div class="basic">
@@ -104,6 +39,76 @@ export default {
     <BlessedCoastCalltoAction />
   </div>
 </template>
+<script>
+import BlessedCoastCalltoAction from '@/components/BlessedCoastCalltoAction.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
+import IconFacebook from '@/components/icons/IconFacebook.vue'
+import IconInstagram from '@/components/icons/IconInstagram.vue'
+
+import { useHead } from '@vueuse/head'
+import { ref, onMounted } from 'vue'
+const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
+const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
+
+export default {
+  name: 'BlessedCoastView',
+  components: {
+    BlessedCoastCalltoAction,
+    CountdownTimer,
+    IconFacebook,
+    IconInstagram
+  },
+  setup() {
+    useHead({
+      title: 'BLESSED COAST FESTIVAL',
+      meta: [
+        {
+          name: 'description',
+          content:
+            'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
+        },
+        {
+          name: 'keywords',
+          content:
+            'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
+        }
+      ]
+    })
+
+    const imageList = ref([])
+    const enlargedImage = ref(null)
+    const videoSrc = ref('')
+
+    onMounted(async () => {
+      try {
+        const imagePaths = Object.keys(images)
+        imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
+
+        for (const path of imagePaths) {
+          const module = await images[path]()
+          imageList.value.push(module.default)
+        }
+
+        const videoModule = await video
+        videoSrc.value = videoModule.default
+      } catch (error) {
+        console.error('Error during onMounted hook:', error)
+      }
+    })
+
+    const toggleEnlarge = (index) => {
+      enlargedImage.value = enlargedImage.value === index ? null : index
+    }
+
+    return {
+      imageList,
+      enlargedImage,
+      toggleEnlarge,
+      videoSrc
+    }
+  }
+}
+</script>
 
 <style scoped>
 * {
@@ -174,7 +179,7 @@ p {
   z-index: 10;
   position: relative;
 }
-  
+
 a {
   border-radius: 10px;
 }
