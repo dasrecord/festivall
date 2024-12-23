@@ -54,7 +54,7 @@ export default {
   name: 'BlessedCoastView',
   components: {
     BlessedCoastCalltoAction,
-    // CountdownTimer,e
+    // CountdownTimer,
     IconFacebook,
     IconInstagram
   },
