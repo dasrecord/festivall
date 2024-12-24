@@ -15,6 +15,7 @@ import FestivallLogin from '@/views/LoginView.vue'
 import Dashboard from '@/views/FestivallDashboard.vue'
 import BlessedCoastLineupView from '@/views/BlessedCoastLineupView.vue'
 import SynergisticView from '@/views/SynergisticView.vue'
+import PlaceHolderView from '@/views/PlaceHolderView.vue'
 
 
 const routes = [
@@ -87,6 +88,12 @@ const routes = [
     name: 'nye',
     component: ExternalRedirect,
     props: { url: 'https://dasrecord.typeform.com/to/dX5LAsHg' }
+  },
+  {
+    path: '/placeholder',
+    name: 'placeholder',
+    component: PlaceHolderView,
+    meta: { showHeader: true }
   },
   {
     path: '/reunion',

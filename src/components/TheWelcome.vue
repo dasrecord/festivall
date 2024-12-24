@@ -7,7 +7,7 @@ import fuse_logo from '../assets/images/fuse_logo_white.png'
 import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
-import das_record_logo from '../assets/images/das_record_logo_white.png'
+import das_record_logo from '../assets/images/das_record_logo_white_edited.png'
 import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.png'
 import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 </script>
@@ -146,7 +146,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 0.5rem;
-  /* padding: 1rem; */
+  padding: 1rem;
   margin: 0 auto;
   max-width: 1200px;
   justify-content: center;
@@ -154,33 +154,34 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   text-align: center;
 }
 .welcome-item {
-  height: 400px;
+  height: 300px;
+  padding: 1rem;
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr 3fr;
+  grid-template-rows: 1fr 1fr 1fr 8fr;
 }
 
 .reunion-emblem {
-  width: 350px;
+  width: 90%;
 }
 .fuse-logo {
-  width: 250px;
+  width: 50%;
 }
 .blessed-coast-emblem {
-  width: 300px;
+  width: 100%;
 }
 .impact-logo {
-  width: 300px;
+  width: 70%;
 }
 .synergistic-logo {
-  width: 350px;
+  width: 90%;
 }
 .das-record-logo {
-  width: 250px;
+  width: 210px;
 }
 .evolved-classic-logo {
-  width: 300px;
+  width: 280px;
 }
 .festivall-emblem {
-  width: 150px;
+  width: 50%;
 }
 </style>
