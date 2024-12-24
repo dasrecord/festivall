@@ -25,8 +25,10 @@ useHead({
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/dasrecord">Das Record</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/fusecollective">Fuse</RouterLink>
+        <RouterLink to="/placeholder">Place Holder</RouterLink>
         <RouterLink to="/blessedcoast">Blessed</RouterLink>
         <RouterLink to="/synergistic">Synergistic</RouterLink>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
@@ -69,7 +71,7 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
 
