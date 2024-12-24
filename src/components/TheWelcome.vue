@@ -4,6 +4,7 @@ import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import fuse_logo from '../assets/images/fuse_logo_white.png'
+import placeholder_logo from '../assets/images/placeholder_logo_white.png'
 import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
@@ -27,17 +28,32 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       </template>
     </WelcomeItem>
+
     <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
       </template>
-      <template #heading><RouterLink to="/fusecollective">Fuse Collective</RouterLink></template>
+      <template #heading><RouterLink to="/dasrecord">Das Record</RouterLink></template>
       <template #description>
-        Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists,
-        and promoters all coming together to create and support new growth in the scene.
+        A medical doctor by day and a DJ/musician/coder by night, Das Record is a live piano and
+        electronic music act and runs music festivals accross Canada.
       </template>
       <template #logo>
-        <img :src="fuse_logo" alt="fuse_logo" class="fuse-logo" />
+        <img :src="das_record_logo" alt="das_record_logo" class="das-record-logo" />
+      </template>
+    </WelcomeItem>
+
+    <WelcomeItem class="welcome-item">
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading><RouterLink to="/placeholder">Placeholder</RouterLink></template>
+      <template #description>
+        A quarterly event series that brings together music enthusiasts and artists for
+        unforgettable performances and experiences.
+      </template>
+      <template #logo>
+        <img :src="placeholder_logo" alt="festivall" class="placeholder-logo" />
       </template>
     </WelcomeItem>
 
@@ -46,14 +62,43 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         <IconFestivall />
       </template>
       <template #heading><RouterLink to="/blessedcoast">Blessed Coast</RouterLink></template>
-
       <template #description>
         Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.
         Multi-cultural, family friendly, music, yoga with inspired artists, teachers & workshops.
       </template>
-
       <template #logo>
         <img :src="blessed_coast_emblem" alt="blessed_coast_emblem" class="blessed-coast-emblem" />
+      </template>
+    </WelcomeItem>
+
+    <WelcomeItem class="welcome-item">
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading
+        ><RouterLink to="/synergistic">Synergystic Entertainment</RouterLink></template
+      >
+      <template #description
+        >A production company that specializes in electronic music events and festivals.</template
+      >
+      <template #logo>
+        <img :src="synergistic_logo" alt="synergistic_logo" class="synergistic-logo" />
+      </template>
+    </WelcomeItem>
+
+    <WelcomeItem class="welcome-item">
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading>
+        <a href="https://evolvedmusicgroup.com">Evolved Music Group</a>
+      </template>
+      <template #description>
+        An international artist management agency and music firm with A&R and publishing consultants
+        with personel in Canada, the US, and Europe.</template
+      >
+      <template #logo>
+        <img :src="evolved_classic_logo" alt="evolved_classic_logo" class="evolved-classic-logo" />
       </template>
     </WelcomeItem>
 
@@ -77,45 +122,16 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       <template #icon>
         <IconFestivall />
       </template>
-      <template #heading
-        ><RouterLink to="/synergistic">Synergystic Entertainment</RouterLink></template
-      >
-      <template #description
-        >A production company that specializes in electronic music events and festivals.</template
-      >
+      <template #heading><RouterLink to="/fusecollective">Fuse Collective</RouterLink></template>
+      <template #description>
+        Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists,
+        and promoters all coming together to create and support new growth in the scene.
+      </template>
       <template #logo>
-        <img :src="synergistic_logo" alt="synergistic_logo" class="synergistic-logo" />
+        <img :src="fuse_logo" alt="fuse_logo" class="fuse-logo" />
       </template>
     </WelcomeItem>
 
-    <WelcomeItem class="welcome-item">
-      <template #icon>
-        <IconFestivall />
-      </template>
-      <template #heading><RouterLink to="/dasrecord">Das Record</RouterLink></template>
-      <template #description>
-        A medical doctor by day and a DJ/musician/coder by night, Das Record is a live piano and
-        electronic music act and runs music festivals accross Canada.
-      </template>
-      <template #logo>
-        <img :src="das_record_logo" alt="das_record_logo" class="das-record-logo" />
-      </template>
-    </WelcomeItem>
-    <WelcomeItem class="welcome-item">
-      <template #icon>
-        <IconFestivall />
-      </template>
-      <template #heading>
-        <a href="https://evolvedmusicgroup.com">Evolved Music Group</a>
-      </template>
-      <template #description>
-        An international artist management agency and music firm with A&R and publishing consultants
-        with personel in Canada, the US, and Europe.</template
-      >
-      <template #logo>
-        <img :src="evolved_classic_logo" alt="evolved_classic_logo" class="evolved-classic-logo" />
-      </template>
-    </WelcomeItem>
     <WelcomeItem class="welcome-item">
       <template #icon>
         <IconFestivall />
@@ -183,5 +199,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 .festivall-emblem {
   width: 50%;
+}
+.placeholder-logo {
+  width: 80%;
 }
 </style>
