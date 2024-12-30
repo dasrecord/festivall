@@ -17,6 +17,7 @@ import BlessedCoastLineupView from '@/views/BlessedCoastLineupView.vue'
 import SynergisticView from '@/views/SynergisticView.vue'
 import PlaceHolderView from '@/views/PlaceHolderView.vue'
 import SoundTechView from '@/views/SoundTechView.vue'
+import ArtPhotographyView from '@/views/ArtPhotographyView.vue'
 
 
 const routes = [
@@ -30,6 +31,12 @@ const routes = [
     path: '/about',
     name: 'about',
     component: () => import('../views/AboutView.vue'),
+    meta: { showHeader: true }
+  },
+  {
+    path: '/art&photography',
+    name: 'art&photography',
+    component: ArtPhotographyView,
     meta: { showHeader: true }
   },
   {
