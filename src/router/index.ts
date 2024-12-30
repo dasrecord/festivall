@@ -208,7 +208,8 @@ const routes = [
   {
     path: '/soundtech',
     name: 'soundtech',
-    component: SoundTechView
+    component: SoundTechView,
+    meta: { showHeader: true }
   },
   {
     path: '/starcrossed',
