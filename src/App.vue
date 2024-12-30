@@ -28,12 +28,12 @@ useHead({
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/dasrecord">Das Record</RouterLink>
         <RouterLink to="/placeholder">Place Holder</RouterLink>
-        <RouterLink to="/services">Services</RouterLink>
         <RouterLink to="/blessedcoast">Blessed</RouterLink>
         <RouterLink to="/synergistic">Synergistic</RouterLink>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <RouterLink to="/fusecollective">Fuse</RouterLink>
+        <RouterLink to="/services">Services</RouterLink>
         <RouterLink to="/dashboard">Dashboard</RouterLink>
       </nav>
     </div>
