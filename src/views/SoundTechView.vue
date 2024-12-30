@@ -112,6 +112,7 @@
             <option value="voiceovers">voiceovers</option>
             <option value="sound design">sound design</option>
             <option value="audio editing">audio editing</option>
+            <option value="other">other</option>
           </select>
         </div>
         <div>
