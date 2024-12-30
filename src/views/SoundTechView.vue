@@ -11,6 +11,9 @@
       <li>reasonable rates</li>
       <li>positive references</li>
       <li>free consultations</li>
+      <li>guitar servicing</li>
+      <li>drum tuning</li>
+      <li>speaker/amplifier repair</li>
     </ul>
     <br />
     <h2>We Serve:</h2>
@@ -32,6 +35,17 @@
       <li>conference rooms</li>
       <li>churches</li>
       <li>houses of worship</li>
+    </ul>
+    <br />
+    <h2>We Also Do:</h2>
+    <ul class="audio-services">
+      <li>mixing & mastering</li>
+      <li>audio recording</li>
+      <li>music production</li>
+      <li>custom composition</li>
+      <li>voiceovers</li>
+      <li>sound design</li>
+      <li>audio editing</li>
     </ul>
   </div>
   <div class="contact-form">
@@ -109,7 +123,8 @@ export default {
   flex-direction: column;
 }
 .services,
-.audience {
+.audience,
+.audio-services {
   padding: 0;
   font-weight: bold;
   display: flex;
