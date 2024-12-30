@@ -56,6 +56,8 @@ header {
 
 nav {
   display: grid;
+  gap: 0.25rem;
+  padding: 0 1rem;
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
   font-size: 16px;
@@ -82,29 +84,12 @@ nav a {
 }
 
 @media (min-width: 1024px) {
-  header {
-    /* display: flex; */
-    place-items: center;
-    justify-items: center;
-    /* padding-right: calc(var(--section-gap) / 2); */
-  }
 
-  .logo {
-    display: block;
-    /* margin: 0 2rem 0 0; */
-  }
-
-  header .wrapper .logo {
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
 
   nav {
     display: flex;
     text-align: center;
+    justify-content: space-around;
     font-size: 1rem;
 
     padding: 1rem 0;
