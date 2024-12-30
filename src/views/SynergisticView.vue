@@ -93,7 +93,7 @@ export default {
 
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/slack', // Use the actual endpoint URL
+          'https://relayproxy.vercel.app/blessed_coast_slack',
           slackPayload,
           {
             headers: {
