@@ -197,8 +197,10 @@ export default {
 }
 
 .controls {
+  padding: 1rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
 .filters {
   display: flex;
