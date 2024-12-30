@@ -1,13 +1,12 @@
 <template>
   <div class="about">
     <h2>
-      The Reunion, Impact Festival, and Blessed Coast are music events that celebrate electronic
-      music across Canada, featuring top Canadian talents. <br />
-      Prasenjit Das, also known as Das Record, is a doctor by day and a DJ and coder by night. His
-      live piano and electronic music act has been showcased at these festivals over several years.
-      Behind the scenes, he is A&R for Evolved Music Group, an international artist management
-      agency and music firm, that supports artists with A&R and publishing consultants across
-      Canada, the US, and Europe.
+      My name is Prasenjit Das,and I'm a doctor by day and a DJ and coder by night.<br />
+      FESTIVALL brings together all of my music ventures under one roof and represents the best of
+      the Canadian electronic music scene. <br /><br />Behind the scenes, I am the A&R for Evolved
+      Music Group, an international artist management agency and music firm, that supports artists
+      with A&R and publishing consultants across Canada, the US, and Europe.<br /><br />
+      <RouterLink to="dasrecord">CLICK HERE TO LEARN MORE ABOUT ME</RouterLink>
     </h2>
     <div class="playbills">
       <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
@@ -17,6 +16,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const images = import.meta.glob('../assets/images/das_record/playbills/*.*')
 const imageList = ref([])

@@ -18,6 +18,8 @@
     <br />
     <h2>We Serve:</h2>
     <ul class="audience">
+      <li>individuals</li>
+      <li>bands</li>
       <li>schools</li>
       <li>theaters</li>
       <li>clubs</li>
@@ -60,6 +62,58 @@
           <label for="email">Email:</label>
           <input type="email" id="email" v-model="form.email" required />
         </div>
+        <!-- <div>
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" v-model="form.phone" />
+        </div> -->
+        <div>
+          <label for="client">I am/represent a(n):</label>
+          <select id="client" v-model="form.client" required>
+            <option value="individual">individual</option>
+            <option value="band">band</option>
+            <option value="school">school</option>
+            <option value="theater">theater</option>
+            <option value="club">club</option>
+            <option value="bar">bar</option>
+            <option value="restaurant">restaurant</option>
+            <option value="auditorium">auditorium</option>
+            <option value="arena">arena</option>
+            <option value="stadium">stadium</option>
+            <option value="outdoor event">outdoor event</option>
+            <option value="festival">festival</option>
+            <option value="conference">conference</option>
+            <option value="convention center">convention center</option>
+            <option value="hotel">hotel</option>
+            <option value="banquet hall">banquet hall</option>
+            <option value="conference room">conference room</option>
+            <option value="church">church</option>
+            <option value="house of worship">house of worship</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+        <div>
+          <label for="needs">I am looking for:</label>
+          <select id="needs" v-model="form.needs" required>
+            <option value="live sound technician">a live sound technician</option>
+            <option value="sound system setup & tuning">sound system setup & tuning</option>
+            <option value="P/A system installation">P/A system installation</option>
+            <option value="acoustic treatment">acoustic treatment</option>
+            <option value="repairs & upgrades">repairs & upgrades</option>
+            <option value="reasonable rates">reasonable rates</option>
+            <option value="positive references">positive references</option>
+            <option value="free consultations">free consultations</option>
+            <option value="guitar servicing">guitar servicing</option>
+            <option value="drum tuning">drum tuning</option>
+            <option value="speaker/amplifier repair">speaker/amplifier repair</option>
+            <option value="mixing & mastering">mixing & mastering</option>
+            <option value="audio recording">audio recording</option>
+            <option value="music production">music production</option>
+            <option value="custom composition">custom composition</option>
+            <option value="voiceovers">voiceovers</option>
+            <option value="sound design">sound design</option>
+            <option value="audio editing">audio editing</option>
+          </select>
+        </div>
         <div>
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
@@ -84,6 +138,8 @@ export default {
       form: {
         name: '',
         email: '',
+        client: '',
+        needs: '',
         message: ''
       }
     }
@@ -94,7 +150,7 @@ export default {
         const response = await axios.post(
           'https://relayproxy.vercel.app/reunion_slack',
           {
-            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nMessage: ${this.form.message}`
+            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nMessage: ${this.form.message}`
           },
           {
             headers: {
@@ -106,6 +162,8 @@ export default {
           alert('Form submitted successfully!')
           this.form.name = ''
           this.form.email = ''
+          this.form.client = ''
+          this.form.needs = ''
           this.form.message = ''
         } else {
           alert('Failed to submit the form.')
@@ -157,7 +215,8 @@ li {
 form,
 label,
 input,
-textarea {
+textarea,
+select {
   font-family: Helvetica;
   width: 500px;
   max-width: 80vw;
