@@ -49,6 +49,8 @@
     </ul>
     <div class="contact-form">
       <h2>Contact Us</h2>
+      Let's talk about your project.<br />Fill out the form below and we'll get back to you as soon
+      as possible.<br /><br />
       <form @submit.prevent="submitForm">
         <div>
           <label for="name">Name:</label>
@@ -171,5 +173,10 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+}
+button:hover {
+  background-color: #0080ff;
+  color: white;
 }
 </style>
