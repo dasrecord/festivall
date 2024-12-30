@@ -47,24 +47,24 @@
       <li>sound design</li>
       <li>audio editing</li>
     </ul>
-  </div>
-  <div class="contact-form">
-    <h2>Contact Us</h2>
-    <form @submit.prevent="submitForm">
-      <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" v-model="form.name" required />
-      </div>
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="form.email" required />
-      </div>
-      <div>
-        <label for="message">Message:</label>
-        <textarea id="message" v-model="form.message" required></textarea>
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+    <div class="contact-form">
+      <h2>Contact Us</h2>
+      <form @submit.prevent="submitForm">
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" id="name" v-model="form.name" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="form.email" required />
+        </div>
+        <div>
+          <label for="message">Message:</label>
+          <textarea id="message" v-model="form.message" required></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   </div>
 </template>
 
