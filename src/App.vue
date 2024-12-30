@@ -28,7 +28,7 @@ useHead({
         <RouterLink to="/reunion">Reunion</RouterLink>
         <RouterLink to="/dasrecord">Das Record</RouterLink>
         <RouterLink to="/placeholder">Place Holder</RouterLink>
-        <RouterLink to="/soundtech">Sound Tech</RouterLink>
+        <RouterLink to="/services">Services</RouterLink>
         <RouterLink to="/blessedcoast">Blessed</RouterLink>
         <RouterLink to="/synergistic">Synergistic</RouterLink>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
@@ -84,8 +84,6 @@ nav a {
 }
 
 @media (min-width: 1024px) {
-
-
   nav {
     display: flex;
     text-align: center;

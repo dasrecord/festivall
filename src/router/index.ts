@@ -18,6 +18,7 @@ import SynergisticView from '@/views/SynergisticView.vue'
 import PlaceHolderView from '@/views/PlaceHolderView.vue'
 import SoundTechView from '@/views/SoundTechView.vue'
 import ArtPhotographyView from '@/views/ArtPhotographyView.vue'
+import ServicesView from '@/views/ServicesView.vue'
 
 
 const routes = [
@@ -211,6 +212,12 @@ const routes = [
     name: 'reunionreceipttracker',
     component: ExternalRedirect,
     props: { url: 'https://dasrecord.typeform.com/to/dOYM3jhk' }
+  },
+  {
+    path: '/services',
+    name: 'services',
+    component: ServicesView,
+    meta: { showHeader: true }
   },
   {
     path: '/soundtech',
