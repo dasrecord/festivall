@@ -176,7 +176,7 @@ import axios from 'axios'
 import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'CodingWebDevView',
+  name: 'coding&webdev',
   components: {
     HelloWorld
   },

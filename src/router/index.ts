@@ -20,6 +20,7 @@ import SoundTechView from '@/views/SoundTechView.vue'
 import ArtPhotographyView from '@/views/ArtPhotographyView.vue'
 import ServicesView from '@/views/ServicesView.vue'
 import CodingWebDevView from '@/views/CodingWebDevView.vue'
+import TestimonialsView from '@/views/TestimonialsView.vue'
 
 
 const routes = [
@@ -250,6 +251,12 @@ const routes = [
     path: '/synergistic',
     name: 'synergistic',
     component: SynergisticView
+  },
+  {
+    path: '/testimonials',
+    name: 'testimonials',
+    component: TestimonialsView,
+    meta: { showHeader: true }
   }
 ]
 

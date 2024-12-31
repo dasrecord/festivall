@@ -6,7 +6,8 @@
       the Canadian electronic music scene. <br /><br />Behind the scenes, I am the A&R for Evolved
       Music Group, an international artist management agency and music firm, that supports artists
       with A&R and publishing consultants across Canada, the US, and Europe.<br /><br />
-      <RouterLink to="dasrecord">CLICK HERE TO LEARN MORE ABOUT ME</RouterLink>
+      <RouterLink to="dasrecord">CLICK HERE TO LEARN MORE ABOUT ME</RouterLink><br /><br />
+      <RouterLink to="testimonials">READ WHAT OTHERS HAVE TO SAY </RouterLink>
     </h2>
     <div class="playbills">
       <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
@@ -37,6 +38,7 @@ onMounted(async () => {
   padding: 1rem;
   text-align: center;
 }
+
 .playbills {
   display: grid;
   grid-template-columns: repeat(2, 2fr);
