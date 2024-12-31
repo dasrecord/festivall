@@ -10,6 +10,9 @@
       <li>3d modeling</li>
       <li>animation</li>
       <li>canvas & digital artwork</li>
+      <li>album artwork</li>
+      <li>poster design</li>
+      <li>graffiti</li>
     </ul>
     <br />
     <h2>Design Services:</h2>
@@ -20,7 +23,7 @@
       <li>game asset & level design</li>
       <li>2d/3d rigging & level design</li>
       <li>character design</li>
-      <li>2d and 3d animation</li>
+      <li>2d & 3d animation</li>
       <li>stage & art construction</li>
       <li>hair & make-up</li>
       <li>prop design</li>
@@ -31,7 +34,7 @@
     <ul class="photo">
       <li>small events</li>
       <li>family photos</li>
-      <li>hair and fashion</li>
+      <li>hair & fashion</li>
       <li>photo editing</li>
       <li>reconstruction</li>
       <li>color grading</li>
