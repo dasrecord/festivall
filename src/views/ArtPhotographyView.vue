@@ -27,7 +27,7 @@
       <li>stage & art construction</li>
       <li>hair & make-up</li>
       <li>prop design</li>
-      <li>sculpture and game asset design</li>
+      <li>sculpture & game asset design</li>
     </ul>
     <br />
     <h2>Photo Servies:</h2>
@@ -75,15 +75,15 @@
             <option value="fashion">fashion</option>
             <option value="set design">set design</option>
             <option value="game asset & level design">game asset & level design</option>
-            <option value="2d/3d rigging and level design">2d/3d rigging and level design</option>
+            <option value="2d/3d rigging & level design">2d/3d rigging & level design</option>
             <option value="character design">character design</option>
-            <option value="2d and 3d animation">2d and 3d animation</option>
-            <option value="stage and art construction">stage and art construction</option>
-            <option value="hair make up and prop design">hair make up and prop design</option>
-            <option value="sculpture and game asset design">sculpture and game asset design</option>
+            <option value="2d & 3d animation">2d & 3d animation</option>
+            <option value="stage & art construction">stage & art construction</option>
+            <option value="hair make up & prop design">hair make up & prop design</option>
+            <option value="sculpture & game asset design">sculpture & game asset design</option>
             <option value="small events">small events</option>
             <option value="family photos">family photos</option>
-            <option value="hair and fashion">hair and fashion</option>
+            <option value="hair & fashion">hair & fashion</option>
             <option value="photo editing">photo editing</option>
             <option value="reconstruction">reconstruction</option>
             <option value="color grading">color grading</option>
