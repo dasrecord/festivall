@@ -1,6 +1,8 @@
 <template>
   <div class="basic">
     <HelloWorld msg="Sound Tech" />
+    FESTIVALL features an in-house team of sound technicians and audio professionals to help you
+    create the perfect sonic representation of your brand.
     <h2>We Provide:</h2>
     <ul class="services">
       <li>live sound technicians</li>
@@ -182,6 +184,7 @@ export default {
 .basic {
   display: flex;
   flex-direction: column;
+  font-weight: bold;
 }
 .services,
 .audience,
@@ -197,8 +200,9 @@ export default {
   list-style-type: none;
 }
 li {
+  font-weight: bold;
   padding: 5px;
-  margin: 5px;
+  margin: 3px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
