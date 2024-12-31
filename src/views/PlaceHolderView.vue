@@ -16,7 +16,7 @@ const form = ref({
   social_url: '',
   message: ''
 })
-const currentStep = ref(1)
+const currentStep = ref(2)
 
 const submitForm = async () => {
   try {
@@ -107,7 +107,7 @@ onMounted(async () => {
       <br />
       <form @submit.prevent="submitForm">
         <div v-if="currentStep >= 1">
-          <label for="name">Name:</label>
+          <label for="name">Full Name:</label>
           <input
             type="text"
             id="name"
@@ -201,15 +201,13 @@ onMounted(async () => {
             @input="currentStep = form.social_url ? 10 : 9"
           />
         </div>
+
         <div v-if="currentStep >= 10">
-          <label for="presskit">Presskit:</label>
-          <input type="file" id="presskit" @change="handleFileUpload" />
-        </div>
-        <div v-if="currentStep >= 11">
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit" v-if="currentStep >= 11">Submit</button>
+        <button type="submit" v-if="currentStep >= 10">Submit</button>
+
       </form>
     </h3>
   </div>
