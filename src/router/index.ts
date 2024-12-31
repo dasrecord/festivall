@@ -19,6 +19,7 @@ import PlaceHolderView from '@/views/PlaceHolderView.vue'
 import SoundTechView from '@/views/SoundTechView.vue'
 import ArtPhotographyView from '@/views/ArtPhotographyView.vue'
 import ServicesView from '@/views/ServicesView.vue'
+import CodingWebDevView from '@/views/CodingWebDevView.vue'
 
 
 const routes = [
@@ -55,6 +56,12 @@ const routes = [
     path: '/blessedcoastlineup',
     name: 'blessedcoastlineup',
     component: BlessedCoastLineupView
+  },
+  {
+    path: '/coding&webdev',
+    name: 'coding&webdev',
+    component: CodingWebDevView,
+    meta: { showHeader: true }
   },
   {
     path: '/fusecollective', 

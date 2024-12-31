@@ -13,7 +13,16 @@
       <h1>
         <RouterLink to="/art&photography">Art & Photography</RouterLink>
       </h1>
-      <p>Need a photographer or artist for your event?<br />Drop us a line.</p>
+      <p>Looking for a photographer or artist for your event?<br />Drop us a line.</p>
+    </div>
+    <div class="service">
+      <h1>
+        <RouterLink to="/coding&webdev">Coding & Web Development</RouterLink>
+      </h1>
+      <p>
+        Searching for a computer programmer or webmaster?<br />
+        Look no further.
+      </p>
     </div>
     <div class="service">
       <h1>
