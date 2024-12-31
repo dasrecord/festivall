@@ -68,7 +68,7 @@ onMounted(async () => {
   <div class="basic">
     <img class="emblem" :src="placeholder_emblem" alt="Placeholder Emblem" />
     <h2 class="description">
-      "PLACEHOLDER" is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das
+      PlaceHolder is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das
       Record. Hosted at the Paved Arts in Saskatoon, the series will feature a variety of high
       quality local and domestic electronic music artists. The series also plans to showcase spoken
       word, live bands, singer/songwriters, and visual artists.
@@ -105,7 +105,7 @@ onMounted(async () => {
     </h3>
     <h3 class="contact-form">
       <h2>Interested in performing?</h2>
-      <h3>Fill out the form below to apply for a spot in the "PLACEHOLDER" event series.</h3>
+      <h3>Fill out the form below to apply for a spot in the PlaceHolder event series.</h3>
       <br />
       <form @submit.prevent="submitForm">
         <div v-if="currentStep >= 1">
