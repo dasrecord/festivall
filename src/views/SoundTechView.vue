@@ -1,7 +1,7 @@
 <template>
   <div class="basic">
     <HelloWorld msg="Sound Tech" />
-    FESTIVALL features an in-house team of sound technicians and audio professionals to help you
+    FESTIVALL features an in-house team of sound technicians & audio professionals to help you
     create the perfect sonic representation of your brand.
     <h2>We Provide:</h2>
     <ul class="services">
