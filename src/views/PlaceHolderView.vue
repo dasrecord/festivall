@@ -214,6 +214,9 @@ onMounted(async () => {
         <button type="submit" v-if="currentStep >= 10">Submit</button>
       </form>
     </h3>
+    <div class="playbills">
+      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+    </div>
   </div>
 </template>
 
@@ -250,7 +253,8 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin: 1rem;
+
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
