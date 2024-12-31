@@ -1,4 +1,5 @@
 <script setup>
+import placeholder_emblem from '../assets/images/placeholder_logo_white.png'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
@@ -65,6 +66,7 @@ onMounted(async () => {
 </script>
 <template>
   <div class="basic">
+    <img class="emblem" :src="placeholder_emblem" alt="Placeholder Emblem" />
     <h2 class="description">
       "PLACEHOLDER" is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das
       Record. Hosted at the Paved Arts in Saskatoon, the series will feature a variety of high
@@ -207,13 +209,16 @@ onMounted(async () => {
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
         <button type="submit" v-if="currentStep >= 10">Submit</button>
-
       </form>
     </h3>
   </div>
 </template>
 
 <style scoped>
+.emblem {
+  border-radius: 0;
+  width: 75%;
+}
 .basic {
   display: flex;
   flex-direction: column;

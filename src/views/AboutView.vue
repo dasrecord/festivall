@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <h2>
-      My name is Prasenjit Das,and I'm a doctor by day and a DJ and coder by night.<br />
+      My name is Prasenjit Das, and I'm a doctor by day and a DJ and coder by night.<br />
       FESTIVALL brings together all of my music ventures under one roof and represents the best of
       the Canadian electronic music scene. <br /><br />Behind the scenes, I am the A&R for Evolved
       Music Group, an international artist management agency and music firm, that supports artists
