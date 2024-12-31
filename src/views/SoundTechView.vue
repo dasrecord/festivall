@@ -200,7 +200,7 @@ export default {
   list-style-type: none;
 }
 li {
-  font-weight: bold;
+  /* font-weight: bold; */
   padding: 5px;
   margin: 3px;
   border: 1px solid #ccc;

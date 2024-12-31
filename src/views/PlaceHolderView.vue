@@ -1,8 +1,57 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const images = import.meta.glob('../assets/images/mr_fudge/playbills/*.*')
 const imageList = ref([])
+
+const form = ref({
+  name: '',
+  email: '',
+  applicant_type: '',
+  act_type: '',
+  act_name: '',
+  act_description: '',
+  act_website: '',
+  social_url: '',
+
+  message: ''
+})
+
+const submitForm = async () => {
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/reunion_slack',
+      {
+        text: `Name: ${form.value.name}\nEmail: ${form.value.email}\nApplicant Type: ${form.value.applicant_type}\nAct Type: ${form.value.act_type}\nAct Name: ${form.value.act_name}\nAct Description: ${form.value.act_description}\nTrack/Mix URL: ${form.value.track_mix_url}\nAct Website: ${form.value.act_website}\nSocial Media URL: ${form.value.social_url}\nMessage: ${form.value.message}`
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    if (response.status === 200) {
+      alert('Form submitted successfully!')
+      form.value.name = ''
+      form.value.email = ''
+      form.value.message = ''
+      form.value.applicant_type = ''
+      form.value.act_type = ''
+      form.value.act_name = ''
+      form.value.act_description = ''
+      form.value.track_mix_url = ''
+      form.value.act_website = ''
+      form.value.social_url = ''
+      form.value.message = ''
+    } else {
+      alert('Failed to submit the form.')
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error)
+    alert('An error occurred while submitting the form.')
+  }
+}
 
 onMounted(async () => {
   const imagePaths = Object.keys(images)
@@ -16,12 +65,11 @@ onMounted(async () => {
 </script>
 <template>
   <div class="basic">
-    <h1>PLACEHOLDER</h1>
     <h2 class="description">
-      "PLACEHOLDER" is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das Record. 
-      Hosted at the Paved Arts in Saskatoon, the series will feature a variety of high quality local and domestic
-      electronic music artists. The series also plans to showcase spoken word, live bands,
-      singer/songwriters, and visual artists.
+      "PLACEHOLDER" is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das
+      Record. Hosted at the Paved Arts in Saskatoon, the series will feature a variety of high
+      quality local and domestic electronic music artists. The series also plans to showcase spoken
+      word, live bands, singer/songwriters, and visual artists.
     </h2>
     <h3 class="presskits">
       <div>
@@ -53,9 +101,69 @@ onMounted(async () => {
         <p>T.B.A.</p>
       </div>
     </h3>
-    <div class="playbills">
-      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
-    </div>
+    <h3 class="contact-form">
+      <h2>Interested in performing?</h2>
+      <h3>Fill out the form below to apply for a spot in the "PLACEHOLDER" event series.</h3>
+      <br />
+      <form @submit.prevent="submitForm">
+        <div>
+          <label for="name">Name:</label>
+          <input type="text" id="name" v-model="form.name" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="form.email" required />
+        </div>
+        <div>
+          <label for="applicant_type">Applicant Type:</label>
+          <select id="applicant_type" v-model="form.applicant_type" required>
+            <option value="" disabled></option>
+            <option value="individual">Individual</option>
+            <option value="group">Group</option>
+          </select>
+        </div>
+        <div>
+          <label for="act_type">Act Type:</label>
+          <select id="act_type" v-model="form.act_type" required>
+            <option value="" disabled></option>
+            <option value="music">Music</option>
+            <option value="spoken_word">Spoken Word</option>
+            <option value="live_band">Live Band</option>
+            <option value="singer_songwriter">Singer/Songwriter</option>
+            <option value="visual_art">Visual Art</option>
+          </select>
+        </div>
+        <div>
+          <label for="act_name">Act Name:</label>
+          <input type="text" id="act_name" v-model="form.act_name" required />
+        </div>
+        <div>
+          <label for="act_description">Act Description:</label>
+          <textarea id="act_description" v-model="form.act_description" required></textarea>
+        </div>
+        <div>
+          <label for="track_mix_url">Track/Mix URL:</label>
+          <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
+        </div>
+        <div>
+          <label for="act_website">Act Website/URL:</label>
+          <input type="url" id="act_website_url" v-model="form.act_website" />
+        </div>
+        <div>
+          <label for="social_url">Social Media URL:</label>
+          <input type="url" id="social_url" v-model="form.social_url" />
+        </div>
+        <div>
+          <label for="presskit">Presskit:</label>
+          <input type="file" id="presskit" @change="handleFileUpload" />
+        </div>
+        <div>
+          <label for="message">Message:</label>
+          <textarea id="message" v-model="form.message" required></textarea>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </h3>
   </div>
 </template>
 
@@ -82,6 +190,43 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   margin-bottom: 1rem;
+}
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+form,
+label,
+input,
+textarea,
+select {
+  font-family: Helvetica;
+  width: 100%;
+  max-width: 80vw;
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 10px;
+}
+button {
+  background-color: white;
+  width: 100%;
+  max-width: 80vw;
+  display: block;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover {
+  background-color: #0080ff;
+  color: white;
 }
 
 .playbills {
