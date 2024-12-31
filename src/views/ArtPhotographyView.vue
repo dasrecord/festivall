@@ -93,6 +93,15 @@
           </select>
         </div>
         <div>
+          <label for="contact_point">Preferred Contact Person:</label>
+          <select id="contact_point" v-model="form.contact_point" required>
+            <option value="Nish">Nish</option>
+            <option value="Janica">Janica</option>
+            <option value="Becca">Becca</option>
+            <option value="Prasenjit">Prasenjit</option>
+          </select>
+        </div>
+        <div>
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
@@ -118,6 +127,7 @@ export default {
         email: '',
         client: '',
         needs: '',
+        contact_point: '',
         message: ''
       }
     }
@@ -128,7 +138,7 @@ export default {
         const response = await axios.post(
           'https://relayproxy.vercel.app/reunion_slack',
           {
-            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nMessage: ${this.form.message}`
+            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nPreferred Contact Person: ${this.form.contact_point}\nMessage: ${this.form.message}`
           },
           {
             headers: {
@@ -142,6 +152,7 @@ export default {
           this.form.email = ''
           this.form.client = ''
           this.form.needs = ''
+          this.form.contact_point = ''
           this.form.message = ''
         } else {
           alert('Failed to submit the form.')
