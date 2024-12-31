@@ -13,6 +13,7 @@ const form = ref({
   act_type: '',
   act_name: '',
   act_description: '',
+  track_mix_url: '',
   act_website: '',
   social_url: '',
   message: ''
@@ -34,17 +35,19 @@ const submitForm = async () => {
     )
     if (response.status === 200) {
       alert('Form submitted successfully!')
-      form.value.name = ''
-      form.value.email = ''
-      form.value.message = ''
-      form.value.applicant_type = ''
-      form.value.act_type = ''
-      form.value.act_name = ''
-      form.value.act_description = ''
-      form.value.track_mix_url = ''
-      form.value.act_website = ''
-      form.value.social_url = ''
-      form.value.message = ''
+      form.value = {
+        name: '',
+        email: '',
+        applicant_type: '',
+        act_type: '',
+        act_name: '',
+        act_description: '',
+        track_mix_url: '',
+        act_website: '',
+        social_url: '',
+        message: ''
+      }
+      currentStep.value = 1
     } else {
       alert('Failed to submit the form.')
     }
@@ -81,7 +84,7 @@ onMounted(async () => {
         <RouterLink to="/das-record">DAS RECORD<br />PORTFOLIO</RouterLink>
       </div>
     </h3>
-    <h3 class="upcoming-shows">
+    <!-- <h3 class="upcoming-shows">
       <h2>UPCOMING SHOWS</h2>
       <div class="event">
         <h3>SPRING</h3>
@@ -102,7 +105,7 @@ onMounted(async () => {
         <h3>WINTER</h3>
         <p>T.B.A.</p>
       </div>
-    </h3>
+    </h3> -->
     <h3 class="contact-form">
       <h2>Interested in performing?</h2>
       <h3>Fill out the form below to apply for a spot in the PlaceHolder event series.</h3>
