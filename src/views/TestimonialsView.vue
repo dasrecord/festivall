@@ -156,6 +156,173 @@ import HelloWorld from '@/components/HelloWorld.vue'
         project or relationship, I highly endorse Prasun.
       </p>
     </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Cafe Deux Soleils</h2>
+        <h3>Venue</h3>
+      </div>
+      <p>Das Record is a talented musician and composer.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Kala Sidhu</h2>
+        <h3>Event Organizer</h3>
+      </div>
+      <p>
+        Das Record is one of the most professional but, more importantly, inspired musicians I've
+        ever worked with. I've booked hundreds of artists and always know that when dad record is on
+        the bill I not only have a one of a kind experience in store for my guests but also another
+        hand on deck that can co-create live with other artists and help in set transitions.
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Felipe Guerra</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is professional.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Simon Walford</h2>
+        <h3>Performer</h3>
+      </div>
+      <p>
+        Das Record is a performer full of life and the love of it. His music was fun and full of
+        life and movement.
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Pacha Papa</h2>
+        <h3>Artist</h3>
+      </div>
+      <p>Das Record is dope af.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Victor Carter</h2>
+        <h3>Musician</h3>
+      </div>
+      <p>Das Record is uniquely talented.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Pete Woronowski</h2>
+        <h3>Information Source</h3>
+      </div>
+      <p>Das Record is a highly knowledgeable source of information with great people skills.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Daniel Julien</h2>
+        <h3>Entertainer</h3>
+      </div>
+      <p>Das Record is a wonderful source of entertainment, talent and hard work combined.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Kirsten Abigail Eyolfson</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is a rare combination of talent and professionalism.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Brennan Elliott</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is super talented, reliable and efficient.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Shendaia Benson</h2>
+        <h3>Musician</h3>
+      </div>
+      <p>Das Record is a very good musician and DJ.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>CQUEL MC</h2>
+        <h3>Musician</h3>
+      </div>
+      <p>Das Record is amazing.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Victor Carter</h2>
+        <h3>Musician</h3>
+      </div>
+      <p>Das Record is very knowledgeable and able to teach to his student's ability.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Brittany Diehl</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is AWESOME and extremely talented!</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Adam McInnes</h2>
+        <h3>Event Organizer</h3>
+      </div>
+      <p>
+        Das Record is a great DJ, he worked very well with our event and helped keep things on
+        schedule, and was very professional.
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Blair Voth Miller</h2>
+        <h3>Bar Owner</h3>
+      </div>
+      <p>
+        Das Record is a great DJ who always plays to the crowd which is important to us as bar
+        owners!
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Kelley-Anne & Jesse Maxemniuk</h2>
+        <h3>Wedding Couple</h3>
+      </div>
+      <p>
+        Das Record is highly recommended for wedding reception music. We were very happy to have Das
+        play the piano for our cocktail hour and during supper. Thank-you!
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Mike Saint-Jules</h2>
+        <h3>Music Producer</h3>
+      </div>
+      <p>
+        Das Record is the best to work with when it comes to collaborative efforts in music
+        production.
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Victoria Karoline</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is adaptable.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Liam Epp</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is a wonderful example of refined and experienced producing and performance.</p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Chad Reynolds</h2>
+        <h3>Professional</h3>
+      </div>
+      <p>Das Record is talented and professional.</p>
+    </div>
   </div>
 </template>
 
