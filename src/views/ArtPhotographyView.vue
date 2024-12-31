@@ -1,7 +1,7 @@
 <template>
   <div class="basic">
     <HelloWorld msg="Art & Photography" />
-    FESTIVALL features an in house team of photohraphers and graphic designers to help you create
+    FESTIVALL features an in-house team of photohraphers and graphic designers to help you create
     the perfect visual representation of your brand.
     <br />
     <h2>Art Services:</h2>
@@ -18,11 +18,12 @@
       <li>fashion</li>
       <li>set design</li>
       <li>game asset & level design</li>
-      <li>2d/3d rigging and level design</li>
+      <li>2d/3d rigging & level design</li>
       <li>character design</li>
       <li>2d and 3d animation</li>
-      <li>stage and art construction</li>
-      <li>hair make up and prop design</li>
+      <li>stage & art construction</li>
+      <li>hair & make-up</li>
+      <li>prop design</li>
       <li>sculpture and game asset design</li>
     </ul>
     <br />
@@ -155,6 +156,7 @@ export default {
 .basic {
   display: flex;
   flex-direction: column;
+  font-weight: bold;
 }
 .art,
 .design,
@@ -170,8 +172,9 @@ export default {
   list-style-type: none;
 }
 li {
+  font-weight: bold;
   padding: 5px;
-  margin: 5px;
+  margin: 3px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
