@@ -18,9 +18,9 @@ onMounted(async () => {
   <div class="basic">
     <h1>PLACEHOLDER</h1>
     <h2 class="description">
-      "PLACEHOLDER" is a quarterly event series curated by Mr. Fudge and Das Record. The events are
-      held at Paved Arts in Saskatoon and feature a variety of high quality local and domestic
-      electronic music artists. The series also showcases spoken word, live bands,
+      "PLACEHOLDER" is a quarterly event series scheduled for 2025 - curated by Mr. Fudge and Das Record. 
+      Hosted at the Paved Arts in Saskatoon, the series will feature a variety of high quality local and domestic
+      electronic music artists. The series also plans to showcase spoken word, live bands,
       singer/songwriters, and visual artists.
     </h2>
     <h3 class="presskits">
