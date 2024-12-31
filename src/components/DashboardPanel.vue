@@ -11,6 +11,7 @@
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
     <button @click="loadApplicants('rapture')">Rapture</button>
     <button @click="loadApplicants('partywell')">PartyWell</button>
+    <button @click="loadApplicants('reunion')">Reunion</button>
   </div>
 
   <h2>Filter By</h2>
@@ -35,7 +36,12 @@
               {{ applicant.act_name || applicant.full_name }}
             </a>
             <span v-else>
-              {{ applicant.full_name || applicant.act_name || applicant.email.split('@')[0] }}
+              {{
+                applicant.first_name + ' ' + applicant.last_name ||
+                applicant.full_name ||
+                applicant.act_name ||
+                applicant.email.split('@')[0]
+              }}
             </span>
             <br />
           </h2>
@@ -80,6 +86,7 @@ export default {
         { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
         { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
         { property: 'applicant_type', value: 'DJ', label: 'DJs' },
+        { property: 'applicant_type', value: 'DJ/Band', label: 'DJ/Band' },
         { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
         { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
         { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
