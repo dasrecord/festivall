@@ -14,9 +14,9 @@ const form = ref({
   act_description: '',
   act_website: '',
   social_url: '',
-
   message: ''
 })
+const currentStep = ref(1)
 
 const submitForm = async () => {
   try {
@@ -106,25 +106,47 @@ onMounted(async () => {
       <h3>Fill out the form below to apply for a spot in the "PLACEHOLDER" event series.</h3>
       <br />
       <form @submit.prevent="submitForm">
-        <div>
+        <div v-if="currentStep >= 1">
           <label for="name">Name:</label>
-          <input type="text" id="name" v-model="form.name" required />
+          <input
+            type="text"
+            id="name"
+            v-model="form.name"
+            @input="currentStep = form.name ? 2 : 1"
+            required
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 2">
           <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+          <input
+            type="email"
+            id="email"
+            v-model="form.email"
+            @input="currentStep = form.email ? 3 : 2"
+            required
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 3">
           <label for="applicant_type">Applicant Type:</label>
-          <select id="applicant_type" v-model="form.applicant_type" required>
+          <select
+            id="applicant_type"
+            v-model="form.applicant_type"
+            @change="currentStep = form.applicant_type ? 4 : 3"
+            required
+          >
             <option value="" disabled></option>
             <option value="individual">Individual</option>
             <option value="group">Group</option>
           </select>
         </div>
-        <div>
+        <div v-if="currentStep >= 4">
           <label for="act_type">Act Type:</label>
-          <select id="act_type" v-model="form.act_type" required>
+          <select
+            id="act_type"
+            v-model="form.act_type"
+            @change="currentStep = form.act_type ? 5 : 4"
+            required
+          >
             <option value="" disabled></option>
             <option value="music">Music</option>
             <option value="spoken_word">Spoken Word</option>
@@ -133,35 +155,61 @@ onMounted(async () => {
             <option value="visual_art">Visual Art</option>
           </select>
         </div>
-        <div>
+        <div v-if="currentStep >= 5">
           <label for="act_name">Act Name:</label>
-          <input type="text" id="act_name" v-model="form.act_name" required />
+          <input
+            type="text"
+            id="act_name"
+            v-model="form.act_name"
+            @input="currentStep = form.act_name ? 6 : 5"
+            required
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 6">
           <label for="act_description">Act Description:</label>
-          <textarea id="act_description" v-model="form.act_description" required></textarea>
+          <textarea
+            id="act_description"
+            v-model="form.act_description"
+            @input="currentStep = form.act_description ? 7 : 6"
+            required
+          ></textarea>
         </div>
-        <div>
+        <div v-if="currentStep >= 7">
           <label for="track_mix_url">Track/Mix URL:</label>
-          <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
+          <input
+            type="url"
+            id="track_mix_url"
+            v-model="form.track_mix_url"
+            @input="currentStep = form.track_mix_url ? 8 : 7"
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 8">
           <label for="act_website">Act Website/URL:</label>
-          <input type="url" id="act_website_url" v-model="form.act_website" />
+          <input
+            type="url"
+            id="act_website_url"
+            v-model="form.act_website"
+            @input="currentStep = form.act_website ? 9 : 8"
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 9">
           <label for="social_url">Social Media URL:</label>
-          <input type="url" id="social_url" v-model="form.social_url" />
+          <input
+            type="url"
+            id="social_url"
+            v-model="form.social_url"
+            @input="currentStep = form.social_url ? 10 : 9"
+          />
         </div>
-        <div>
+        <div v-if="currentStep >= 10">
           <label for="presskit">Presskit:</label>
           <input type="file" id="presskit" @change="handleFileUpload" />
         </div>
-        <div>
+        <div v-if="currentStep >= 11">
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" v-if="currentStep >= 11">Submit</button>
       </form>
     </h3>
   </div>
