@@ -47,7 +47,6 @@ export default {
 
 <style scoped>
 .services {
-  margin-top: 10%;
   height: 300px;
   padding: 1rem;
   display: flex;
