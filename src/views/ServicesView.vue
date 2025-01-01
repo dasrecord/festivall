@@ -2,6 +2,15 @@
   <div class="services">
     <div class="service">
       <h1>
+        <RouterLink to="/starcrossed">Record Label</RouterLink>
+      </h1>
+      <p>
+        Want to submit your demos?<br />
+        Start here.
+      </p>
+    </div>
+    <div class="service">
+      <h1>
         <RouterLink to="/soundtech">Sound Tech</RouterLink>
       </h1>
       <p>
@@ -14,6 +23,15 @@
         <RouterLink to="/art&photography">Art & Photography</RouterLink>
       </h1>
       <p>Looking for a photographer or artist for your event?<br />Drop us a line.</p>
+    </div>
+    <div class="service">
+      <h1>
+        <a href="https://www.instagram.com/cakeawaysk">Cakeaway</a>
+      </h1>
+      <p>
+        Interested in custom desserts and cakes?<br />
+        Dig in.
+      </p>
     </div>
     <div class="service">
       <h1>
