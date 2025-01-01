@@ -30,17 +30,27 @@
       </h1>
       <p>Interested in learning about Bitcoin?<br />Schedule a free workshop.</p>
     </div>
+    <div id="emblem">
+      <img :src="festivall_emblem" alt="Festivall Emblem" />
+    </div>
   </div>
 </template>
 
 <script>
 import HelloWorld from '@/components/HelloWorld.vue'
 import { RouterLink } from 'vue-router'
+import festivallEmblemWhite from '@/assets/images/festivall_emblem_white.png'
 
 export default {
   name: 'ServicesView',
   components: {
-    HelloWorld
+    HelloWorld,
+    RouterLink
+  },
+  data() {
+    return {
+      festivall_emblem: festivallEmblemWhite
+    }
   }
 }
 </script>
@@ -66,6 +76,9 @@ export default {
   width: 80%;
   max-width: 80vw;
   margin: 1rem;
+}
+#emblem {
+  height: 64px;
 }
 
 h1 {
