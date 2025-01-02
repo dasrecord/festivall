@@ -153,11 +153,14 @@ onMounted(async () => {
             required
           >
             <option value="" disabled></option>
-            <option value="music">Music</option>
+            <option value="producer">Producer</option>
+            <option value="dj">DJ</option>
+            <option value="music">Musician</option>
             <option value="spoken_word">Spoken Word</option>
             <option value="live_band">Live Band</option>
             <option value="singer_songwriter">Singer/Songwriter</option>
             <option value="visual_art">Visual Art</option>
+            <option value="dance">Dance</option>
           </select>
         </div>
         <div v-if="currentStep >= 5">
@@ -254,7 +257,6 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   margin: 1rem;
-
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -269,7 +271,8 @@ select {
   max-width: 80vw;
   display: grid;
   gap: 0.5rem;
-  margin-bottom: 10px;
+  border-radius: 15px;
+  padding: 5px;
 }
 button {
   background-color: white;
