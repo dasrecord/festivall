@@ -64,6 +64,9 @@ nav {
   text-align: center;
   margin-top: 1rem;
 }
+nav a:hover {
+  color: white;
+}
 
 nav a.router-link-exact-active {
   color: var(--color-text);
