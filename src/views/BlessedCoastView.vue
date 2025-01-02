@@ -31,19 +31,19 @@
         We'd love to hear from you.<br /><br />
       </div>
       <form @submit.prevent="submitForm">
-        <div>
-          <label for="name">Name:</label>
+        <div class="form-section">
+          <label for="name">NAME</label>
           <input type="text" id="name" v-model="form.name" required />
         </div>
-        <div>
-          <label for="email">Email:</label>
+        <div class="form-section">
+          <label for="email">EMAIL</label>
           <input type="email" id="email" v-model="form.email" required />
         </div>
-        <div>
-          <label for="message">Message:</label>
+        <div class="form-section">
+          <label for="message">MESSAGE</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">SUBMIT</button>
       </form>
     </div>
 
@@ -223,25 +223,51 @@ p {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #531a4a;
+  border-radius: 15px 0px 15px 0px;
+  height: auto;
 }
 .contact-us {
   font-family: Helvetica;
   font-size: 1rem;
   font-weight: 700;
 }
+.form-section {
+  display: flex;
+  flex-direction: row;
+  text-align: left;
+}
+.form-section label {
+  width: 100px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-right: 10px;
+  justify-content: center;
+}
 form,
-label,
+label {
+  height: 110%;
+  font-family: Helvetica;
+  font-weight: 700;
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  max-width: 80vw;
+
+  border-radius: 10px 0px 10px 0px;
+  padding: 5px;
+  margin: 10px;
+}
 input,
 textarea,
 select {
   font-family: Helvetica;
-  font-weight: 700;
   width: 100%;
-  max-width: 500px;
-  max-width: 80vw;
+  max-width: 100%;
   display: block;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px 0px 10px 0px;
   margin-bottom: 10px;
 }
 button {
@@ -252,11 +278,13 @@ button {
   display: block;
   padding: 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px 0px 10px 0px;
   cursor: pointer;
   font-weight: bold;
 }
 button:hover {
+  background-color: #531a4a;
+  color: white;
 }
 
 .landing_page_images {
