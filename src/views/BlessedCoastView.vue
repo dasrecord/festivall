@@ -217,6 +217,7 @@ p {
   color: #531a4a;
 }
 .contact-form {
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -237,7 +238,8 @@ textarea,
 select {
   font-family: Helvetica;
   font-weight: 700;
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   max-width: 80vw;
   display: block;
   margin-bottom: 10px;
@@ -246,7 +248,7 @@ button {
   font-family: Helvetica;
   background-color: white;
   width: 100%;
-  max-width: 80vw;
+  max-width: 50%;
   display: block;
   padding: 10px;
   border: none;
@@ -283,6 +285,9 @@ a:hover {
   background-color: white;
 }
 @media (max-width: 768px) {
+  .contact-form {
+    flex-direction: column;
+  }
   .basic {
     font-size: 1.5rem;
   }
