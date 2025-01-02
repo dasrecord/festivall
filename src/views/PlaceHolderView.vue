@@ -77,10 +77,10 @@ onMounted(async () => {
       word, live bands, singer/songwriters, and visual artists.
     </h2>
     <h3 class="presskits">
-      <div>
+      <div class="presskit">
         <a href="/docs/mr_fudge_presskit.pdf" target="_blank">MR. FUDGE<br />PRESSKIT</a>
       </div>
-      <div>
+      <div class="presskit">
         <RouterLink to="/das-record">DAS RECORD<br />PORTFOLIO</RouterLink>
       </div>
     </h3>
@@ -242,6 +242,17 @@ onMounted(async () => {
   flex-direction: row;
   justify-content: space-around;
 }
+.presskit {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
 
 .upcoming-shows,
 .event {
@@ -259,7 +270,7 @@ onMounted(async () => {
   margin: 1rem;
   padding: 20px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 15px;
 }
 form,
 label,
@@ -281,7 +292,7 @@ button {
   display: block;
   padding: 10px;
   border: none;
-  border-radius: 5px;
+  border-radius: 15px;
   cursor: pointer;
   font-weight: bold;
 }
