@@ -66,8 +66,8 @@ export default {
         <router-link to="/reunionamenities">amenities.</router-link>
       </template>
     </DetailsPanel>
+    <CalltoAction />
   </div>
-  <CalltoAction />
 </template>
 
 <style scoped>
