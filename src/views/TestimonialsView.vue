@@ -72,22 +72,7 @@ import HelloWorld from '@/components/HelloWorld.vue'
         Prasun my friend and colleague.
       </p>
     </div>
-    <div class="testimonial">
-      <div class="person">
-        <h2>Jessica Noujeim</h2>
-        <h3>
-          High-Level Remote Communications Expert | Writer, Branding Specialist, Creative Director
-        </h3>
-      </div>
-      <p>
-        Prasun is one of the most brilliant individuals I know. His mental aptitude is matched only
-        by his warm heart and stellar communication skills. We regularly engage in high-level
-        strategic, creative, and musical conversations which always leave me overflowing with new
-        knowledge and insight. From technical support to true visionary design, Prasun is at the top
-        of my list for collaborators on any high impact production. I recommend and endorse him
-        fully in all the areas he pursues.
-      </p>
-    </div>
+
     <div class="testimonial">
       <div class="person">
         <h2>Daniel Martell-Gardiner</h2>
@@ -148,13 +133,6 @@ import HelloWorld from '@/components/HelloWorld.vue'
     </div>
     <div class="testimonial">
       <div class="person">
-        <h2>Cafe Deux Soleils</h2>
-        <h3>Venue</h3>
-      </div>
-      <p>Das Record is a talented musician and composer.</p>
-    </div>
-    <div class="testimonial">
-      <div class="person">
         <h2>Kala Sidhu</h2>
         <h3>Event Organizer</h3>
       </div>
@@ -164,6 +142,29 @@ import HelloWorld from '@/components/HelloWorld.vue'
         the bill I not only have a one of a kind experience in store for my guests but also another
         hand on deck that can co-create live with other artists and help in set transitions.
       </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Jessica Noujeim</h2>
+        <h3>
+          High-Level Remote Communications Expert | Writer, Branding Specialist, Creative Director
+        </h3>
+      </div>
+      <p>
+        Prasun is one of the most brilliant individuals I know. His mental aptitude is matched only
+        by his warm heart and stellar communication skills. We regularly engage in high-level
+        strategic, creative, and musical conversations which always leave me overflowing with new
+        knowledge and insight. From technical support to true visionary design, Prasun is at the top
+        of my list for collaborators on any high impact production. I recommend and endorse him
+        fully in all the areas he pursues.
+      </p>
+    </div>
+    <div class="testimonial">
+      <div class="person">
+        <h2>Cafe Deux Soleils</h2>
+        <h3>Venue</h3>
+      </div>
+      <p>Das Record is a talented musician and composer.</p>
     </div>
     <div class="testimonial">
       <div class="person">
