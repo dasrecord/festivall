@@ -4,12 +4,12 @@
       <div class="background" :style="{ backgroundImage: `url(${piano})` }"></div>
       <div class="content">
         <div>
-          <h1>Doctor</h1>
+          <h1>doctor</h1>
           <p>
-            Physician | Consultant | Innovator | Systems Administrator | Process Automation
-            Specialist
+            physician | consultant | innovator | systems administrator | process automation
+            specialist
           </p>
-          <a href="/docs/PD_CV_2024.pdf" download class="section-link"> Downloadable CV </a>
+          <a href="/docs/PD_CV_2024.pdf" download class="section-link"> downloadable cv </a>
         </div>
       </div>
     </div>
@@ -17,16 +17,16 @@
       <div class="background" :style="{ backgroundImage: `url(${headshot})` }"></div>
       <div class="content">
         <div>
-          <h1>Coder</h1>
+          <h1>coder</h1>
           <p>
-            Skill is hitting a target that others cannot hit. Genius is hitting a target that others
+            skill is hitting a target that others cannot hit. genius is hitting a target that others
             cannot see.
           </p>
           <a
             href="https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1KjYDRCbhGGFOsdqawJ5OowtHBn5JTEBEsayhtpIa23A&font=UnicaOne-Vollkorn&lang=en&initial_zoom=3&start_at_slide=75"
             class="section-link"
           >
-            Interactive Timeline
+            interactive timeline
           </a>
         </div>
       </div>
@@ -35,13 +35,13 @@
       <div class="background" :style="{ backgroundImage: `url(${soundcheck})` }"></div>
       <div class="content">
         <div>
-          <h1>Musician</h1>
+          <h1>musician</h1>
           <p>
-            Writer | Composer | Performer | Festival Organizer | Pianist | Producer | DJ &
-            Turntablist
+            writer | composer | performer | festival organizer | pianist | producer | dj &
+            turntablist
           </p>
           <a href="https://festivall.webflow.io/repertoire" class="section-link"
-            >Artistic Repertoire</a
+            >artistic repertoire</a
           >
         </div>
       </div>
@@ -125,7 +125,7 @@ export default {
   color: black;
   text-decoration: none;
   border-radius: 10px;
-  text-shadow: 0px 0px 10px black;
+  text-shadow: 0px 0px 15px black;
 }
 .section-link:hover {
   background: black;
