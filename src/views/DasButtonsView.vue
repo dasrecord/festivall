@@ -26,13 +26,13 @@ export default {
           }
         )
         if (response.status === 200) {
-          alert(`${buttonName} updated successfully!`)
+          alert(`Tracked successfully!`)
         } else {
-          alert(`Failed to update ${buttonName}.`)
+          alert(`Failed to track.`)
         }
       } catch (error) {
-        console.error(`Error updating ${buttonName}:`, error)
-        alert(`An error occurred while updating ${buttonName}.`)
+        console.error(`Error tracking ${buttonName}:`, error)
+        alert(`An error occurred while tracking ${buttonName}.`)
       }
     }
   }
@@ -53,5 +53,8 @@ button {
   flex: 1; /* Distribute the available space evenly among the buttons */
   padding: 10px 20px;
   font-size: 2rem; /* Adjust font size for better readability */
+  box-shadow: inset 0 0 0 2px #000; /* Add a border around the button */
+  background-color: #fff; /* Set the background color to white */
+  border: none; /* Remove the default border */
 }
 </style>
