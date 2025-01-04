@@ -111,6 +111,7 @@ export default {
   font-size: 1em;
   text-align: center;
   z-index: 2;
+  padding: 0.5rem;
 }
 .content p {
   font-size: 16px;
