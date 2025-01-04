@@ -81,13 +81,13 @@ const routes = [
     path: '/dasrecord',
     name :'dasrecord',
     component: DasRecordView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/das-record',
     name :'das-record',
-    component: ExternalRedirect,
-    props: { url: 'https://festivall.webflow.io/das-record' }
+    component: DasRecordView,
+    meta: { showHeader: false }
   },
   {
     path: '/howitallworks',
