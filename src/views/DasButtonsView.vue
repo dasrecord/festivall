@@ -1,8 +1,8 @@
 <template>
   <div class="button-container">
-    <button @click="updateSheet('IRON')">IRON</button>
-    <button @click="updateSheet('FOLATE')">FOLATE</button>
-    <button @click="updateSheet('SSRI')">SSRI</button>
+    <button @click="updateSheet(':pill: SSRI')">SSRI</button>
+    <button @click="updateSheet(':medical_symbol: PRENATAL & DHA')">PRENATAL & DHA</button>
+    <button @click="updateSheet(':magnet: IRON')">IRON</button>
   </div>
 </template>
 
@@ -15,11 +15,11 @@ export default {
     async updateSheet(buttonName) {
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/das_tracker',
-          JSON.stringify({ text: buttonName }),
+          'https://relayproxy.vercel.app/dasbutton',
+          JSON.stringify({ button: buttonName }), // Format data as JSON
           {
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json' // Set content type to JSON
             }
           }
         )
@@ -39,16 +39,13 @@ export default {
 
 <style scoped>
 .button-container {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px;
+  height: calc(100vh - env(safe-area-inset-bottom)); /* Adjust for browser toolbar */
 }
 
 button {
-  width: 100%;
-  height: calc(100vh / 3);
+  flex: 1; /* Distribute the available space evenly among the buttons */
   padding: 10px 20px;
 }
 </style>
