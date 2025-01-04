@@ -8,13 +8,10 @@
       with A&R and publishing consultants across Canada, the US, and Europe.<br /><br />
       <div class="links">
         <div class="link">
-          <RouterLink to="dasrecord">CLICK HERE TO LEARN MORE ABOUT ME</RouterLink>
+          <RouterLink to="dasrecord">LEARN MORE ABOUT ME</RouterLink>
         </div>
         <div class="link">
-          <RouterLink to="testimonials"
-            >CLICK HERE TO<br />
-            READ WHAT OTHERS HAVE TO SAY
-          </RouterLink>
+          <RouterLink to="testimonials">READ WHAT OTHERS HAVE TO SAY</RouterLink>
         </div>
       </div>
     </h2>
