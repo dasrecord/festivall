@@ -14,10 +14,6 @@ import HelloWorld from '@/components/HelloWorld.vue'
         All very impressive traits. I worked with Prasenjit for over a year and a half where he
         oversaw the development of a nation-wide pool artists, curating for top talent and
         potential. He was organized, timely, professional, and smart. I would recommend him for any
-        team. Prasenjit is the definition of multi-talented. A medical doctor, DJ, and software
-        developer. All very impressive traits. I worked with Prasenjit for over a year and a half
-        where he oversaw the development of a nation-wide pool artists, curating for top talent and
-        potential. He was organized, timely, professional, and smart. I would recommend him for any
         team.
       </p>
     </div>
@@ -32,13 +28,7 @@ import HelloWorld from '@/components/HelloWorld.vue'
         in the studio. He's also a person that you can learn from and that's the kind of person you
         want on your team. Prasenjit is an asset to any team, organization, you name it. He has a
         strong passion for the music industry and his skillset outputs the right amount of soul that
-        will entice anyone to get close to him. It's my pleasure to offer my recommendation for
-        Prasenjit Das. Over the last several years, Prasenjit has always demonstrated great
-        workmanship and great spirits when working together in the studio. He's also a person that
-        you can learn from and that's the kind of person you want on your team. Prasenjit is an
-        asset to any team, organization, you name it. He has a strong passion for the music industry
-        and his skillset outputs the right amount of soul that will entice anyone to get close to
-        him.
+        will entice anyone to get close to him.
       </p>
     </div>
     <div class="testimonial">
@@ -47,8 +37,8 @@ import HelloWorld from '@/components/HelloWorld.vue'
         <h3>Innovating with AI | GUINNESS WORLD RECORD Holder</h3>
       </div>
       <p>
-        Dr. Das is the only human I’ve ever met who codes, produces phenomenal music, DJs like a pro
-        AND is a licensed doctor! So much talent in this one human, I’m consistently astounded and
+        Dr. Das is the only human I've ever met who codes, produces phenomenal music, DJs like a pro
+        AND is a licensed doctor! So much talent in this one human, I'm consistently astounded and
         grateful to collaborate with such a fantastic mind.
       </p>
     </div>
@@ -109,7 +99,7 @@ import HelloWorld from '@/components/HelloWorld.vue'
         within the live arena and in studios can light up even the most near complete projects and
         compositional ideas. This young man knows no bounds and the very creativity by which he
         lives, eats, sleeps and breathes is simply formidable and a real thing of beauty to behold.
-        This incredibly gifted, young, musical professional is a very rare find in today’s world
+        This incredibly gifted, young, musical professional is a very rare find in today's world
         make no mistake and a genuine diamond in the rough like he surely is can add enormous
         sparkle and class to any composition or live works set before him and the great thing is the
         ease and speed by which he delivers and the level at which he operates. Undeniably he is a
@@ -290,16 +280,6 @@ import HelloWorld from '@/components/HelloWorld.vue'
       <p>
         Das Record is highly recommended for wedding reception music. We were very happy to have Das
         play the piano for our cocktail hour and during supper. Thank-you!
-      </p>
-    </div>
-    <div class="testimonial">
-      <div class="person">
-        <h2>Mike Saint-Jules</h2>
-        <h3>Music Producer</h3>
-      </div>
-      <p>
-        Das Record is the best to work with when it comes to collaborative efforts in music
-        production.
       </p>
     </div>
     <div class="testimonial">
