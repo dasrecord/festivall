@@ -21,6 +21,7 @@ import ArtPhotographyView from '@/views/ArtPhotographyView.vue'
 import ServicesView from '@/views/ServicesView.vue'
 import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
+import DasButtonsView from '@/views/DasButtonsView.vue'
 
 
 const routes = [
@@ -57,6 +58,11 @@ const routes = [
     path: '/blessedcoastlineup',
     name: 'blessedcoastlineup',
     component: BlessedCoastLineupView
+  },
+  {
+    path: '/cakeaway',
+    name: 'cakeaway',
+    component: ExternalRedirect,    
   },
   {
     path: '/coding&webdev',
@@ -99,6 +105,11 @@ const routes = [
     name: 'dashboard',
     component: Dashboard,
     meta: { requiresAuth: true }
+  },
+  { path : '/dasbuttons',
+    name : 'dasbuttons',
+    component: DasButtonsView,
+    meta: { requiresAuth: true, showHeader: false }
   },
   {
     path: '/nye',
