@@ -53,7 +53,7 @@
     </div>
     <div class="service">
       <h1>
-        <RouterLink to="/bitcoinmeetup">Bitcoin</RouterLink>
+        <RouterLink id="bitcoin" to="/bitcoinmeetup">Bitcoin</RouterLink>
       </h1>
       <p>Interested in learning about Bitcoin?<br />Schedule a free workshop.</p>
     </div>
@@ -103,6 +103,9 @@ export default {
   width: 80%;
   max-width: 80vw;
   margin: 1rem;
+}
+#bitcoin {
+  color: #ff9900;
 }
 #emblem {
   height: 64px;

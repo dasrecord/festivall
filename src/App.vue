@@ -34,7 +34,7 @@ useHead({
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <RouterLink to="/fusecollective">Fuse</RouterLink>
         <RouterLink to="/services">Services</RouterLink>
-        <RouterLink to="/dashboard">Dashboard</RouterLink>
+        <RouterLink id="dashboard" to="/dashboard">Dashboard</RouterLink>
       </nav>
     </div>
   </header>
@@ -43,6 +43,11 @@ useHead({
 </template>
 
 <style scoped>
+#dashboard {
+  background-color: var(--color-primary);
+  color: white;
+  text-shadow: 0px 0px 10px white;
+}
 header {
   line-height: 1.3;
   max-height: 100vh;
@@ -55,6 +60,7 @@ header {
 }
 
 nav {
+  text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
   display: grid;
   gap: 0.25rem;
   padding: 0 1rem;
