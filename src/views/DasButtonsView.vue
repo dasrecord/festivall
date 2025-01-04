@@ -41,7 +41,7 @@ export default {
 .button-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - env(safe-area-inset-bottom)); /* Adjust for browser toolbar */
+  height: 90vh; /* Adjust for browser toolbar */
 }
 
 button {
