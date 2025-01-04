@@ -15,11 +15,13 @@ export default {
     async track_in_slack(buttonName) {
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/dasbutton',
-          JSON.stringify({ button: buttonName }), // Format data as JSON
+          'https://relayproxy.vercel.app/das_tracker',
+          {
+            text: `${buttonName}`
+          },
           {
             headers: {
-              'Content-Type': 'application/json' // Set content type to JSON
+              'Content-Type': 'application/json'
             }
           }
         )
