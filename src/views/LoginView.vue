@@ -42,7 +42,11 @@ export default {
           } else {
             console.warn('localStorage is not available.')
           }
-          router.push('/blessedcoastdashboard')
+          
+          // Get the redirect path from query parameters or default to dashboard
+          const route = useRoute()
+          const redirectPath = route.query.redirect || '/dashboard'
+          router.push(redirectPath)
         })
         .catch((error) => {
           const errorCode = error.code
