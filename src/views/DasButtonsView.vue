@@ -1,8 +1,8 @@
 <template>
   <div class="button-container">
-    <button @click="updateSheet(':pill: SSRI')">SSRI</button>
-    <button @click="updateSheet(':medical_symbol: PRENATAL & DHA')">PRENATAL & DHA</button>
-    <button @click="updateSheet(':magnet: IRON')">IRON</button>
+    <button @click="track_in_slack(':pill: SSRI')">SSRI</button>
+    <button @click="track_in_slack(':medical_symbol: PRENATAL & DHA')">PRENATAL & DHA</button>
+    <button @click="track_in_slack(':magnet: IRON')">IRON</button>
   </div>
 </template>
 
@@ -12,7 +12,7 @@ import axios from 'axios'
 export default {
   name: 'DasButtonsView',
   methods: {
-    async updateSheet(buttonName) {
+    async track_in_slack(buttonName) {
       try {
         const response = await axios.post(
           'https://relayproxy.vercel.app/dasbutton',
