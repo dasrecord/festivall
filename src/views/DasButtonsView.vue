@@ -43,11 +43,15 @@ export default {
 .button-container {
   display: flex;
   flex-direction: column;
-  height: 90vh; /* Adjust for browser toolbar */
+  height: 100vh; /* Full viewport height */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 button {
   flex: 1; /* Distribute the available space evenly among the buttons */
   padding: 10px 20px;
+  font-size: 2rem; /* Adjust font size for better readability */
 }
 </style>
