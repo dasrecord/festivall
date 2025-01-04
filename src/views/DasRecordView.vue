@@ -6,8 +6,8 @@
         <div>
           <h1>doctor</h1>
           <p>
-            physician | consultant | innovator | systems administrator | process automation
-            specialist
+            physician | consultant | innovator | systems administrator<br />
+            process automation specialist
           </p>
           <a href="/docs/PD_CV_2024.pdf" download class="section-link"> downloadable cv </a>
         </div>
@@ -19,8 +19,8 @@
         <div>
           <h1>coder</h1>
           <p>
-            skill is hitting a target that others cannot hit. genius is hitting a target that others
-            cannot see.
+            skill is hitting a target that others cannot hit.<br />
+            genius is hitting a target that others cannot see.
           </p>
           <a
             href="https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1KjYDRCbhGGFOsdqawJ5OowtHBn5JTEBEsayhtpIa23A&font=UnicaOne-Vollkorn&lang=en&initial_zoom=3&start_at_slide=75"
@@ -37,8 +37,8 @@
         <div>
           <h1>musician</h1>
           <p>
-            writer | composer | performer | festival organizer | pianist | producer | dj &
-            turntablist
+            writer | composer | performer | festival organizer<br />
+            pianist | producer | dj & turntablist
           </p>
           <a href="https://festivall.webflow.io/repertoire" class="section-link"
             >artistic repertoire</a
@@ -103,7 +103,7 @@ export default {
 .content {
   position: relative;
   display: flex;
-  /* justify-content: flex-end; */
+  justify-content: center;
   align-items: center;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
