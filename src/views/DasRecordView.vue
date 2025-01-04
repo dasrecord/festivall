@@ -112,6 +112,7 @@ export default {
   text-align: center;
   z-index: 2;
   padding: 0.5rem;
+  text-shadow: 0px 0px 10px white;
 }
 .content p {
   font-size: 16px;
@@ -124,10 +125,12 @@ export default {
   color: black;
   text-decoration: none;
   border-radius: 10px;
+  text-shadow: 0px 0px 10px black;
 }
 .section-link:hover {
   background: black;
   color: white;
+  text-shadow: 0px 0px 10px white;
 }
 
 @media (min-width: 768px) {
