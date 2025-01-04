@@ -22,6 +22,7 @@ import ServicesView from '@/views/ServicesView.vue'
 import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
+import DasRecordView from '@/views/DasRecordView.vue'
 
 
 const routes = [
@@ -79,8 +80,8 @@ const routes = [
   {
     path: '/dasrecord',
     name :'dasrecord',
-    component: ExternalRedirect,
-    props: { url: 'https://festivall.webflow.io/das-record' }
+    component: DasRecordView,
+    meta: { showHeader: true }
   },
   {
     path: '/das-record',
