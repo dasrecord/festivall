@@ -135,6 +135,7 @@ export default {
 
 @media (min-width: 768px) {
   .dasrecord {
+    width: 100vw;
     flex-direction: row;
   }
   .section {
