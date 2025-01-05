@@ -11,7 +11,8 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "convert-to-json": "node ./scripts/convert-to-json.js"
+    "convert-to-json": "node ./scripts/convert-to-json.js",
+    "generate-qrs": "node ./scripts/generate-qrs.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
@@ -20,6 +21,7 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.13.2",
     "ical.js": "^2.1.0",
+    "qrcode": "^1.5.4",
     "vue": "^3.4.15",
     "vue-qrcode-reader": "^5.5.3",
     "vue-router": "^4.2.5"
