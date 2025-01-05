@@ -208,7 +208,7 @@ label,
 input,
 textarea,
 select {
-  font-family: Helvetica;
+  font-family: Oswald, Helvetica, sans-serif;
   width: 500px;
   max-width: 80vw;
   display: block;
