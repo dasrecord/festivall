@@ -40,7 +40,9 @@
             writer | composer | performer | festival organizer<br />
             pianist | producer | dj & turntablist
           </p>
-          <a href="https://festivall.webflow.io/repertoire" class="section-link"
+          <a
+            href="https://open.spotify.com/playlist/2RXN8qyLntleaVvFNxQsQs?si=9fb28578bc2a42ee"
+            class="section-link"
             >artistic repertoire</a
           >
         </div>
