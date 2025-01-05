@@ -26,10 +26,11 @@ useHead({
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
-        <RouterLink to="/dasrecord">Das Record</RouterLink>
+        <!-- <RouterLink to="/dasrecord">Das Record</RouterLink> -->
         <RouterLink to="/placeholder">PlaceHolder</RouterLink>
         <RouterLink to="/blessedcoast">Blessed</RouterLink>
         <RouterLink to="/synergistic">Synergistic</RouterLink>
+        <RouterLink to="/starcrossed">Starcrossed</RouterLink>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
         <a href="https://www.instagram.com/impactfestival_bc/">Impact</a>
         <RouterLink to="/fusecollective">Fuse</RouterLink>
@@ -67,6 +68,7 @@ nav {
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
   font-size: 16px;
+
   text-align: center;
   margin-top: 1rem;
 }
