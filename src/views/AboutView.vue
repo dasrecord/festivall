@@ -15,13 +15,12 @@
         </div>
       </div>
     </h2>
-
     <iframe
       class="spotify"
       style="border-radius: 12px"
       src="https://open.spotify.com/embed/playlist/2RXN8qyLntleaVvFNxQsQs?utm_source=generator&theme=0"
       width="100%"
-      height="152"
+      height="352"
       frameBorder="0"
       allowfullscreen=""
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
