@@ -10,6 +10,7 @@ import impact_logo from '../assets/images/impact_logo_white.png'
 import synergistic_logo from '../assets/images/synergistic_logo_white.png'
 import das_record_logo from '../assets/images/das_record_logo_white_edited.png'
 import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.png'
+import starcrossed_emblem from '../assets/images/starcrossed/starcrossed_emblem_white.png'
 import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 </script>
 
@@ -83,6 +84,19 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       >
       <template #logo>
         <img :src="synergistic_logo" alt="synergistic_logo" class="synergistic-logo" />
+      </template>
+    </WelcomeItem>
+    <WelcomeItem class="welcome-item">
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading><RouterLink to="/starcrossed">Starcrossed</RouterLink></template>
+      <template #description>
+        A low volume, high quality, boutique record label interested in the best electronic dance
+        music from across the universe.
+      </template>
+      <template #logo>
+        <img :src="starcrossed_emblem" alt="starcrossed" class="star-crossed-emblem" />
       </template>
     </WelcomeItem>
 
