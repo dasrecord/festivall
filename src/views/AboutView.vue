@@ -1,5 +1,6 @@
 <template>
   <div class="about">
+    <img class="headshot" src="../assets/images/team/Prasenjit.jpg" alt="Prasenjit Das" />
     <h2>
       My name is Prasenjit Das, and I'm a doctor by day and a DJ and coder by night.<br />
       FESTIVALL brings together all of my music ventures under one roof and represents the best of
@@ -53,8 +54,15 @@ onMounted(async () => {
 <style scoped>
 .about {
   padding: 1rem;
+  align-items: center;
   text-align: center;
 }
+.headshot {
+  width: 300px;
+  max-width: 50vw;
+  border-radius: 50%;
+}
+
 .links {
   width: 100%;
   display: flex;
