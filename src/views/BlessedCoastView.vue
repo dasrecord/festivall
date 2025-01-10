@@ -253,7 +253,6 @@ label {
   height: auto;
   max-width: 500px;
   max-width: 80vw;
-
   border-radius: 10px 0px 10px 0px;
   padding: 5px;
   margin: 10px;
@@ -266,7 +265,7 @@ select {
   max-width: 100%;
   display: block;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px outset #531a4a;
   border-radius: 10px 0px 10px 0px;
   margin-bottom: 10px;
 }
@@ -277,10 +276,12 @@ button {
   max-width: 50%;
   display: block;
   padding: 10px;
-  border: none;
+  border: 1px outset #531a4a;
   border-radius: 10px 0px 10px 0px;
   cursor: pointer;
+  font-size: small;
   font-weight: bold;
+  text-align: center;
 }
 button:hover {
   background-color: #531a4a;
