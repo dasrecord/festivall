@@ -260,6 +260,12 @@ const routes = [
     }
   },
   {
+    path: '/physicianreceipttracker',
+    name: 'physicianreceipttracker',
+    component: ExternalRedirect,
+    props: { url: 'https://dasrecord.typeform.com/to/s4jrTrXA' }
+  },
+  {
     path: '/synergistic',
     name: 'synergistic',
     component: SynergisticView
