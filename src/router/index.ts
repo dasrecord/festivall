@@ -119,6 +119,12 @@ const routes = [
     props: { url: 'https://dasrecord.typeform.com/to/dX5LAsHg' }
   },
   {
+    path: '/physicianreceipttracker',
+    name: 'physicianreceipttracker',
+    component: ExternalRedirect,
+    props: { url: 'https://dasrecord.typeform.com/to/s4jrTrXA' }
+  },
+  {
     path: '/placeholder',
     name: 'placeholder',
     component: PlaceHolderView,
