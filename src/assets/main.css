@@ -11,7 +11,8 @@
 a,
 .blue {
   text-decoration: none;
-  color: rgb(0, 128, 255);
+  /* color: rgb(0, 128, 255); */
+  color: var(--festivall-baby-blue);
   transition: 0.4s;
   padding: 3px;
 }

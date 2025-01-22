@@ -188,6 +188,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   padding: 1rem;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 8fr;
+  box-shadow: 0 0 50px #ffffff23;
 }
 
 .reunion-emblem {

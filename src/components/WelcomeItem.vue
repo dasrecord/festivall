@@ -29,7 +29,7 @@
 }
 .item:hover {
   border: 1px solid rgba(255, 255, 255, 0.245.5);
-  box-shadow: 0 0 10px 0 rgba(0, 128, 255, 1);
+  box-shadow: 0 0 10px 0 var(--festivall-baby-blue);
   transition: all 0.3s ease;
 }
 .details {
