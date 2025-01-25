@@ -22,8 +22,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #heading><RouterLink to="/reunion">The Reunion</RouterLink></template>
       <template #description>
-        The Reunion is a music festival that takes place in the heart of the Canadian prairies
-        featuring some of the best electronic music DJs and local acts.
+        A three day family friendly music festival that takes place in the heart of the Canadian
+        prairies featuring some of the best electronic music DJs and local acts.
       </template>
       <template #logo>
         <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
@@ -64,8 +64,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #heading><RouterLink to="/blessedcoast">Blessed Coast</RouterLink></template>
       <template #description>
-        Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.
-        Multi-cultural, family friendly, music, yoga with inspired artists, teachers & workshops.
+        A celebration of coastal arts and culture taking place in Squamish, BC. A Multi-cultural,
+        family friendly event featuring music, yoga, inspired artists, teachers and workshops.
       </template>
       <template #logo>
         <img :src="blessed_coast_emblem" alt="blessed_coast_emblem" class="blessed-coast-emblem" />
@@ -80,7 +80,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         ><RouterLink to="/synergistic">Synergystic Entertainment</RouterLink></template
       >
       <template #description
-        >A production company that specializes in electronic music events and festivals.</template
+        >A production company that specializes in electronic music events and curated
+        festivals.</template
       >
       <template #logo>
         <img :src="synergistic_logo" alt="synergistic_logo" class="synergistic-logo" />
@@ -93,7 +94,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       <template #heading><RouterLink to="/starcrossed">Starcrossed</RouterLink></template>
       <template #description>
         A low volume, high quality, boutique record label interested in the best electronic dance
-        music from across the universe.
+        music from across the universe.<br />
+        We have one rule... keep it danceable.
       </template>
       <template #logo>
         <img :src="starcrossed_emblem" alt="starcrossed" class="star-crossed-emblem" />
@@ -109,7 +111,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #description>
         An international artist management agency and music firm with A&R and publishing consultants
-        with personel in Canada, the US, and Europe.</template
+        and personel in Canada, the US, and Europe.</template
       >
       <template #logo>
         <img :src="evolved_classic_logo" alt="evolved_classic_logo" class="evolved-classic-logo" />
@@ -124,8 +126,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         ><a href="https://www.instagram.com/impactfestival_bc/">Impact Festival</a></template
       >
       <template #description>
-        Showcasing the best western Canadian talent, Impact Music Festival based out of Vancouver,
-        is a must-see event for any electronic music fan.
+        A showcase of the best western Canadian talent, Impact Music Festival based out of
+        Vancouver, is a must-see event for any electronic music fan.
       </template>
       <template #logo>
         <img :src="impact_logo" alt="impact_logo" class="impact-logo" />
@@ -138,8 +140,8 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #heading><RouterLink to="/fusecollective">Fuse Collective</RouterLink></template>
       <template #description>
-        Fuse Collective is a group of artists, musicians, producers, DJ's, production specialists,
-        and promoters all coming together to create and support new growth in the scene.
+        A group of artists, musicians, producers, DJ's, production specialists, and promoters all
+        coming together to create and support new growth in the scene.
       </template>
       <template #logo>
         <img :src="fuse_logo" alt="fuse_logo" class="fuse-logo" />
