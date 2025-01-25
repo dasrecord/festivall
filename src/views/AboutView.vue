@@ -6,12 +6,14 @@
       FESTIVALL brings together all of my music ventures under one roof and represents the best of
       the Canadian electronic music circuit. <br /><br />
       Current Activities:<br />
-      <li>clinical teacher at the University of Saskatchewan College of Medicine</li>
-      <li>resident DJ on rotation at Bokeh on the Plaza in Saskatoon</li>
-      <li>sotware developer for small businesses and entrepreneurs</li>
-      <li>composer and producer for the internationally acclaimed Mike Saint-Jules</li>
-      <li>devops engineer for several independent electronic music festivals</li>
-      <br />
+      <ul class="current-activities">
+        <li>clinical teacher at the University of Saskatchewan College of Medicine</li>
+        <li>resident DJ on rotation at Bokeh on the Plaza in Saskatoon</li>
+        <li>sotware developer for small businesses and entrepreneurs</li>
+        <li>composer and producer for the internationally acclaimed Mike Saint-Jules</li>
+        <li>devops engineer for several independent electronic music festivals</li>
+        <br />
+      </ul>
       Behind the scenes, I am the A&R for Evolved Music Group, an international artist management
       agency and music firm, that supports artists with A&R and publishing consultants across
       Canada, the US, and Europe.<br /><br />
@@ -69,6 +71,9 @@ onMounted(async () => {
   width: 300px;
   max-width: 50vw;
   border-radius: 50%;
+}
+.current-activities {
+  font-size: smaller;
 }
 
 .links {
