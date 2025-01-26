@@ -1,11 +1,12 @@
 <template>
   <div class="about">
     <img class="headshot" src="../assets/images/team/Prasenjit.jpg" alt="Prasenjit Das" />
+    <h1>Prasenjit Das M.D. B.Sc.</h1>
+    Doctor by day and a DJ by night.<br />
     <h2>
-      My name is Prasenjit Das, and I'm a doctor by day and a DJ and coder by night.<br />
       FESTIVALL brings together all of my music ventures under one roof and represents the best of
       the Canadian electronic music circuit. <br /><br />
-      Current Activities:<br />
+      <div class="label">Current Activities<br /></div>
       <ul class="current-activities">
         <li>clinical teacher at the University of Saskatchewan College of Medicine</li>
         <li>resident DJ on rotation at Bokeh on the Plaza in Saskatoon</li>
@@ -71,6 +72,10 @@ onMounted(async () => {
   width: 300px;
   max-width: 50vw;
   border-radius: 50%;
+}
+h1,
+.label {
+  color: var(--festivall-baby-blue);
 }
 .current-activities {
   font-size: smaller;
