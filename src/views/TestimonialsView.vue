@@ -333,7 +333,7 @@ import HelloWorld from '@/components/HelloWorld.vue'
 }
 h2 {
   font-weight: bold;
-  color: rgb(0, 128, 255);
+  color: var(--festivall-baby-blue);
 }
 h3 {
   font-size: smaller;
