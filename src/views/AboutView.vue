@@ -2,7 +2,7 @@
   <div class="about">
     <img class="headshot" src="../assets/images/team/Prasenjit.jpg" alt="Prasenjit Das" />
     <h1>Prasenjit Das M.D. B.Sc.</h1>
-    Doctor by day and a DJ by night.<br />
+    Doctor by day and DJ by night.<br />
     <h2>
       FESTIVALL brings together all of my music ventures under one roof and represents the best of
       the Canadian electronic music circuit. <br /><br />
