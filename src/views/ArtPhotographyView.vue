@@ -105,7 +105,7 @@
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">SUBMIT</button>
       </form>
     </div>
   </div>
@@ -226,7 +226,7 @@ button {
   font-weight: bold;
 }
 button:hover {
-  background-color: #0080ff;
+  background-color: var(--festivall-baby-blue);
   color: white;
 }
 </style>
