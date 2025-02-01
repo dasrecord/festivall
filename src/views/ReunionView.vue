@@ -33,25 +33,33 @@ export default {
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
-    <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-    <img
-      class="frog"
-      :src="frogImage"
-      alt="frog"
-      :style="{ height: '150px', width: '150px' }"
-      @click="handleClick"
-    />
 
-    <!-- <h2>
+    <div class="title">
+      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+
+      <img
+        class="frog"
+        :src="frogImage"
+        alt="frog"
+        :style="{ height: '250px', width: '250px' }"
+        @click="handleClick"
+      />
+    </div>
+
+    <h2>
       AUG 29th - SEPT 1st, 2025 <br />
       30 min from Saskatoon <br /><br />
       MUSIC - DANCING - CAMPING‍ <br />
       FAMILY - FRIENDS - FOOD‍ <br /><br />
+
+      <span class="bitcoin">NO PRICE INCREASE IN 2025!‍<br />:)<br /><br /> </span>
+
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
       MEAL PLANS - $20 CAD/DAY<br />
-      25% discount if you pay with bitcoin!‍<br /><br />
-    </h2> -->
+      <span class="bitcoin"> 25% discount if you pay with bitcoin!‍<br /><br /> </span>
+    </h2>
+
     <DetailsPanel>
       <template #link1>
         <router-link to="/reunionfamily">Learn more</router-link>
@@ -93,6 +101,16 @@ a:hover {
   width: 100%;
   max-width: 500px;
   margin: 1rem 0;
+}
+.title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.bitcoin {
+  font-size: 1.5rem;
+  color: var(--bitcoin-orange);
 }
 
 @media (min-width: 1024px) {
