@@ -52,12 +52,21 @@ export default {
       MUSIC - DANCING - CAMPING‍ <br />
       FAMILY - FRIENDS - FOOD‍ <br /><br />
 
-      <span class="bitcoin">NO PRICE INCREASE IN 2025!‍<br />:)<br /><br /> </span>
+      <span class="bitcoin">
+        NO PRICE INCREASE IN 2025!‍
+        <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
+      
+        <br /><br />
+      </span>
 
       WEEKEND PASS - $140 CAD<br />
       DAY PASS - $80 CAD‍ <br />
       MEAL PLANS - $20 CAD/DAY<br />
-      <span class="bitcoin"> 25% discount if you pay with bitcoin!‍<br /><br /> </span>
+      <span class="bitcoin">
+        25% discount if you pay with bitcoin!‍
+        <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
+        <br />
+      </span>
     </h2>
 
     <DetailsPanel>
