@@ -11,7 +11,8 @@
     <button @click="loadApplicants('cream_collective')">Cream Collective</button>
     <button @click="loadApplicants('rapture')">Rapture</button>
     <button @click="loadApplicants('partywell')">PartyWell</button>
-    <button @click="loadApplicants('reunion')">Reunion</button>
+    <button @click="loadApplicants('reunion')">Reunion Static</button>
+    <button @click="loadApplicants('reunion', true)">Reunion 2024</button>
   </div>
 
   <h2>Filter By</h2>
@@ -37,8 +38,10 @@
             </a>
             <span v-else>
               {{
+                applicant.fullname ||
                 applicant.first_name + ' ' + applicant.last_name ||
                 applicant.full_name ||
+                applicant.applicant.fullname ||
                 applicant.act_name ||
                 applicant.email.split('@')[0]
               }}
@@ -68,6 +71,8 @@
 <script>
 import HelloWorld from './HelloWorld.vue'
 import IconFestivall from './icons/IconFestivall.vue'
+import { reunion_db } from '@/firebase'
+import { collection, getDocs } from 'firebase/firestore'
 
 export default {
   components: {
@@ -137,27 +142,34 @@ export default {
     this.loadEmailTemplate()
   },
   methods: {
-    loadApplicants(type) {
-      fetch(`/data/applicants/${type}.json`)
-        .then((response) => {
+    async loadApplicants(type, isFirestore = false) {
+      try {
+        let data = []
+        if (isFirestore) {
+          // Fetch data from Firestore
+          const applicantsCollection = collection(reunion_db, 'applications')
+          const applicantsSnapshot = await getDocs(applicantsCollection)
+          data = applicantsSnapshot.docs.map((doc) => doc.data())
+          console.log(data)
+        } else {
+          // Fetch static data from public folder
+          const response = await fetch(`/data/applicants/${type}.json`)
           if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText)
           }
-          return response.json()
+          data = await response.json()
+        }
+
+        // Sort applicants by whether they have a URL
+        this.applicants = data.sort((a, b) => {
+          if (a.url && !b.url) return -1
+          if (!a.url && b.url) return 1
+          return 0
         })
-        .then((data) => {
-          console.log('Fetched data:', data) // Log the fetched data
-          // Sort applicants by whether they have a URL
-          this.applicants = data.sort((a, b) => {
-            if (a.url && !b.url) return -1
-            if (!a.url && b.url) return 1
-            return 0
-          })
-          this.filteredApplicants = this.applicants // Initialize filteredApplicants
-        })
-        .catch((error) => {
-          console.error('There was a problem with the fetch operation:', error)
-        })
+        this.filteredApplicants = this.applicants // Initialize filteredApplicants
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error)
+      }
     },
     applyFilter(property, value) {
       this.filteredApplicants = this.applicants.filter((applicant) => {
