@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const form = ref({
+  id_code: '',
   name: '',
   email: '',
   applicant_type: '',
@@ -21,7 +22,7 @@ const currentStep = ref(2)
 const submitForm = async () => {
   try {
     const response = await axios.post(
-      'https://relayproxy.vercel.app/festivall_placeholder',
+      'https://relayproxy.vercel.app/reunion_slack',
       {
         text: `Name: ${form.value.name}\nEmail: ${form.value.email}\nApplicant Type: ${form.value.applicant_type}\nAct Type: ${form.value.act_type}\nAct Name: ${form.value.act_name}\nAct Description: ${form.value.act_description}\nTrack/Mix URL: ${form.value.track_mix_url}\nAct Website: ${form.value.act_website}\nSocial Media URL: ${form.value.social_url}\nMessage: ${form.value.message}`
       },
@@ -68,17 +69,23 @@ onMounted(async () => {
 <template>
   <div class="basic">
     <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-
     <h2 class="description"></h2>
 
     <h3 class="application-form">
+      <img :src="frog_image" alt="frog" class="frog-image" />
       <h2>Interested in performing at Reunion 2025?</h2>
       <h3>
         Please fill out the form below.<br />
-        Selected acts will be contacted by our team directly.
+        Selected acts will be contacted by our team directly.<br />
+        If you have a ID_CODE and would like us to use your existing information,<br />
+        please enter it and skip the rest of the form.
       </h3>
       <br />
       <form @submit.prevent="submitForm">
+        <div class="form-section">
+          <label for="id_code">ID Code:</label>
+          <input type="text" id="id_code" v-model="form.id_code" />
+        </div>
         <div class="form-section">
           <label for="name">Full Name:</label>
           <input type="text" id="name" v-model="form.name" required />
@@ -154,7 +161,10 @@ onMounted(async () => {
   justify-items: flex-start;
   align-items: center;
 }
-
+.frog-image {
+  width: 100%;
+  max-width: 250px;
+}
 .application-form {
   width: 100%;
   max-width: 80vw;
@@ -196,6 +206,7 @@ button {
   border-radius: 15px;
   cursor: pointer;
   font-weight: bold;
+  margin-top: 5px;
 }
 button:hover {
   background-color: #0080ff;
