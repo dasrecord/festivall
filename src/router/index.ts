@@ -23,6 +23,7 @@ import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
+import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
 
 
 const routes = [
@@ -163,8 +164,7 @@ const routes = [
   {
     path: '/reunionapplication',
     name: 'reunionapplication',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/a65mFuLr' }
+    component: ReunionApplicationView,
   },
   {
     path: '/reunionlineup',
