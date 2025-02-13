@@ -21,6 +21,7 @@ const form = ref({
 })
 
 const btcRate = ref(0)
+const paymentInstructions = ref('')
 
 const fetchApplicantData = async (id_code) => {
   try {
@@ -60,6 +61,33 @@ const calculateTotalPrice = () => {
   }
   form.value.total_price = totalPrice
 }
+const generatePaymentInstructions = () => {
+  if (form.value.payment_type === 'e-transfer') {
+    paymentInstructions.value = `Please e-transfer $${form.value.total_price} to humanoidtwo@gmail.com<br>Enter this id_code in the message section: ${form.value.id_code}<br>If you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/meetup'>click here</a> to book a free workshop with us.`
+  } else {
+    const bitcoinPrice = (form.value.total_price / btcRate.value).toFixed(8)
+    paymentInstructions.value = `Pay with BTC Pay Server by clicking <a href='https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC'>HERE</a><br>Your 25% discount will automatically be applied in the payment portal.`
+  }
+}
+const textPaymentInstructions = async () => {
+  try {
+    await axios.post(
+      'https://relayproxy.vercel.app/sms',
+      {
+        value1: form.value.phone,
+        value2: paymentInstructions.value,
+        value3: 'Powered by Festivall'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+  } catch (error) {
+    console.error('Error sending payment instructions:', error)
+  }
+}
 
 const addTicket = async () => {
   try {
@@ -77,6 +105,8 @@ const submitForm = async () => {
       form.value.id_code = form.value.id_code_long.slice(0, 5)
     }
     calculateTotalPrice()
+    generatePaymentInstructions()
+    await textPaymentInstructions()
     await addTicket()
 
     const response = await axios.post(
