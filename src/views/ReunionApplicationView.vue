@@ -135,7 +135,7 @@ const submitForm = async () => {
         If you have an existing
         <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
         information,<br />
-        please enter it first and skip the rest of the form.<br /><br />
+        please enter it first.<br /><br />
       </h3>
       <h4 class="disclaimer">
         *Please note that submitting this form does not guarantee a performance slot at Reunion
@@ -159,6 +159,7 @@ const submitForm = async () => {
             type="text"
             id="id_code"
             v-model="form.id_code"
+            placeholder="Enter your ID_CODE if you have one!"
             @blur="fetchApplicantData(form.id_code)"
           />
         </div>
