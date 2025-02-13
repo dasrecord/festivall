@@ -3,11 +3,17 @@ import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { reunion_db } from '@/firebase'
+import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
+import { v4 as uuidv4 } from 'uuid'
 
 const form = ref({
+  id_code_long: '',
   id_code: '',
-  name: '',
+  fullname: '',
   email: '',
+  city: '',
+  phone: '',
   applicant_type: '',
   act_type: '',
   act_name: '',
@@ -17,10 +23,37 @@ const form = ref({
   social_url: '',
   message: ''
 })
-const currentStep = ref(2)
+const fetchApplicantData = async (id_code) => {
+  try {
+    const docRef = doc(reunion_db, 'applications', id_code)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      form.value = { ...form.value, ...docSnap.data() }
+    } else {
+      console.log('No such document!')
+    }
+  } catch (error) {
+    console.error('Error fetching document:', error)
+  }
+}
+
+const addApplicant = async () => {
+  try {
+    await setDoc(doc(reunion_db, 'applications_2025', form.value.id_code), form.value)
+    console.log('Document successfully written!')
+  } catch (error) {
+    console.error('Error writing document:', error)
+  }
+}
 
 const submitForm = async () => {
   try {
+    if (!form.value.id_code) {
+      form.value.id_code_long = uuidv4()
+      form.value.id_code = form.value.id_code.slice(0, 5)
+    }
+    await addApplicant()
+
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_slack',
       {
@@ -35,18 +68,26 @@ const submitForm = async () => {
     if (response.status === 200) {
       alert('Your application has been submitted successfully!')
       form.value = {
-        name: '',
+        id_code_long: '',
+        id_code: '',
+        fullname: '',
         email: '',
+        city: '',
+        phone: '',
         applicant_type: '',
-        act_type: '',
         act_name: '',
+        act_type: '',
         act_description: '',
+        volunteer_type: '',
+        workshop_title: '',
+        workshop_description: '',
         track_mix_url: '',
         act_website: '',
         social_url: '',
+        press_kit_url: '',
+        logo_url: '',
         message: ''
       }
-      currentStep.value = 1
     } else {
       alert('Failed to submit the form.')
     }
@@ -77,65 +118,127 @@ onMounted(async () => {
       <h3>
         Please fill out the form below.<br />
         Selected acts will be contacted by our team directly.<br />
-        If you have a ID_CODE and would like us to use your existing information,<br />
-        please enter it and skip the rest of the form.
+        If you have an existing Festivall ID_CODE and would like us to use your existing
+        information,<br />
+        please enter it first and skip the rest of the form.
       </h3>
       <br />
       <form @submit.prevent="submitForm">
         <div class="form-section">
-          <label for="id_code">ID Code:</label>
-          <input type="text" id="id_code" v-model="form.id_code" />
+          <label for="id_code">ID_CODE:</label>
+          <input
+            type="text"
+            id="id_code"
+            v-model="form.id_code"
+            @blur="fetchApplicantData(form.id_code)"
+          />
         </div>
         <div class="form-section">
           <label for="name">Full Name:</label>
-          <input type="text" id="name" v-model="form.name" required />
+          <input type="text" id="name" v-model="form.fullname" required />
         </div>
         <div class="form-section">
           <label for="email">Email:</label>
           <input type="email" id="email" v-model="form.email" required />
         </div>
         <div class="form-section">
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" v-model="form.phone" required />
+        </div>
+        <div class="form-section">
+          <label for="city">City:</label>
+          <input type="text" id="city" v-model="form.city" required />
+        </div>
+        <div class="form-section">
           <label for="applicant_type">Applicant Type:</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
             <option value="" disabled></option>
-            <option value="individual">Individual</option>
-            <option value="group">Group</option>
+            <option value="Volunteer">Volunteer</option>
+            <option value="DJ">DJ</option>
+            <option value="Band">Band</option>
+            <option value="Workshop">Workshop</option>
           </select>
         </div>
-        <div class="form-section">
-          <label for="act_type">Act Type:</label>
-          <select id="act_type" v-model="form.act_type" required>
-            <option value="" disabled></option>
-            <option value="producer">Producer</option>
-            <option value="dj">DJ</option>
-            <option value="music">Musician</option>
-            <option value="spoken_word">Spoken Word</option>
-            <option value="live_band">Live Band</option>
-            <option value="singer_songwriter">Singer/Songwriter</option>
-            <option value="visual_art">Visual Art</option>
-            <option value="dance">Dance</option>
-          </select>
+
+        <!-- Conditional Form Sections -->
+        <div v-if="form.applicant_type === 'Volunteer'">
+          <div class="form-section">
+            <label for="volunteer_type">Volunteer Type:</label>
+            <select id="volunteer_type" v-model="form.volunteer_type" required>
+              <option value="" disabled></option>
+              <option value="Build Crew">Build Crew</option>
+              <option value="Stage Crew">Stage Crew</option>
+              <option value="Front Gate">Front Gate</option>
+              <option value="Food Team">Food Team</option>
+            </select>
+          </div>
         </div>
-        <div class="form-section">
-          <label for="act_name">Act Name:</label>
-          <input type="text" id="act_name" v-model="form.act_name" required />
+
+        <div
+          v-else-if="
+            form.applicant_type === 'DJ' ||
+            form.applicant_type === 'Band' ||
+            form.applicant_type === 'Rapper'
+          "
+        >
+          <div class="form-section">
+            <label for="act_type">Act Type:</label>
+            <select id="act_type" v-model="form.act_type" required>
+              <option value="" disabled></option>
+              <option value="dj">DJ</option>
+              <option value="musician">Musician</option>
+              <option value="spoken_word">Spoken Word</option>
+              <option value="live_band">Live Band</option>
+              <option value="singer_songwriter">Singer/Songwriter</option>
+              <option value="rapper">Rapper</option>
+              <option value="dancer">Dancer</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="act_name">Act Name:</label>
+            <input type="text" id="act_name" v-model="form.act_name" required />
+          </div>
+          <div class="form-section">
+            <label for="act_description">Act Description:</label>
+            <textarea id="act_description" v-model="form.act_description" required></textarea>
+          </div>
+          <div class="form-section">
+            <label for="track_mix_url">Track/Mix URL:</label>
+            <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
+          </div>
+          <div class="form-section">
+            <label for="act_website">Act Website/URL:</label>
+            <input type="url" id="act_website_url" v-model="form.act_website" />
+          </div>
+          <div class="form-section">
+            <label for="social_url">Social Media URL:</label>
+            <input type="url" id="social_url" v-model="form.social_url" />
+          </div>
+          <div class="form-section">
+            <label for="press_kit_url">Press Kit URL:</label>
+            <input type="url" id="press_kit_url" v-model="form.press_kit_url" />
+          </div>
+          <div class="form-section">
+            <label for="logo_url">Logo URL:</label>
+            <input type="url" id="logo_url" v-model="form.logo_url" />
+          </div>
         </div>
-        <div class="form-section">
-          <label for="act_description">Act Description:</label>
-          <textarea id="act_description" v-model="form.act_description" required></textarea>
+
+        <div v-else-if="form.applicant_type === 'Workshop'">
+          <div class="form-section">
+            <label for="workshop_title">Workshop Title:</label>
+            <input type="text" id="workshop_title" v-model="form.workshop_title" required />
+          </div>
+          <div class="form-section">
+            <label for="workshop_description">Workshop Description:</label>
+            <textarea
+              id="workshop_description"
+              v-model="form.workshop_description"
+              required
+            ></textarea>
+          </div>
         </div>
-        <div class="form-section">
-          <label for="track_mix_url">Track/Mix URL:</label>
-          <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
-        </div>
-        <div class="form-section">
-          <label for="act_website">Act Website/URL:</label>
-          <input type="url" id="act_website_url" v-model="form.act_website" />
-        </div>
-        <div class="form-section">
-          <label for="social_url">Social Media URL:</label>
-          <input type="url" id="social_url" v-model="form.social_url" />
-        </div>
+
         <div class="form-section">
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>

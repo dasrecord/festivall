@@ -22,6 +22,7 @@
     "firebase": "^10.13.2",
     "ical.js": "^2.1.0",
     "qrcode": "^1.5.4",
+    "uuid": "^11.0.5",
     "vue": "^3.4.15",
     "vue-qrcode-reader": "^5.5.3",
     "vue-router": "^4.2.5"
