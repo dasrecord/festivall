@@ -112,14 +112,14 @@ onMounted(async () => {
 <template>
   <div class="basic">
     <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-    <h2 class="description"></h2>
 
     <h3 class="application-form">
       <img :src="frog_image" alt="frog" class="frog-image" />
       <h2>Interested in performing at Reunion 2025?</h2>
       <h3>
         Please fill out the form below.<br />
-        If you have an existing Festivall ID_CODE and would like us to use your existing
+        If you have an existing
+        <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
         information,<br />
         please enter it first and skip the rest of the form.<br /><br />
       </h3>
@@ -129,7 +129,7 @@ onMounted(async () => {
         <div>
           Compensenation Schedule:<br />
           Artists - Festival Pass + 1 Guest<br />
-          Volunteers - Festival Pass + 1 Meal Package/Day<br />
+          Volunteers - Festival Pass + 1 Meal Package per day worked<br />
           Workshops - Festival Pass + 1 Meal Package
         </div>
       </h4>
@@ -231,11 +231,11 @@ onMounted(async () => {
 
         <div v-else-if="form.applicant_type === 'Workshop'">
           <div class="form-section">
-            <label for="workshop_title">Workshop Title:</label>
+            <label for="workshop_title">Title:</label>
             <input type="text" id="workshop_title" v-model="form.workshop_title" required />
           </div>
           <div class="form-section">
-            <label for="workshop_description">Workshop Description:</label>
+            <label for="workshop_description">Description:</label>
             <textarea
               id="workshop_description"
               v-model="form.workshop_description"
@@ -258,6 +258,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+#app {
+  padding: 0;
+}
+
 .reunion-emblem {
   border-radius: 0%;
   width: 75%;
@@ -274,8 +278,7 @@ onMounted(async () => {
   max-width: 250px;
 }
 .application-form {
-  width: 100%;
-  max-width: 80vw;
+  width: 80vw;
   padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 15px;
@@ -292,7 +295,7 @@ onMounted(async () => {
 label {
   display: flex;
   flex-direction: column;
-  width: 23%;
+  width: 25%;
   height: 40px;
   text-align: left;
   padding: 10px;
@@ -325,29 +328,14 @@ button:hover {
   background-color: var(--reunion-frog-green);
   color: white;
 }
-
-.playbills {
-  display: grid;
-  grid-template-columns: repeat(3, 2fr);
-  gap: 0.5rem;
+.highlight {
+  color: var(--reunion-frog-green);
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }
 
-img {
-  border-radius: 15px;
-}
-a {
-  display: inline-block;
-  padding: 0.5rem 0.5rem;
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  transition: box-shadow 0.4s ease-in-out;
-}
-a:hover {
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  color: white;
-}
 @media (max-width: 600px) {
   .application-form {
+    width: 100%;
     padding: 0.5rem;
   }
 
