@@ -113,7 +113,7 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_slack',
       {
-        text: `:ticket: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:1234: ${form.value.ticket_quantity}\n:meal: ${form.value.meal_packages}\n:moneybag: ${form.value.payment_type}\n:id: ${form.value.id_code}\n:money_with_wings: Total Price: $${form.value.total_price}`
+        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:currency_exchange: ${form.value.payment_type}\n:id: ${form.value.id_code}\n:dollar $${form.value.total_price}`
       },
       {
         headers: {
@@ -123,7 +123,7 @@ const submitForm = async () => {
     )
     if (response.status === 200) {
       alert(
-        'Your ticket request has been submitted successfully!\nYou will be contacted by our team directly.'
+        'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'
       )
       form.value = {
         id_code_long: '',
