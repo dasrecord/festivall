@@ -16,8 +16,11 @@ const form = ref({
   ticket_type: '',
   ticket_quantity: 1,
   meal_packages: 0,
+  meal_tickets_remaining: 0,
   payment_type: '',
-  total_price: 0
+  total_price: 0,
+  paid: false,
+  checked_in: false
 })
 
 const btcRate = ref(0)
@@ -228,7 +231,7 @@ onMounted(() => {
         </div>
         <div class="form-section">
           <label for="meal_packages">Meal Packages:</label>
-          <input type="number" id="meal_packages" v-model="form.meal_packages" min="0" />
+          <input type="number" id="meal_packages" v-model="form.meal_packages" min="0" @input="form.meal_tickets_remaining = form.meal_packages * 2" />
         </div>
         <div class="form-section">
           <label for="payment_type">Payment Type:</label>
