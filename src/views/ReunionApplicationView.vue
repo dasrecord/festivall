@@ -105,9 +105,8 @@ const submitForm = async () => {
 </script>
 <template>
   <div class="basic">
-    <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-
     <h3 class="application-form">
+      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       <img :src="frog_image" alt="frog" class="frog-image" />
       <h2>Interested in performing at Reunion 2025?</h2>
       <h3>
@@ -122,9 +121,12 @@ const submitForm = async () => {
         2025.<br /><br />
         <div>
           Compensenation Schedule:<br />
-          Artists - Festival Pass + 1 Guest<br />
-          Volunteers - Festival Pass + 1 Meal Package per day worked<br />
-          Workshops - Festival Pass + 1 Meal Package
+          <span class="highlight"> ARTISTS </span>
+          - Festival Pass + 1 Guest<br />
+          <span class="highlight"> VOLUNTEERS </span>
+          - Festival Pass + 1 Meal Package per day worked<br />
+          <span class="highlight"> WORKSHOPS </span>
+          - Festival Pass + 1 Meal Package
         </div>
       </h4>
       <br />
@@ -155,7 +157,7 @@ const submitForm = async () => {
           <input type="text" id="city" v-model="form.city" required />
         </div>
         <div class="form-section">
-          <label for="applicant_type">Category</label>
+          <label for="applicant_type">Category:</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
             <option value="" disabled></option>
             <option value="Volunteer">Volunteer</option>
@@ -286,7 +288,7 @@ const submitForm = async () => {
 label {
   display: flex;
   flex-direction: column;
-  width: 33%;
+  width: 25%;
   height: 40px;
   text-align: left;
   padding: 10px;
@@ -297,7 +299,7 @@ label {
 input,
 textarea,
 select {
-  width: 67%;
+  width: 75%;
   height: 42px;
   font-family: Helvetica;
   gap: 0.5rem;
@@ -324,6 +326,20 @@ button:hover {
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }
 
+table {
+  display: flex;
+  flex-direction: column;
+
+  border-collapse: collapse;
+  margin: 1rem;
+  border: 1px solid white;
+  td {
+    padding: 10px;
+    border: 1px solid white;
+    text-align: center;
+  }
+}
+
 @media (max-width: 600px) {
   .application-form {
     width: 100%;
@@ -332,7 +348,7 @@ button:hover {
 
   .form-section {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 
   label {
