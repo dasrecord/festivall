@@ -132,7 +132,7 @@ const submitForm = async () => {
         phone: '',
         ticket_type: '',
         ticket_quantity: 1,
-        meal_packages: 0,
+        meal_packages: 1,
         payment_type: '',
         total_price: 0
       }
@@ -155,23 +155,24 @@ onMounted(() => {
 
     <h3 class="application-form">
       <img :src="frog_image" alt="frog" class="frog-image" />
-      <h2>Request Tickets for Reunion 2025</h2>
+      <h2>Want to buy tickets for Reunion 2025?</h2>
       <h3>
-        Please fill out the form below.<br />
         If you know an Artist's or Volunteer's
         <span class="highlight">Festivall ID_CODE</span><br />
         please enter it so they can earn a referral bonus.<br /><br />
       </h3>
       <h4 class="disclaimer">
-        *Please note that submitting this form does not guarantee ticket availability.<br /><br />
         <div>
           Ticket Prices:<br />
-          Weekend Pass - $140CAD<br />
-          (Valid from 12:00PM FRI AUG 29, 2025 - 12:00PM MON SEPT 1, 2025 )<br /><br />
-          Day Pass - $80CAD<br />
+          <span class="highlight"> WEEKEND PASS </span>
+          - $140 CAD/PERSON/WEEKEND<br />
+          (Valid from 12:00PM Friday August 29th, 2025 - 12:00PM Monday September 1st, 2025 )<br /><br />
+          <span class="highlight"> DAY PASS </span>
+          - $80 CAD/PERSON/DAY<br />
           (Valid from 12:00PM - 12:00AM on any day)<br /><br />
-          <br />
-          Meal Package - $20 (includes 1 lunch and 1 dinner)<br />
+          <span class="highlight"> MEAL PACKAGE </span>
+          - $20 CAD/PERSON/DAY<br />
+          (Includes 1 lunch and 1 dinner)<br /><br />
           <div class="bitcoin">
             25% off if you pay in Bitcoin
             <img
@@ -179,7 +180,7 @@ onMounted(() => {
               alt="bitcoin"
               style="height: 16px; width: 16px"
             /><br />
-            <span id="btc-rate">Current BTCRate: ${{ btcRate }}/BTC</span>
+            <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
           </div>
         </div>
       </h4>
