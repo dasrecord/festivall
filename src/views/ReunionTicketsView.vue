@@ -231,13 +231,19 @@ onMounted(() => {
         </div>
         <div class="form-section">
           <label for="meal_packages">Meal Packages:</label>
-          <input type="number" id="meal_packages" v-model="form.meal_packages" min="0" @input="form.meal_tickets_remaining = form.meal_packages * 2" />
+          <input
+            type="number"
+            id="meal_packages"
+            v-model="form.meal_packages"
+            min="0"
+            @input="form.meal_tickets_remaining = form.meal_packages * 2"
+          />
         </div>
         <div class="form-section">
           <label for="payment_type">Payment Type:</label>
           <select id="payment_type" v-model="form.payment_type" required>
             <option value="" disabled></option>
-            <option value="e-transfer">E-Transfer</option>
+            <option value="etransfer">E-transfer</option>
             <option value="bitcoin">Bitcoin (25% off)</option>
           </select>
         </div>
