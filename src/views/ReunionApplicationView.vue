@@ -21,6 +21,11 @@ const form = ref({
   track_mix_url: '',
   act_website: '',
   social_url: '',
+  press_kit_url: '',
+  logo_url: '',
+  volunteer_type: '',
+  workshop_title: '',
+  workshop_description: '',
   message: ''
 })
 const fetchApplicantData = async (id_code) => {
@@ -50,7 +55,7 @@ const submitForm = async () => {
   try {
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
-      form.value.id_code = form.value.id_code.slice(0, 5)
+      form.value.id_code = form.value.id_code_long.slice(0, 5)
     }
     await addApplicant()
 
@@ -77,17 +82,17 @@ const submitForm = async () => {
         city: '',
         phone: '',
         applicant_type: '',
-        act_name: '',
         act_type: '',
+        act_name: '',
         act_description: '',
-        volunteer_type: '',
-        workshop_title: '',
-        workshop_description: '',
         track_mix_url: '',
         act_website: '',
         social_url: '',
         press_kit_url: '',
         logo_url: '',
+        volunteer_type: '',
+        workshop_title: '',
+        workshop_description: '',
         message: ''
       }
     } else {
@@ -95,7 +100,6 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Error submitting form:', error)
-    alert('An error occurred while submitting the form.')
   }
 }
 </script>
@@ -194,7 +198,7 @@ const submitForm = async () => {
             <input type="text" id="act_name" v-model="form.act_name" required />
           </div>
           <div class="form-section">
-            <label for="act_description">Act Description:</label>
+            <label for="act_description">Description:</label>
             <textarea id="act_description" v-model="form.act_description" required></textarea>
           </div>
           <div class="form-section">
@@ -282,7 +286,7 @@ const submitForm = async () => {
 label {
   display: flex;
   flex-direction: column;
-  width: 25%;
+  width: 33%;
   height: 40px;
   text-align: left;
   padding: 10px;
@@ -293,7 +297,7 @@ label {
 input,
 textarea,
 select {
-  width: 80%;
+  width: 67%;
   height: 42px;
   font-family: Helvetica;
   gap: 0.5rem;
