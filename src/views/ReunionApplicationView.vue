@@ -121,12 +121,17 @@ onMounted(async () => {
         Please fill out the form below.<br />
         If you have an existing Festivall ID_CODE and would like us to use your existing
         information,<br />
-        please enter it first and skip the rest of the form.
+        please enter it first and skip the rest of the form.<br /><br />
       </h3>
       <h4 class="disclaimer">
         *Please note that submitting this form does not guarantee a performance slot at Reunion
-        2025. Compensenation Schedule: DJs - Festival Pass + 1 Volunteer - Festival Pass + Meals
-        Workshops - Festival Pass
+        2025.<br /><br />
+        <div>
+          Compensenation Schedule:<br />
+          Artists - Festival Pass + 1 Guest<br />
+          Volunteers - Festival Pass + 1 Meal Package/Day<br />
+          Workshops - Festival Pass + 1 Meal Package
+        </div>
       </h4>
       <br />
       <form @submit.prevent="submitForm">
@@ -253,8 +258,8 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.emblem {
-  border-radius: 0;
+.reunion-emblem {
+  border-radius: 0%;
   width: 75%;
 }
 .basic {
