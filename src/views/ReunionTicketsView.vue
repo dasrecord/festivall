@@ -107,6 +107,7 @@ const submitForm = async () => {
     calculateTotalPrice()
     generatePaymentInstructions()
     await textPaymentInstructions()
+    // await emailPaymentInstructions()
     await addTicket()
 
     const response = await axios.post(
