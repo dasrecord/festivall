@@ -63,10 +63,10 @@ const calculateTotalPrice = () => {
 }
 const generatePaymentInstructions = () => {
   if (form.value.payment_type === 'e-transfer') {
-    paymentInstructions.value = `Please e-transfer $${form.value.total_price} to humanoidtwo@gmail.com<br>Enter this id_code in the message section: ${form.value.id_code}<br>If you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/meetup'>click here</a> to book a free workshop with us.`
+    paymentInstructions.value = `Please e-transfer $${form.value.total_price} to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
   } else {
     const bitcoinPrice = (form.value.total_price / btcRate.value).toFixed(8)
-    paymentInstructions.value = `Pay with BTC Pay Server by clicking <a href='https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC'>HERE</a><br>Your 25% discount will automatically be applied in the payment portal.`
+    paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC \nYour 25% discount will automatically be applied in the payment portal.`
   }
 }
 const textPaymentInstructions = async () => {
@@ -179,7 +179,7 @@ onMounted(() => {
               alt="bitcoin"
               style="height: 16px; width: 16px"
             /><br />
-            <span id="btc-rate">Current BTC/CAD Rate: ${{ btcRate }}/BTC</span>
+            <span id="btc-rate">Current BTCRate: ${{ btcRate }}/BTC</span>
           </div>
         </div>
       </h4>
