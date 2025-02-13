@@ -1,4 +1,6 @@
 <script>
+import { RouterLink } from 'vue-router'
+
 export default {
   name: 'CalltoAction'
 }
@@ -8,7 +10,7 @@ export default {
   <div class="call-to-action">
     <h1 class="volunteer">
       Want to volunteer?‍<br />
-      <a href="https://dasrecord.typeform.com/to/a65mFuLr">APPLY NOW</a>
+      <RouterLink to="/reunionapplication">APPLY NOW</RouterLink>
     </h1>
     <!-- <h1 class="lineup">
       Want to know who's performing?<br />
@@ -16,7 +18,7 @@ export default {
     </h1> -->
     <h1 class="tickets">
       Ready to buy tickets?‍<br />
-      <a href="https://dasrecord.typeform.com/to/dyJs6iFd">BUY TICKETS</a>
+      <RouterLink to="/reuniontickets">BUY TICKETS</RouterLink>
     </h1>
     <h1 class="contact">
       Have something to say?<br />
