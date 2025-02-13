@@ -12,7 +12,8 @@
     <button @click="loadApplicants('rapture')">Rapture</button>
     <button @click="loadApplicants('partywell')">PartyWell</button>
     <button @click="loadApplicants('reunion')">Reunion Static</button>
-    <button @click="loadApplicants('reunion', true)">Reunion 2024</button>
+    <button @click="loadApplicants('applications', true)">Reunion 2024</button>
+    <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
   </div>
 
   <h2>Filter By</h2>
@@ -147,7 +148,7 @@ export default {
         let data = []
         if (isFirestore) {
           // Fetch data from Firestore
-          const applicantsCollection = collection(reunion_db, 'applications')
+          const applicantsCollection = collection(reunion_db, type)
           const applicantsSnapshot = await getDocs(applicantsCollection)
           data = applicantsSnapshot.docs.map((doc) => doc.data())
           console.log(data)
