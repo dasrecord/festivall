@@ -24,6 +24,7 @@ import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
 import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
+import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
 
 
 const routes = [
@@ -192,8 +193,7 @@ const routes = [
   {
     path: '/reuniontickets',
     name: 'reuniontickets',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
+    component: ReunionTicketsView
   },
   {
     path: '/reunionticketscanner',

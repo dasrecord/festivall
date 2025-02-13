@@ -1,0 +1,340 @@
+<script setup>
+import frog_image from '@/assets/images/frog.png'
+import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { reunion_db } from '@/firebase'
+import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
+import { v4 as uuidv4 } from 'uuid'
+
+const form = ref({
+  id_code_long: '',
+  id_code: '',
+  fullname: '',
+  email: '',
+  phone: '',
+  ticket_type: '',
+  ticket_quantity: 1,
+  meal_packages: 0,
+  payment_type: '',
+  total_price: 0
+})
+
+const btcRate = ref(0)
+
+const fetchApplicantData = async (id_code) => {
+  try {
+    const docRef = doc(reunion_db, 'applications', id_code)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      form.value = { ...form.value, ...docSnap.data() }
+    } else {
+      console.log('No such document!')
+    }
+  } catch (error) {
+    console.error('Error fetching document:', error)
+  }
+}
+
+const fetchBtcRate = async () => {
+  try {
+    const response = await axios.get(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad'
+    )
+    btcRate.value = response.data.bitcoin.cad
+  } catch (error) {
+    console.error('Error fetching BTC rate:', error)
+  }
+}
+
+const calculateTotalPrice = () => {
+  let ticketPrice = 0
+  if (form.value.ticket_type === 'Weekend Pass') {
+    ticketPrice = 140
+  } else if (form.value.ticket_type === 'Day Pass') {
+    ticketPrice = 80
+  }
+  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * 20
+  if (form.value.payment_type === 'bitcoin') {
+    totalPrice *= 0.75 // Apply 25% discount
+  }
+  form.value.total_price = totalPrice
+}
+
+const addTicket = async () => {
+  try {
+    await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), form.value)
+    console.log('Document successfully written!')
+  } catch (error) {
+    console.error('Error writing document:', error)
+  }
+}
+
+const submitForm = async () => {
+  try {
+    if (!form.value.id_code) {
+      form.value.id_code_long = uuidv4()
+      form.value.id_code = form.value.id_code_long.slice(0, 5)
+    }
+    calculateTotalPrice()
+    await addTicket()
+
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/reunion_slack',
+      {
+        text: `:ticket: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:1234: ${form.value.ticket_quantity}\n:meal: ${form.value.meal_packages}\n:moneybag: ${form.value.payment_type}\n:id: ${form.value.id_code}\n:money_with_wings: Total Price: $${form.value.total_price}`
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    if (response.status === 200) {
+      alert(
+        'Your ticket request has been submitted successfully!\nYou will be contacted by our team directly.'
+      )
+      form.value = {
+        id_code_long: '',
+        id_code: '',
+        fullname: '',
+        email: '',
+        phone: '',
+        ticket_type: '',
+        ticket_quantity: 1,
+        meal_packages: 0,
+        payment_type: '',
+        total_price: 0
+      }
+    } else {
+      alert('Failed to submit the form.')
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error)
+  }
+}
+
+onMounted(() => {
+  fetchBtcRate()
+})
+</script>
+
+<template>
+  <div class="basic">
+    <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+
+    <h3 class="application-form">
+      <img :src="frog_image" alt="frog" class="frog-image" />
+      <h2>Request Tickets for Reunion 2025</h2>
+      <h3>
+        Please fill out the form below.<br />
+        If you know an Artist's or Volunteer's
+        <span class="highlight">Festivall ID_CODE</span><br />
+        please enter it so they can earn a referral bonus.<br /><br />
+      </h3>
+      <h4 class="disclaimer">
+        *Please note that submitting this form does not guarantee ticket availability.<br /><br />
+        <div>
+          Ticket Prices:<br />
+          Weekend Pass - $140CAD<br />
+          (Valid from 12:00PM FRI AUG 29, 2025 - 12:00PM MON SEPT 1, 2025 )<br /><br />
+          Day Pass - $80CAD<br />
+          (Valid from 12:00PM - 12:00AM on any day)<br /><br />
+          <br />
+          Meal Package - $20 (includes 1 lunch and 1 dinner)<br />
+          <div class="bitcoin">
+            25% off if you pay in Bitcoin
+            <img
+              src="/public/bitcoin_favicon.ico"
+              alt="bitcoin"
+              style="height: 16px; width: 16px"
+            /><br />
+            <span id="btc-rate">Current BTC/CAD Rate: ${{ btcRate }}/BTC</span>
+          </div>
+        </div>
+      </h4>
+      <br />
+      <form @submit.prevent="submitForm">
+        <div class="form-section">
+          <label for="id_code">ID_CODE:</label>
+          <input
+            type="text"
+            id="id_code"
+            v-model="form.id_code"
+            @blur="fetchApplicantData(form.id_code)"
+          />
+        </div>
+        <div class="form-section">
+          <label for="name">Full Name:</label>
+          <input type="text" id="name" v-model="form.fullname" required />
+        </div>
+        <div class="form-section">
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="form.email" required />
+        </div>
+        <div class="form-section">
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" v-model="form.phone" required />
+        </div>
+        <div class="form-section">
+          <label for="ticket_type">Ticket Type:</label>
+          <select id="ticket_type" v-model="form.ticket_type" required>
+            <option value="" disabled></option>
+            <option value="Weekend Pass">Weekend Pass - $140</option>
+            <option value="Day Pass">Day Pass - $80</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label for="ticket_quantity">Ticket Quantity:</label>
+          <input
+            type="number"
+            id="ticket_quantity"
+            v-model="form.ticket_quantity"
+            min="1"
+            required
+          />
+        </div>
+        <div class="form-section">
+          <label for="meal_packages">Meal Packages:</label>
+          <input type="number" id="meal_packages" v-model="form.meal_packages" min="0" />
+        </div>
+        <div class="form-section">
+          <label for="payment_type">Payment Type:</label>
+          <select id="payment_type" v-model="form.payment_type" required>
+            <option value="" disabled></option>
+            <option value="e-transfer">E-Transfer</option>
+            <option value="bitcoin">Bitcoin (25% off)</option>
+          </select>
+        </div>
+        <button type="submit">SUBMIT</button>
+      </form>
+    </h3>
+  </div>
+</template>
+
+<style scoped>
+#app {
+  padding: 0;
+}
+
+.reunion-emblem {
+  border-radius: 0%;
+  width: 75%;
+}
+.basic {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  justify-items: flex-start;
+  align-items: center;
+}
+.frog-image {
+  width: 100%;
+  max-width: 250px;
+}
+.application-form {
+  width: 80vw;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+.form-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+  font-family: Helvetica;
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+  height: 40px;
+  text-align: left;
+  padding: 10px;
+  background-color: var(--reunion-frog-green);
+  color: white;
+  border-radius: 15px 0 0 15px;
+}
+input,
+textarea,
+select {
+  width: 67%;
+  height: 42px;
+  font-family: Helvetica;
+  gap: 0.5rem;
+  border-radius: 0 15px 15px 0;
+  padding: 5px;
+  margin: 5px;
+}
+button {
+  background-color: white;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 5px;
+}
+button:hover {
+  background-color: var(--reunion-frog-green);
+  color: white;
+}
+.highlight {
+  color: var(--reunion-frog-green);
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+}
+.bitcoin {
+  color: var(--bitcoin-orange);
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .application-form {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .form-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  label {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    border-radius: 15px 15px 0 0;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 0 0 15px 15px;
+  }
+
+  button {
+    padding: 5px;
+  }
+
+  .basic {
+    padding: 0.5rem;
+  }
+
+  .form-section,
+  label,
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 0.8rem;
+  }
+}
+</style>
