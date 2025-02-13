@@ -60,7 +60,7 @@ const submitForm = async () => {
     await addApplicant()
 
     const response = await axios.post(
-      'https://relayproxy.vercel.app/reunion_slack',
+      'https://relayproxy.vercel.app/reunion_applications',
       {
         text: `:bust_in_silhouette: ${form.value.name}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:id: ${form.value.id_code}`
       },
