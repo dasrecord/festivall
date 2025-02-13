@@ -50,6 +50,18 @@ const addApplicant = async () => {
     console.error('Error writing document:', error)
   }
 }
+const formatPhoneNumber = (phone) => {
+  const cleaned = ('' + phone).replace(/\D/g, '')
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]}`
+  }
+  return phone
+}
+
+const handlePhoneInput = (event) => {
+  form.value.phone = formatPhoneNumber(event.target.value)
+}
 
 const submitForm = async () => {
   try {
@@ -67,7 +79,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.name}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Festivall Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
@@ -159,7 +171,14 @@ const submitForm = async () => {
         </div>
         <div class="form-section">
           <label for="phone">Phone:</label>
-          <input type="tel" id="phone" v-model="form.phone" required />
+          <input
+            type="tel"
+            id="phone"
+            v-model="form.phone"
+            @input="handlePhoneInput"
+            placeholder="123-456-7890"
+            required
+          />
         </div>
         <div class="form-section">
           <label for="city">City:</label>
@@ -251,7 +270,11 @@ const submitForm = async () => {
 
         <div class="form-section">
           <label for="message">Message:</label>
-          <textarea id="message" v-model="form.message" required></textarea>
+          <textarea
+            id="message"
+            v-model="form.message"
+            placeholder="Leave a personal statement to the festival team. Tell us what sets you apart from other applicants."
+          ></textarea>
         </div>
         <button type="submit">SUBMIT</button>
       </form>
