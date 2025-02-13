@@ -155,9 +155,9 @@ onMounted(() => {
 
 <template>
   <div class="basic">
-    <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-
-    <h3 class="application-form">
+      
+      <h3 class="application-form">
+        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       <img :src="frog_image" alt="frog" class="frog-image" />
       <h2>Want to buy tickets for Reunion 2025?</h2>
       <h3>
