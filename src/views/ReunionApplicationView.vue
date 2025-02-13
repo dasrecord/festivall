@@ -98,16 +98,6 @@ const submitForm = async () => {
     alert('An error occurred while submitting the form.')
   }
 }
-
-onMounted(async () => {
-  const imagePaths = Object.keys(images)
-  imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
-
-  for (const path of imagePaths) {
-    const module = await images[path]()
-    imageList.value.push(module.default)
-  }
-})
 </script>
 <template>
   <div class="basic">
@@ -251,9 +241,6 @@ onMounted(async () => {
         <button type="submit">SUBMIT</button>
       </form>
     </h3>
-    <div class="playbills">
-      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
-    </div>
   </div>
 </template>
 
