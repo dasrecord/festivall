@@ -143,11 +143,11 @@ const submitForm = async () => {
         <div>
           Compensenation Schedule:<br />
           <span class="highlight"> ARTISTS </span>
-          - Festival Pass + 1 Guest<br />
+          - Weekend Pass + 1 Guest<br />
           <span class="highlight"> VOLUNTEERS </span>
-          - Festival Pass + 1 Meal Package per day worked<br />
+          - Weekend Pass + 1 Meal Package per day worked<br />
           <span class="highlight"> WORKSHOPS </span>
-          - Festival Pass + 1 Meal Package
+          - Weekend Pass + 1 Meal Package
         </div>
       </h4>
 
