@@ -150,6 +150,7 @@ const submitForm = async () => {
           - Festival Pass + 1 Meal Package
         </div>
       </h4>
+
       <br />
       <form @submit.prevent="submitForm">
         <div class="form-section">
@@ -163,11 +164,23 @@ const submitForm = async () => {
         </div>
         <div class="form-section">
           <label for="name">Full Name:</label>
-          <input type="text" id="name" v-model="form.fullname" required />
+          <input
+            type="text"
+            id="name"
+            v-model="form.fullname"
+            placeholder="Please use your legal name."
+            required
+          />
         </div>
         <div class="form-section">
           <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+          <input
+            type="email"
+            id="email"
+            v-model="form.email"
+            placeholder="What is the best email to reach you at?"
+            required
+          />
         </div>
         <div class="form-section">
           <label for="phone">Phone:</label>
@@ -182,12 +195,18 @@ const submitForm = async () => {
         </div>
         <div class="form-section">
           <label for="city">City:</label>
-          <input type="text" id="city" v-model="form.city" required />
+          <input
+            type="text"
+            id="city"
+            v-model="form.city"
+            placeholder="Where are you from?"
+            required
+          />
         </div>
         <div class="form-section">
           <label for="applicant_type">Category:</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
-            <option value="" disabled></option>
+            <option value="" disabled>What kind of application is this?</option>
             <option value="Volunteer">Volunteer</option>
             <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
@@ -199,7 +218,7 @@ const submitForm = async () => {
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
-              <option value="" disabled></option>
+              <option value="" disabled>What team are you interested in?</option>
               <option value="Setup Crew">Setup Crew</option>
               <option value="Cleanup Crew">Cleanup Crew</option>
               <option value="Stage Crew">Stage Crew</option>
@@ -213,56 +232,100 @@ const submitForm = async () => {
           <div class="form-section">
             <label for="act_type">Act Type:</label>
             <select id="act_type" v-model="form.act_type" required>
-              <option value="" disabled></option>
-              <option value="dj">DJ</option>
-              <option value="musician">Musician</option>
-              <option value="spoken_word">Spoken Word</option>
-              <option value="live_band">Live Band</option>
-              <option value="singer_songwriter">Singer/Songwriter</option>
-              <option value="rapper">Rapper</option>
-              <option value="dancer">Dancer</option>
+              <option value="" disabled>What type of artist are you?</option>
+              <option value="DJ">DJ</option>
+              <option value="Musician">Musician</option>
+              <option value="Spoken_word">Spoken Word</option>
+              <option value="Live Band">Live Band</option>
+              <option value="Singer/Songwriter">Singer/Songwriter</option>
+              <option value="Rapper">Rapper</option>
+              <option value="Dancer">Dancer</option>
             </select>
           </div>
           <div class="form-section">
             <label for="act_name">Act Name:</label>
-            <input type="text" id="act_name" v-model="form.act_name" required />
+            <input
+              type="text"
+              id="act_name"
+              v-model="form.act_name"
+              placeholder="What is your stage name?"
+            />
           </div>
           <div class="form-section">
             <label for="act_description">Description:</label>
-            <textarea id="act_description" v-model="form.act_description" required></textarea>
+            <textarea
+              id="act_description"
+              v-model="form.act_description"
+              placeholder="Please use third person.1000 Character Limit"
+              required
+              maxlength="1000"
+            ></textarea>
           </div>
           <div class="form-section">
             <label for="track_mix_url">Track/Mix URL:</label>
-            <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
+            <input
+              type="url"
+              id="track_mix_url"
+              v-model="form.track_mix_url"
+              placeholder="We want to see and hear your act!"
+              required
+            />
           </div>
           <div class="form-section">
             <label for="act_website">Act/Website URL:</label>
-            <input type="url" id="act_website_url" v-model="form.act_website" />
+            <input
+              type="url"
+              id="act_website_url"
+              v-model="form.act_website"
+              placeholder="Etner your artist website here if you have one."
+            />
           </div>
           <div class="form-section">
             <label for="social_url">Social Media URL:</label>
-            <input type="url" id="social_url" v-model="form.social_url" />
+            <input
+              type="url"
+              id="social_url"
+              v-model="form.social_url"
+              placeholder="X, FB, IG, TT, LI"
+            />
           </div>
           <div class="form-section">
             <label for="press_kit_url">Press Kit URL:</label>
-            <input type="url" id="press_kit_url" v-model="form.press_kit_url" />
+            <input
+              type="url"
+              id="press_kit_url"
+              v-model="form.press_kit_url"
+              placeholder="Please provide a link to a downloadable press kit."
+            />
           </div>
           <div class="form-section">
             <label for="logo_url">Logo URL:</label>
-            <input type="url" id="logo_url" v-model="form.logo_url" />
+            <input
+              type="url"
+              id="logo_url"
+              v-model="form.logo_url"
+              placeholder="We prefer .SVG vector files, or high resolution .PNG with alpha layer."
+            />
           </div>
         </div>
 
         <div v-else-if="form.applicant_type === 'Workshop'">
           <div class="form-section">
             <label for="workshop_title">Title:</label>
-            <input type="text" id="workshop_title" v-model="form.workshop_title" required />
+            <input
+              type="text"
+              id="workshop_title"
+              v-model="form.workshop_title"
+              placeholder="What is the name of your workshop?"
+            />
           </div>
           <div class="form-section">
             <label for="workshop_description">Description:</label>
             <textarea
               id="workshop_description"
               v-model="form.workshop_description"
+              placeholder="Please provide a detailed description of your workshop."
+              maxlength="1000"
               required
             ></textarea>
           </div>
