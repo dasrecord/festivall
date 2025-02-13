@@ -156,7 +156,7 @@ onMounted(async () => {
           <input type="text" id="city" v-model="form.city" required />
         </div>
         <div class="form-section">
-          <label for="applicant_type">Applicant Type:</label>
+          <label for="applicant_type">Category</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
             <option value="" disabled></option>
             <option value="Volunteer">Volunteer</option>
@@ -341,10 +341,48 @@ a:hover {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   color: white;
 }
+@media (max-width: 600px) {
+  .application-form {
+    padding: 0.5rem;
+  }
 
-@media (min-width: 1024px) {
-  .form {
-    width: 100vw;
+  .form-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  label {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    border-radius: 15px 15px 0 0;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 0 0 15px 15px;
+  }
+
+  button {
+    padding: 5px;
+  }
+
+  .basic {
+    padding: 0.5rem;
+  }
+
+  .form-section,
+  label,
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 0.8rem;
   }
 }
 </style>
