@@ -212,7 +212,7 @@ onMounted(async () => {
             <input type="url" id="track_mix_url" v-model="form.track_mix_url" />
           </div>
           <div class="form-section">
-            <label for="act_website">Act Website/URL:</label>
+            <label for="act_website">Act/Website URL:</label>
             <input type="url" id="act_website_url" v-model="form.act_website" />
           </div>
           <div class="form-section">
