@@ -66,7 +66,9 @@ const submitForm = async () => {
       }
     )
     if (response.status === 200) {
-      alert('Your application has been submitted successfully!')
+      alert(
+        'Your application has been submitted successfully!\nSelected acts will be contacted by our team directly.'
+      )
       form.value = {
         id_code_long: '',
         id_code: '',
@@ -117,11 +119,15 @@ onMounted(async () => {
       <h2>Interested in performing at Reunion 2025?</h2>
       <h3>
         Please fill out the form below.<br />
-        Selected acts will be contacted by our team directly.<br />
         If you have an existing Festivall ID_CODE and would like us to use your existing
         information,<br />
         please enter it first and skip the rest of the form.
       </h3>
+      <h4 class="disclaimer">
+        *Please note that submitting this form does not guarantee a performance slot at Reunion
+        2025. Compensenation Schedule: DJs - Festival Pass + 1 Volunteer - Festival Pass + Meals
+        Workshops - Festival Pass
+      </h4>
       <br />
       <form @submit.prevent="submitForm">
         <div class="form-section">
@@ -154,8 +160,7 @@ onMounted(async () => {
           <select id="applicant_type" v-model="form.applicant_type" required>
             <option value="" disabled></option>
             <option value="Volunteer">Volunteer</option>
-            <option value="DJ">DJ</option>
-            <option value="Band">Band</option>
+            <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
           </select>
         </div>
@@ -166,7 +171,8 @@ onMounted(async () => {
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
               <option value="" disabled></option>
-              <option value="Build Crew">Build Crew</option>
+              <option value="Setup Crew">Setup Crew</option>
+              <option value="Cleanup Crew">Cleanup Crew</option>
               <option value="Stage Crew">Stage Crew</option>
               <option value="Front Gate">Front Gate</option>
               <option value="Food Team">Food Team</option>
@@ -174,13 +180,7 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div
-          v-else-if="
-            form.applicant_type === 'DJ' ||
-            form.applicant_type === 'Band' ||
-            form.applicant_type === 'Rapper'
-          "
-        >
+        <div v-else-if="form.applicant_type === 'Artist'">
           <div class="form-section">
             <label for="act_type">Act Type:</label>
             <select id="act_type" v-model="form.act_type" required>
@@ -243,7 +243,7 @@ onMounted(async () => {
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">SUBMIT</button>
       </form>
     </h3>
     <div class="playbills">
@@ -280,24 +280,29 @@ onMounted(async () => {
   flex-direction: row;
   align-items: center;
   height: auto;
-
   font-family: Helvetica;
   width: 100%;
-  border-radius: 15px;
 }
 
 label {
-  width: 25%;
+  display: flex;
+  flex-direction: column;
+  width: 23%;
+  height: 40px;
   text-align: left;
-  padding: 5px;
+  padding: 10px;
+  background-color: var(--reunion-frog-green);
+  color: white;
+  border-radius: 15px 0 0 15px;
 }
 input,
 textarea,
 select {
   width: 80%;
+  height: 42px;
   font-family: Helvetica;
   gap: 0.5rem;
-  border-radius: 15px;
+  border-radius: 0 15px 15px 0;
   padding: 5px;
   margin: 5px;
 }
@@ -312,7 +317,7 @@ button {
   margin-top: 5px;
 }
 button:hover {
-  background-color: #0080ff;
+  background-color: var(--reunion-frog-green);
   color: white;
 }
 
