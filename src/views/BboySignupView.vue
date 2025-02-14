@@ -28,7 +28,7 @@
       <div>
         <label for="liability">
           <input type="checkbox" id="liability" v-model="form.liability" required />
-          I agree to the participate at my own risk.
+          I agree to participate at my own risk.
         </label>
       </div>
       <button type="submit">Submit</button>
