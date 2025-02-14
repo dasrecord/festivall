@@ -6,7 +6,7 @@
       class="signup-image"
     />
     <form @submit.prevent="submitForm">
-      <h2>Bboy Signup</h2>
+      <h2>Dancer Registration</h2>
       <div>
         <label for="name">Full Name:</label>
         <input type="text" id="name" v-model="form.name" required />
@@ -28,7 +28,7 @@
       <div>
         <label for="liability">
           <input type="checkbox" id="liability" v-model="form.liability" required />
-          I agree to the indemnification/liability clause
+          I agree to the participate at my own risk.
         </label>
       </div>
       <button type="submit">Submit</button>
