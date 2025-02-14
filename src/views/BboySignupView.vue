@@ -1,8 +1,15 @@
+@media (min-width: 768px) { .basic { flex-direction: row; } .signup-image { margin-bottom: 0;
+margin-right: 20px; } form { width: calc(100% - 320px); /* Adjust width to account for image and
+margin */ } }
 <template>
   <div class="basic">
-    <img src="@/assets/images/bboy/bring_the_circle_back.jpg" alt="Bring the Circle Back" />
-    <h2>Bboy Signup</h2>
+    <img
+      src="@/assets/images/bboy/bring_the_circle_back.jpg"
+      alt="Bring the Circle Back"
+      class="signup-image"
+    />
     <form @submit.prevent="submitForm">
+      <h2>Bboy Signup</h2>
       <div>
         <label for="name">Full Name:</label>
         <input type="text" id="name" v-model="form.name" required />
@@ -18,16 +25,16 @@
       <div>
         <label for="newsletter">
           <input type="checkbox" id="newsletter" v-model="form.newsletter" />
-          I consent to receive future newsletters.
+          I consent to receive the newsletter
         </label>
       </div>
       <div>
         <label for="liability">
           <input type="checkbox" id="liability" v-model="form.liability" required />
-          I agree to participate at my own risk.
+          I agree to the indemnification/liability clause
         </label>
       </div>
-      <button type="submit">SUBMIT</button>
+      <button type="submit">Submit</button>
     </form>
   </div>
 </template>
@@ -89,6 +96,12 @@ const submitForm = async () => {
   margin: auto;
 }
 
+.signup-image {
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
+}
+
 form {
   width: 100%;
   display: grid;
@@ -121,5 +134,21 @@ button {
 button:hover {
   background-color: #059bfa;
   color: white;
+}
+
+@media (min-width: 768px) {
+  .basic {
+    flex-direction: row;
+  }
+
+  .signup-image {
+    margin-bottom: 0;
+    margin-right: 20px;
+  }
+
+  form {
+    width: calc(100% - 320px);
+    /* Adjust width to account for image and margin */
+  }
 }
 </style>
