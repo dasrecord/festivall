@@ -1,6 +1,3 @@
-@media (min-width: 768px) { .basic { flex-direction: row; } .signup-image { margin-bottom: 0;
-margin-right: 20px; } form { width: calc(100% - 320px); /* Adjust width to account for image and
-margin */ } }
 <template>
   <div class="basic">
     <img
@@ -92,13 +89,13 @@ const submitForm = async () => {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 15px;
-  max-width: 600px;
+  max-width: 1200px; /* Increase max-width for desktop */
   margin: auto;
 }
 
 .signup-image {
   width: 100%;
-  max-width: 300px;
+  max-width: 400px; /* Increase max-width for desktop */
   margin-bottom: 20px;
 }
 
@@ -139,6 +136,7 @@ button:hover {
 @media (min-width: 768px) {
   .basic {
     flex-direction: row;
+    align-items: flex-start; /* Align items to the top */
   }
 
   .signup-image {
@@ -147,8 +145,7 @@ button:hover {
   }
 
   form {
-    width: calc(100% - 320px);
-    /* Adjust width to account for image and margin */
+    width: calc(100% - 420px); /* Adjust width to account for image and margin */
   }
 }
 </style>
