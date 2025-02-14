@@ -22,7 +22,7 @@
       <div>
         <label for="newsletter">
           <input type="checkbox" id="newsletter" v-model="form.newsletter" />
-          I consent to receive the newsletter
+          I consent to receive future newsletters.
         </label>
       </div>
       <div>
