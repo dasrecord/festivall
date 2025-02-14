@@ -39,6 +39,18 @@ const fetchApplicantData = async (id_code) => {
     console.error('Error fetching document:', error)
   }
 }
+const formatPhoneNumber = (phone) => {
+  const cleaned = ('' + phone).replace(/\D/g, '')
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+  if (match) {
+    return `(${match[1]})${match[2]}-${match[3]}`
+  }
+  return phone
+}
+
+const handlePhoneInput = (event) => {
+  form.value.phone = formatPhoneNumber(event.target.value)
+}
 
 const fetchBtcRate = async () => {
   try {
@@ -155,9 +167,8 @@ onMounted(() => {
 
 <template>
   <div class="basic">
-      
-      <h3 class="application-form">
-        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+    <h3 class="application-form">
+      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
       <img :src="frog_image" alt="frog" class="frog-image" />
       <h2>Want to buy tickets for Reunion 2025?</h2>
       <h3>
@@ -196,27 +207,47 @@ onMounted(() => {
             type="text"
             id="id_code"
             v-model="form.id_code"
+            placeholder="Enter an Artist or Volunteer's ID_CODE if you know one!"
             @blur="fetchApplicantData(form.id_code)"
           />
         </div>
         <div class="form-section">
           <label for="name">Full Name:</label>
-          <input type="text" id="name" v-model="form.fullname" required />
+          <input
+            type="text"
+            id="name"
+            v-model="form.fullname"
+            placeholder="Please use your legal name."
+            required
+          />
         </div>
         <div class="form-section">
           <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+          <input
+            type="email"
+            id="email"
+            v-model="form.email"
+            placeholder="What is the best email to reach you at?"
+            required
+          />
         </div>
         <div class="form-section">
           <label for="phone">Phone:</label>
-          <input type="tel" id="phone" v-model="form.phone" required />
+          <input
+            type="tel"
+            id="phone"
+            v-model="form.phone"
+            @input="handlePhoneInput"
+            placeholder="123-456-7890"
+            required
+          />
         </div>
         <div class="form-section">
           <label for="ticket_type">Ticket Type:</label>
           <select id="ticket_type" v-model="form.ticket_type" required>
-            <option value="" disabled></option>
-            <option value="Weekend Pass">Weekend Pass - $140</option>
-            <option value="Day Pass">Day Pass - $80</option>
+            <option value="" disabled>What kind of tickets would you like?</option>
+            <option value="Weekend Pass">Weekend Pass - $140 CAD</option>
+            <option value="Day Pass">Day Pass - $80 CAD</option>
           </select>
         </div>
         <div class="form-section">
@@ -242,7 +273,7 @@ onMounted(() => {
         <div class="form-section">
           <label for="payment_type">Payment Type:</label>
           <select id="payment_type" v-model="form.payment_type" required>
-            <option value="" disabled></option>
+            <option value="" disabled>Choose a payment method.</option>
             <option value="etransfer">E-transfer</option>
             <option value="bitcoin">Bitcoin (25% off)</option>
           </select>
