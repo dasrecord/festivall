@@ -23,6 +23,7 @@ import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
+import BboySignupView from '@/views/BboySignupView.vue'
 
 
 const routes = [
@@ -43,6 +44,11 @@ const routes = [
     name: 'art&photography',
     component: ArtPhotographyView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/bboysignup',
+    name: 'bboysignup',
+    component: BboySignupView
   },
   {
     path: '/bitcoinmeetup',
