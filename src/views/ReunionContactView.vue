@@ -29,10 +29,15 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_slack',
       {
-        fullname: form.value.fullname,
-        email: form.value.email,
-        phone: form.value.phone,
-        message: form.value.message
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:memo: ${form.value.message}`
+            }
+          }
+        ]
       },
       {
         headers: {
@@ -40,7 +45,8 @@ const submitForm = async () => {
         }
       }
     )
-    if (response.status === 200) {
+    console.log('Response status:', response.status)
+    if (response.status >= 200 && response.status < 300) {
       alert('Your message has been sent successfully!')
       form.value = {
         fullname: '',
@@ -53,6 +59,7 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Error sending message:', error)
+    alert('Failed to send the message.')
   }
 }
 </script>
