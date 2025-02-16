@@ -24,6 +24,9 @@ import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
 import BboySignupView from '@/views/BboySignupView.vue'
+import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
+import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
+import ReunionContactView from '@/views/ReunionContactView.vue'
 
 
 const routes = [
@@ -169,8 +172,7 @@ const routes = [
   {
     path: '/reunionapplication',
     name: 'reunionapplication',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/a65mFuLr' }
+    component: ReunionApplicationView,
   },
   {
     path: '/reunionlineup',
@@ -180,8 +182,7 @@ const routes = [
   {
     path: '/reunioncontact',
     name: 'reunioncontact',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/OahALD' }
+    component: ReunionContactView
   },
   {
     path: '/chooseyourvisuals',
@@ -198,8 +199,7 @@ const routes = [
   {
     path: '/reuniontickets',
     name: 'reuniontickets',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/dyJs6iFd' }
+    component: ReunionTicketsView
   },
   {
     path: '/reunionticketscanner',
