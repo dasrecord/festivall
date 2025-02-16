@@ -51,7 +51,12 @@ async function generateAllQRCodes() {
     const baseUrl = 'https://festivall.ca';
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
-    const outputDir = path.resolve(__dirname, '../public/qr_codes');
+
+    // output to local machine
+    const outputDir = path.resolve(__dirname, '../../../DOCUMENTS/qr_codes');
+
+    // // output to public folder
+    // const outputDir = path.resolve(__dirname, '../public/qr_codes');
 
     // Create output directory if it doesn't exist
     await fs.mkdir(outputDir, { recursive: true });
