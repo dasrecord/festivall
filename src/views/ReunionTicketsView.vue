@@ -168,8 +168,10 @@ onMounted(() => {
 <template>
   <div class="basic">
     <h3 class="application-form">
-      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-      <img :src="frog_image" alt="frog" class="frog-image" />
+      <div class="splash">
+        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+        <img :src="frog_image" alt="frog" class="frog-image" />
+      </div>
       <h2>Want to buy tickets for Reunion 2025?</h2>
       <h3>
         If you know an Artist's or Volunteer's
@@ -299,6 +301,14 @@ onMounted(() => {
   justify-content: flex-start;
   justify-items: flex-start;
   align-items: center;
+}
+.splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
 }
 .frog-image {
   width: 100%;
