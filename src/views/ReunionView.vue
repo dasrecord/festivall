@@ -30,6 +30,7 @@ export default {
   }
 }
 </script>
+
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
@@ -68,10 +69,8 @@ export default {
         <br />
       </span>
     </h2>
-    <div class="video">
+    <div class="video-wrapper">
       <iframe
-        width="560"
-        height="315"
         src="https://www.youtube.com/embed/xibNU7F_RKQ?si=ImT7j7-lbAu41oPu"
         title="YouTube video player"
         frameborder="0"
@@ -137,6 +136,24 @@ a:hover {
 .bitcoin {
   font-size: 1.5rem;
   color: var(--bitcoin-orange);
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+  background: #000;
+  margin: 1rem 0;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 @media (min-width: 1024px) {
