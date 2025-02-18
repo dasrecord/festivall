@@ -55,7 +55,7 @@ export default {
       <span class="bitcoin">
         NO PRICE INCREASE IN 2025!‍
         <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
-      
+
         <br /><br />
       </span>
 
@@ -68,6 +68,23 @@ export default {
         <br />
       </span>
     </h2>
+    <div class="video">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/xibNU7F_RKQ?si=ImT7j7-lbAu41oPu"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <!-- <video controls style="width: 100%; max-width: 600px; margin: 1rem 0; border-radius: 10px">
+      <source src="@/assets/videos/Reunion_2025_Trailer_FB_Logos.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video> -->
 
     <DetailsPanel>
       <template #link1>
