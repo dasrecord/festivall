@@ -28,6 +28,9 @@ const form = ref({
   workshop_description: '',
   message: ''
 })
+
+const submitting = ref(false)
+
 const fetchApplicantData = async (id_code) => {
   try {
     const docRef = doc(reunion_db, 'applications', id_code)
@@ -65,6 +68,9 @@ const handlePhoneInput = (event) => {
 }
 
 const submitForm = async () => {
+  if (submitting.value) return
+  submitting.value = true
+
   try {
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
@@ -85,7 +91,6 @@ const submitForm = async () => {
           }
         ]
       },
-
       {
         headers: {
           'Content-Type': 'application/json'
@@ -94,7 +99,7 @@ const submitForm = async () => {
     )
     if (response.status === 200) {
       alert(
-        'Your application has been submitted successfully!\nSelected acts will be contacted by our team directly.'
+        'Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.'
       )
       form.value = {
         id_code_long: '',
@@ -122,6 +127,8 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Error submitting form:', error)
+  } finally {
+    submitting.value = false
   }
 }
 </script>
