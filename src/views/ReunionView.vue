@@ -146,6 +146,7 @@ a:hover {
   max-width: 100%;
   background: #000;
   margin: 1rem 0;
+  border-radius: 15px;
 }
 
 .video-wrapper iframe {
