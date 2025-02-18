@@ -128,8 +128,10 @@ const submitForm = async () => {
 <template>
   <div class="basic">
     <h3 class="application-form">
-      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
-      <img :src="frog_image" alt="frog" class="frog-image" />
+      <div class="splash">
+        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+        <img :src="frog_image" alt="frog" class="frog-image" />
+      </div>
       <h2>Interested in performing at Reunion 2025?</h2>
       <h3>
         Please fill out the form below.<br />
@@ -363,6 +365,16 @@ const submitForm = async () => {
   justify-items: flex-start;
   align-items: center;
 }
+
+.splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+}
+
 .frog-image {
   width: 100%;
   max-width: 250px;
