@@ -6,6 +6,8 @@ import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'
 
+
+
 export default {
   components: {
     CountdownTimer,
