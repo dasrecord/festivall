@@ -3,12 +3,12 @@
     <div id="logo-container">
       <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" />
     </div>
-    <h2>LOGIN</h2>
+    <h2>LOGIN PORTAL</h2>
     <p>You are currently {{ status }}.</p>
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
       <input type="password" v-model="password" placeholder="Password" required />
-      <button type="submit">Login</button>
+      <button type="submit">LOGIN</button>
       <button @click="logout" v-if="isUserLoggedIn">LOGOUT</button>
     </form>
   </div>
