@@ -5,6 +5,7 @@
     </div>
     <h2>LOGIN PORTAL</h2>
     <p>You are currently {{ status }}.</p>
+    <p v-if="isUserLoggedIn">Logged in as {{ email }}</p>
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
       <input type="password" v-model="password" placeholder="Password" required />
