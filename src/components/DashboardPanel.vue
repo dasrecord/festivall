@@ -200,7 +200,7 @@ export default {
 
 <style scoped>
 .dashboard {
-  padding: 2rem;
+  padding: 1rem;
   background-color: #1f1e22;
   color: #f0f4f8;
 }
@@ -212,7 +212,7 @@ export default {
   background-color: #333;
   padding: 1rem;
   border-radius: 10px;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 .logo {
@@ -237,7 +237,7 @@ h1 {
 }
 
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   border: none;
   border-radius: 5px;
   background-color: var(--festivall-baby-blue);
@@ -295,9 +295,12 @@ button:hover {
 
 .applicants.cards .applicant {
   width: 300px;
-  height: 500px;
+  height: 200px;
   align-items: center;
   text-align: center;
+  overflow: hidden;
+  position: relative;
+  overflow-y: auto;
 }
 
 .applicant:hover {
@@ -307,7 +310,7 @@ button:hover {
 .applicant-content {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
 }
 
 h3 {
