@@ -3,13 +3,13 @@
     <div id="logo-container">
       <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" />
     </div>
-    <h2>Login</h2>
+    <h2>LOGIN</h2>
     <p>You are currently {{ status }}.</p>
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
       <input type="password" v-model="password" placeholder="Password" required />
       <button type="submit">Login</button>
-      <button @click="logout" v-if="isUserLoggedIn">Logout</button>
+      <button @click="logout" v-if="isUserLoggedIn">LOGOUT</button>
     </form>
   </div>
 </template>
@@ -147,7 +147,8 @@ input {
 }
 button {
   display: inline-block;
-  width: 30%;
+  width: 100%;
+  padding: 0.75rem;
   margin: 5px;
   border: none;
   border-radius: 5px;
