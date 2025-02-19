@@ -263,7 +263,7 @@ button:hover {
 
 .dashboard-panel {
   background-color: #333;
-  padding: 2rem;
+  padding: 0.5rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -271,7 +271,8 @@ button:hover {
 .applicants {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .applicants.rows {
@@ -301,6 +302,7 @@ button:hover {
   overflow: hidden;
   position: relative;
   overflow-y: auto;
+  padding: 1rem;
 }
 
 .applicant:hover {
@@ -310,7 +312,7 @@ button:hover {
 .applicant-content {
   display: flex;
   flex-direction: column;
-  /* gap: 0.5rem; */
+  gap: 0.5rem;
 }
 
 h3 {
@@ -326,6 +328,7 @@ p {
 a {
   color: var(--festivall-baby-blue);
   text-decoration: none;
+  border-radius: 6px;
 }
 
 a:hover {
