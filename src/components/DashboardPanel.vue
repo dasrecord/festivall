@@ -1,68 +1,61 @@
 <template>
-  <div class="banner">
-    <IconFestivall style="width: 50px; height: 50px" />
-    <HelloWorld msg="SCOUTING DASHBOARD" />
-  </div>
+  <div class="dashboard">
+    <div class="banner">
+      <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
+      <h1>SCOUTING DASHBOARD</h1>
+    </div>
 
-  <h2>Talent Pool</h2>
-  <div class="controls">
-    <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
-    <button @click="loadApplicants('impact')">Impact</button>
-    <button @click="loadApplicants('cream_collective')">Cream Collective</button>
-    <button @click="loadApplicants('rapture')">Rapture</button>
-    <button @click="loadApplicants('partywell')">PartyWell</button>
-    <button @click="loadApplicants('reunion')">Reunion Static</button>
-    <button @click="loadApplicants('applications', true)">Reunion 2024</button>
-    <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
-  </div>
+    <div class="controls">
+      <h2>Talent Pool</h2>
+      <div class="buttons">
+        <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
+        <button @click="loadApplicants('impact')">Impact</button>
+        <button @click="loadApplicants('cream_collective')">Cream Collective</button>
+        <button @click="loadApplicants('rapture')">Rapture</button>
+        <button @click="loadApplicants('partywell')">PartyWell</button>
+        <button @click="loadApplicants('reunion')">Reunion Static</button>
+        <button @click="loadApplicants('applications', true)">Reunion 2024</button>
+        <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
+      </div>
+    </div>
 
-  <h2>Filter By</h2>
-  <div class="filters">
-    <button
-      v-for="filter in relevantFilters"
-      :key="filter.property"
-      @click="applyFilter(filter.property, filter.value)"
-    >
-      {{ filter.label }}
-    </button>
-    <button @click="clearFilters">Clear Filters</button>
-  </div>
+    <div class="filters">
+      <h2>Filter By</h2>
+      <div class="buttons">
+        <button
+          v-for="filter in relevantFilters"
+          :key="filter.property"
+          @click="applyFilter(filter.property, filter.value)"
+        >
+          {{ filter.label }}
+        </button>
+        <button @click="clearFilters">Clear Filters</button>
+      </div>
+    </div>
 
-  <div class="dashboard-panel">
-    <h2>Current View <br />{{ filteredApplicants.length }}</h2>
-    <div class="applicants" :style="{ transform: `scale(${scale})` }">
-      <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
-        <div class="applicant-content">
-          <h2>
-            <a v-if="applicant.url" :href="applicant.url" target="_blank">
-              {{ applicant.act_name || applicant.full_name }}
-            </a>
-            <span v-else>
-              {{
-                applicant.fullname ||
-                applicant.first_name + ' ' + applicant.last_name ||
-                applicant.full_name ||
-                applicant.applicant.fullname ||
-                applicant.act_name ||
-                applicant.email.split('@')[0]
-              }}
-            </span>
-            <br />
-          </h2>
-          <p>
-            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
-              LISTEN TO A MIX/TRACK
-            </a>
-          </p>
-          <p v-if="applicant.region">{{ applicant.region }}</p>
-          <p id="bio">{{ applicant.bio }}</p>
-          <br />
-          <p>{{ applicant.rates }}</p>
-          <br />
-          <br />
-          <p>
+    <div class="view-toggle">
+      <label> <input type="radio" value="rows" v-model="viewStyle" /> Rows </label>
+      <label> <input type="radio" value="cards" v-model="viewStyle" /> Cards </label>
+    </div>
+
+    <div class="dashboard-panel">
+      <h2>Current View <br />{{ filteredApplicants.length }}</h2>
+      <div class="applicants" :class="viewStyle">
+        <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
+          <div class="applicant-content">
+            <h3>
+              <a v-if="applicant.url" :href="applicant.url" target="_blank">
+                {{ applicant.act_name || applicant.full_name }}
+              </a>
+              <span v-else>
+                {{ applicant.fullname || applicant.email.split('@')[0] }}
+              </span>
+            </h3>
+            <p v-if="applicant.region">{{ applicant.region }}</p>
+            <p>{{ applicant.bio }}</p>
+            <p>{{ applicant.rates }}</p>
             <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
-          </p>
+          </div>
         </div>
       </div>
     </div>
@@ -70,88 +63,76 @@
 </template>
 
 <script>
-import HelloWorld from './HelloWorld.vue'
-import IconFestivall from './icons/IconFestivall.vue'
-import { reunion_db } from '@/firebase'
+import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
 
 export default {
-  components: {
-    HelloWorld,
-    IconFestivall
-  },
-  data() {
-    return {
-      applicants: [],
-      filteredApplicants: [],
-      scale: 1,
-      emailBody: '',
-      filters: [
-        { property: 'applicant_type', value: 'Artist', label: 'Artists' },
-        { property: 'applicant_type', value: 'Musician', label: 'Musicians' },
-        { property: 'act_type', value: 'Musician', label: 'Musicians' },
-        { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
-        { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
-        { property: 'applicant_type', value: 'DJ', label: 'DJs' },
-        { property: 'act_type', value: 'dj', label: 'DJs' },
-        { property: 'applicant_type', value: 'DJ/Band', label: 'DJ/Band' },
-        { property: 'act_type', value: 'Live Band', label: 'Live Bands' },
-        { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
-        { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew' },
-        { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew' },
-        { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew' },
-        { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate' },
-        { property: 'volunteer_type', value: 'Food Team', label: 'Food Team' },
-        { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
-        { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
-        { property: 'applicant_type', value: 'Art Vendor', label: 'Art Vendors' },
-        { property: 'applicant_type', value: 'Event Manager', label: 'Event Manager' },
-        { property: 'applicant_type', value: 'A&R', label: 'A&R' },
-        { property: 'applicant_type', value: 'Accounts Manager', label: 'Accounts Manager' },
-        { property: 'applicant_type', value: 'Marketing', label: 'Marketing' },
-        { property: 'applicant_type', value: 'Operations Manager', label: 'Operations Manager' },
-        { property: 'applicant_type', value: 'Market Analyst', label: 'Market Analyst' },
-        { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
-        { property: 'applicant_type', value: 'UX', label: 'UX' },
-        { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
-        { property: 'applicant_type', value: 'Customer', label: 'Customer' },
-        { property: 'mix_track_url', value: '', label: 'Mix/Track' },
-        { property: 'willing', value: '', label: 'Willing' },
-        { property: 'url', value: '', label: 'URL' },
-        { property: 'build_crew', value: '', label: 'Build Crew' },
-        { property: 'kitchen_crew', value: '', label: 'Kitchen Crew' },
-        { property: 'security', value: '', label: 'Security' },
-        { property: 'first_aid', value: '', label: 'First Aid' },
-        { property: 'front_gate', value: '', label: 'Front Gate' },
-        { property: 'parking_attendant', value: '', label: 'Parking Attendant' },
-        { property: 'front_of_house', value: '', label: 'Front of House' },
-        { property: 'stage_tech', value: '', label: 'Stage Tech' },
-        { property: 'hospitality', value: '', label: 'Hospitality' },
-        { property: 'green_team', value: '', label: 'Green Team' },
-        { property: 'childrens_area', value: '', label: "Children's Area" },
-        { property: 'merch_table', value: '', label: 'Merch Table' },
-        { property: 'float_crew', value: '', label: 'Float Crew' },
-        { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' }
-      ]
-    }
-  },
-  computed: {
-    relevantFilters() {
-      return this.filters.filter((filter) => {
-        return this.applicants.some((applicant) => {
+  name: 'DashboardPanel',
+  setup() {
+    const applicants = ref([])
+    const filteredApplicants = ref([])
+    const viewStyle = ref('cards') // Default view style
+    const filters = ref([
+      { property: 'applicant_type', value: 'Artist', label: 'Artists' },
+      { property: 'applicant_type', value: 'Musician', label: 'Musicians' },
+      { property: 'act_type', value: 'Musician', label: 'Musicians' },
+      { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
+      { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
+      { property: 'applicant_type', value: 'DJ', label: 'DJs' },
+      { property: 'act_type', value: 'dj', label: 'DJs' },
+      { property: 'applicant_type', value: 'DJ/Band', label: 'DJ/Band' },
+      { property: 'act_type', value: 'Live Band', label: 'Live Bands' },
+      { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
+      { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew' },
+      { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew' },
+      { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew' },
+      { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate' },
+      { property: 'volunteer_type', value: 'Food Team', label: 'Food Team' },
+      { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
+      { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
+      { property: 'applicant_type', value: 'Art Vendor', label: 'Art Vendors' },
+      { property: 'applicant_type', value: 'Event Manager', label: 'Event Manager' },
+      { property: 'applicant_type', value: 'A&R', label: 'A&R' },
+      { property: 'applicant_type', value: 'Accounts Manager', label: 'Accounts Manager' },
+      { property: 'applicant_type', value: 'Marketing', label: 'Marketing' },
+      { property: 'applicant_type', value: 'Operations Manager', label: 'Operations Manager' },
+      { property: 'applicant_type', value: 'Market Analyst', label: 'Market Analyst' },
+      { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
+      { property: 'applicant_type', value: 'UX', label: 'UX' },
+      { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
+      { property: 'applicant_type', value: 'Customer', label: 'Customer' },
+      { property: 'mix_track_url', value: '', label: 'Mix/Track' },
+      { property: 'willing', value: '', label: 'Willing' },
+      { property: 'url', value: '', label: 'URL' },
+      { property: 'build_crew', value: '', label: 'Build Crew' },
+      { property: 'kitchen_crew', value: '', label: 'Kitchen Crew' },
+      { property: 'security', value: '', label: 'Security' },
+      { property: 'first_aid', value: '', label: 'First Aid' },
+      { property: 'front_gate', value: '', label: 'Front Gate' },
+      { property: 'parking_attendant', value: '', label: 'Parking Attendant' },
+      { property: 'front_of_house', value: '', label: 'Front of House' },
+      { property: 'stage_tech', value: '', label: 'Stage Tech' },
+      { property: 'hospitality', value: '', label: 'Hospitality' },
+      { property: 'green_team', value: '', label: 'Green Team' },
+      { property: 'childrens_area', value: '', label: "Children's Area" },
+      { property: 'merch_table', value: '', label: 'Merch Table' },
+      { property: 'float_crew', value: '', label: 'Float Crew' },
+      { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' }
+    ])
+
+    const relevantFilters = computed(() => {
+      return filters.value.filter((filter) => {
+        return applicants.value.some((applicant) => {
           if (filter.value === '') {
             return applicant[filter.property] !== undefined && applicant[filter.property] !== ''
           }
           return applicant[filter.property] === filter.value
         })
       })
-    }
-  },
-  created() {
-    this.loadEmailTemplate()
-  },
-  methods: {
-    async loadApplicants(type, isFirestore = false) {
+    })
+
+    const loadApplicants = async (type, isFirestore = false) => {
       try {
         let data = []
         if (isFirestore) {
@@ -159,7 +140,6 @@ export default {
           const applicantsCollection = collection(reunion_db, type)
           const applicantsSnapshot = await getDocs(applicantsCollection)
           data = applicantsSnapshot.docs.map((doc) => doc.data())
-          console.log(data)
         } else {
           // Fetch static data from public folder
           const response = await fetch(`/data/applicants/${type}.json`)
@@ -170,173 +150,182 @@ export default {
         }
 
         // Sort applicants by whether they have a URL
-        this.applicants = data.sort((a, b) => {
+        applicants.value = data.sort((a, b) => {
           if (a.url && !b.url) return -1
           if (!a.url && b.url) return 1
           return 0
         })
-        this.filteredApplicants = this.applicants // Initialize filteredApplicants
+        filteredApplicants.value = applicants.value // Initialize filteredApplicants
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error)
       }
-    },
-    applyFilter(property, value) {
-      this.filteredApplicants = this.applicants.filter((applicant) => {
+    }
+
+    const applyFilter = (property, value) => {
+      filteredApplicants.value = applicants.value.filter((applicant) => {
         if (value === '') {
           return applicant[property] !== undefined && applicant[property] !== ''
         }
         return applicant[property] === value
       })
-    },
-    clearFilters() {
-      this.filteredApplicants = this.applicants
-    },
-    loadEmailTemplate() {
-      fetch('/email_templates/artist_request_template.txt')
-        .then((response) => response.text())
-        .then((text) => {
-          this.emailBody = text
-        })
-        .catch((error) => {
-          console.error('Error loading email template:', error)
-        })
-    },
-    generateMailtoLink(email) {
+    }
+
+    const clearFilters = () => {
+      filteredApplicants.value = applicants.value
+    }
+
+    const generateMailtoLink = (email) => {
       const subject = encodeURIComponent('Your Subject Here')
-      const body = encodeURIComponent(this.emailBody)
+      const body = encodeURIComponent('Your email body here')
       return `mailto:${email}?subject=${subject}&body=${body}`
+    }
+
+    onMounted(() => {
+      loadApplicants('blessed_coast')
+    })
+
+    return {
+      applicants,
+      filteredApplicants,
+      viewStyle,
+      relevantFilters,
+      loadApplicants,
+      applyFilter,
+      clearFilters,
+      generateMailtoLink
     }
   }
 }
 </script>
 
 <style scoped>
+.dashboard {
+  padding: 2rem;
+  background-color: #1f1e22;
+  color: #f0f4f8;
+}
+
 .banner {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  position: sticky;
-  top: 0;
-  background-color: #1f1e22;
-  z-index: 25;
-  padding: 1rem 0;
+  justify-content: center;
+  background-color: #333;
+  padding: 1rem;
+  border-radius: 10px;
   margin-bottom: 2rem;
 }
 
-.controls {
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+.logo {
+  width: 50px;
+  height: 50px;
+  margin-right: 1rem;
 }
+
+h1 {
+  color: var(--festivall-baby-blue);
+}
+
+.controls,
 .filters {
+  margin-bottom: 2rem;
+}
+
+.buttons {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 2px;
+  gap: 1rem;
 }
 
 button {
-  width: auto;
-  padding: 0.5rem 0.5rem;
-
-  border-radius: 10px;
-  background-color: #1f1e22;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--festivall-baby-blue);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #2c3e50;
+  background-color: #0056b3;
+}
+
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.view-toggle label {
+  margin: 0 1rem;
+  cursor: pointer;
+}
+
+.dashboard-panel {
+  background-color: #333;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .applicants {
-  font-size: 1rem;
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  transition: transform 50ms ease-in;
-  padding: 0.5rem 0.5rem;
+  gap: 1rem;
+}
+
+.applicants.rows {
+  flex-direction: column;
+  width: 100%;
 }
 
 .applicant {
-  border: 2px solid #7097be;
-  width: 150px;
-  height: 150px;
-  margin: 10px;
+  background-color: #444;
+  padding: 1rem;
   border-radius: 10px;
-  overflow: hidden;
-  white-space: wrap;
-  text-overflow: ellipsis;
-  transition:
-    transform 750ms ease,
-    width 750s ease-in-out,
-    height 750ms ease-in-out;
-  background-color: #1f1e22;
-  position: relative;
-  transform-origin: center center;
-  box-shadow: inset 0 0 25px rgba(121, 188, 255, 0.25);
-}
-
-.applicant p {
-  display: none;
-  /* transform: scale(0.8);
-  opacity: 0.2; */
-}
-.applicant h2 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.applicant:hover {
-  transform: scale(2);
-  z-index: 10;
-  padding: 3px 3px;
-  font-size: 30%;
-}
-
-.applicant:hover h2 {
-  font-size: 6px;
-  padding: 5px;
-}
-.applicant:hover p {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  font-size: 6px;
-}
-
-.applicant-content {
-  width: auto;
-  /* height: 100%; */
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-#bio {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  justify-content: space-between;
+  align-items: flex-start;
   text-align: left;
 }
 
-.applicant-content::-webkit-scrollbar {
-  display: none;
+.applicants.cards .applicant {
+  width: 300px;
+  height: 500px;
+  align-items: center;
+  text-align: center;
 }
 
-.applicant-content:hover {
-  justify-content: flex-start;
-  padding: 0px 10px;
-  scrollbar-width: thin;
+.applicant:hover {
+  transform: scale(1.05);
+}
+
+.applicant-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+h3 {
+  margin: 0;
+  color: var(--festivall-baby-blue);
+}
+
+p {
+  margin: 0;
+  color: #f0f4f8;
+}
+
+a {
+  color: var(--festivall-baby-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 </style>
