@@ -1,6 +1,9 @@
 <template>
-  <h2>Login</h2>
   <div id="login-container">
+    <div id="logo-container">
+      <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" />
+    </div>
+    <h2>Login</h2>
     <p>You are currently {{ status }}.</p>
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
@@ -25,6 +28,7 @@ export default {
     const status = ref('logged out')
     const isUserLoggedIn = ref(false)
     const router = useRouter()
+    const route = useRoute() // Initialize useRoute at the top
 
     const login = () => {
       signInWithEmailAndPassword(festivall_auth, email.value, password.value)
@@ -42,9 +46,8 @@ export default {
           } else {
             console.warn('localStorage is not available.')
           }
-          
+
           // Get the redirect path from query parameters or default to dashboard
-          const route = useRoute()
           const redirectPath = route.query.redirect || '/dashboard'
           router.push(redirectPath)
         })
@@ -103,20 +106,44 @@ export default {
 </script>
 
 <style scoped>
+#logo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+#logo-container img {
+  width: 200px;
+}
 #login-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   height: 100vh;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h2 {
+  color: var(--festivall-baby-blue);
+  margin-bottom: 1rem;
 }
 form {
-  width: 60vw;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 1rem 0;
+}
+input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
 }
 button {
   display: inline-block;
@@ -124,7 +151,7 @@ button {
   margin: 5px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: var(--festivall-baby-blue);
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
