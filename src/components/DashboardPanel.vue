@@ -56,17 +56,11 @@
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.message }}</p>
             <div class="actions">
-              <p v-if="applicant.mix_track_url">
-                <a :href="applicant.mix_track_url" target="_blank">
-                  <img
-                    :src="mix_track"
-                    alt="Listen to Mix/Track"
-                    style="width: 30px; height: 30px"
-                  />
-                </a>
-              </p>
+              <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
+                <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
+              </a>
               <a :href="generateMailtoLink(applicant.email)">
-                <img :src="contract" alt="Book Applicant" style="width: 30px; height: 30px" />
+                <img :src="contract" alt="Book Applicant" class="action-icon" />
               </a>
             </div>
             <div v-if="applicant.phone" class="message-section">
@@ -84,7 +78,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import mix_track from '@/assets/images/reunion_amenities/mix_track.png'
+import mixTrack from '@/assets/images/reunion_amenities/mix_track.png'
 import contract from '@/assets/images/reunion_amenities/contract.png'
 
 export default {
@@ -251,12 +245,13 @@ export default {
       clearFilters,
       generateMailtoLink,
       sendMessage,
-      mix_track,
+      mixTrack,
       contract
     }
   }
 }
 </script>
+
 <style scoped>
 .dashboard {
   padding: 0.5rem;
@@ -380,12 +375,9 @@ button:hover {
   justify-content: space-around;
   align-items: center;
 }
-.actions img:hover {
-  cursor: pointer;
-}
 
 input {
-  width: 50%;
+  width: 40%;
   padding: 0.4rem;
   margin-bottom: 0.5rem;
   border-radius: 6px;
@@ -406,5 +398,12 @@ a {
   color: var(--festivall-baby-blue);
   text-decoration: none;
   border-radius: 6px;
+}
+
+.action-icon {
+  height: 42px;
+  width: 42px;
+  cursor: pointer;
+  margin: 6px;
 }
 </style>
