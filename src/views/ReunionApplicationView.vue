@@ -28,7 +28,7 @@ const form = ref({
   workshop_title: '',
   workshop_description: '',
   vendor_type: '',
-  message: ''
+  statement: ''
 })
 
 const submitting = ref(false)

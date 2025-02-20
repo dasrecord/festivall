@@ -54,7 +54,7 @@
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
-            <p>{{ applicant.message }}</p>
+            <p>{{ applicant.statement }}</p>
 
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
             <div class="actions">
@@ -70,7 +70,12 @@
               </a>
             </div>
             <div v-if="applicant.phone" class="message-section">
-              <input type="text" v-model="applicant.message" />
+              <input
+                type="text"
+                v-model="applicant.message"
+                @keyup.enter="sendMessage(applicant.phone, applicant.message)"
+                placeholder="Type your message"
+              />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
             </div>
           </div>
@@ -247,6 +252,7 @@ export default {
         console.log('Response data:', responseData) // Log the response data for debugging
 
         alert('Message sent successfully!')
+        applicant.message = ''
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error)
         alert('Failed to send message.')
