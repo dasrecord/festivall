@@ -61,7 +61,11 @@
               <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
                 <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
               </a>
-              <a :href="generateMailtoLink(applicant.email, applicant.fullname)">
+              <a
+                :href="
+                  generateMailtoLink(applicant.email, applicant.fullname, applicant.applicant_type)
+                "
+              >
                 <img :src="contract" alt="Book Applicant" class="action-icon" />
               </a>
             </div>
@@ -203,9 +207,11 @@ export default {
         })
     }
 
-    const generateMailtoLink = (email, fullname) => {
+    const generateMailtoLink = (email, fullname, role) => {
       const subject = encodeURIComponent('Reunion 2025')
-      const personalizedBody = emailBody.value.replace('{name}', fullname || '')
+      const personalizedBody = emailBody.value
+        .replace('{name}', fullname || '')
+        .replace('{role}', role || '')
       const body = encodeURIComponent(personalizedBody)
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
