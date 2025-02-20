@@ -27,6 +27,7 @@ const form = ref({
   volunteer_type: '',
   workshop_title: '',
   workshop_description: '',
+  vendor_type: '',
   message: ''
 })
 
@@ -123,6 +124,7 @@ const submitForm = async () => {
         volunteer_type: '',
         workshop_title: '',
         workshop_description: '',
+        vendor_type: '',
         message: ''
       }
     } else {
@@ -224,6 +226,7 @@ const submitForm = async () => {
             <option value="Volunteer">Volunteer</option>
             <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
+            <option value="Vendor">Vendor</option>
           </select>
         </div>
 
@@ -242,6 +245,19 @@ const submitForm = async () => {
           </div>
         </div>
 
+        <div v-else-if="form.applicant_type === 'Vendor'">
+          <div class="form-section">
+            <label for="vendor_type">Vendor Type:</label>
+            <select id="vendor_type" v-model="form.vendor_type" required>
+              <option value="" disabled>What type of vendor are you?</option>
+              <option value="Food">Food</option>
+              <option value="Merchandise">Merchandise</option>
+              <option value="Artisan">Artisan</option>
+              <option value="Service">Service</option>
+            </select>
+          </div>
+        </div>
+
         <div v-else-if="form.applicant_type === 'Artist'">
           <div class="form-section">
             <label for="act_type">Act Type:</label>
@@ -256,6 +272,7 @@ const submitForm = async () => {
               <option value="Dancer">Dancer</option>
             </select>
           </div>
+
           <div class="form-section">
             <label for="act_name">Act Name:</label>
             <input
