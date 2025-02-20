@@ -190,9 +190,22 @@ export default {
       filteredApplicants.value = applicants.value
     }
 
+    const emailBody = ref('')
+
+    const loadEmailTemplate = () => {
+      fetch('/email_templates/artist_request_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          emailBody.value = text
+        })
+        .catch((error) => {
+          console.error('Error loading email template:', error)
+        })
+    }
+
     const generateMailtoLink = (email) => {
       const subject = encodeURIComponent('Your Subject Here')
-      const body = encodeURIComponent('Your email body here')
+      const body = encodeURIComponent(emailBody.value)
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
@@ -235,6 +248,7 @@ export default {
 
     onMounted(() => {
       loadApplicants('reunion')
+      loadEmailTemplate()
     })
 
     return {
@@ -248,7 +262,8 @@ export default {
       generateMailtoLink,
       sendMessage,
       mixTrack,
-      contract
+      contract,
+      emailBody
     }
   }
 }
