@@ -246,6 +246,12 @@ const routes = [
     props: { url: 'https://dasrecord.typeform.com/to/dOYM3jhk' }
   },
   {
+    path: '/reuniontrailer',
+    name: 'reuniontrailer',
+    component: ExternalRedirect,
+    props: { url: 'https://youtu.be/xibNU7F_RKQ?si=OSSjz5IVD1O_5Eoz' }
+  },
+  {
     path: '/services',
     name: 'services',
     component: ServicesView,
