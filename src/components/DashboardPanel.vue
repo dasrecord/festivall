@@ -54,6 +54,12 @@
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.rates }}</p>
+            <p>{{ applicant.email }}</p>
+            {{ applicant.phone }}
+            <div v-if="applicant.phone" class="message-section">
+              <input type="text" v-model="applicant.message" placeholder="Enter message" />
+              <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
+            </div>
             <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
           </div>
         </div>
@@ -148,14 +154,14 @@ export default {
           }
           data = await response.json()
         }
-
-        // Sort applicants by whether they have a URL
-        applicants.value = data.sort((a, b) => {
-          if (a.url && !b.url) return -1
-          if (!a.url && b.url) return 1
-          return 0
-        })
-        filteredApplicants.value = applicants.value // Initialize filteredApplicants
+        applicants.value = data
+          .map((applicant) => ({ ...applicant, message: '' }))
+          .sort((a, b) => {
+            if (a.url && !b.url) return -1
+            if (!a.url && b.url) return 1
+            return 0
+          })
+        filteredApplicants.value = applicants.value
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error)
       }
@@ -180,8 +186,45 @@ export default {
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
+    const sendMessage = async (phone, message) => {
+      if (!phone || !message) {
+        alert('Phone number and message are required.')
+        return
+      }
+
+      const payload = {
+        value1: phone,
+        value2: message,
+        value3: 'Powered by Festivall'
+      }
+
+      console.log('Sending payload:', JSON.stringify(payload)) // Add logging for debugging
+
+      try {
+        const response = await fetch('https://relayproxy.vercel.app/sms', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText)
+        }
+
+        const responseData = await response.json()
+        console.log('Response data:', responseData) // Log the response data for debugging
+
+        alert('Message sent successfully!')
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error)
+        alert('Failed to send message.')
+      }
+    }
+
     onMounted(() => {
-      loadApplicants('blessed_coast')
+      loadApplicants('reunion')
     })
 
     return {
@@ -192,12 +235,12 @@ export default {
       loadApplicants,
       applyFilter,
       clearFilters,
-      generateMailtoLink
+      generateMailtoLink,
+      sendMessage
     }
   }
 }
 </script>
-
 <style scoped>
 .dashboard {
   padding: 1rem;
