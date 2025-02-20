@@ -43,18 +43,20 @@
       <div class="applicants" :class="viewStyle">
         <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
           <div class="applicant-content">
-            <h3>
+            <h2>
               <a v-if="applicant.url" :href="applicant.url" target="_blank">
                 {{ applicant.act_name || applicant.full_name }}
               </a>
               <span v-else>
                 {{ applicant.fullname || applicant.email.split('@')[0] }}
               </span>
-            </h3>
+            </h2>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.message }}</p>
+
+            <span v-if="applicant.comments">{{ applicant.comments }} </span>
             <div class="actions">
               <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
                 <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
@@ -64,7 +66,7 @@
               </a>
             </div>
             <div v-if="applicant.phone" class="message-section">
-              <input type="text" v-model="applicant.message" placeholder="Enter message" />
+              <input type="text" v-model="applicant.message" />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
             </div>
           </div>
@@ -384,8 +386,9 @@ input {
   border: 1px solid var(--festivall-baby-blue);
 }
 
-h3 {
+h2 {
   margin: 0;
+  padding: 0;
   color: var(--festivall-baby-blue);
 }
 
