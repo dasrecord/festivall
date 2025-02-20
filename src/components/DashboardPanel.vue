@@ -55,12 +55,24 @@
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.message }}</p>
-
+            <div class="actions">
+              <p v-if="applicant.mix_track_url">
+                <a :href="applicant.mix_track_url" target="_blank">
+                  <img
+                    :src="mix_track"
+                    alt="Listen to Mix/Track"
+                    style="width: 30px; height: 30px"
+                  />
+                </a>
+              </p>
+              <a :href="generateMailtoLink(applicant.email)">
+                <img :src="contract" alt="Book Applicant" style="width: 30px; height: 30px" />
+              </a>
+            </div>
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" placeholder="Enter message" />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
             </div>
-            <a :href="generateMailtoLink(applicant.email)">BOOK APPLICANT</a>
           </div>
         </div>
       </div>
@@ -72,6 +84,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
+import mix_track from '@/assets/images/reunion_amenities/mix_track.png'
+import contract from '@/assets/images/reunion_amenities/contract.png'
 
 export default {
   name: 'DashboardPanel',
@@ -236,7 +250,9 @@ export default {
       applyFilter,
       clearFilters,
       generateMailtoLink,
-      sendMessage
+      sendMessage,
+      mix_track,
+      contract
     }
   }
 }
@@ -358,6 +374,24 @@ button:hover {
   gap: 0.5rem;
 }
 
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+.actions img:hover {
+  cursor: pointer;
+}
+
+input {
+  width: 50%;
+  padding: 0.4rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--festivall-baby-blue);
+}
+
 h3 {
   margin: 0;
   color: var(--festivall-baby-blue);
@@ -372,9 +406,5 @@ a {
   color: var(--festivall-baby-blue);
   text-decoration: none;
   border-radius: 6px;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 </style>
