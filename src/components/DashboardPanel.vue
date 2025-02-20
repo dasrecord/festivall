@@ -51,11 +51,11 @@
                 {{ applicant.fullname || applicant.email.split('@')[0] }}
               </span>
             </h3>
+            <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
-            <p>{{ applicant.rates }}</p>
-            <p>{{ applicant.email }}</p>
-            {{ applicant.phone }}
+            <p>{{ applicant.message }}</p>
+
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" placeholder="Enter message" />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
@@ -243,24 +243,23 @@ export default {
 </script>
 <style scoped>
 .dashboard {
-  padding: 1rem;
+  padding: 0.5rem;
   background-color: #1f1e22;
   color: #f0f4f8;
 }
 
 .banner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   background-color: #333;
   padding: 1rem;
   border-radius: 10px;
-  /* margin-bottom: 2rem; */
 }
 
 .logo {
-  width: 50px;
-  height: 50px;
+  height: auto;
+  width: 150px;
   margin-right: 1rem;
 }
 
@@ -270,11 +269,12 @@ h1 {
 
 .controls,
 .filters {
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .buttons {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -296,7 +296,7 @@ button:hover {
 .view-toggle {
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .view-toggle label {

@@ -14,6 +14,7 @@ const form = ref({
   email: '',
   city: '',
   phone: '',
+  formatted_phone: '',
   applicant_type: '',
   act_type: '',
   act_name: '',
@@ -64,18 +65,19 @@ const formatPhoneNumber = (phone) => {
 }
 
 const handlePhoneInput = (event) => {
-  form.value.phone = formatPhoneNumber(event.target.value)
+  form.value.phone = event.target.value
+  form.value.formatted_phone = formatPhoneNumber(event.target.value)
 }
-
 const submitForm = async () => {
   if (submitting.value) return
   submitting.value = true
-
+  form.value.raw_phone = form.value.phone.replace(/\D/g, '')
   try {
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
       form.value.id_code = form.value.id_code_long.slice(0, 5)
     }
+
     await addApplicant()
 
     const response = await axios.post(
@@ -86,7 +88,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
@@ -108,6 +110,7 @@ const submitForm = async () => {
         email: '',
         city: '',
         phone: '',
+        formatted_phone: '',
         applicant_type: '',
         act_type: '',
         act_name: '',
