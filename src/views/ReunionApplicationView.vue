@@ -124,7 +124,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.formatted_phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
