@@ -140,6 +140,7 @@ const submitForm = async () => {
       alert(
         'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'
       )
+
       form.value = {
         id_code_long: '',
         id_code: '',
