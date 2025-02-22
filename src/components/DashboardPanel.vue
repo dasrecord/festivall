@@ -11,6 +11,7 @@
         <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
         <button @click="loadApplicants('impact')">Impact</button>
         <button @click="loadApplicants('cream_collective')">Cream Collective</button>
+        <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button>
         <button @click="loadApplicants('rapture')">Rapture</button>
         <button @click="loadApplicants('partywell')">PartyWell</button>
         <button @click="loadApplicants('reunion')">Reunion Static</button>
@@ -51,6 +52,7 @@
                 {{ applicant.fullname || applicant.email.split('@')[0] }}
               </span>
             </h2>
+            <p v-if="applicant.id_code" id="id_code">{{ applicant.id_code }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
@@ -74,7 +76,6 @@
                 type="text"
                 v-model="applicant.message"
                 @keyup.enter="sendMessage(applicant.phone, applicant.message)"
-                placeholder="Type your message"
               />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
             </div>
@@ -379,14 +380,16 @@ button:hover {
 }
 
 .applicants.cards .applicant {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 200px;
   align-items: center;
   text-align: center;
   overflow: hidden;
   position: relative;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--festivall-baby-blue);
 }
 
 .applicant:hover {
@@ -399,11 +402,16 @@ button:hover {
   gap: 0.5rem;
 }
 
+#id_code {
+  color: var(--festivall-baby-blue);
+}
+
 .actions {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+  border-radius: 8px;
 }
 
 input {
@@ -435,6 +443,6 @@ a {
   height: 42px;
   width: 42px;
   cursor: pointer;
-  margin: 6px;
+  margin: 3px;
 }
 </style>
