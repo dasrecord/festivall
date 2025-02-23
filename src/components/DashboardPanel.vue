@@ -52,7 +52,7 @@
                 {{ applicant.fullname || applicant.email.split('@')[0] }}
               </span>
             </h2>
-            <p v-if="applicant.id_code" id="id_code">{{ applicant.id_code }}</p>
+            <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.region">{{ applicant.region }}</p>
             <p>{{ applicant.bio }}</p>
@@ -402,7 +402,7 @@ button:hover {
   gap: 0.5rem;
 }
 
-#id_code {
+.id_code {
   color: var(--festivall-baby-blue);
 }
 
