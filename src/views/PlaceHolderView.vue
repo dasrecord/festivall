@@ -25,7 +25,15 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/festivall_placeholder',
       {
-        text: `Name: ${form.value.name}\nEmail: ${form.value.email}\nApplicant Type: ${form.value.applicant_type}\nAct Type: ${form.value.act_type}\nAct Name: ${form.value.act_name}\nAct Description: ${form.value.act_description}\nTrack/Mix URL: ${form.value.track_mix_url}\nAct Website: ${form.value.act_website}\nSocial Media URL: ${form.value.social_url}\nMessage: ${form.value.message}`
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `:bust_in_silhouette: ${form.value.name}\n:email: ${form.value.email}\:trident: ${form.value.applicant_type}\n:radio_button: ${form.value.act_type}\n:musical_note: ${form.value.act_name}\n:pencil: ${form.value.act_description}\n:cd: ${form.value.track_mix_url}\n:link: ${form.value.act_website}\n:iphone: ${form.value.social_url}\n:black_nib: ${form.value.message}`
+            }
+          }
+        ]
       },
       {
         headers: {
