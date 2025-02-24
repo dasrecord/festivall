@@ -78,6 +78,7 @@
                 @keyup.enter="sendMessage(applicant.phone, applicant.message)"
               />
               <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
+              <button @click="generateContract(applicant.id_code)">Generate Contract</button>
             </div>
           </div>
         </div>
@@ -92,6 +93,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import mixTrack from '@/assets/images/reunion_amenities/mix_track.png'
 import contract from '@/assets/images/reunion_amenities/contract.png'
+import { useRoute, useRouter } from 'vue-router'
 
 export default {
   name: 'DashboardPanel',
@@ -260,6 +262,12 @@ export default {
       }
     }
 
+    const router = useRouter()
+
+    const generateContract = (id_code) => {
+      router.push({ path: `/contract/${id_code}` })
+    }
+
     onMounted(() => {
       loadApplicants('reunion')
       loadEmailTemplate()
@@ -275,6 +283,7 @@ export default {
       clearFilters,
       generateMailtoLink,
       sendMessage,
+      generateContract,
       mixTrack,
       contract,
       emailBody

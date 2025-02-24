@@ -12,8 +12,12 @@ const form = ref({
   id_code: '',
   fullname: '',
   email: '',
-  city: '',
   phone: '',
+  street_address: '',
+  city: '',
+  province: '',
+  country: '',
+  postal_code: '',
   formatted_phone: '',
   applicant_type: '',
   act_type: '',
@@ -148,8 +152,12 @@ const submitForm = async () => {
         id_code: '',
         fullname: '',
         email: '',
-        city: '',
         phone: '',
+        street_address: '',
+        city: '',
+        province: '',
+        country: '',
+        postal_code: '',
         formatted_phone: '',
         applicant_type: '',
         act_type: '',
@@ -249,12 +257,40 @@ const submitForm = async () => {
           />
         </div>
         <div class="form-section">
-          <label for="city">City:</label>
+          <label for="address">Street Address:</label>
           <input
             type="text"
-            id="city"
-            v-model="form.city"
-            placeholder="Where are you from?"
+            id="address"
+            v-model="form.address"
+            placeholder="123 Main St."
+            required
+          />
+        </div>
+        <div class="form-section">
+          <label for="city">City:</label>
+          <input type="text" id="city" v-model="form.city" placeholder="Enter your city" required />
+        </div>
+        <div class="form-section">
+          <label for="province">Province/Region:</label>
+          <input
+            type="text"
+            id="region"
+            v-model="form.province"
+            placeholder="Province/Region"
+            required
+          />
+        </div>
+        <div class="form-section">
+          <label for="country">Country:</label>
+          <input type="text" id="country" v-model="form.country" placeholder="Canada" required />
+        </div>
+        <div class="form-section">
+          <label for="postal_code">Postal Code:</label>
+          <input
+            type="text"
+            id="postal_code"
+            v-model="form.postal_code"
+            placeholder="A1A 1A1"
             required
           />
         </div>
