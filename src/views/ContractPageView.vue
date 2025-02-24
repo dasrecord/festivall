@@ -211,11 +211,16 @@ export default {
 
     const loadApplicant = async (id_code) => {
       try {
-        const q = query(
-          collection(reunion_db, 'applications_2025'),
-          where('id_code', '==', id_code)
-        )
-        const querySnapshot = await getDocs(q)
+        // Check if the applicant is found in the applications_2025 collection
+        let q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', id_code))
+        let querySnapshot = await getDocs(q)
+
+        // Check if the applicant is found in the applications_2024 collection
+        // if (querySnapshot.empty) {
+        //   q = query(collection(reunion_db, 'applications'), where('id_code', '==', id_code))
+        //   querySnapshot = await getDocs(q)
+        // }
+
         if (!querySnapshot.empty) {
           applicant.value = querySnapshot.docs[0].data()
         } else {
@@ -315,6 +320,7 @@ h2 {
 h3 {
   color: red;
   margin-top: 1.5rem;
+  font-weight: bold;
 }
 
 p,
@@ -339,6 +345,7 @@ li {
 }
 
 .signature label {
+  font-weight: bold;
   margin-bottom: 0.5rem;
 }
 
