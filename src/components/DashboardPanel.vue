@@ -218,10 +218,11 @@ export default {
     const generateMailtoLink = (email, fullname, role) => {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = emailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{role}', role || '')
+      .replace('{name}', fullname || '')
+      .replace('{role}', role || '')
       const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}`
+      const attachment = encodeURIComponent('path/to/your/attachment.pdf')
+      return `mailto:${email}?subject=${subject}&body=${body}&attachment=${attachment}`
     }
 
     const sendMessage = async (phone, message) => {
