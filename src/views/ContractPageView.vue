@@ -1,7 +1,13 @@
 <template>
   <div class="contract-page" v-if="applicant">
-    <h1>Reunion Festival Artist Contract</h1>
-    <h2>Powered by Festivall</h2>
+    <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
+    <h1>
+      Reunion Festival<br />
+      {{ applicant.applicant_type }} Contract
+    </h1>
+    <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
+    <!-- <h2>Powered by Festivall</h2> -->
+    <h3 class="preamble">PREAMBLE</h3>
     <p>
       This {{ applicant.applicant_type.toUpperCase().toUpperCase() }} Contract (the “Contract”) is
       entered into <strong>{{ currentDate }}</strong> (the “Effective Date”),
@@ -22,7 +28,7 @@
       provide {{ applicant.applicant_type.toUpperCase() }} services.
     </p>
 
-    <h3 class="red">1. Event Date & Description</h3>
+    <h3 class="red">1. EVENT DATE & DESCRIPTION</h3>
     <p>
       <strong>Venue:</strong> Reunion Festival Grounds (51°57'46.6"N 106°03'10.9"W 51.962948,
       -106.053036)
@@ -36,8 +42,8 @@
       determined no later than 14 days before Event Date
     </p>
     <p v-if="applicant.applicant_type === 'Volunteer'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong>One 4HR
-      volunteer shift during Event Date<br />
+      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong>
+      One 4HR volunteer shift during Event Date<br />
       <strong>Shift Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
@@ -48,7 +54,7 @@
       determined no later than 14 days before Event Date
     </p>
 
-    <h3>2. Payment</h3>
+    <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
     <p><strong>Initial Compensation for Services:</strong></p>
     <ul v-if="applicant.applicant_type === 'Artist'">
@@ -77,7 +83,7 @@
     <p><strong>Additional Compensation:</strong> {{ applicant.additional_compensation }}</p>
     <p><strong>Balance Due:</strong> no later than 30 days after Event Date</p>
 
-    <h3>3. {{ applicant.applicant_type.toUpperCase() }} Requirements</h3>
+    <h3>3. {{ applicant.applicant_type.toUpperCase() }} REQUIREMENTS</h3>
     <p>
       The {{ applicant.applicant_type.toUpperCase() }} requires the following equipment requirements
       to provide {{ applicant.applicant_type.toUpperCase() }} Services:
@@ -103,7 +109,7 @@
       <li>Access to stage management or available DJ to play music provided by WORKSHOP</li>
     </ul>
 
-    <h3>4. Cancellation Policy</h3>
+    <h3>4. CANCELLATION</h3>
 
     <p>
       By REUNION FESTIVAL. The REUNION FESTIVAL may cancel this Agreement at any time prior to the
@@ -112,12 +118,13 @@
     </p>
 
     <p>
-      By {{ applicant.applicant_type }}. The {{ applicant.applicant_type }} may cancel this
-      Agreement at any time. If the {{ applicant.applicant_type }} cancels, it must provide a
-      suitable, replacement {{ applicant.applicant_type }}, subject to the REUNION FESTIVAL's
-      approval, which shall be obtained in writing. In the alternative, the
-      {{ applicant.applicant_type }} shall refund all monies previously paid by the REUNION
-      FESTIVAL.
+      By {{ applicant.applicant_type.toUpperCase() }}. The
+      {{ applicant.applicant_type.toUpperCase() }} may cancel this Agreement at any time. If the
+      {{ applicant.applicant_type.toUpperCase() }} cancels, it must provide a suitable, replacement
+      {{ applicant.applicant_type.toUpperCase() }}, subject to the REUNION FESTIVAL's approval,
+      which shall be obtained in writing. In the alternative, the
+      {{ applicant.applicant_type.toUpperCase() }} shall refund all monies previously paid by the
+      REUNION FESTIVAL.
     </p>
     <ul>
       <li>
@@ -151,13 +158,14 @@
         conduct yourselves accordingly.
       </li>
       <li>
-        G. We encourage you to join us for the entire weekend, you’ve been selected not only for
+        G. We encourage you to join us for the entire weekend, you've been selected not only for
         your music, but because of who you are.
       </li>
     </ul>
-
     <div class="signature">
       <label for="signature">E-Signature:</label>
+      By signing and submitting this form, you agree to the terms and conditions of this contract.
+      <p><strong>By:</strong> {{ applicant.fullname }} <strong>Date:</strong> {{ currentDate }}</p>
       <input
         type="text"
         id="signature"
@@ -176,6 +184,7 @@
     >
       SIGN & SUBMIT
     </button>
+    <img :src="poster_footer" style="width: 100%; margin-top: 2rem" alt="Poster Footer" />
   </div>
   <div v-else>
     <p>Loading...</p>
@@ -187,6 +196,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where, setDoc, doc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
+import frog_image from '@/assets/images/frog.png'
+import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
+import poster_footer from '@/assets/images/poster_footer_v1.png'
 
 export default {
   name: 'ContractPageView',
@@ -199,7 +211,10 @@ export default {
 
     const loadApplicant = async (id_code) => {
       try {
-        const q = query(collection(reunion_db, 'applications'), where('id_code', '==', id_code))
+        const q = query(
+          collection(reunion_db, 'applications_2025'),
+          where('id_code', '==', id_code)
+        )
         const querySnapshot = await getDocs(q)
         if (!querySnapshot.empty) {
           applicant.value = querySnapshot.docs[0].data()
@@ -252,9 +267,13 @@ export default {
     })
 
     return {
+      frog_image,
+      festivall_emblem,
+      poster_footer,
       applicant,
       signature,
       saveContract,
+      addOrder,
       currentDate
     }
   }
@@ -265,6 +284,10 @@ export default {
 * {
   font-family: 'Arial', sans-serif;
 }
+strong {
+  font-weight: bold;
+}
+
 .contract-page {
   display: flex;
   flex-direction: column;
@@ -274,14 +297,19 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 800px;
-  margin: 2rem auto;
+  margin: 1rem 1rem;
+}
+
+img {
+  margin: 0 auto;
 }
 
 h1,
 h2 {
-  color: var(--festivall-baby-blue);
+  color: var(--reunion-frog-green);
   text-align: center;
-  margin-bottom: 1rem;
+  font-weight: bold;
+  /* margin-bottom: 1rem; */
 }
 
 h3 {
@@ -325,7 +353,7 @@ li {
 button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--festivall-baby-blue);
+  background-color: var(--reunion-frog-green);
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -334,6 +362,6 @@ button {
 }
 
 button:hover {
-  background-color: #004494;
+  background-color: hwb(64 14% 74%);
 }
 </style>
