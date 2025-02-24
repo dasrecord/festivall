@@ -2,7 +2,12 @@ Congratulations {name}!
 We would like to invite you to participate at our upcoming festival
 in the capacity of {role}.
 Your talent and energy would be a perfect addition to our lineup.
-Please let us know if this is of interest to you.
+
+To e-sign your contract please navigate to:
+https://festivall.ca/contract
+
+and input your ID_CODE: {id_code}
+
 
 Looking forward to your positive response.
 

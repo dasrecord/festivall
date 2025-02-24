@@ -1,7 +1,9 @@
 <template>
   <div class="dashboard">
     <div class="banner">
-      <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
+      <a href="/">
+        <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
+      </a>
       <h1>SCOUTING DASHBOARD</h1>
     </div>
 
@@ -77,8 +79,8 @@
                 v-model="applicant.message"
                 @keyup.enter="sendMessage(applicant.phone, applicant.message)"
               />
-              <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button>
-              <button @click="generateContract(applicant.id_code)">Generate Contract</button>
+              <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button><br />
+              <button @click="generateContract(applicant.id_code)">Preview Contract</button>
             </div>
           </div>
         </div>
@@ -218,11 +220,10 @@ export default {
     const generateMailtoLink = (email, fullname, role) => {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = emailBody.value
-      .replace('{name}', fullname || '')
-      .replace('{role}', role || '')
+        .replace('{name}', fullname || '')
+        .replace('{role}', role || '')
       const body = encodeURIComponent(personalizedBody)
-      const attachment = encodeURIComponent('path/to/your/attachment.pdf')
-      return `mailto:${email}?subject=${subject}&body=${body}&attachment=${attachment}`
+      return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
     const sendMessage = async (phone, message) => {
