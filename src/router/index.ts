@@ -27,6 +27,8 @@ import BboySignupView from '@/views/BboySignupView.vue'
 import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
 import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
 import ReunionContactView from '@/views/ReunionContactView.vue'
+import ContractPage from '@/views/ContractPageView.vue'
+import IDCodeInput from '@/views/IDCodeInput.vue'
 
 
 const routes = [
@@ -115,6 +117,15 @@ const routes = [
     name: 'dashboard',
     component: Dashboard,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/contract',
+    name: 'EnterIDCode',
+    component: IDCodeInput
+  },
+  { path: '/contract/:id_code', 
+    name: 'ContractPage',
+    component: ContractPage
   },
   { path : '/dasbuttons',
     name : 'dasbuttons',
