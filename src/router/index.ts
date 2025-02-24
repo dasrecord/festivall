@@ -119,11 +119,11 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/contract',
+    path: '/reunioncontract',
     name: 'EnterIDCode',
     component: IDCodeInput
   },
-  { path: '/contract/:id_code', 
+  { path: '/reunioncontract/:id_code', 
     name: 'ContractPage',
     component: ContractPage
   },

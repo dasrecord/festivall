@@ -151,7 +151,7 @@
       <li>
         E. Entire Agreement. The Parties acknowledge and agree that this Agreement represents the
         entire agreement between the Parties. If the Parties desire to change, add, or otherwise
-        modify any terms, they shall do so in writing to be signed by both parties.
+        modify any terms, they shall do so mutually aiming for agreement by both parties.
       </li>
       <li>
         F. Please remember that this is a family-centered event and ensure that you and your party
@@ -159,7 +159,7 @@
       </li>
       <li>
         G. We encourage you to join us for the entire weekend, you've been selected not only for
-        your music, but because of who you are.
+        your skills, but because of who you are - your character.
       </li>
     </ul>
     <div class="signature">
@@ -216,10 +216,10 @@ export default {
         let querySnapshot = await getDocs(q)
 
         // Check if the applicant is found in the applications_2024 collection
-        // if (querySnapshot.empty) {
-        //   q = query(collection(reunion_db, 'applications'), where('id_code', '==', id_code))
-        //   querySnapshot = await getDocs(q)
-        // }
+        if (querySnapshot.empty) {
+          q = query(collection(reunion_db, 'applications'), where('id_code', '==', id_code))
+          querySnapshot = await getDocs(q)
+        }
 
         if (!querySnapshot.empty) {
           applicant.value = querySnapshot.docs[0].data()
@@ -369,6 +369,6 @@ button {
 }
 
 button:hover {
-  background-color: hwb(64 14% 74%);
+  background-color: #404224;
 }
 </style>
