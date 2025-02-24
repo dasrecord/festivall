@@ -267,7 +267,7 @@ export default {
     const router = useRouter()
 
     const generateContract = (id_code) => {
-      router.push({ path: `/contract/${id_code}` })
+      router.push({ path: `/reunioncontract/${id_code}` })
     }
 
     onMounted(() => {

@@ -1,8 +1,13 @@
 <template>
   <div class="id-code-input">
-    <h1>Enter Your ID Code</h1>
+    <img :src="festivall_emblem" alt="Festivall Emblem" class="emblem" />
+    <h1>Reunion Festival</h1>
+    <h2>Contract Portal</h2>
+
+    <h3>Enter Your ID Code</h3>
+
     <form @submit.prevent="checkIdCode">
-      <input type="text" v-model="idCode" placeholder="Enter your ID code" required />
+      <input type="text" v-model="idCode" placeholder="a2c4e" required />
       <button type="submit">Submit</button>
     </form>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -12,6 +17,7 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 
 export default {
   name: 'EnterIDCode',
@@ -39,6 +45,7 @@ export default {
     }
 
     return {
+      festivall_emblem,
       idCode,
       errorMessage,
       checkIdCode
@@ -60,8 +67,7 @@ export default {
 }
 
 h1 {
-  color: var(--festivall-baby-blue);
-  margin-bottom: 1.5rem;
+  color: var(--reunion-frog-green);
 }
 
 form {
@@ -81,7 +87,7 @@ input {
 
 button {
   padding: 0.75rem 1.5rem;
-  background-color: #0056b3;
+  background-color: var(--reunion-frog-green);
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -90,7 +96,7 @@ button {
 }
 
 button:hover {
-  background-color: #004494;
+  background-color: #404224;
 }
 
 .error {
