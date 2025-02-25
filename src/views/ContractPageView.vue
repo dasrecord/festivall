@@ -10,10 +10,8 @@
     <h3 class="preamble">PREAMBLE</h3>
     <p>
       This {{ applicant.applicant_type.toUpperCase().toUpperCase() }} Contract (the “Contract”) is
-      entered into <strong>{{ currentDate }}</strong> (the “Effective Date”),
-    </p>
-    <p>
-      by and between <strong>REUNION FESTIVAL</strong>, with an address of
+      entered into <strong>{{ currentDate }}</strong> (the “Effective Date”), by and between
+      <strong>REUNION FESTIVAL</strong>, with an address of
       <strong>Blucher No. 343, Elstow, Saskatchewan</strong> (the “REUNION FESTIVAL”) and
       <strong>{{ applicant.fullname }}</strong
       >, with an address of
@@ -21,29 +19,34 @@
         >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region }},
         {{ applicant.country }}, {{ applicant.postal_code }}</strong
       >, (the "{{ applicant.applicant_type.toUpperCase() }}"), also individually referred to as (the
-      “Party”) and collectively, (the “Parties).
-    </p>
-    <p>
-      The REUNION FESTIVAL wishes to engage the {{ applicant.applicant_type.toUpperCase() }} to
-      provide {{ applicant.applicant_type.toUpperCase() }} services.
+      “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to engage the
+      {{ applicant.applicant_type.toUpperCase() }} to provide
+      {{ applicant.applicant_type.toUpperCase() }} services.
     </p>
 
     <h3 class="red">1. EVENT DATE & DESCRIPTION</h3>
     <p>
       <strong>Venue:</strong> Reunion Festival Grounds (51°57'46.6"N 106°03'10.9"W 51.962948,
-      -106.053036)
+      -106.053036)<br />
+      <strong>Venue Address:</strong> Blucher No. 343, Elstow, Saskatchewan<br /><strong
+        >Event Date: </strong
+      >AUG 29, 2025 - SEPT 01, 2025
     </p>
-    <p><strong>Venue Address:</strong> Blucher No. 343, Elstow, Saskatchewan</p>
-    <p><strong>Event Date:</strong> AUG 29, 2025 - SEPT 01, 2025</p>
     <p v-if="applicant.applicant_type === 'Artist'">
       <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
       60-90min DJ/performance set during Event Date<br />
       <strong>Set Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
+    <p v-if="applicant.applicant_type === 'DJ/Band'">
+      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
+      60-90min DJ/performance set during Event Date<br />
+      <strong>Set Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
+      determined no later than 14 days before Event Date
+    </p>
     <p v-if="applicant.applicant_type === 'Volunteer'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong>
-      One 4HR volunteer shift during Event Date<br />
+      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
+      4HR volunteer shift during Event Date<br />
       <strong>Shift Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
@@ -57,7 +60,16 @@
     <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
     <p><strong>Initial Compensation for Services:</strong></p>
+
     <ul v-if="applicant.applicant_type === 'Artist'">
+      <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
+      <li>One complementary weekend pass for GUEST</li>
+      <li>
+        $20 Referral bonus for every weekend pass sold using the ID_CODE:
+        <strong>{{ applicant.id_code }}</strong>
+      </li>
+    </ul>
+    <ul v-if="applicant.applicant_type === 'DJ/Band'">
       <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
       <li>One complementary weekend pass for GUEST</li>
       <li>
@@ -184,7 +196,12 @@
     >
       SIGN & SUBMIT
     </button>
-    <img :src="poster_footer" style="width: 100%; margin-top: 2rem" alt="Poster Footer" />
+    <img
+      class="footer"
+      :src="poster_footer"
+      style="width: 100%; margin-top: 2rem"
+      alt="Poster Footer"
+    />
   </div>
   <div v-else>
     <p>Loading...</p>
@@ -287,7 +304,7 @@ export default {
 
 <style scoped>
 * {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Helvetica', sans-serif;
 }
 strong {
   font-weight: bold;
@@ -297,8 +314,8 @@ strong {
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: white;
+  color: black;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 800px;

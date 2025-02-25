@@ -1,14 +1,15 @@
 <template>
   <div class="id-code-input">
-    <img :src="festivall_emblem" alt="Festivall Emblem" class="emblem" />
+    <img :src="festivall_emblem" style="width: 100px" alt="Festivall Emblem" class="emblem" />
     <h1>Reunion Festival</h1>
+    <img :src="frog_image" style="width: 200px" alt="Frog" class="frog" />
     <h2>Contract Portal</h2>
 
     <h3>Enter Your ID Code</h3>
 
     <form @submit.prevent="checkIdCode">
       <input type="text" v-model="idCode" placeholder="a2c4e" required />
-      <button type="submit">Submit</button>
+      <button type="submit">ENTER</button>
     </form>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
@@ -18,6 +19,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
+import frog_image from '@/assets/images/frog.png'
 
 export default {
   name: 'EnterIDCode',
@@ -46,6 +48,7 @@ export default {
 
     return {
       festivall_emblem,
+      frog_image,
       idCode,
       errorMessage,
       checkIdCode
