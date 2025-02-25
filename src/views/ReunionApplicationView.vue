@@ -324,45 +324,44 @@ const submitForm = async () => {
             <label for="volunteer_availability">Availability:</label>
             <div class="checkboxes">
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Mon Aug 25" />
-                Mon Aug 25
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 25" />
+                Aug 25
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Tue Aug 26" />
-                Tue Aug 26
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 26" />
+                Aug 26
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Wed Aug 27" />
-                Wed Aug 27
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 27" />
+                Aug 27
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Thu Aug 28" />
-                Thu Aug 28
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 28" />
+                Aug 28
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Fri Aug 29" />
-                Fri Aug 29
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 29" />
+                Aug 29
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sat Aug 30" />
-                Sat Aug 30
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 30" />
+                Aug 30
               </span>
-              <br />
+
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sun Aug 31" />
-                Sun Aug 31
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 31" />
+                Aug 31
               </span>
-              <br />
+
               <span class="checkbox-label">
                 <input type="checkbox" v-model="form.volunteer_availability" value="Mon Sept 1" />
                 Mon Sept 1
               </span>
-              <br />
             </div>
           </div>
         </div>
@@ -581,6 +580,7 @@ input[type='checkbox'] {
   justify-items: center;
   align-items: center;
   text-align: center;
+
 }
 
 .checkbox-label {
