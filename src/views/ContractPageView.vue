@@ -34,13 +34,8 @@
     </p>
     <p v-if="applicant.applicant_type === 'Artist'">
       <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      60-90min DJ/performance set during Event Date<br />
-      <strong>Set Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
-      determined no later than 14 days before Event Date
-    </p>
-    <p v-if="applicant.applicant_type === 'DJ/Band'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      60-90min DJ/performance set during Event Date<br />
+      60-90min DJ/performance set during Event Date by {{ applicant.act_type }} -
+      {{ applicant.act_name }}<br />
       <strong>Set Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
@@ -52,7 +47,8 @@
     </p>
     <p v-if="applicant.applicant_type === 'Workshop'">
       <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      60-90min workshop during Event Date<br />
+      60-90min workshop during Event Date entitled<br />
+      {{ applicant.workshop_title }} - {{ applicant.workshop_description }}<br />
       <strong>Workshop Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
@@ -62,14 +58,6 @@
     <p><strong>Initial Compensation for Services:</strong></p>
 
     <ul v-if="applicant.applicant_type === 'Artist'">
-      <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
-      <li>One complementary weekend pass for GUEST</li>
-      <li>
-        $20 Referral bonus for every weekend pass sold using the ID_CODE:
-        <strong>{{ applicant.id_code }}</strong>
-      </li>
-    </ul>
-    <ul v-if="applicant.applicant_type === 'DJ/Band'">
       <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
       <li>One complementary weekend pass for GUEST</li>
       <li>
@@ -101,24 +89,28 @@
       to provide {{ applicant.applicant_type.toUpperCase() }} Services:
     </p>
     <ul v-if="applicant.applicant_type === 'Artist'">
-      <li>Flat table/surface 36” in height</li>
-      <li>Standard DJ Setup</li>
-      <li>Pioneer S9 mixer</li>
-      <li>2 CDJs with USB and LINK capabilities</li>
-      <li>Turntables with timecode control vinyl</li>
-      <li>Adequate booth sound level</li>
-      <li>2 Standard 120V Power Sockets</li>
+      <li><strong>Flat table/surface 36” in height</strong></li>
+      <li><strong>Standard DJ Setup</strong></li>
+      <li><strong>Pioneer S9 mixer</strong></li>
+      <li><strong>2 CDJs with USB and LINK capabilities</strong></li>
+      <li><strong>Turntables with timecode control vinyl</strong></li>
+      <li><strong>Adequate booth sound level</strong></li>
+      <li><strong>2 Standard 120V Power Sockets</strong></li>
     </ul>
     <ul v-if="applicant.applicant_type === 'Volunteer'">
-      <li>In-house Ticket Scanner, Seating, and Shade for Front Gate</li>
-      <li>Access to walkie-talkie for team communications</li>
-      <li>Water/Juice for refreshment</li>
+      <li><strong>In-house Ticket Scanner, Seating, and Shade for Front Gate</strong></li>
+      <li><strong>Access to walkie-talkie for team communications</strong></li>
+      <li><strong>Water/Juice for refreshment</strong></li>
     </ul>
     <ul v-if="applicant.applicant_type === 'Workshop'">
-      <li>Adequate ground space for workshop activities</li>
-      <li>Including space for audience participation if required</li>
-      <li>Access to microphone with signal flow to main speaker system</li>
-      <li>Access to stage management or available DJ to play music provided by WORKSHOP</li>
+      <li><strong>Adequate ground space for workshop activities</strong></li>
+      <li><strong>Including space for audience participation if required</strong></li>
+      <li><strong>Access to microphone with signal flow to main speaker system</strong></li>
+      <li>
+        <strong
+          >Access to stage management or available DJ to play music provided by WORKSHOP</strong
+        >
+      </li>
     </ul>
 
     <h3>4. CANCELLATION</h3>
@@ -348,10 +340,6 @@ ul {
 ul {
   list-style: none;
   text-indent: -1.25rem;
-}
-
-li {
-  margin: 0.25rem 0;
 }
 
 .signature {
