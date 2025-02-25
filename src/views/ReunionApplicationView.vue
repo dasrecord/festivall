@@ -359,8 +359,8 @@ const submitForm = async () => {
               </span>
 
               <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Mon Sept 1" />
-                Mon Sept 1
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 1" />
+                Sept 1
               </span>
             </div>
           </div>
@@ -580,7 +580,6 @@ input[type='checkbox'] {
   justify-items: center;
   align-items: center;
   text-align: center;
-
 }
 
 .checkbox-label {
