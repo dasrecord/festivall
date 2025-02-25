@@ -32,7 +32,8 @@ const form = ref({
   workshop_title: '',
   workshop_description: '',
   vendor_type: '',
-  statement: ''
+  statement: '',
+  volunteer_availability: []
 })
 
 const submitting = ref(false)
@@ -172,7 +173,8 @@ const submitForm = async () => {
         workshop_title: '',
         workshop_description: '',
         vendor_type: '',
-        message: ''
+        statement: '',
+        volunteer_availability: []
       }
     } else {
       alert('Failed to submit the form.')
@@ -318,6 +320,51 @@ const submitForm = async () => {
               <option value="Food Team">Food Team</option>
             </select>
           </div>
+          <div class="form-section">
+            <label for="volunteer_availability">Availability:</label>
+            <div class="checkboxes">
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Mon Aug 25" />
+                Mon Aug 25
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Tue Aug 26" />
+                Tue Aug 26
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Wed Aug 27" />
+                Wed Aug 27
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Thu Aug 28" />
+                Thu Aug 28
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Fri Aug 29" />
+                Fri Aug 29
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sat Aug 30" />
+                Sat Aug 30
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sun Aug 31" />
+                Sun Aug 31
+              </span>
+              <br />
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Mon Sept 1" />
+                Mon Sept 1
+              </span>
+              <br />
+            </div>
+          </div>
         </div>
 
         <div v-else-if="form.applicant_type === 'Vendor'">
@@ -438,9 +485,9 @@ const submitForm = async () => {
         </div>
 
         <div class="form-section">
-          <label for="message">Message:</label>
+          <label for="statement">Statement:</label>
           <textarea
-            id="message"
+            id="statement"
             v-model="form.message"
             placeholder="Leave a personal statement to the festival team. Tell us what sets you apart from other applicants."
           ></textarea>
@@ -507,6 +554,7 @@ label {
   color: white;
   border-radius: 15px 0 0 15px;
 }
+
 input,
 textarea,
 select {
@@ -517,6 +565,26 @@ select {
   border-radius: 0 15px 15px 0;
   padding: 5px;
   margin: 5px;
+  cursor: pointer;
+}
+input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  cursor: pointer;
+}
+.checkboxes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 5px;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+}
+
+.checkbox-label {
+  font-size: 0.8rem;
 }
 button {
   background-color: white;
@@ -594,6 +662,7 @@ table {
   select,
   button {
     font-size: 0.8rem;
+    text-align: center;
   }
 }
 </style>
