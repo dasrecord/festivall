@@ -16,6 +16,7 @@
         <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button>
         <button @click="loadApplicants('rapture')">Rapture</button>
         <button @click="loadApplicants('partywell')">PartyWell</button>
+        <button @click="loadApplicants('festivall', true)">Festivall</button>
         <button @click="loadApplicants('applications', true)">Reunion 2024</button>
         <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
       </div>
