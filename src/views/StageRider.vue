@@ -119,7 +119,7 @@
         </div>
 
         <div class="form-section">
-          <label for="guitar_cab">Guitar Cab?</label>
+          <label for="guitar_cab">Bringing your own Guitar Cab?</label>
           <select id="guitar_cab" v-model="form.guitar_cab" required>
             <option value="" disabled>Select an option</option>
             <option value="Yes">Yes</option>
@@ -128,8 +128,18 @@
         </div>
 
         <div class="form-section">
-          <label for="bass_cab">Bass Cab?</label>
+          <label for="bass_cab">Bringing your own Bass Cab?</label>
           <select id="bass_cab" v-model="form.bass_cab" required>
+            <option value="" disabled>Select an option</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div class="form-section"></div>
+
+        <div class="form-section">
+          <label for="monitors">Bringing your own Monitors?</label>
+          <select id="monitors" v-model="form.monitors" required>
             <option value="" disabled>Select an option</option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -141,7 +151,7 @@
           <textarea
             id="additional_notes"
             v-model="form.additional_notes"
-            placeholder="Enter any additional notes"
+            placeholder="Enter any additional notes if necessary"
             maxlength="1000"
           ></textarea>
         </div>
@@ -257,7 +267,7 @@ const submitForm = async () => {
     const formattedPhone = formatPhoneSlack(form.value.phone)
 
     const response = await axios.post(
-      'https://relayproxy.vercel.app/reunion_applications',
+      'https://relayproxy.vercel.app/festivall_notifications',
       {
         blocks: [
           {
@@ -345,7 +355,7 @@ label {
   display: flex;
   flex-direction: column;
   width: 25%;
-  height: 40px;
+  /* height: 40px; */
   text-align: left;
   padding: 0.5rem;
   background-color: var(--festivall-baby-blue);
