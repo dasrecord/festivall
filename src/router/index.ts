@@ -29,6 +29,7 @@ import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
 import ReunionContactView from '@/views/ReunionContactView.vue'
 import ContractPage from '@/views/ContractPageView.vue'
 import IDCodeInput from '@/views/IDCodeInput.vue'
+import StageRider from '@/views/StageRider.vue'
 
 
 const routes = [
@@ -273,6 +274,11 @@ const routes = [
     name: 'soundtech',
     component: SoundTechView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/stagerider',
+    name: 'stagerider',
+    component: StageRider,
   },
   {
     path: '/starcrossed',
