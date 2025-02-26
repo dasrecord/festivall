@@ -15,6 +15,7 @@
             required
           />
         </div>
+
         <div class="form-section">
           <label for="email">Email:</label>
           <input
@@ -25,6 +26,7 @@
             required
           />
         </div>
+
         <div class="form-section">
           <label for="phone">Phone Number:</label>
           <input
@@ -36,6 +38,7 @@
             required
           />
         </div>
+
         <div class="form-section">
           <label for="act_name">Act Name:</label>
           <input id="act_name" v-model="form.act_name" placeholder="Enter your act name" required />
@@ -77,10 +80,12 @@
             placeholder="Enter a link to your mix or track"
           />
         </div>
+
         <div class="form-section">
           <label for="event_date">Event Date:</label>
           <input id="event_date" type="date" v-model="form.event_date" required />
         </div>
+
         <div class="form-section">
           <label for="load_in_time">Load-In Time:</label>
           <input id="load_in_time" type="time" v-model="form.load_in_time" required />
@@ -95,6 +100,7 @@
           <label for="performance_time">Performance Time:</label>
           <input id="performance_time" type="time" v-model="form.performance_time" required />
         </div>
+
         <div class="form-section">
           <label for="stage_plot_link">Stage Plot:</label>
           <input
@@ -310,9 +316,7 @@ const submitForm = async () => {
       }
     )
     if (response.status === 200) {
-      alert(
-        'Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.'
-      )
+      alert('Your information has been submitted successfully!')
       if (form.value.phone) {
         await sendMessage(form.value.phone, `Thank you for providing your stage plot information!`)
       }
