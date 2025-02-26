@@ -47,12 +47,23 @@
         </div>
 
         <div class="form-section">
+          <label for="description">Description/Bio:</label>
+          <textarea
+            id="description"
+            v-model="form.bio"
+            placeholder="Enter a brief description or bio"
+            maxlength="1000"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-section">
           <label for="number_of_members"># Band Members:</label>
           <input
             id="number_of_members"
             type="number"
             v-model="form.number_of_members"
-            placeholder="Enter the number of members"
+            placeholder="Enter the number of band members"
             required
           />
         </div>
@@ -80,8 +91,7 @@
             id="stage_plot_link"
             type="url"
             v-model="form.stage_plot_link"
-            placeholder="Enter a link to a downloadable stage plot"
-            required
+            placeholder="Enter a link to a downloadable stage plot if you have one"
           />
         </div>
 
@@ -181,6 +191,7 @@ const form = ref({
   event_date: '',
   act_name: '',
   genre: '',
+  bio: '',
   number_of_members: '',
   mic_level_inputs: '',
   mono_line_level_inputs: '',
@@ -308,12 +319,14 @@ const submitForm = async () => {
       event_date: '',
       act_name: '',
       genre: '',
+      bio: '',
       number_of_members: '',
       mic_level_inputs: '',
       mono_line_level_inputs: '',
       stereo_line_level_inputs: '',
       guitar_cab: '',
       bass_cab: '',
+      monitors: '',
       stage_plot_link: '',
       load_in_time: '',
       sound_check_time: '',
