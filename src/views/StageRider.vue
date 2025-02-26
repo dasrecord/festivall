@@ -67,6 +67,16 @@
             required
           />
         </div>
+
+        <div class="form-section">
+          <label for="mix_track_url">Mix/Track URL:</label>
+          <input
+            id="mix_track_url"
+            type="url"
+            v-model="form.mix_track_url"
+            placeholder="Enter a link to your mix or track"
+          />
+        </div>
         <div class="form-section">
           <label for="event_date">Event Date:</label>
           <input id="event_date" type="date" v-model="form.event_date" required />
@@ -145,7 +155,6 @@
             <option value="No">No</option>
           </select>
         </div>
-        <div class="form-section"></div>
 
         <div class="form-section">
           <label for="monitors">Bringing your own Monitors?</label>
@@ -193,6 +202,7 @@ const form = ref({
   genre: '',
   bio: '',
   number_of_members: '',
+  mix_track_url: '',
   mic_level_inputs: '',
   mono_line_level_inputs: '',
   stereo_line_level_inputs: '',
@@ -288,7 +298,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${formattedPhone}\n:calendar: ${form.value.event_date}\n:musical_note: ${form.value.act_name}\n:notes: ${form.value.genre}\n:hash: ${form.value.number_of_members}\n:microphone: ${form.value.mic_level_inputs}\n:one: ${form.value.mono_line_level_inputs}\n:two: ${form.value.stereo_line_level_inputs}\n:sound: ${form.value.guitar_cab}\n:loud_sound: ${form.value.bass_cab}\n:link: ${form.value.stage_plot_link}\n:clock1: ${form.value.load_in_time}\n:clock2: ${form.value.sound_check_time}\n:clock3: ${form.value.performance_time}\n:memo: ${form.value.additional_notes}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${formattedPhone}\n:calendar: ${form.value.event_date}\n:musical_note: ${form.value.act_name}\n:notes: ${form.value.genre}\n:hash: ${form.value.number_of_members}\n:cd: ${form.value.mix_track_url}\n:microphone: ${form.value.mic_level_inputs}\n:one: ${form.value.mono_line_level_inputs}\n:two: ${form.value.stereo_line_level_inputs}\n:sound: ${form.value.guitar_cab}\n:loud_sound: ${form.value.bass_cab}\n:link: ${form.value.stage_plot_link}\n:clock1: ${form.value.load_in_time}\n:clock2: ${form.value.sound_check_time}\n:clock3: ${form.value.performance_time}\n:memo: ${form.value.additional_notes}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
@@ -321,6 +331,7 @@ const submitForm = async () => {
       genre: '',
       bio: '',
       number_of_members: '',
+      mix_track_url: '',
       mic_level_inputs: '',
       mono_line_level_inputs: '',
       stereo_line_level_inputs: '',
