@@ -20,6 +20,15 @@
     </div>
     <div class="service">
       <h1>
+        <RouterLink to="/stagerider">Stage Rider</RouterLink>
+      </h1>
+      <p>
+        Need to submit your stage rider for your performance?<br />
+        We can help.
+      </p>
+    </div>
+    <div class="service">
+      <h1>
         <RouterLink to="/art&photography">Art & Photography</RouterLink>
       </h1>
       <p>Looking for a photographer or artist for your event?<br />Drop us a line.</p>
