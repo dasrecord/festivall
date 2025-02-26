@@ -108,12 +108,12 @@
         </div>
 
         <div class="form-section">
-          <label for="stereo_line_level_inputs"># Stereo Line Inputs:</label>
+          <label for="stereo_line_level_inputs"># Stereo Line Pairs:</label>
           <input
             id="stereo_line_level_inputs"
             type="number"
             v-model="form.stereo_line_level_inputs"
-            placeholder="Enter the number of stereo line level inputs"
+            placeholder="Enter the number of stereo line level L/R input pairs"
             required
           />
         </div>
@@ -166,7 +166,7 @@
 import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
-import { festivall_db } from '@/firebase'
+import { reunion_db, festivall_db } from '@/firebase'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
 import axios from 'axios'
 
@@ -187,6 +187,7 @@ const form = ref({
   stereo_line_level_inputs: '',
   guitar_cab: '',
   bass_cab: '',
+  monitors: '',
   stage_plot_link: '',
   load_in_time: '',
   sound_check_time: '',
@@ -247,7 +248,9 @@ const sendMessage = async (phone, message) => {
 const addApplicant = async () => {
   try {
     await setDoc(doc(festivall_db, 'stage_riders', form.value.id_code), form.value)
-    console.log('Document successfully written!')
+    console.log('Document successfully written to Festivall!')
+    await setDoc(doc(reunion_db, 'festivall', form.value.id_code), form.value)
+    console.log('Document successfully written to Reunion!')
   } catch (error) {
     console.error('Error writing document:', error)
   }
@@ -274,7 +277,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${formattedPhone}\n:calendar: ${form.value.event_date}\n:musical_note: ${form.value.act_name}\n:notes: ${form.value.genre}\n:hash: ${form.value.number_of_members}\n:microphone: ${form.value.mic_level_inputs}\n:guitar: ${form.value.mono_line_level_inputs}\n:seft_right_arrow: ${form.value.stereo_line_level_inputs}\n:sound: ${form.value.guitar_cab}\n:loud_sound: ${form.value.bass_cab}\n:link: ${form.value.stage_plot_link}\n:clock1: ${form.value.load_in_time}\n:clock2: ${form.value.sound_check_time}\n:clock3: ${form.value.performance_time}\n:memo: ${form.value.additional_notes}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${formattedPhone}\n:calendar: ${form.value.event_date}\n:musical_note: ${form.value.act_name}\n:notes: ${form.value.genre}\n:hash: ${form.value.number_of_members}\n:microphone: ${form.value.mic_level_inputs}\n:one: ${form.value.mono_line_level_inputs}\n:two: ${form.value.stereo_line_level_inputs}\n:sound: ${form.value.guitar_cab}\n:loud_sound: ${form.value.bass_cab}\n:link: ${form.value.stage_plot_link}\n:clock1: ${form.value.load_in_time}\n:clock2: ${form.value.sound_check_time}\n:clock3: ${form.value.performance_time}\n:memo: ${form.value.additional_notes}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
