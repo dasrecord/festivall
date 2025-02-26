@@ -1,6 +1,8 @@
 <template>
   <div class="basic">
-    <img :src="emblem" alt="Festivall Emblem" style="width: 250px" />
+    <a href="/">
+      <img :src="emblem" alt="Festivall Emblem" style="width: 250px" />
+    </a>
     <h1>Stage Rider Information Form</h1>
     <h3 class="application-form">
       <form @submit.prevent="submitForm">
@@ -378,7 +380,9 @@ button:hover {
   background-color: var(--festivall-baby-blue);
   color: black;
 }
-
+a {
+  border-radius: 15px;
+}
 @media (max-width: 768px) {
   .application-form {
     width: 95vw;
