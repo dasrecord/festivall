@@ -4,21 +4,49 @@ import TeamCard from '@/components/TeamCard.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
-import Chris from '@/assets/images/team/Chris.jpg'
-import Brandon from '@/assets/images/team/Brandon.jpg'
-import Prasenjit from '@/assets/images/team/Prasenjit.jpg'
-import Corey from '@/assets/images/team/Corey.jpg'
-import Janicka from '@/assets/images/team/Janicka.jpg'
-import Arthur from '@/assets/images/team/Arthur.jpg'
-import Christina from '@/assets/images/team/Christina.jpg'
-import Natalie from '@/assets/images/team/Natalie.jpg'
-import Nish from '@/assets/images/team/Nish.jpg'
-import Kayla from '@/assets/images/team/Kayla.jpg'
-import Becca from '@/assets/images/team/Becca.jpg'
-import Yvo from '@/assets/images/team/Yvo.jpg'
-import Angela from '@/assets/images/team/Angela.jpg'
-import Andy from '@/assets/images/team/Andy.jpg'
-import Brandon_and_Liam from '@/assets/images/team/Brandon_and_Liam.jpg'
+import Chris from '@/assets/images/reunion_team/Chris.jpg'
+import land_icon from '@/assets/images/reunion_icons/land.png'
+
+import Brandon from '@/assets/images/reunion_team/Brandon.jpg'
+import construction_icon from '@/assets/images/reunion_icons/construction.png'
+
+import Prasenjit from '@/assets/images/reunion_team/Prasenjit.jpg'
+import devops_icon from '@/assets/images/reunion_icons/devops.png'
+
+import Corey from '@/assets/images/reunion_team/Corey.jpg'
+import headphones_icon from '@/assets/images/reunion_icons/headphones.png'
+
+import Janicka from '@/assets/images/reunion_team/Janicka.jpg'
+import community_icon from '@/assets/images/reunion_icons/community.png'
+
+import Arthur from '@/assets/images/reunion_team/Arthur.jpg'
+import soundtech_icon from '@/assets/images/reunion_icons/soundtech.png'
+
+import Christina from '@/assets/images/reunion_team/Christina.jpg'
+import decorations_icon from '@/assets/images/reunion_icons/decorations.png'
+
+import Natalie from '@/assets/images/reunion_team/Natalie.jpg'
+import ethos_icon from '@/assets/images/reunion_icons/ethos.png'
+
+import Nish from '@/assets/images/reunion_team/Nish.jpg'
+import photography_icon from '@/assets/images/reunion_icons/photography.png'
+
+import Kayla from '@/assets/images/reunion_team/Kayla.jpg'
+import vectors_icon from '@/assets/images/reunion_icons/vectors.png'
+
+import Becca from '@/assets/images/reunion_team/Becca.jpg'
+import graphics_icon from '@/assets/images/reunion_icons/graphics.png'
+
+import Yvo from '@/assets/images/reunion_team/Yvo.jpg'
+import guitartech_icon from '@/assets/images/reunion_icons/guitartech.png'
+
+import Angela from '@/assets/images/reunion_team/Angela.jpg'
+import food_icon from '@/assets/images/reunion_icons/food.png'
+
+import Andy from '@/assets/images/reunion_team/Andy.jpg'
+import playground_icon from '@/assets/images/reunion_amenities/playground.png'
+
+import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
 
 export default {
   name: 'ReunionTeamView',
@@ -31,19 +59,33 @@ export default {
   data() {
     return {
       Chris,
+      land_icon,
       Brandon,
+      construction_icon,
       Prasenjit,
+      devops_icon,
       Corey,
+      headphones_icon,
       Janicka,
+      community_icon,
       Arthur,
+      soundtech_icon,
       Christina,
+      decorations_icon,
       Natalie,
+      ethos_icon,
       Nish,
+      photography_icon,
       Kayla,
+      vectors_icon,
       Becca,
+      graphics_icon,
       Yvo,
+      guitartech_icon,
       Angela,
+      food_icon,
       Andy,
+      playground_icon,
       Brandon_and_Liam
     }
   }
@@ -57,7 +99,7 @@ export default {
     <div class="cards">
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Chris" :src="Chris" alt="Chris" />
+          <img :src="Chris" alt="Chris" />
         </template>
         <template v-slot:name>
           <h2>Chris</h2>
@@ -65,16 +107,30 @@ export default {
         <template v-slot:role>
           <p>Land & Infrastructure</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="land_icon"
+            alt="Land Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Brandon" :src="Brandon" alt="Brandon" />
+          <img :src="Brandon" alt="Brandon" />
         </template>
         <template v-slot:name>
           <h2>Brandon B.</h2>
         </template>
         <template v-slot:role>
           <p>Construction & Bookings</p>
+        </template>
+        <template v-slot:icon>
+          <img
+            :src="construction_icon"
+            alt="Construction Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
         </template>
       </TeamCard>
       <TeamCard>
@@ -87,6 +143,13 @@ export default {
         <template v-slot:role>
           <p>DevOps & Technology</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="devops_icon"
+            alt="DevOps Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
@@ -98,10 +161,17 @@ export default {
         <template v-slot:role>
           <p>Artist Changeovers</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="headphones_icon"
+            alt="Headphones Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Natalie" :src="Natalie" alt="Natalie" />
+          <img :src="Natalie" alt="Natalie" />
         </template>
         <template v-slot:name>
           <h2>Natalie</h2>
@@ -109,16 +179,30 @@ export default {
         <template v-slot:role>
           <p>Consultant & Ethos</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="ethos_icon"
+            alt="Ethos Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Kayla" :src="Kayla" alt="Kayla" />
+          <img :src="Kayla" alt="Kayla" />
         </template>
         <template v-slot:name>
           <h2>Kayla</h2>
         </template>
         <template v-slot:role>
           <p>Vectors & Logos</p>
+        </template>
+        <template v-slot:icon>
+          <img
+            :src="vectors_icon"
+            alt="Vectors Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
         </template>
       </TeamCard>
       <TeamCard>
@@ -131,6 +215,13 @@ export default {
         <template v-slot:role>
           <p>Decorations & Vibe</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="decorations_icon"
+            alt="Decorations Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
@@ -141,6 +232,13 @@ export default {
         </template>
         <template v-slot:role>
           <p>Construction</p>
+        </template>
+        <template v-slot:icon>
+          <img
+            :src="construction_icon"
+            alt="Construction Icon"
+            style="width: 75px; border-radius: 0"
+          />
         </template>
       </TeamCard>
       <TeamCard>
@@ -153,6 +251,9 @@ export default {
         <template v-slot:role>
           <p>Community Building</p>
         </template>
+        <template v-slot:icon>
+          <img :src="community_icon" alt="Community Icon" style="width: 75px; border-radius: 0" />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
@@ -164,16 +265,26 @@ export default {
         <template v-slot:role>
           <p>Graphic Design</p>
         </template>
+        <template v-slot:icon>
+          <img :src="graphics_icon" alt="Graphics Icon" style="width: 75px; border-radius: 0" />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Nish" :src="Nish" alt="Nish" />
+          <img :src="Nish" alt="Nish" />
         </template>
         <template v-slot:name>
           <h2>Nish</h2>
         </template>
         <template v-slot:role>
           <p>Photography & Resolume</p>
+        </template>
+        <template v-slot:icon>
+          <img
+            :src="photography_icon"
+            alt="Photography Icon"
+            style="width: 75px; border-radius: 0"
+          />
         </template>
       </TeamCard>
       <TeamCard>
@@ -186,10 +297,13 @@ export default {
         <template v-slot:role>
           <p>Soundtech</p>
         </template>
+        <template v-slot:icon>
+          <img :src="soundtech_icon" alt="Soundtech Icon" style="width: 75px; border-radius: 0" />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Yvo" :src="Yvo" alt="Yvo" />
+          <img :src="Yvo" alt="Yvo" />
         </template>
         <template v-slot:name>
           <h2>Yvo</h2>
@@ -197,10 +311,17 @@ export default {
         <template v-slot:role>
           <p>Guitar Tech & Soundtech</p>
         </template>
+        <template v-slot:icon>
+          <img
+            :src="guitartech_icon"
+            alt="Guitar Tech Icon"
+            style="width: 75px; border-radius: 0"
+          />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Angela" :src="Angela" alt="Angela" />
+          <img :src="Angela" alt="Angela" />
         </template>
         <template v-slot:name>
           <h2>Angela</h2>
@@ -208,16 +329,22 @@ export default {
         <template v-slot:role>
           <p>Food Coordinator</p>
         </template>
+        <template v-slot:icon>
+          <img :src="food_icon" alt="Food Icon" style="width: 75px; border-radius: 0" />
+        </template>
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img v-if="Andy" :src="Andy" alt="Andy" />
+          <img :src="Andy" alt="Andy" />
         </template>
         <template v-slot:name>
           <h2>Andy</h2>
         </template>
         <template v-slot:role>
           <p>Children's Coordinator</p>
+        </template>
+        <template v-slot:icon>
+          <img :src="playground_icon" alt="Playground Icon" style="width: 75px; border-radius: 0" />
         </template>
       </TeamCard>
     </div>
