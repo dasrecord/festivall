@@ -1,6 +1,9 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import meal_ticket from '@/assets/images/reunion_amenities/meal_ticket.png'
+import meals from '@/assets/images/reunion_amenities/meals.png'
+
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
@@ -22,6 +25,8 @@ const form = ref({
   paid: false,
   checked_in: false
 })
+const meal_ticket_image = meal_ticket
+const meals_image = meals
 
 const btcRate = ref(0)
 const paymentInstructions = ref('')
@@ -70,7 +75,7 @@ const calculateTotalPrice = () => {
   } else if (form.value.ticket_type === 'Day Pass') {
     ticketPrice = 80
   }
-  let totalPrice = (ticketPrice * form.value.ticket_quantity) + (form.value.meal_packages * 20)
+  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * 20
   if (form.value.payment_type === 'bitcoin') {
     totalPrice *= 0.75 // Apply 25% discount
   }
@@ -78,10 +83,10 @@ const calculateTotalPrice = () => {
 }
 const generatePaymentInstructions = () => {
   if (form.value.payment_type === 'e-transfer') {
-    paymentInstructions.value = `Please e-transfer $${form.value.total_price} to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
+    paymentInstructions.value = `Please e-transfer $${form.value.total_price} CAD to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
   } else {
     const bitcoinPrice = (form.value.total_price / btcRate.value).toFixed(8)
-    paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC \nYour 25% discount will automatically be applied in the payment portal.`
+    paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC \nYour 25% discount will automatically be applied in the payment portal.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
   }
 }
 const textPaymentInstructions = async () => {
@@ -192,32 +197,55 @@ onMounted(() => {
         <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
         <img :src="frog_image" alt="frog" class="frog-image" />
       </div>
-      <h2>Want to buy tickets for Reunion 2025?</h2>
-      <h3>
+      <h1>Want to buy tickets for Reunion 2025?</h1>
+      <h2>
         If you know an Artist's or Volunteer's
         <span class="highlight">Festivall ID_CODE</span><br />
-        please enter it so they can earn a referral bonus.<br /><br />
-      </h3>
+        plese enter it so they can earn a referral bonus.<br /><br />
+      </h2>
       <h4 class="disclaimer">
         <div>
-          Ticket Prices:<br />
-          <span class="highlight"> WEEKEND PASS </span>
-          - $140 CAD/PERSON/WEEKEND<br />
-          (Valid from 12:00PM Friday August 29th, 2025 - 12:00PM Monday September 1st, 2025 )<br /><br />
-          <span class="highlight"> DAY PASS </span>
-          - $80 CAD/PERSON/DAY<br />
-          (Valid from 12:00PM - 12:00AM on any day)<br /><br />
-          <span class="highlight"> MEAL PACKAGE </span>
-          - $20 CAD/PERSON/DAY<br />
-          (Includes 1 lunch and 1 dinner)<br /><br />
+          <h1>Ticket Prices:<br /></h1>
+          *Children 12 and under free!*<br />
+          *Youth 18 and under must be accompanied by an adult*<br /><br />
+          <div class="ticket">
+            <img :src="meal_ticket_image" alt="meal ticket" class="icon" />
+            <h2>
+              <span class="highlight"> WEEKEND PASS </span>
+              - $140 CAD/PERSON/WEEKEND<br />
+            </h2>
+            <h3>
+              (Valid from 12:00PM Friday August 29th, 2025 - 12:00PM Monday September 1st, 2025)
+            </h3>
+          </div>
+          <div class="ticket">
+            <img :src="meal_ticket_image" alt="meal ticket" class="icon" />
+            <h2>
+              <span class="highlight"> DAY PASS </span>
+              - $80 CAD/PERSON/DAY<br />
+            </h2>
+            <h3>(Valid from 12:00PM - 12:00AM on any day)</h3>
+          </div>
+          <div class="ticket">
+            <img :src="meals_image" alt="meals" class="icon" />
+            <h2>
+              <span class="highlight"> MEAL PACKAGE </span>
+              - $20 CAD/PERSON/DAY<br />
+            </h2>
+            <h3>(Includes 1 lunch and 1 dinner)</h3>
+          </div>
+
           <div class="bitcoin">
-            25% off if you pay in Bitcoin
-            <img
-              src="/public/bitcoin_favicon.ico"
-              alt="bitcoin"
-              style="height: 16px; width: 16px"
-            /><br />
-            <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
+            <h2>
+              25% off if you pay in Bitcoin
+
+              <img
+                src="/public/bitcoin_favicon.ico"
+                alt="bitcoin"
+                style="height: 16px; width: 16px"
+              /><br />
+              <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
+            </h2>
           </div>
         </div>
       </h4>
@@ -307,6 +335,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
+* {
+  /* border: 1px solid lime; */
+}
 #app {
   padding: 0;
 }
@@ -334,6 +365,22 @@ onMounted(() => {
   width: 100%;
   max-width: 250px;
 }
+
+.ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+.icon {
+  float: left;
+  width: 50px;
+  height: auto;
+}
+
 .application-form {
   width: 80vw;
   padding: 1rem;
