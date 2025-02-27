@@ -100,7 +100,7 @@ const textPaymentInstructions = async () => {
       }
     )
   } catch (error) {
-    console.error('Error texting payment instructions:', error)
+    console.error('Error textn payment instructions:', error)
   }
 }
 const emailPaymentInstructions = async () => {
@@ -119,8 +119,9 @@ const emailPaymentInstructions = async () => {
       }
     )
   } catch (error) {
-    console.error('Error emailing payment instructions:', error)
+    console.error('Error sending payment instructions:', error)
   }
+}
 
 const addTicket = async () => {
   try {
@@ -140,7 +141,7 @@ const submitForm = async () => {
     calculateTotalPrice()
     generatePaymentInstructions()
     await textPaymentInstructions()
-    await emailPaymentInstructions()
+    // await emailPaymentInstructions()
     await addTicket()
 
     const response = await axios.post(
