@@ -257,10 +257,11 @@ export default {
         console.log('Response data:', responseData) // Log the response data for debugging
 
         alert('Message sent successfully!')
-        applicant.message = ''
+        return true
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error)
         alert('Failed to send message.')
+        return false
       }
     }
 
@@ -393,7 +394,7 @@ button:hover {
 .applicants.cards .applicant {
   width: 100%;
   max-width: 300px;
-  height: 200px;
+  height: 300px;
   align-items: center;
   text-align: center;
   overflow: hidden;
