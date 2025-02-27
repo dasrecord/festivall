@@ -109,6 +109,40 @@ const sendMessage = async (phone, message) => {
   }
 }
 
+const sendEmail = async (email, subject, message) => {
+  if (!email || !subject || !message) {
+    alert('Email, subject, and message are required.')
+    return
+  }
+
+  const payload = {
+    value1: email,
+    value2: subject,
+    value3: message
+  }
+
+  console.log('Sending payload:', JSON.stringify(payload)) // Add logging for debugging
+
+  try {
+    const response = await fetch('https://relayproxy.vercel.app/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText)
+    }
+
+    const responseData = await response.json()
+    console.log('Response data:', responseData) // Log the response data for debugging
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error)
+  }
+}
+
 const submitForm = async () => {
   if (submitting.value) return
   submitting.value = true
@@ -146,6 +180,13 @@ const submitForm = async () => {
       )
       if (form.value.phone) {
         await sendMessage(form.value.phone, `Thank you for applying to Reunion 2025!`)
+      }
+      if (form.value.email) {
+        await sendMessage(
+          form.value.email,
+          `Reunion 2025`,
+          `Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.`
+        )
       }
 
       form.value = {

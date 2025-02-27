@@ -100,9 +100,27 @@ const textPaymentInstructions = async () => {
       }
     )
   } catch (error) {
-    console.error('Error sending payment instructions:', error)
+    console.error('Error texting payment instructions:', error)
   }
 }
+const emailPaymentInstructions = async () => {
+  try {
+    await axios.post(
+      'https://relayproxy.vercel.app/email',
+      {
+        value1: form.value.email,
+        value2: 'Payment Instructions - Reunion 2025',
+        value3: paymentInstructions.value
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+  } catch (error) {
+    console.error('Error emailing payment instructions:', error)
+  }
 
 const addTicket = async () => {
   try {
@@ -122,7 +140,7 @@ const submitForm = async () => {
     calculateTotalPrice()
     generatePaymentInstructions()
     await textPaymentInstructions()
-    // await emailPaymentInstructions()
+    await emailPaymentInstructions()
     await addTicket()
 
     const response = await axios.post(
