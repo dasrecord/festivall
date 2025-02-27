@@ -70,7 +70,7 @@ const calculateTotalPrice = () => {
   } else if (form.value.ticket_type === 'Day Pass') {
     ticketPrice = 80
   }
-  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * 20
+  let totalPrice = (ticketPrice * form.value.ticket_quantity) + (form.value.meal_packages * 20)
   if (form.value.payment_type === 'bitcoin') {
     totalPrice *= 0.75 // Apply 25% discount
   }
@@ -141,7 +141,7 @@ const submitForm = async () => {
     calculateTotalPrice()
     generatePaymentInstructions()
     await textPaymentInstructions()
-    // await emailPaymentInstructions()
+    await emailPaymentInstructions()
     await addTicket()
 
     const response = await axios.post(
