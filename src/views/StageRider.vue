@@ -276,8 +276,8 @@ const addApplicant = async () => {
   try {
     await setDoc(doc(festivall_db, 'stage_riders', form.value.id_code), form.value)
     console.log('Document successfully written to Festivall!')
-    await setDoc(doc(reunion_db, 'festivall', form.value.id_code), form.value)
-    console.log('Document successfully written to Reunion!')
+    // await setDoc(doc(reunion_db, 'festivall', form.value.id_code), form.value)
+    // console.log('Document successfully written to Reunion!')
   } catch (error) {
     console.error('Error writing document:', error)
   }
