@@ -183,7 +183,7 @@ const submitForm = async () => {
           <span class="highlight"> ARTISTS </span>
           - Weekend Pass + 1 Guest<br />
           <span class="highlight"> VOLUNTEERS </span>
-          - Weekend Pass + 1 Meal Package per day worked<br />
+          - Weekend Pass + 1 Meal Package per festival day worked<br />
           <span class="highlight"> WORKSHOPS </span>
           - Weekend Pass + 1 Meal Package
         </div>
