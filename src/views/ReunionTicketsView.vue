@@ -1,7 +1,7 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import meal_ticket from '@/assets/images/reunion_amenities/meal_ticket.png'
+import ticket from '@/assets/images/reunion_amenities/ticket.png'
 import meals from '@/assets/images/reunion_amenities/meals.png'
 
 import { ref, onMounted } from 'vue'
@@ -25,7 +25,7 @@ const form = ref({
   paid: false,
   checked_in: false
 })
-const meal_ticket_image = meal_ticket
+const meal_ticket_image = ticket
 const meals_image = meals
 
 const btcRate = ref(0)

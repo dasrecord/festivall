@@ -22,7 +22,7 @@ export default {
       filter: 'all'
     }
   },
-  
+
   computed: {
     filteredOrders() {
       if (this.filter === 'all') {
@@ -36,7 +36,8 @@ export default {
   },
   async created() {
     try {
-      const ordersCollection = collection(this.db, 'orders_2025')
+      const ordersCollection = collection(this.db, 'orders') // fetch 2024 orders
+      // const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
       const orderSnapshot = await getDocs(ordersCollection)
       this.orders = orderSnapshot.docs.map((doc) => doc.data())
     } catch (error) {
@@ -115,7 +116,7 @@ export default {
 </script>
 
 <template>
-  <h1>REUNION 2024 TICKET SCANNER</h1>
+  <h1>REUNION 2025 TICKET SCANNER</h1>
   <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
   <div class="panel">
     <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
@@ -162,31 +163,31 @@ export default {
     <ul>
       <li>
         <div>
-          <h4>Total Orders</h4>
+          <h4 style="color: var(--festivall-baby-blue)">Total Orders</h4>
           <h2>
             {{ orders.length }}
           </h2>
         </div>
         <div>
-          <h4>Paid</h4>
+          <h4 style="color: green">Paid</h4>
           <h2>
             {{ orders.filter((order) => order.paid === 'true').length }}
           </h2>
         </div>
         <div>
-          <h4>Not Paid</h4>
+          <h4 style="color: red">Not Paid</h4>
           <h2>
             {{ orders.filter((order) => order.paid === 'false').length }}
           </h2>
         </div>
         <div>
-          <h4>Checked In</h4>
+          <h4 style="color: orange">Checked In</h4>
           <h2>
             {{ orders.filter((order) => order.checked_in === 'true').length }}
           </h2>
         </div>
         <div>
-          <h4>Not Checked In</h4>
+          <h4 style="color: yellow">Not Checked In</h4>
           <h2>
             {{ orders.filter((order) => order.checked_in === 'false').length }}
           </h2>
@@ -215,7 +216,18 @@ export default {
         </div>
         <div class="order-status">
           <h4>Admit {{ order.quantity }}</h4>
-          <h4>{{ paidStatus(order) }}</h4>
+          <div class="tickets">
+            <img
+              v-for="n in parseInt(order.quantity)"
+              :key="n"
+              src="@/assets/images/reunion_amenities/ticket.png"
+              alt="Meal Ticket"
+              style="width: 24px"
+            />
+          </div>
+          <h4 :style="{ color: paidStatus(order) === 'Paid' ? 'green' : 'red' }">
+            {{ paidStatus(order) }}
+          </h4>
           <h4>{{ currentStatus(order) }}</h4>
         </div>
       </li>
@@ -302,5 +314,10 @@ li {
 .order {
   display: flex;
   justify-content: space-around;
+}
+
+.tickets img {
+  margin: 3px;
+  transform: rotate(-45deg);
 }
 </style>
