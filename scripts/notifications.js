@@ -23,6 +23,8 @@ export const sendSMS = async (phone, message) => {
       body: JSON.stringify(payload)
     });
 
+    alert('SMS sent successfully!');
+
     if (!response.ok) {
       throw new Error('Network response was not ok ' + response.statusText);
     }
@@ -56,6 +58,8 @@ export const sendEmail = async (email, subject, message) => {
       },
       body: JSON.stringify(payload)
     });
+
+    alert('Email sent successfully!');
 
     if (!response.ok) {
       throw new Error('Network response was not ok ' + response.statusText);
@@ -98,6 +102,8 @@ export const sendReunionSlackAdmin = async (message) => {
       payload,
       { headers }
     );
+
+    alert('Sent to Slack successfully!');
 
     console.log('Response data:', response.data); // Log the response data for debugging
   } catch (error) {

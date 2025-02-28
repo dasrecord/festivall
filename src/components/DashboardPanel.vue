@@ -17,6 +17,7 @@
         <button @click="loadApplicants('rapture')">Rapture</button>
         <button @click="loadApplicants('partywell')">PartyWell</button>
         <button @click="loadApplicants('festivall', true)">Festivall</button>
+        <button @click="loadApplicants('reunion')">Reunion Static</button>
         <button @click="loadApplicants('applications', true)">Reunion 2024</button>
         <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
       </div>
@@ -86,7 +87,7 @@
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" />
               <img
-                @click="sendSMS(applicant.phone, applicant.message)"
+                @click="sendSMS(applicant.phone, applicant.message); applicant.message = ''"
                 :src="sms_icon"
                 alt="Send SMS"
                 class="action-icon"
@@ -94,7 +95,7 @@
               /><br />
               <input type="text" v-model="applicant.additional_compensation" />
               <img
-                @click="updateCompensation(applicant.id_code, applicant.additional_compensation)"
+                @click="updateCompensation(applicant.id_code, applicant.additional_compensation); applicant.additional_compensation = ''"
                 :src="compensation_icon"
                 alt="Update Compensation"
                 class="action-icon"
