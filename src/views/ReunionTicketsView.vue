@@ -25,8 +25,9 @@ const form = ref({
   paid: false,
   checked_in: false
 })
-const meal_ticket_image = ticket
-const meals_image = meals
+
+const ticket_image = ref(ticket)
+const meals_image = ref(meals)
 
 const btcRate = ref(0)
 const paymentInstructions = ref('')
@@ -201,15 +202,15 @@ onMounted(() => {
       <h2>
         If you know an Artist's or Volunteer's
         <span class="highlight">Festivall ID_CODE</span><br />
-        plese enter it so they can earn a referral bonus.<br /><br />
+        please enter it so they can earn a referral bonus.<br /><br />
       </h2>
       <h4 class="disclaimer">
         <div>
           <h1>Ticket Prices:<br /></h1>
           *Children 12 and under free!*<br />
-          *Youth 18 and under must be accompanied by an adult*<br /><br />
+          *Youth 18 and under must be accompanied by an adult.*<br /><br />
           <div class="ticket">
-            <img :src="meal_ticket_image" alt="meal ticket" class="icon" />
+            <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> WEEKEND PASS </span>
               - $140 CAD/PERSON/WEEKEND<br />
@@ -219,7 +220,7 @@ onMounted(() => {
             </h3>
           </div>
           <div class="ticket">
-            <img :src="meal_ticket_image" alt="meal ticket" class="icon" />
+            <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> DAY PASS </span>
               - $80 CAD/PERSON/DAY<br />
@@ -238,14 +239,15 @@ onMounted(() => {
           <div class="bitcoin">
             <h2>
               25% off if you pay in Bitcoin
-
               <img
                 src="/public/bitcoin_favicon.ico"
                 alt="bitcoin"
                 style="height: 16px; width: 16px"
               /><br />
-              <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
             </h2>
+            <h3>
+              <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
+            </h3>
           </div>
         </div>
       </h4>
