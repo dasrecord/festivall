@@ -189,8 +189,9 @@ const submitForm = async () => {
         2025.<br /><br />
         <div class="applicant-type">
           <img :src="artist_icon" alt="artist" class="icon" />
+          <h1><span class="highlight">ARTISTS</span><br /></h1>
           <h2>
-            <span class="highlight">ARTISTS</span><br /><img
+            <img
               :src="ticket_icon"
               alt="ticket"
               class="icon"
@@ -201,8 +202,9 @@ const submitForm = async () => {
         </div>
         <div class="applicant-type">
           <img :src="volunteer_icon" alt="volunteer" class="icon" />
+          <h1><span class="highlight">VOLUNTEERS</span><br /></h1>
           <h2>
-            <span class="highlight">VOLUNTEERS</span><br /><img
+            <img
               :src="ticket_icon"
               alt="ticket"
               class="icon"
@@ -213,8 +215,8 @@ const submitForm = async () => {
         </div>
         <div class="applicant-type">
           <img :src="workshop_icon" alt="workshop" class="icon" />
+          <h1><span class="highlight">WORKSHOPS</span><br /></h1>
           <h2>
-            <span class="highlight">WORKSHOPS</span><br />
             <img
               :src="ticket_icon"
               alt="ticket"
