@@ -85,17 +85,22 @@
             </div>
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" />
-              <button @click="sendSMS(applicant.phone, applicant.message)">SMS</button><br />
-              <input
-                type="text"
-                v-model="applicant.additional_compensation"
-                placeholder="Additional Compensation"
-              />
-              <button
+              <img
+                @click="sendSMS(applicant.phone, applicant.message)"
+                :src="sms_icon"
+                alt="Send SMS"
+                class="action-icon"
+                style="width: auto; height: 42px; transform: translateY(18px)"
+              /><br />
+              <input type="text" v-model="applicant.additional_compensation" />
+              <img
                 @click="updateCompensation(applicant.id_code, applicant.additional_compensation)"
-              >
-                Update Compensation
-              </button>
+                :src="compensation_icon"
+                alt="Update Compensation"
+                class="action-icon"
+                style="width: auto; height: 32px; transform: translateY(12px)"
+              />
+              <br />
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
             </div>
           </div>
@@ -113,6 +118,8 @@ import mixTrack from '@/assets/images/icons/mix_track.png'
 import contract from '@/assets/images/icons/contract.png'
 import { useRoute, useRouter } from 'vue-router'
 import { sendSMS, sendEmail } from '/scripts/notifications.js'
+import sms_icon from '@/assets/images/icons/sms.png'
+import compensation_icon from '@/assets/images/icons/compensation.png'
 
 export default {
   name: 'DashboardPanel',
@@ -282,7 +289,9 @@ export default {
       clearFilters,
       generateMailtoLink,
       sendSMS,
+      sms_icon,
       sendEmail,
+      compensation_icon,
       updateCompensation,
       generateContract,
       mixTrack,
