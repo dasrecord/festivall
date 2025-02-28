@@ -3,6 +3,8 @@ import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import { ref } from 'vue'
 import axios from 'axios'
+import { reunion_db } from '@/firebase'
+import { setDoc } from 'firebase/firestore'
 
 const form = ref({
   fullname: '',
@@ -22,6 +24,19 @@ const formatPhoneNumber = (phone) => {
 
 const handlePhoneInput = (event) => {
   form.value.phone = formatPhoneNumber(event.target.value)
+}
+
+const addtoMailingList = async () => {
+  try {
+    await setDoc(reunion_db, {
+      name: form.value.fullname,
+      email: form.value.email
+    })
+    alert('You have been added to our mailing list!')
+  } catch (error) {
+    console.error('Error adding to mailing list:', error)
+    alert('Failed to add to mailing list.')
+  }
 }
 
 const submitForm = async () => {
@@ -48,6 +63,7 @@ const submitForm = async () => {
     console.log('Response status:', response.status)
     if (response.status >= 200 && response.status < 300) {
       alert('Your message has been sent successfully!')
+      addtoMailingList()
       form.value = {
         fullname: '',
         email: '',
