@@ -16,7 +16,7 @@
       <strong>{{ applicant.fullname }}</strong
       >, with an address of
       <strong
-        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region }},
+        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region  }},
         {{ applicant.country }}, {{ applicant.postal_code }}</strong
       >, (the "{{ applicant.applicant_type.toUpperCase() }}"), also individually referred to as (the
       “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to engage the
