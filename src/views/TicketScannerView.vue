@@ -220,7 +220,7 @@ export default {
             <img
               v-for="n in parseInt(order.quantity)"
               :key="n"
-              src="@/assets/images/reunion_amenities/ticket.png"
+              src="@/assets/images/icons/ticket.png"
               alt="Meal Ticket"
               style="width: 24px"
             />
