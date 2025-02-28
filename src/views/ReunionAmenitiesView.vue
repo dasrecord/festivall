@@ -7,7 +7,7 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import bitcoin from '@/assets/images/reunion_amenities/bitcoin.png'
 import campsite_parking from '@/assets/images/reunion_amenities/campsite_parking.png'
 import meals from '@/assets/images/reunion_amenities/meals.png'
-import meal_ticket from '@/assets/images/reunion_amenities/meal_ticket.png'
+import ticket from '@/assets/images/reunion_amenities/ticket.png'
 import kitchen from '@/assets/images/reunion_amenities/kitchen.png'
 import paw from '@/assets/images/reunion_amenities/paw.png'
 import playground from '@/assets/images/reunion_amenities/playground.png'
@@ -32,7 +32,7 @@ export default {
       bitcoin: bitcoin,
       campsite_parking: campsite_parking,
       meals: meals,
-      meal_ticket: meal_ticket,
+      ticket: ticket,
       kitchen: kitchen,
       paw: paw,
       playground: playground,
@@ -76,7 +76,7 @@ export default {
         <span>Potable water available on site‍</span>
       </div>
       <div class="amenity">
-        <img :src="meal_ticket" alt="target" class="amenity-icon" />
+        <img :src="ticket" alt="target" class="amenity-icon" />
         <span>Scannable meal tickets</span>
       </div>
       <div class="amenity">
@@ -162,7 +162,6 @@ export default {
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-
 }
 
 .amenity-icon {
