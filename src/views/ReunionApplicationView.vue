@@ -1,6 +1,12 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import artist_icon from '../assets/images/reunion_icons/artist.png'
+import volunteer_icon from '../assets/images/reunion_icons/volunteer.png'
+import workshop_icon from '../assets/images/reunion_icons/workshop.png'
+import ticket_icon from '../assets/images/reunion_amenities/ticket.png'
+import meal_icon from '../assets/images/reunion_amenities/meals.png'
+
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
@@ -167,25 +173,56 @@ const submitForm = async () => {
         <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
         <img :src="frog_image" alt="frog" class="frog-image" />
       </div>
-      <h2>Interested in performing at Reunion 2025?</h2>
-      <h3>
+      <h1>Interested in performing at Reunion 2025?</h1>
+      <h2>
         Please fill out the form below.<br />
         If you have an existing
         <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
         information,<br />
         please enter it first.<br /><br />
-      </h3>
+      </h2>
       <h4 class="disclaimer">
+        <div>
+          <h1>Compensenation Schedule:<br /></h1>
+        </div>
         *Please note that submitting this form does not guarantee a performance slot at Reunion
         2025.<br /><br />
-        <div>
-          Compensenation Schedule:<br />
-          <span class="highlight"> ARTISTS </span>
-          - Weekend Pass + 1 Guest<br />
-          <span class="highlight"> VOLUNTEERS </span>
-          - Weekend Pass + 1 Meal Package per festival day worked<br />
-          <span class="highlight"> WORKSHOPS </span>
-          - Weekend Pass + 1 Meal Package
+        <div class="applicant-type">
+          <img :src="artist_icon" alt="artist" class="icon" />
+          <h2>
+            <span class="highlight">ARTISTS</span><br /><img
+              :src="ticket_icon"
+              alt="ticket"
+              class="icon"
+              style="transform: rotate(-45deg)"
+            /><img :src="ticket_icon" alt="ticket" class="icon" style="transform: rotate(-45deg)" />
+            <h3>Weekend Pass + 1 Guest<br /></h3>
+          </h2>
+        </div>
+        <div class="applicant-type">
+          <img :src="volunteer_icon" alt="volunteer" class="icon" />
+          <h2>
+            <span class="highlight">VOLUNTEERS</span><br /><img
+              :src="ticket_icon"
+              alt="ticket"
+              class="icon"
+              style="transform: rotate(-45deg) translateY(-15px)"
+            /><img :src="meal_icon" alt="meal" class="icon" />
+            <h3>Weekend Pass + 1 Meal Package per festival day worked<br /></h3>
+          </h2>
+        </div>
+        <div class="applicant-type">
+          <img :src="workshop_icon" alt="workshop" class="icon" />
+          <h2>
+            <span class="highlight">WORKSHOPS</span><br />
+            <img
+              :src="ticket_icon"
+              alt="ticket"
+              class="icon"
+              style="transform: rotate(-45deg) translateY(-15px)"
+            /><img :src="meal_icon" alt="meal" class="icon" />
+            <h3>Weekend Pass + 1 Meal Package</h3>
+          </h2>
         </div>
       </h4>
 
@@ -501,6 +538,22 @@ const submitForm = async () => {
   width: 100%;
   max-width: 250px;
 }
+
+.applicant-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+.icon {
+  width: 50px;
+  height: auto;
+  margin-top: 1rem;
+}
+
 .application-form {
   width: 80vw;
   padding: 1rem;

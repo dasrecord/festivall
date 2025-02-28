@@ -233,7 +233,7 @@ onMounted(() => {
               <span class="highlight"> MEAL PACKAGE </span>
               - $20 CAD/PERSON/DAY<br />
             </h2>
-            <h3>(Includes 1 lunch and 1 dinner)</h3>
+            <h3>(Includes 1 lunch and 1 supper during scheduled service hours)</h3>
           </div>
 
           <div class="bitcoin">
