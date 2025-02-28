@@ -40,6 +40,7 @@ const form = ref({
   workshop_description: '',
   vendor_type: '',
   statement: '',
+  rates: '',
   volunteer_availability: []
 })
 

@@ -55,7 +55,7 @@
 
     <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
-    <p><strong>Initial Compensation for Services:</strong></p>
+    <p><strong>Compensation for Services:</strong></p>
 
     <ul v-if="applicant.applicant_type === 'Artist'">
       <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
@@ -67,7 +67,7 @@
     </ul>
     <ul v-if="applicant.applicant_type === 'Volunteer'">
       <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
-      <li>One complementary meal package for each day of service</li>
+      <li>One complementary meal package for each festival day of service</li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
@@ -80,13 +80,13 @@
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
-    <p><strong>Additional Compensation:</strong> {{ applicant.additional_compensation }}</p>
+    <p v-if="applicant.rates"><strong>Additional Compensation:</strong> {{ applicant.rates }}</p>
     <p><strong>Balance Due:</strong> no later than 30 days after Event Date</p>
 
     <h3>3. {{ applicant.applicant_type.toUpperCase() }} REQUIREMENTS</h3>
     <p>
-      The {{ applicant.applicant_type.toUpperCase() }} requires the following equipment requirements
-      to provide {{ applicant.applicant_type.toUpperCase() }} Services:
+      The {{ applicant.applicant_type.toUpperCase() }} requires the following equipment to provide
+      {{ applicant.applicant_type.toUpperCase() }} Services:
     </p>
     <ul v-if="applicant.applicant_type === 'Artist'">
       <li><strong>Flat table/surface 36” in height</strong></li>

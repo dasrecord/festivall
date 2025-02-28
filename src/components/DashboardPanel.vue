@@ -63,27 +63,39 @@
 
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.statement }}</p>
-
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
+            <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
+
             <div class="actions">
               <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
                 <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
               </a>
               <a
                 :href="
-                  generateMailtoLink(applicant.email, applicant.fullname, applicant.applicant_type)
+                  generateMailtoLink(
+                    applicant.email,
+                    applicant.fullname,
+                    applicant.applicant_type,
+                    applicant.id_code
+                  )
                 "
               >
                 <img :src="contract" alt="Book Applicant" class="action-icon" />
               </a>
             </div>
             <div v-if="applicant.phone" class="message-section">
+              <input type="text" v-model="applicant.message" />
+              <button @click="sendSMS(applicant.phone, applicant.message)">SMS</button><br />
               <input
                 type="text"
-                v-model="applicant.message"
-                @keyup.enter="sendSMS(applicant.phone, applicant.message)"
+                v-model="applicant.additional_compensation"
+                placeholder="Additional Compensation"
               />
-              <button @click="sendEmail(applicant.phone, applicant.message)">SMS</button><br />
+              <button
+                @click="updateCompensation(applicant.id_code, applicant.additional_compensation)"
+              >
+                Update Compensation
+              </button>
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
             </div>
           </div>
@@ -95,7 +107,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import mixTrack from '@/assets/images/icons/mix_track.png'
 import contract from '@/assets/images/icons/contract.png'
@@ -222,16 +234,34 @@ export default {
         })
     }
 
-    const generateMailtoLink = (email, fullname, role) => {
+    const generateMailtoLink = (email, fullname, role, id_code) => {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = emailBody.value
         .replace('{name}', fullname || '')
         .replace('{role}', role || '')
+        .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
     const router = useRouter()
+
+    const updateCompensation = async (id_code, additional_compensation) => {
+      try {
+        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        await updateDoc(docRef, {
+          rates: additional_compensation
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.additional_compensation = ''
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error updating compensation:', error)
+      }
+    }
 
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
@@ -253,6 +283,7 @@ export default {
       generateMailtoLink,
       sendSMS,
       sendEmail,
+      updateCompensation,
       generateContract,
       mixTrack,
       contract,
