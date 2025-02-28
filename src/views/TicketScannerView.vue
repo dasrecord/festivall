@@ -1,4 +1,5 @@
 <script>
+import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
@@ -12,6 +13,7 @@ export default {
   },
   data() {
     return {
+      festivall_emblem,
       db: reunion_db,
       fullResult: null,
       scanResult: null,
@@ -20,6 +22,7 @@ export default {
       filter: 'all'
     }
   },
+  
   computed: {
     filteredOrders() {
       if (this.filter === 'all') {
@@ -33,7 +36,7 @@ export default {
   },
   async created() {
     try {
-      const ordersCollection = collection(this.db, 'orders')
+      const ordersCollection = collection(this.db, 'orders_2025')
       const orderSnapshot = await getDocs(ordersCollection)
       this.orders = orderSnapshot.docs.map((doc) => doc.data())
     } catch (error) {
