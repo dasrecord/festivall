@@ -55,8 +55,12 @@
               </span>
             </h2>
             <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
+            <p v-if="applicant.applicant_type">{{ applicant.applicant_type }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
-            <p v-if="applicant.region">{{ applicant.region }}</p>
+            <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
+            <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
+            <p v-if="applicant.workshop_description">{{ applicant.workshop_description }}</p>
+
             <p>{{ applicant.bio }}</p>
             <p>{{ applicant.statement }}</p>
 
@@ -77,9 +81,9 @@
               <input
                 type="text"
                 v-model="applicant.message"
-                @keyup.enter="sendMessage(applicant.phone, applicant.message)"
+                @keyup.enter="sendSMS(applicant.phone, applicant.message)"
               />
-              <button @click="sendMessage(applicant.phone, applicant.message)">SMS</button><br />
+              <button @click="sendEmail(applicant.phone, applicant.message)">SMS</button><br />
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
             </div>
           </div>
@@ -96,6 +100,7 @@ import { reunion_db } from '@/firebase'
 import mixTrack from '@/assets/images/reunion_amenities/mix_track.png'
 import contract from '@/assets/images/reunion_amenities/contract.png'
 import { useRoute, useRouter } from 'vue-router'
+import { sendSMS, sendEmail } from '@/scripts/notifications.js'
 
 export default {
   name: 'DashboardPanel',
@@ -226,45 +231,6 @@ export default {
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
-    const sendMessage = async (phone, message) => {
-      if (!phone || !message) {
-        alert('Phone number and message are required.')
-        return
-      }
-
-      const payload = {
-        value1: phone,
-        value2: message,
-        value3: 'Powered by Festivall'
-      }
-
-      console.log('Sending payload:', JSON.stringify(payload)) // Add logging for debugging
-
-      try {
-        const response = await fetch('https://relayproxy.vercel.app/sms', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        })
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText)
-        }
-
-        const responseData = await response.json()
-        console.log('Response data:', responseData) // Log the response data for debugging
-
-        alert('Message sent successfully!')
-        return true
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error)
-        alert('Failed to send message.')
-        return false
-      }
-    }
-
     const router = useRouter()
 
     const generateContract = (id_code) => {
@@ -285,7 +251,8 @@ export default {
       applyFilter,
       clearFilters,
       generateMailtoLink,
-      sendMessage,
+      sendSMS,
+      sendEmail,
       generateContract,
       mixTrack,
       contract,
