@@ -3,7 +3,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
-import { sendReunionSlackAdmin } from '@/scripts/notifications.js'
+import { sendReunionSlackAdmin } from '/scripts/notifications.js'
 
 export default {
   components: {
@@ -82,7 +82,9 @@ export default {
       await updateDoc(orderRef, {
         checked_in: 'true'
       })
-      sendReunionSlackAdmin(`:bust_in_silhouette: ${order.fullname} has checked in.\n:ticket: ${order.id_code}`)
+      sendReunionSlackAdmin(
+        `:bust_in_silhouette: ${order.fullname} has checked in.\n:ticket: ${order.id_code}`
+      )
       order.checked_in = 'true'
     },
     async checkOut(order) {

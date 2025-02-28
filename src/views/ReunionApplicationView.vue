@@ -6,7 +6,7 @@ import axios from 'axios'
 import { reunion_db } from '@/firebase'
 import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
-import { sendSMS, sendEmail } from '@/scripts/notifications.js'
+import { sendSMS, sendEmail } from '/scripts/notifications.js'
 
 const form = ref({
   id_code_long: '',
