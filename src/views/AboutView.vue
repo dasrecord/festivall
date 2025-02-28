@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <img class="headshot" src="../assets/images/team/Prasenjit.jpg" alt="Prasenjit Das" />
+    <img class="headshot" src="@/assets/images/reunion_team/Prasenjit.jpg" alt="Prasenjit Das" />
     <h1>Prasenjit Das M.D. B.Sc.</h1>
     Doctor by day and DJ by night.<br />
     <h2>

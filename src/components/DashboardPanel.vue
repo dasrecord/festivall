@@ -100,7 +100,7 @@ import { reunion_db } from '@/firebase'
 import mixTrack from '@/assets/images/reunion_amenities/mix_track.png'
 import contract from '@/assets/images/reunion_amenities/contract.png'
 import { useRoute, useRouter } from 'vue-router'
-import { sendSMS, sendEmail } from '@/scripts/notifications.js'
+import { sendSMS, sendEmail } from '/scripts/notifications.js'
 
 export default {
   name: 'DashboardPanel',

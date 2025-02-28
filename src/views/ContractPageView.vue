@@ -298,6 +298,7 @@ export default {
 * {
   font-family: 'Helvetica', sans-serif;
 }
+
 strong {
   font-weight: bold;
 }

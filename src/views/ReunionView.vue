@@ -1,38 +1,3 @@
-<script>
-import CountdownTimer from '@/components/CountdownTimer.vue'
-import frog_image from '@/assets/images/frog.png'
-import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import CalltoAction from '@/components/CalltoAction.vue'
-import DetailsPanel from '@/components/DetailsPanel.vue'
-import { RouterLink } from 'vue-router'
-
-
-
-export default {
-  components: {
-    CountdownTimer,
-    CalltoAction,
-    DetailsPanel,
-    RouterLink
-  },
-  data() {
-    return {
-      frogImage: frog_image,
-      reunion_emblem: reunion_emblem,
-      clickCount: 0
-    }
-  },
-  methods: {
-    handleClick() {
-      this.clickCount++
-      if (this.clickCount === 21) {
-        this.$router.push('/reunionticketscanner')
-      }
-    }
-  }
-}
-</script>
-
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
@@ -82,11 +47,6 @@ export default {
       ></iframe>
     </div>
 
-    <!-- <video controls style="width: 100%; max-width: 600px; margin: 1rem 0; border-radius: 10px">
-      <source src="@/assets/videos/Reunion_2025_Trailer_FB_Logos.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video> -->
-
     <DetailsPanel>
       <template #link1>
         <router-link to="/reunionfamily">Learn more</router-link>
@@ -105,12 +65,45 @@ export default {
   </div>
 </template>
 
+<script>
+import CountdownTimer from '@/components/CountdownTimer.vue'
+import frog_image from '@/assets/images/frog.png'
+import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import CalltoAction from '@/components/CalltoAction.vue'
+import DetailsPanel from '@/components/DetailsPanel.vue'
+import { RouterLink } from 'vue-router'
+
+export default {
+  components: {
+    CountdownTimer,
+    CalltoAction,
+    DetailsPanel,
+    RouterLink
+  },
+  data() {
+    return {
+      frogImage: frog_image,
+      reunion_emblem: reunion_emblem,
+      clickCount: 0
+    }
+  },
+  methods: {
+    handleClick() {
+      this.clickCount++
+      if (this.clickCount === 21) {
+        this.$router.push('/reunionticketscanner')
+      }
+    }
+  }
+}
+</script>
+
 <style scoped>
 .basic {
   padding: 1rem;
   text-align: center;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 a {
@@ -145,7 +138,7 @@ a:hover {
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   height: 0;
   overflow: hidden;
-  max-width: 100%;
+  width: 100%;
   background: #000;
   margin: 1rem 0;
   border-radius: 15px;
@@ -157,16 +150,17 @@ a:hover {
   left: 0;
   width: 100%;
   height: 100%;
+  border-radius: 15px;
 }
 
 @media (min-width: 1024px) {
   .basic {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    justify-items: flex-start;
+    justify-content: center;
     align-items: center;
   }
+
   .frog {
     display: flex;
     justify-self: center;
