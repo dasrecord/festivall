@@ -1,11 +1,11 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import artist_icon from '../assets/images/reunion_icons/artist.png'
-import volunteer_icon from '../assets/images/reunion_icons/volunteer.png'
-import workshop_icon from '../assets/images/reunion_icons/workshop.png'
-import ticket_icon from '../assets/images/reunion_amenities/ticket.png'
-import meal_icon from '../assets/images/reunion_amenities/meals.png'
+import artist_icon from '../assets/images/icons/artist.png'
+import volunteer_icon from '../assets/images/icons/volunteer.png'
+import workshop_icon from '../assets/images/icons/workshop.png'
+import ticket_icon from '../assets/images/icons/ticket.png'
+import meal_icon from '../assets/images/icons/meals.png'
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'

@@ -97,8 +97,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import mixTrack from '@/assets/images/reunion_amenities/mix_track.png'
-import contract from '@/assets/images/reunion_amenities/contract.png'
+import mixTrack from '@/assets/images/icons/mix_track.png'
+import contract from '@/assets/images/icons/contract.png'
 import { useRoute, useRouter } from 'vue-router'
 import { sendSMS, sendEmail } from '/scripts/notifications.js'
 

@@ -1,8 +1,8 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import ticket from '@/assets/images/reunion_amenities/ticket.png'
-import meals from '@/assets/images/reunion_amenities/meals.png'
+import ticket from '@/assets/images/icons/ticket.png'
+import meals from '@/assets/images/icons/meals.png'
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
