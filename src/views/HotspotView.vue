@@ -269,6 +269,7 @@ export default {
   text-align: center;
   width: 67%;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: fadeIn 1s ease-in-out;
 }
@@ -328,6 +329,7 @@ textarea:focus {
     background-color 0.3s ease,
     border-color 0.3s ease;
   cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .checkbox:hover {
