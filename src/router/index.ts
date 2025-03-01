@@ -30,6 +30,7 @@ import ReunionContactView from '@/views/ReunionContactView.vue'
 import ContractPage from '@/views/ContractPageView.vue'
 import IDCodeInput from '@/views/IDCodeInput.vue'
 import StageRider from '@/views/StageRider.vue'
+import StarcrossedDemos from '@/views/StarcrossedDemos.vue'
 
 
 const routes = [
@@ -283,8 +284,7 @@ const routes = [
   {
     path: '/starcrossed',
     name: 'starcrossed',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/xHvozB7Y' }
+    component: StarcrossedDemos,
   },
   {
     path: '/partyinthepark',
