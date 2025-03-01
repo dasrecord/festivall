@@ -183,7 +183,7 @@ export default {
       }
 
       axios
-        .post('https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK', payload)
+        .post('https://relayproxy.vercel.app/festivall_hotspot', payload)
         .then((response) => {
           console.log('Form submitted:', response.data)
           alert('Your submission has been received!')
@@ -354,7 +354,7 @@ textarea:focus {
 button {
   padding: 0.75rem 1rem;
   margin: 1rem;
-  /* border: none; */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 6px;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
