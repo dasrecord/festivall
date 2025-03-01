@@ -42,8 +42,8 @@
             <img :src="down_icon" alt="Next" style="height: auto; width: 32px" />
           </button>
         </div>
-        <button v-if="index === filteredQuestions.length - 1" @click="submitForm">Submit</button>
         <button v-if="index === 0" @click="nextQuestion">Begin</button>
+        <button v-if="index === filteredQuestions.length - 1" @click="submitForm">Submit</button>
       </div>
     </div>
   </div>
@@ -284,6 +284,7 @@ export default {
 
 input,
 textarea {
+  font-family: 'League Spartan', sans-serif;
   width: 100%;
   padding: 0.5rem;
   margin: 1rem 0;
@@ -305,7 +306,7 @@ textarea:focus {
   align-items: center;
   padding: 0.5rem;
   margin: 1rem 0;
-  /* border: 1px solid white; */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   transition:
