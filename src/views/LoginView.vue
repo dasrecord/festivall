@@ -4,8 +4,9 @@
       <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" />
     </div>
     <h2>LOGIN PORTAL</h2>
+    <h3>This is a memebers only area.</h3>
     <p>You are currently {{ status }}.</p>
-    <p v-if="isUserLoggedIn">Logged in as {{ email }}</p>
+
     <form @submit.prevent="login">
       <input type="email" v-model="email" placeholder="Email" required />
       <input type="password" v-model="password" placeholder="Password" required />
