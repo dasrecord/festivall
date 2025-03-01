@@ -116,7 +116,7 @@ export default {
           type: 'textarea'
         },
         {
-          text: 'Thank you for your submission!',
+          text: 'Press Submit to complete the form.',
           subtext: 'We will get back to you shortly with more details.'
         }
       ],
@@ -158,8 +158,20 @@ export default {
     },
     submitForm() {
       // Handle form submission
+      const payload = {
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*New Hotspot Submission*\n\n${this.answers.map((answer, index) => `*${this.questions[index].text}*\n${answer}`).join('\n')}`
+            }
+          }
+        ]
+      }
+
       axios
-        .post('https://relayproxy.vercel.app/festivall_hotspot', this.answers)
+        .post('https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK', payload)
         .then((response) => {
           console.log('Form submitted:', response.data)
           alert('Your submission has been received!')
