@@ -69,11 +69,10 @@ export default {
             'This venue is a cozy and versatile space located in a private residence.\nIt is perfect for small gatherings, workshops, and microevents.'
         },
         {
-          text: 'Please select your prupose:',
+          text: 'Please select your purpose:',
           type: 'radio',
           options: ['Attend an Event', 'Promote/Host an Event']
         },
-
         {
           text: 'Please provide your full name:',
           type: 'text'
@@ -204,8 +203,12 @@ export default {
   },
   created() {
     // Initialize answers array with empty arrays for each question
-    this.questions.forEach((_, index) => {
-      this.answers[index] = []
+    this.questions.forEach((question, index) => {
+      if (question.type === 'checkbox') {
+        this.answers[index] = []
+      } else {
+        this.answers[index] = ''
+      }
     })
   }
 }

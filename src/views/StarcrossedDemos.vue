@@ -32,7 +32,7 @@
           </button>
         </div>
         <button v-if="index === questions.length - 1" @click="submitForm">
-          Submit Another Track
+          SUBMIT<br />&<br />UPLOAD ANOTHER TRACK<br />
         </button>
         <button v-if="index === 0" @click="nextQuestion">UPLOAD</button>
       </div>
@@ -72,7 +72,7 @@ export default {
           type: 'textarea'
         },
         {
-          text: 'Thank you for your submission!',
+          text: 'Almost done!',
           subtext:
             'Your track will be reviewed by our in-house A&R team.\nThe most promising works will receive an invitation to have the track signed for release with a recoupable advance fee.\nArtists retain the masters and royalty splits are 50/50.'
         }

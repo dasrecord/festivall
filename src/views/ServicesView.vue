@@ -2,10 +2,19 @@
   <div class="services">
     <div class="service">
       <h1>
+        <RouterLink to="/hotpot">Hotspot</RouterLink>
+      </h1>
+      <p>
+        Looking for a creative space for microevents?<br />
+        Check this place out.
+      </p>
+    </div>
+    <div class="service">
+      <h1>
         <RouterLink to="/starcrossed">Record Label</RouterLink>
       </h1>
       <p>
-        Want to submit your demos?<br />
+        Want to submit your producer/dj demos?<br />
         Start here.
       </p>
     </div>
