@@ -2,7 +2,7 @@
   <div class="services">
     <div class="service">
       <h1>
-        <RouterLink to="/hotpot">Hotspot</RouterLink>
+        <RouterLink to="/hotpot">Community Hotspot</RouterLink>
       </h1>
       <p>
         Looking for a creative space for microevents?<br />
