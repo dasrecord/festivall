@@ -31,6 +31,7 @@ import ContractPage from '@/views/ContractPageView.vue'
 import IDCodeInput from '@/views/IDCodeInput.vue'
 import StageRider from '@/views/StageRider.vue'
 import StarcrossedDemos from '@/views/StarcrossedDemos.vue'
+import HotspotView from '@/views/HotspotView.vue'
 
 
 const routes = [
@@ -101,6 +102,11 @@ const routes = [
     name :'das-record',
     component: DasRecordView,
     meta: { showHeader: false }
+  },
+  {
+    path: '/hotspot',
+    name: 'hotspot',
+    component: HotspotView,
   },
   {
     path: '/howitallworks',
