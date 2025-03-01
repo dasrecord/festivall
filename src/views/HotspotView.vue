@@ -1,18 +1,5 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
-    <img
-      v-if="currentQuestion === 0"
-      :src="festivall_emblem"
-      alt="Festivall Emblem"
-      style="
-        position: absolute;
-        top: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        height: 100px;
-        width: auto;
-      "
-    />
     <div
       class="form-slide"
       v-for="(question, index) in filteredQuestions"
@@ -73,10 +60,14 @@ export default {
         {
           text: 'Welcome to the Community Hotspot.',
           subtext:
-            'This venue is a cozy and versatile space located in a private residence.\nIt is perfect for small gatherings, workshops, and microevents.\n\nPlease select your purpose:',
+            'This venue is a cozy and versatile space located in a private residence.\nIt is perfect for small gatherings, workshops, and microevents.'
+        },
+        {
+          text: 'Please select your prupose:',
           type: 'radio',
           options: ['Attend an Event', 'Promote/Host an Event']
         },
+
         {
           text: 'Please provide your full name:',
           type: 'text'
@@ -263,7 +254,7 @@ export default {
 }
 
 .question {
-  background-color: rgba(0, 0, 0, 0.288);
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
@@ -290,7 +281,7 @@ textarea {
   width: 100%;
   padding: 0.5rem;
   margin: 1rem 0;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(0, 0, 0, 0.8);
   border: 1px solid white;
   border-radius: 5px;
   color: white;
@@ -350,7 +341,7 @@ textarea:focus {
 button {
   padding: 0.75rem 1rem;
   margin: 1rem;
-  border: none;
+  /* border: none; */
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
