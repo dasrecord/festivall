@@ -209,15 +209,15 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   width: 90%;
 }
 .das-record-logo {
-  width: 210px;
+  width: 200px;
 }
 .evolved-classic-logo {
-  width: 280px;
+  width: 250px;
 }
 .festivall-emblem {
   width: 50%;
 }
 .placeholder-logo {
-  width: 80%;
+  width: 85%;
 }
 </style>
