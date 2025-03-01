@@ -69,9 +69,9 @@ export default {
             'This venue is a cozy and versatile space located in a private residence.\nIt is perfect for small gatherings, workshops, and microevents.'
         },
         {
-          text: 'Please select your purpose:',
+          text: 'Are you looking to attend or host an event?',
           type: 'radio',
-          options: ['Attend an Event', 'Promote/Host an Event']
+          options: ['Attend', 'Host']
         },
         {
           text: 'Please provide your full name:',
@@ -98,7 +98,7 @@ export default {
           condition: 'attend'
         },
         {
-          text: 'Please provide the date and time for the event:',
+          text: 'Please provide the date and time for your proposed event:',
           type: 'text',
           condition: 'host'
         },
@@ -148,11 +148,11 @@ export default {
   },
   methods: {
     nextQuestion() {
-      if (this.currentQuestion === 0) {
-        const purposeAnswer = this.answers[0]
-        if (purposeAnswer === 'Attend an Event') {
+      if (this.currentQuestion === 1) {
+        const purposeAnswer = this.answers[1]
+        if (purposeAnswer === 'Attend') {
           this.purpose = 'attend'
-        } else if (purposeAnswer === 'Promote/Host an Event') {
+        } else if (purposeAnswer === 'Host') {
           this.purpose = 'host'
         }
       }
