@@ -1,5 +1,18 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
+    <img
+      v-if="currentQuestion === 0"
+      :src="festivall_emblem"
+      alt="Festivall Emblem"
+      style="
+        position: absolute;
+        top: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 100px;
+        width: auto;
+      "
+    />
     <div
       class="form-slide"
       v-for="(question, index) in filteredQuestions"
@@ -44,6 +57,7 @@
 </template>
 
 <script>
+import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import stage_bg from '@/assets/images/hotspot/stage_bg.png'
 import up_icon from '@/assets/images/starcrossed/up.png'
 import down_icon from '@/assets/images/starcrossed/down.png'
@@ -122,7 +136,8 @@ export default {
       ],
       answers: [],
       up_icon: up_icon,
-      down_icon: down_icon
+      down_icon: down_icon,
+      festivall_emblem: festivall_emblem
     }
   },
   computed: {

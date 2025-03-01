@@ -106,7 +106,7 @@ const routes = [
   {
     path: '/hotspot',
     name: 'hotspot',
-    component: HotspotView,
+    component: HotspotView
   },
   {
     path: '/howitallworks',
