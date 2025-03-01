@@ -88,13 +88,13 @@ export default {
           condition: 'attend'
         },
         {
-          text: 'Please provide details about the event you want to host:',
-          type: 'textarea',
+          text: 'Please provide the date and time for the event:',
+          type: 'text',
           condition: 'host'
         },
         {
-          text: 'Please provide the date and time for the event:',
-          type: 'text',
+          text: 'Please provide details about the event you want to host:',
+          type: 'textarea',
           condition: 'host'
         },
         {
@@ -159,7 +159,7 @@ export default {
     submitForm() {
       // Handle form submission
       axios
-        .post('https://relayproxy.vercel.app/community_center_notifications', this.answers)
+        .post('https://relayproxy.vercel.app/festivall_hotspot', this.answers)
         .then((response) => {
           console.log('Form submitted:', response.data)
           alert('Your submission has been received!')
