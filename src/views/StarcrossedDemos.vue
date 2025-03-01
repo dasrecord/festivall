@@ -30,10 +30,10 @@
           <button v-if="index < questions.length - 1 && index > 0" @click="nextQuestion">
             <img :src="down_icon" alt="Next" style="height: auto; width: 32px" />
           </button>
-          <button v-if="index === questions.length - 1" @click="submitForm">
-            Submit Another Track
-          </button>
         </div>
+        <button v-if="index === questions.length - 1" @click="submitForm">
+          Submit Another Track
+        </button>
         <button v-if="index === 0" @click="nextQuestion">UPLOAD</button>
       </div>
     </div>
@@ -141,25 +141,32 @@ export default {
   width: 100vw;
   height: 100vh;
   position: absolute;
-  top: 100vh;
+  top: 0;
   left: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: top 0.8s ease;
+  transition:
+    transform 1.2s ease,
+    opacity 1.5s ease;
+  opacity: 0;
+  transform: translateY(100vh);
 }
 
 .form-slide.active {
-  top: 0;
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .form-slide.previous {
-  top: -100vh;
+  transform: translateY(-100vh);
+  opacity: 0;
 }
 
 .form-slide.next {
-  top: 100vh;
+  transform: translateY(100vh);
+  opacity: 0;
 }
 
 .question {
@@ -169,6 +176,19 @@ export default {
   text-align: center;
   width: 67%;
   color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 input,
@@ -180,10 +200,17 @@ textarea {
   border: 1px solid white;
   border-radius: 5px;
   color: white;
+  transition: border-color 0.3s ease;
 }
+
+input:focus,
+textarea:focus {
+  border-color: var(--festivall-baby-blue);
+}
+
 .controls {
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
 }
 
@@ -197,10 +224,14 @@ button {
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
 }
 
 button:hover {
   background-color: black;
   color: white;
+  transform: scale(1.05);
 }
 </style>
