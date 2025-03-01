@@ -29,10 +29,16 @@
           </label>
         </div>
         <div class="controls">
-          <button v-if="index > 0" @click="prevQuestion">
+          <button v-if="index > 0" @click="prevQuestion" class="previous">
             <img :src="up_icon" alt="Previous" style="height: auto; width: 32px" />
+            BACK
           </button>
-          <button v-if="index < filteredQuestions.length - 1 && index > 0" @click="nextQuestion">
+          <button
+            v-if="index < filteredQuestions.length - 1 && index > 0"
+            @click="nextQuestion"
+            class="next"
+          >
+            NEXT
             <img :src="down_icon" alt="Next" style="height: auto; width: 32px" />
           </button>
         </div>
@@ -338,11 +344,18 @@ textarea:focus {
   align-items: center;
 }
 
+.previous,
+.next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 button {
   padding: 0.75rem 1rem;
   margin: 1rem;
   /* border: none; */
-  border-radius: 5px;
+  border-radius: 6px;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
   cursor: pointer;
@@ -351,6 +364,9 @@ button {
   transition:
     background-color 0.3s ease,
     transform 0.3s ease;
+}
+button img {
+  margin: 10px;
 }
 
 button:hover {
