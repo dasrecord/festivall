@@ -4,9 +4,7 @@
       <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION WORKSHOP RESPONSIBILITIES</h2>
-      <h3>
-        As a Workshop Volunteer, you are expected to adhere to the following responsibilities:
-      </h3>
+      <h3>As a Workshop Workshop, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
         <li>
           <strong>Ensure that your contact information is up-to-date and accurate:</strong>
