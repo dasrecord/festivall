@@ -32,6 +32,11 @@ import IDCodeInput from '@/views/IDCodeInput.vue'
 import StageRider from '@/views/StageRider.vue'
 import StarcrossedDemos from '@/views/StarcrossedDemos.vue'
 import HotspotView from '@/views/HotspotView.vue'
+import ReunionArtistResponsibilities from '@/views/ReunionArtistResponsibilitiesView.vue'
+import ReunionVolunteerResponsibilities from '@/views/ReunionVolunteerResponsibilitiesView.vue'
+import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibilitiesView.vue'
+// import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
+
 
 
 const routes = [
@@ -194,6 +199,26 @@ const routes = [
     component: ReunionApplicationView,
   },
   {
+    path: '/reunion-artist-responsibilities',
+    name: 'reunion-artist-responsibilities',
+    component: ReunionArtistResponsibilities,
+  },
+  {
+    path: '/reunion-volunteer-responsibilities',
+    name: 'reunion-volunteer-responsibilities',
+    component: ReunionVolunteerResponsibilities
+  },
+  {
+    path: '/reunion-workshop-responsibilities',
+    name: 'reunion-workshop-responsibilities',
+    component: ReunionWorkshopResponsibilities
+  },
+  // {
+  //   path: '/reunion-vendor-responsibilities',
+  //   name: 'reunion-vendor-responsibilities',
+  //   component: ReunionVendorResponsibilities
+  // },
+  { 
     path: '/reunionlineup',
     name: 'reunionlineup',
     component: ReunionLineupView

@@ -199,6 +199,9 @@ const submitForm = async () => {
               style="transform: rotate(-45deg)"
             /><img :src="ticket_icon" alt="ticket" class="icon" style="transform: rotate(-45deg)" />
             <h3>Weekend Pass + 1 Guest<br /></h3>
+            <RouterLink to="/reunion-artist-responsibilities" class="info"
+              >* Click Here For More Info *</RouterLink
+            >
           </h2>
         </div>
         <div class="applicant-type">
@@ -212,6 +215,9 @@ const submitForm = async () => {
               style="transform: rotate(-45deg) translateY(-15px)"
             /><img :src="meal_icon" alt="meal" class="icon" />
             <h3>Weekend Pass + 1 Meal Package per festival day worked<br /></h3>
+            <RouterLink to="/reunion-volunteer-responsibilities" class="info"
+              >* Click Here For More Info *</RouterLink
+            >
           </h2>
         </div>
         <div class="applicant-type">
@@ -225,6 +231,9 @@ const submitForm = async () => {
               style="transform: rotate(-45deg) translateY(-15px)"
             /><img :src="meal_icon" alt="meal" class="icon" />
             <h3>Weekend Pass + 1 Meal Package</h3>
+            <RouterLink to="/reunion-workshop-responsibilities" class="info"
+              >* Click Here For More Info *</RouterLink
+            >
           </h2>
         </div>
       </h4>
@@ -555,6 +564,13 @@ const submitForm = async () => {
   width: 50px;
   height: auto;
   margin-top: 1rem;
+}
+
+.info {
+  color: var(--reunion-frog-green);
+  font-weight: bold;
+  text-decoration: none;
+  font-size: smaller;
 }
 
 .application-form {
