@@ -189,52 +189,69 @@ const submitForm = async () => {
         *Please note that submitting this form does not guarantee a performance slot at Reunion
         2025.<br /><br />
         <div class="applicant-type">
-          <img :src="artist_icon" alt="artist" class="icon" />
-          <h1><span class="highlight">ARTISTS</span><br /></h1>
-          <h2>
-            <img
-              :src="ticket_icon"
-              alt="ticket"
-              class="icon"
-              style="transform: rotate(-45deg)"
-            /><img :src="ticket_icon" alt="ticket" class="icon" style="transform: rotate(-45deg)" />
-            <h3>Weekend Pass + 1 Guest<br /></h3>
-            <RouterLink to="/reunion-artist-responsibilities" class="info"
-              >* Click Here For More Info *</RouterLink
-            >
-          </h2>
+          <div>
+            <img :src="artist_icon" alt="artist" class="icon" />
+            <h1><span class="highlight">ARTISTS</span><br /></h1>
+          </div>
+          <div>
+            <h2>
+              <img
+                :src="ticket_icon"
+                alt="ticket"
+                class="icon"
+                style="transform: rotate(-45deg)"
+              /><img
+                :src="ticket_icon"
+                alt="ticket"
+                class="icon"
+                style="transform: rotate(-45deg)"
+              />
+              <h4>Weekend Pass + 1 Guest<br /></h4>
+              <RouterLink to="/reunion-artist-responsibilities" class="info"
+                >* More Info *</RouterLink
+              >
+            </h2>
+          </div>
         </div>
         <div class="applicant-type">
-          <img :src="volunteer_icon" alt="volunteer" class="icon" />
-          <h1><span class="highlight">VOLUNTEERS</span><br /></h1>
-          <h2>
-            <img
-              :src="ticket_icon"
-              alt="ticket"
-              class="icon"
-              style="transform: rotate(-45deg) translateY(-15px)"
-            /><img :src="meal_icon" alt="meal" class="icon" />
-            <h3>Weekend Pass + 1 Meal Package per festival day worked<br /></h3>
-            <RouterLink to="/reunion-volunteer-responsibilities" class="info"
-              >* Click Here For More Info *</RouterLink
-            >
-          </h2>
+          <div>
+            <img :src="volunteer_icon" alt="volunteer" class="icon" />
+            <h1><span class="highlight">VOLUNTEERS</span><br /></h1>
+          </div>
+          <div>
+            <h2>
+              <img
+                :src="ticket_icon"
+                alt="ticket"
+                class="icon"
+                style="transform: rotate(-45deg) translateY(-15px)"
+              /><img :src="meal_icon" alt="meal" class="icon" />
+              <h4>Weekend Pass + 1 Meal Package<br /></h4>
+              <RouterLink to="/reunion-volunteer-responsibilities" class="info"
+                >* More Info *</RouterLink
+              >
+            </h2>
+          </div>
         </div>
         <div class="applicant-type">
-          <img :src="workshop_icon" alt="workshop" class="icon" />
-          <h1><span class="highlight">WORKSHOPS</span><br /></h1>
-          <h2>
-            <img
-              :src="ticket_icon"
-              alt="ticket"
-              class="icon"
-              style="transform: rotate(-45deg) translateY(-15px)"
-            /><img :src="meal_icon" alt="meal" class="icon" />
-            <h3>Weekend Pass + 1 Meal Package</h3>
-            <RouterLink to="/reunion-workshop-responsibilities" class="info"
-              >* Click Here For More Info *</RouterLink
-            >
-          </h2>
+          <div>
+            <img :src="workshop_icon" alt="workshop" class="icon" />
+            <h1><span class="highlight">WORKSHOPS</span><br /></h1>
+          </div>
+          <div>
+            <h2>
+              <img
+                :src="ticket_icon"
+                alt="ticket"
+                class="icon"
+                style="transform: rotate(-45deg) translateY(-15px)"
+              /><img :src="meal_icon" alt="meal" class="icon" />
+              <h4>Weekend Pass + 1 Meal Package<br /></h4>
+              <RouterLink to="/reunion-workshop-responsibilities" class="info"
+                >* More Info *</RouterLink
+              >
+            </h2>
+          </div>
         </div>
       </h4>
 
@@ -553,7 +570,8 @@ const submitForm = async () => {
 
 .applicant-type {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 15px;
