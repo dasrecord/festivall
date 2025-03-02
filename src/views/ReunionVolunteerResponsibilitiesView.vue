@@ -4,7 +4,7 @@
       <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION VOLUNTEER RESPONSIBILITIES</h2>
-      <h3>As a Reunion Artist, you are expected to adhere to the following responsibilities:</h3>
+      <h3>As a Reunion Volunteer, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
         <li>
           <strong>Ensure that your contact information is up-to-date and accurate:</strong>
