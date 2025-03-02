@@ -82,14 +82,12 @@
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue'
 import { RouterLink } from 'vue-router'
 import festivallEmblemWhite from '@/assets/images/festivall_emblem_white.png'
 
 export default {
   name: 'ServicesView',
   components: {
-    HelloWorld,
     RouterLink
   },
   data() {
