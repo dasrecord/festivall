@@ -47,7 +47,61 @@
             contribute to making the Reunion experience better for everyone.
           </p>
         </li>
+        <ul class="front-gate">
+          <li>
+            <strong>Front Gate Volunteers:</strong>
+            <p>
+              Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
+              providing information about the event. They are the first point of contact for
+              attendees and play a crucial role in ensuring a positive experience for everyone.
+            </p>
+          </li>
+        </ul>
+        <ul class="food-team">
+          <li>
+            <strong>Food Team Volunteers:</strong>
+            <p>
+              Food Team Volunteers are responsible for assisting with food preparation, serving, and
+              cleanup. They help ensure that attendees have access to food and refreshments during
+              the event and maintain cleanliness and hygiene in the food service area.
+            </p>
+          </li>
+        </ul>
+        <ul class="setup-crew">
+          <li>
+            <strong>Setup Crew Volunteers:</strong>
+            <p>
+              Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
+              items needed for the event. They help create a welcoming and festive atmosphere for
+              attendees and ensure that the event space is ready for the activities and programs
+              planned.
+            </p>
+          </li>
+        </ul>
+        <ul class="cleanup-crew">
+          <li>
+            <strong>Cleanup Crew Volunteers:</strong>
+            <p>
+              Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
+              after the event. They help pack up equipment, decorations, and other items, and ensure
+              that the venue is left in good condition. Cleanup Crew Volunteers play a vital role in
+              wrapping up the event smoothly and efficiently.
+            </p>
+          </li>
+        </ul>
+        <ul class="stage-crew">
+          <li>
+            <strong>Stage Crew Volunteers:</strong>
+            <p>
+              Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
+              lighting, and other technical aspects of the event. They help ensure that performers
+              and presenters have the necessary support and equipment for their performances and
+              presentations.
+            </p>
+          </li>
+        </ul>
       </ul>
+
       <h3>
         If you have any questions or require further assistance, please contact us at
         <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
