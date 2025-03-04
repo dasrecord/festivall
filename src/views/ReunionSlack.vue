@@ -11,8 +11,8 @@
     </p>
     <p>
       By joining this team, you will have access to various channels dedicated to different aspects
-      of our operations, including project updates, team discussions, and general announcements.
-      This helps in keeping everyone informed and aligned with the company's goals and activities.
+      of our operations, including project updates, discussions, and general announcements.
+      This helps in keeping everyone informed and aligned with the team's goals and activities.
     </p>
     <p>
       Slack also allows for real-time messaging, file sharing, and integration with other tools we
