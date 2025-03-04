@@ -38,8 +38,6 @@ import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibili
 // import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
 import ReunionSlack from '@/views/ReunionSlack.vue'
 
-
-
 const routes = [
   {
     path: '/',
@@ -125,6 +123,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: FestivallLogin
+  },
+  {
+    path: '/collaborate',
+    name: 'collaborate',
+    component: ReunionSlack
   },
   {
     path: '/dashboard',
