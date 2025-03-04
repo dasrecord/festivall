@@ -69,6 +69,10 @@ const fetchBtcRate = async () => {
   }
 }
 
+const calculateMealTickets = () => {
+  form.value.meal_tickets_remaining = form.value.meal_packages * 2
+}
+
 const calculateTotalPrice = () => {
   let ticketPrice = 0
   if (form.value.ticket_type === 'Weekend Pass') {
@@ -145,6 +149,7 @@ const submitForm = async () => {
       form.value.id_code = form.value.id_code_long.slice(0, 5)
     }
     calculateTotalPrice()
+    calculateMealTickets()
     generatePaymentInstructions()
     await textPaymentInstructions()
     await emailPaymentInstructions()
