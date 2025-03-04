@@ -1,9 +1,19 @@
 <template>
   <div class="reunion-slack">
+    <img
+      :src="festivall_emblem"
+      alt="Reunion Festival Emblem"
+      style="width: 100px; display: block; margin: 0 auto 1rem"
+    />
     <h1>
       You've Been Invited To Join<br />
       The Reunion Slack Team
     </h1>
+    <img
+      :src="reunion_frog"
+      alt="Reunion Frog"
+      style="width: 100px; display: block; margin: 0 auto 1rem"
+    />
     <p>
       The Reunion Slack team serves as a central hub for all communication and collaboration within
       our organization. It is designed to be a (S)earchable (L)og of all (C)ompany (K)nowledge,
@@ -11,8 +21,8 @@
     </p>
     <p>
       By joining this team, you will have access to various channels dedicated to different aspects
-      of our operations, including project updates, discussions, and general announcements.
-      This helps in keeping everyone informed and aligned with the team's goals and activities.
+      of our operations, including project updates, discussions, and general announcements. This
+      helps in keeping everyone informed and aligned with the team's goals and activities.
     </p>
     <p>
       Slack also allows for real-time messaging, file sharing, and integration with other tools we
@@ -40,8 +50,16 @@
 </template>
 
 <script>
+import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
+import reunion_frog from '@/assets/images/frog.png'
 export default {
-  name: 'ReunionSlack'
+  name: 'ReunionSlack',
+  data() {
+    return {
+      festivall_emblem,
+      reunion_frog
+    }
+  }
 }
 </script>
 
