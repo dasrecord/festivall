@@ -36,6 +36,7 @@ import ReunionArtistResponsibilities from '@/views/ReunionArtistResponsibilities
 import ReunionVolunteerResponsibilities from '@/views/ReunionVolunteerResponsibilitiesView.vue'
 import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibilitiesView.vue'
 // import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
+import ReunionSlack from '@/views/ReunionSlack.vue'
 
 
 
@@ -278,10 +279,7 @@ const routes = [
   {
     path: '/reunionslack',
     name: 'reunionslack',
-    component: ExternalRedirect,
-    props: {
-      url: 'https://join.slack.com/t/reunionfestival/shared_invite/zt-2n9v17aud-yUWqZQBLj~zUlS9A4AngNA'
-    }
+    component: ReunionSlack
   },
   {
     path: '/reunionreceipttracker',
