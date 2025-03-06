@@ -3,7 +3,6 @@
     <img :src="festivall_emblem" style="width: 100px" alt="Festivall Emblem" class="emblem" />
     <h1>Reunion Festival</h1>
     <img :src="frog_image" style="width: 200px" alt="Frog" class="frog" />
-    <h2>Contract Portal</h2>
 
     <h3>Enter Your ID Code</h3>
 
@@ -18,6 +17,8 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import frog_image from '@/assets/images/frog.png'
 
@@ -30,11 +31,21 @@ export default {
 
     const checkIdCode = async () => {
       try {
-        // Check if the ID code exists in Firestore
-        const response = await fetch(`/api/check-id-code?id_code=${idCode.value}`)
-        const data = await response.json()
+        // Check if the ID code exists in 'orders_2025'
+        let q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', idCode.value))
+        let querySnapshot = await getDocs(q)
 
-        if (data.exists) {
+        if (!querySnapshot.empty) {
+          // Redirect to the ticket page if the ID code is valid
+          router.push({ name: 'TicketPage', params: { id_code: idCode.value } })
+          return
+        }
+
+        // Check if the ID code exists in 'applications_2025'
+        q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', idCode.value))
+        querySnapshot = await getDocs(q)
+
+        if (!querySnapshot.empty) {
           // Redirect to the contract page if the ID code is valid
           router.push({ name: 'ContractPage', params: { id_code: idCode.value } })
         } else {
@@ -42,7 +53,7 @@ export default {
         }
       } catch (error) {
         console.error('Error checking ID code:', error)
-        errorMessage.value = 'An error occurred. Please try again later.'
+        errorMessage.value = 'An error occurred. Please contact webmaster.'
       }
     }
 

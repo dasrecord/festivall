@@ -16,7 +16,7 @@
       <strong>{{ applicant.fullname }}</strong
       >, with an address of
       <strong
-        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region  }},
+        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region }},
         {{ applicant.country }}, {{ applicant.postal_code }}</strong
       >, (the "{{ applicant.applicant_type.toUpperCase() }}"), also individually referred to as (the
       “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to engage the
@@ -107,9 +107,7 @@
       <li><strong>Including space for audience participation if required</strong></li>
       <li><strong>Access to microphone with signal flow to main speaker system</strong></li>
       <li>
-        <strong
-          >Access to stage management or available DJ to play music provided by WORKSHOP</strong
-        >
+        <strong>Access to stage management or available DJ to play music</strong>
       </li>
     </ul>
 
@@ -166,7 +164,7 @@
         your skills, but because of who you are - your character.
       </li>
     </ul>
-    <div class="signature">
+    <div v-if="applicant.contract_signed === false" class="signature">
       <label for="signature">E-Signature:</label>
       By signing and submitting this form, you agree to the terms and conditions of this contract.
       <p><strong>By:</strong> {{ applicant.fullname }} <strong>Date:</strong> {{ currentDate }}</p>
@@ -178,6 +176,13 @@
         required
       />
     </div>
+    <div v-else>
+      <p>
+        Thank you, {{ applicant.fullname }}. Your contract has been signed on
+        {{ applicant.signedAt }}.
+      </p>
+    </div>
+
     <button
       @click="
         () => {
@@ -253,7 +258,8 @@ export default {
         await setDoc(contractDoc, {
           ...applicant.value,
           signature: signature.value,
-          signedAt: new Date().toISOString()
+          signedAt: new Date().toISOString(),
+          contract_signed: true
         })
         alert('Contract saved successfully!')
       } catch (error) {

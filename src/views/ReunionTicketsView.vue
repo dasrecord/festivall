@@ -214,11 +214,23 @@ onMounted(() => {
           <h1>Ticket Prices:<br /></h1>
           *Children 12 and under free!*<br />
           *Youth 18 and under must be accompanied by an adult.*<br /><br />
+          <div class="bitcoin">
+            <h2>
+              <img
+                src="/public/bitcoin_favicon.ico"
+                alt="bitcoin"
+                style="height: 16px; width: 16px"
+              />
+              NO PRICE INCREASE IN 2025!
+              <br />
+            </h2>
+          </div>
+
           <div class="ticket">
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
-              <span class="highlight"> WEEKEND PASS </span>
-              - $140 CAD/PERSON/WEEKEND<br />
+              <span class="highlight"> WEEKEND PASS</span><br />
+              $140 CAD/PERSON/WEEKEND<br />
             </h2>
             <h3>
               (Valid from 12:00PM Friday August 29th, 2025 - 12:00PM Monday September 1st, 2025)
@@ -227,18 +239,21 @@ onMounted(() => {
           <div class="ticket">
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
-              <span class="highlight"> DAY PASS </span>
-              - $80 CAD/PERSON/DAY<br />
+              <span class="highlight"> DAY PASS</span><br />
+              $80 CAD/PERSON/DAY<br />
             </h2>
             <h3>(Valid from 12:00PM - 12:00AM on any day)</h3>
           </div>
           <div class="ticket">
             <img :src="meals_image" alt="meals" class="icon" />
             <h2>
-              <span class="highlight"> MEAL PACKAGE </span>
-              - $20 CAD/PERSON/DAY<br />
+              <span class="highlight"> MEAL PACKAGE</span><br />
+              $20 CAD/PERSON/DAY<br />
             </h2>
-            <h3>(Includes 1 lunch and 1 supper during scheduled service hours)</h3>
+            <h3>
+              (Includes 1 lunch and 1 supper<br />
+              during scheduled service hours)
+            </h3>
           </div>
 
           <div class="bitcoin">

@@ -30,7 +30,7 @@ const form = ref({
   act_type: '',
   act_name: '',
   act_description: '',
-  track_mix_url: '',
+  mix_track_url: '',
   act_website: '',
   social_url: '',
   press_kit_url: '',
@@ -41,7 +41,8 @@ const form = ref({
   vendor_type: '',
   statement: '',
   rates: '',
-  volunteer_availability: []
+  volunteer_availability: [],
+  contract_signed: false
 })
 
 const submitting = ref(false)
@@ -145,7 +146,7 @@ const submitForm = async () => {
         act_type: '',
         act_name: '',
         act_description: '',
-        track_mix_url: '',
+        mix_track_url: '',
         act_website: '',
         social_url: '',
         press_kit_url: '',
@@ -454,11 +455,11 @@ const submitForm = async () => {
             ></textarea>
           </div>
           <div class="form-section">
-            <label for="track_mix_url">Track/Mix URL:</label>
+            <label for="mix_track_url">Mix/Track URL:</label>
             <input
               type="url"
-              id="track_mix_url"
-              v-model="form.track_mix_url"
+              id="mix_track_url"
+              v-model="form.mix_track_url"
               placeholder="We want to see and hear your act!"
               required
             />
