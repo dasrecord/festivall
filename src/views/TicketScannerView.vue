@@ -1,3 +1,119 @@
+<template>
+  <h1>REUNION 2025 TICKET SCANNER</h1>
+  <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
+  <div class="panel">
+    <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
+
+    <h3>
+      Scan Result:<br />
+      {{ fullResult }}<br /><br />
+    </h3>
+    <p v-if="matchingOrder && typeof matchingOrder === 'string'">
+      {{ matchingOrder }}
+    </p>
+    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+      Matching Order: {{ matchingOrder.id_code }}
+    </p>
+    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+      Name: {{ matchingOrder.fullname }} <br />
+      Email: {{ matchingOrder.email }} <br />
+      Phone: {{ matchingOrder.phone }} <br /><br />
+      Admit: {{ matchingOrder.ticket_quantity }}<br />
+      Paid: {{ paidStatus(matchingOrder) }} <br />
+      Status: {{ currentStatus(matchingOrder) }} <br /><br />
+    </p>
+    <button
+      class="panel-button"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && !matchingOrder.checked_in"
+      @click="checkIn(matchingOrder)"
+    >
+      Check In
+    </button>
+    <button
+      class="panel-button"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in"
+      @click="checkOut(matchingOrder)"
+    >
+      Check Out
+    </button>
+  </div>
+  <div class="at-a-glance">
+    <h2>At A Glance</h2>
+    <ul>
+      <li>
+        <div>
+          <h4 style="color: var(--festivall-baby-blue)">Total Orders</h4>
+          <h2>
+            {{ orders.length }}
+          </h2>
+        </div>
+        <div>
+          <h4 style="color: green">Paid</h4>
+          <h2>
+            {{ orders.filter((order) => order.paid).length }}
+          </h2>
+        </div>
+        <div>
+          <h4 style="color: red">Not Paid</h4>
+          <h2>
+            {{ orders.filter((order) => !order.paid).length }}
+          </h2>
+        </div>
+        <div>
+          <h4 style="color: orange">Checked In</h4>
+          <h2>
+            {{ orders.filter((order) => order.checked_in).length }}
+          </h2>
+        </div>
+        <div>
+          <h4 style="color: yellow">Not Checked In</h4>
+          <h2>
+            {{ orders.filter((order) => !order.checked_in).length }}
+          </h2>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="database">
+    <h2>Order Database</h2>
+    <button @click="toggleView">
+      Show Me
+      {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
+      Orders
+    </button>
+    <ul>
+      <li v-for="order in filteredOrders" :key="order.id_code" class="order">
+        <div>
+          <IconFestivall height="24px" />
+          <h2>{{ order.id_code }}</h2>
+        </div>
+
+        <div>
+          <h2>{{ order.fullname }}</h2>
+          <p>{{ order.email }}</p>
+          <p>{{ order.phone }}</p>
+        </div>
+        <div class="order-status">
+          <h4>Admit {{ order.ticket_quantity }}</h4>
+          <div class="tickets">
+            <img
+              v-for="n in parseInt(order.ticket_quantity)"
+              :key="n"
+              src="@/assets/images/icons/ticket.png"
+              alt="Meal Ticket"
+              style="width: 24px"
+            />
+          </div>
+          <h4 :style="{ color: paidStatus(order) === 'Paid' ? 'green' : 'red' }">
+            {{ paidStatus(order) }}
+          </h4>
+          <h4>{{ currentStatus(order) }}</h4>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
 <script>
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
@@ -28,16 +144,16 @@ export default {
       if (this.filter === 'all') {
         return this.orders
       } else if (this.filter === 'checkedIn') {
-        return this.orders.filter((order) => order.checked_in === 'true')
+        return this.orders.filter((order) => order.checked_in)
       } else {
-        return this.orders.filter((order) => order.checked_in === 'false')
+        return this.orders.filter((order) => !order.checked_in)
       }
     }
   },
   async created() {
     try {
-      const ordersCollection = collection(this.db, 'orders') // fetch 2024 orders
-      // const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
+      // const ordersCollection = collection(this.db, 'orders') // fetch 2024 orders
+      const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
       const orderSnapshot = await getDocs(ordersCollection)
       this.orders = orderSnapshot.docs.map((doc) => doc.data())
     } catch (error) {
@@ -54,50 +170,40 @@ export default {
     },
     onDetect(result) {
       this.fullResult = result[0].rawValue
-      if (typeof this.fullResult === 'string' && this.fullResult.includes('_')) {
-        this.scanResult = this.fullResult.split('_')[0]
-        const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
-        if (matchingOrder) {
-          this.matchingOrder = matchingOrder
-          console.log('Order found:', this.matchingOrder)
-        } else {
-          this.matchingOrder = 'No Matching Order Found'
-          console.log('Order not found:', this.matchingOrder)
-        }
+      this.scanResult = this.fullResult
+      const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
+      if (matchingOrder) {
+        this.matchingOrder = matchingOrder
+        console.log('Order found:', this.matchingOrder)
+      } else {
+        this.matchingOrder = 'No Matching Order Found'
+        console.log('Order not found:', this.matchingOrder)
       }
     },
     currentStatus(order) {
-      if (order.checked_in) {
-        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
-      } else {
-        return 'Not Checked In'
-      }
+      return order.checked_in ? 'Checked In' : 'Not Checked In'
     },
     paidStatus(order) {
-      if (order.paid) {
-        return order.paid === 'true' ? 'Paid' : 'Not Paid'
-      } else {
-        return 'Not Paid'
-      }
+      return order.paid ? 'Paid' : 'Not Paid'
     },
 
     async checkIn(order) {
-      const orderRef = doc(this.db, 'orders', order.id_code)
+      const orderRef = doc(this.db, 'orders_2025', order.id_code)
       await updateDoc(orderRef, {
-        checked_in: 'true'
+        checked_in: true
       })
       sendReunionSlackAdmin(
         `:bust_in_silhouette: ${order.fullname} has checked in.\n:ticket: ${order.id_code}`
       )
-      order.checked_in = 'true'
+      order.checked_in = true
     },
     async checkOut(order) {
-      const orderRef = doc(this.db, 'orders', order.id_code)
+      const orderRef = doc(this.db, 'orders_2025', order.id_code)
       await updateDoc(orderRef, {
-        checked_in: 'false'
+        checked_in: false
       })
       sendReunionSlackAdmin(`:bust_in_silhouette: ${order.fullname} has checked out.`)
-      order.checked_in = 'false'
+      order.checked_in = false
     },
     refreshPage() {
       window.location.reload()
@@ -114,126 +220,6 @@ export default {
   }
 }
 </script>
-
-<template>
-  <h1>REUNION 2025 TICKET SCANNER</h1>
-  <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
-  <div class="panel">
-    <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
-
-    <h3>
-      Scan Result:<br />
-      {{ fullResult }}<br /><br />
-    </h3>
-    <p v-if="matchingOrder && typeof matchingOrder === 'string'">
-      {{ matchingOrder }}
-    </p>
-    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
-      Matching Order: {{ matchingOrder.id_code }}
-    </p>
-    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
-      Name: {{ matchingOrder.fullname }} <br />
-      Email: {{ matchingOrder.email }} <br />
-      Phone: {{ matchingOrder.phone }} <br /><br />
-      Admit: {{ matchingOrder.quantity }}<br />
-      Paid: {{ paidStatus(matchingOrder) }} <br />
-      Status: {{ currentStatus(matchingOrder) }} <br /><br />
-    </p>
-    <button
-      class="panel-button"
-      v-if="
-        matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in === 'false'
-      "
-      @click="checkIn(matchingOrder)"
-    >
-      Check In
-    </button>
-    <button
-      class="panel-button"
-      v-if="
-        matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in === 'true'
-      "
-      @click="checkOut(matchingOrder)"
-    >
-      Check Out
-    </button>
-  </div>
-  <div class="at-a-glance">
-    <h2>At A Glance</h2>
-    <ul>
-      <li>
-        <div>
-          <h4 style="color: var(--festivall-baby-blue)">Total Orders</h4>
-          <h2>
-            {{ orders.length }}
-          </h2>
-        </div>
-        <div>
-          <h4 style="color: green">Paid</h4>
-          <h2>
-            {{ orders.filter((order) => order.paid === 'true').length }}
-          </h2>
-        </div>
-        <div>
-          <h4 style="color: red">Not Paid</h4>
-          <h2>
-            {{ orders.filter((order) => order.paid === 'false').length }}
-          </h2>
-        </div>
-        <div>
-          <h4 style="color: orange">Checked In</h4>
-          <h2>
-            {{ orders.filter((order) => order.checked_in === 'true').length }}
-          </h2>
-        </div>
-        <div>
-          <h4 style="color: yellow">Not Checked In</h4>
-          <h2>
-            {{ orders.filter((order) => order.checked_in === 'false').length }}
-          </h2>
-        </div>
-      </li>
-    </ul>
-  </div>
-  <div class="database">
-    <h2>Order Database</h2>
-    <button @click="toggleView">
-      Show Me
-      {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
-      Orders
-    </button>
-    <ul>
-      <li v-for="order in filteredOrders" :key="order.id_code" class="order">
-        <div>
-          <IconFestivall height="24px" />
-          <h2>{{ order.id_code }}</h2>
-        </div>
-
-        <div>
-          <h2>{{ order.fullname }}</h2>
-          <p>{{ order.email }}</p>
-          <p>{{ order.phone }}</p>
-        </div>
-        <div class="order-status">
-          <h4>Admit {{ order.quantity }}</h4>
-          <div class="tickets">
-            <img
-              v-for="n in parseInt(order.quantity)"
-              :key="n"
-              src="@/assets/images/icons/ticket.png"
-              alt="Meal Ticket"
-              style="width: 24px"
-            />
-          </div>
-          <h4 :style="{ color: paidStatus(order) === 'Paid' ? 'green' : 'red' }">
-            {{ paidStatus(order) }}
-          </h4>
-          <h4>{{ currentStatus(order) }}</h4>
-        </div>
-      </li>
-    </ul>
-  </div>
-</template>
 
 <style scoped>
 h1,

@@ -37,6 +37,7 @@ import ReunionVolunteerResponsibilities from '@/views/ReunionVolunteerResponsibi
 import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibilitiesView.vue'
 // import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
 import ReunionSlack from '@/views/ReunionSlack.vue'
+import TicketPageView from '@/views/TicketPageView.vue'
 
 const routes = [
   {
@@ -143,6 +144,16 @@ const routes = [
   { path: '/reunioncontract/:id_code', 
     name: 'ContractPage',
     component: ContractPage
+  },
+  {
+    path: '/reunionticket',
+    name: 'reunionticket',
+    component: IDCodeInput
+  },
+  {
+    path: '/reunionticket/:id_code',
+    name: 'TicketPage',
+    component: TicketPageView
   },
   { path : '/dasbuttons',
     name : 'dasbuttons',
