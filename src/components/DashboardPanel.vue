@@ -72,17 +72,23 @@
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
           </div>
           <div v-if="applicant.payment_type" class="ticket-content">
+            <p v-if="applicant.paid">Paid</p>
+            <p v-else>Unpaid</p>
             <p v-if="applicant.checked_in">Checked In</p>
+            <p v-else>Not Checked In</p>
+            <br />
+            <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
+            <p v-if="applicant.ticket_quantity">Ticket Quantity: {{ applicant.ticket_quantity }}</p>
+            <br />
             <p v-if="applicant.meal_packages">Meal Packages: {{ applicant.meal_packages }}</p>
             <p v-if="applicant.meal_tickets_remaining">
               Meal Tickets Remaining: {{ applicant.meal_tickets_remaining }}
             </p>
-            <p v-if="applicant.ticket_quantity">Ticket Quantity: {{ applicant.ticket_quantity }}</p>
-            <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
+            <br />
             <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
             <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
-            <p v-if="applicant.paid">Paid</p>
-            <p v-else>Unpaid</p>
+            <br />
+            <button @click="previewTicket(applicant.id_code)">Preview Ticket</button>
           </div>
           <div class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
@@ -198,7 +204,10 @@ export default {
       { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' },
       // ticket filters
       { property: 'paid', value: true, label: 'Paid' },
-      { property: 'paid', value: false, label: 'Unpaid' }
+      { property: 'paid', value: false, label: 'Unpaid' },
+      { property: 'checked_in', value: true, label: 'Checked In' },
+      { property: 'checked_in', value: false, label: 'Not Checked In' }
+      
     ])
 
     const relevantFilters = computed(() => {
@@ -300,6 +309,10 @@ export default {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
 
+    const previewTicket = (id_code) => {
+      router.push({ path: `/reunionticket/${id_code}` })
+    }
+
     onMounted(() => {
       loadApplicants('applications', true)
       loadEmailTemplate()
@@ -320,6 +333,7 @@ export default {
       compensation_icon,
       updateCompensation,
       generateContract,
+      previewTicket,
       mixTrack,
       contract,
       emailBody
