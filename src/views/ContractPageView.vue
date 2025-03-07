@@ -278,7 +278,8 @@ export default {
           ticket_type: 'Weekend Pass',
           total_price: '0',
           ticket_quantity: applicant.value.applicant_type === 'Artist' ? 2 : 1,
-          meal_packages: applicant.value.applicant_type === 'Volunteer' ? 1 : 0
+          meal_packages: applicant.value.applicant_type === 'Volunteer' ? 2 : 0,
+          meal_tickets_remaining: applicant.value.applicant_type === 'Volunteer' ? 4 : 0
         })
         console.log('Order added successfully!')
       } catch (error) {
