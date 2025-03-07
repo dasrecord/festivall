@@ -284,7 +284,7 @@ export default {
     const ticketEmailBody = ref('')
 
     const loadContractDeliveryTemplate = () => {
-      fetch('/email_templates/artist_request_template.txt')
+      fetch('/email_templates/contract_delivery_template.txt')
         .then((response) => response.text())
         .then((text) => {
           contractEmailBody.value = text
