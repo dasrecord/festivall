@@ -207,9 +207,12 @@ const submitForm = async () => {
                 class="icon"
                 style="transform: rotate(-45deg)"
               />
-              <h4>Weekend Pass + 1 Guest<br /></h4>
+              <h4>
+                Weekend Pass<br />
+                + 1 Guest<br />
+              </h4>
               <RouterLink to="/reunion-artist-responsibilities" class="info"
-                >* More Info *</RouterLink
+                >* Artist Responsibilities *</RouterLink
               >
             </h2>
           </div>
@@ -227,9 +230,12 @@ const submitForm = async () => {
                 class="icon"
                 style="transform: rotate(-45deg) translateY(-15px)"
               /><img :src="meal_icon" alt="meal" class="icon" />
-              <h4>Weekend Pass + 1 Meal Package<br /></h4>
+              <h4>
+                Weekend Pass<br />
+                + 1 Meal Package/DayWorked<br />
+              </h4>
               <RouterLink to="/reunion-volunteer-responsibilities" class="info"
-                >* More Info *</RouterLink
+                >* Volunteer Responsibilities *</RouterLink
               >
             </h2>
           </div>
@@ -246,10 +252,10 @@ const submitForm = async () => {
                 alt="ticket"
                 class="icon"
                 style="transform: rotate(-45deg) translateY(-15px)"
-              /><img :src="meal_icon" alt="meal" class="icon" />
-              <h4>Weekend Pass + 1 Meal Package<br /></h4>
+              />
+              <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-workshop-responsibilities" class="info"
-                >* More Info *</RouterLink
+                >* Workshop Responsibilities *</RouterLink
               >
             </h2>
           </div>

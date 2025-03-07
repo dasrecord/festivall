@@ -67,7 +67,7 @@
     </ul>
     <ul v-if="applicant.applicant_type === 'Volunteer'">
       <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
-      <li>One complementary meal package for each festival day of service</li>
+      <li>One complementary meal package for each festival day worked</li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
@@ -271,9 +271,14 @@ export default {
       try {
         const orderDoc = doc(collection(reunion_db, 'orders_2025'), applicant.value.id_code)
         await setDoc(orderDoc, {
-          applicant: applicant.value.fullname,
-          orderDate: new Date().toISOString(),
-          status: 'pending'
+          ...applicant.value,
+          checked_in: false,
+          paid: true,
+          payment_type: 'InKind',
+          ticket_type: 'Weekend Pass',
+          total_price: '0',
+          ticket_quantity: applicant.value.applicant_type === 'Artist' ? 2 : 1,
+          meal_packages: applicant.value.applicant_type === 'Volunteer' ? 1 : 0
         })
         console.log('Order added successfully!')
       } catch (error) {
