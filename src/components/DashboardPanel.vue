@@ -220,6 +220,9 @@ export default {
       { property: 'merch_table', value: '', label: 'Merch Table' },
       { property: 'float_crew', value: '', label: 'Float Crew' },
       { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' },
+      // contract filters
+      { property: 'contract_signed', value: true, label: 'Contract Signed' },
+      { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
       // ticket filters
       { property: 'paid', value: true, label: 'Paid' },
       { property: 'paid', value: false, label: 'Unpaid' },
