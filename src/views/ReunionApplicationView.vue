@@ -200,19 +200,19 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg)"
+                style="transform: rotate(-45deg) translateY(-10px) translateX(12px)"
               /><img
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg)"
+                style="transform: rotate(-45deg) translateY(-10px) translateX(12px)"
               />
               <h4>
                 Weekend Pass<br />
                 + 1 Guest<br />
               </h4>
               <RouterLink to="/reunion-artist-responsibilities" class="info"
-                >* Artist Responsibilities *</RouterLink
+                >* Artist Duties *</RouterLink
               >
             </h2>
           </div>
@@ -228,14 +228,14 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-15px)"
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
               /><img :src="meal_icon" alt="meal" class="icon" />
               <h4>
                 Weekend Pass<br />
                 + 1 Meal Package/DayWorked<br />
               </h4>
               <RouterLink to="/reunion-volunteer-responsibilities" class="info"
-                >* Volunteer Responsibilities *</RouterLink
+                >* Volunteer Duties *</RouterLink
               >
             </h2>
           </div>
@@ -251,11 +251,11 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-15px)"
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
               />
               <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-workshop-responsibilities" class="info"
-                >* Workshop Responsibilities *</RouterLink
+                >* Workshop Duties *</RouterLink
               >
             </h2>
           </div>
@@ -733,6 +733,10 @@ table {
   button {
     font-size: 0.8rem;
     text-align: center;
+  }
+  .info,
+  h4 {
+    font-size: 1rem;
   }
 }
 </style>
