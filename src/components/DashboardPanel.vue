@@ -2,9 +2,14 @@
   <div class="dashboard">
     <div class="banner">
       <a href="/">
-        <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
+        <img
+          src="@/assets/images/festivall_emblem_white.png"
+          alt="Festivall Logo"
+          class="logo"
+          style="display: flex; align-items: center"
+        />
       </a>
-      <h1>SCOUTING DASHBOARD</h1>
+      <h1>DASHBOARD</h1>
     </div>
 
     <div class="controls">
@@ -88,7 +93,19 @@
             <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
             <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
             <br />
-            <button @click="previewTicket(applicant.id_code)">Preview Ticket</button>
+            <button @click="previewTicket(applicant.id_code)">Preview Ticket</button><br />
+            <a
+              :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
+              target="_blank"
+              style="display: inline-block"
+            >
+              <img
+                :src="ticket_icon"
+                alt="Deliver Ticket"
+                class="action-icon"
+                style="height: 42px; width: auto"
+              />
+            </a>
           </div>
           <div class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
@@ -97,7 +114,7 @@
             <a
               v-if="applicant.applicant_type"
               :href="
-                generateMailtoLink(
+                deliverContract(
                   applicant.email,
                   applicant.fullname,
                   applicant.applicant_type,
@@ -149,6 +166,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { sendSMS, sendEmail } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
+import ticket_icon from '@/assets/images/icons/ticket.png'
 
 export default {
   name: 'DashboardPanel',
@@ -207,7 +225,6 @@ export default {
       { property: 'paid', value: false, label: 'Unpaid' },
       { property: 'checked_in', value: true, label: 'Checked In' },
       { property: 'checked_in', value: false, label: 'Not Checked In' }
-      
     ])
 
     const relevantFilters = computed(() => {
@@ -263,27 +280,29 @@ export default {
       filteredApplicants.value = applicants.value
     }
 
-    const emailBody = ref('')
+    const contractEmailBody = ref('')
+    const ticketEmailBody = ref('')
 
-    const loadEmailTemplate = () => {
+    const loadContractDeliveryTemplate = () => {
       fetch('/email_templates/artist_request_template.txt')
         .then((response) => response.text())
         .then((text) => {
-          emailBody.value = text
+          contractEmailBody.value = text
         })
         .catch((error) => {
           console.error('Error loading email template:', error)
         })
     }
 
-    const generateMailtoLink = (email, fullname, role, id_code) => {
-      const subject = encodeURIComponent('Reunion 2025')
-      const personalizedBody = emailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{role}', role || '')
-        .replace('{id_code}', id_code || '')
-      const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}`
+    const loadTicketDeliveryTemplate = () => {
+      fetch('/email_templates/ticket_delivery_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          ticketEmailBody.value = text
+        })
+        .catch((error) => {
+          console.error('Error loading email template:', error)
+        })
     }
 
     const router = useRouter()
@@ -312,10 +331,29 @@ export default {
     const previewTicket = (id_code) => {
       router.push({ path: `/reunionticket/${id_code}` })
     }
+    const deliverContract = (email, fullname, role, id_code) => {
+      const subject = encodeURIComponent('Reunion 2025')
+      const personalizedBody = contractEmailBody.value
+        .replace('{name}', fullname || '')
+        .replace('{role}', role || '')
+        .replace('{id_code}', id_code || '')
+      const body = encodeURIComponent(personalizedBody)
+      return `mailto:${email}?subject=${subject}&body=${body}`
+    }
+
+    const deliverTicket = (email, fullname, id_code) => {
+      const subject = encodeURIComponent('Reunion 2025')
+      const personalizedBody = ticketEmailBody.value
+        .replace('{name}', fullname || '')
+        .replace('{id_code}', id_code || '')
+      const body = encodeURIComponent(personalizedBody)
+      return `mailto:${email}?subject=${subject}&body=${body}`
+    }
 
     onMounted(() => {
-      loadApplicants('applications', true)
-      loadEmailTemplate()
+      loadApplicants('orders_2025', true)
+      loadContractDeliveryTemplate()
+      loadTicketDeliveryTemplate()
     })
 
     return {
@@ -326,9 +364,11 @@ export default {
       loadApplicants,
       applyFilter,
       clearFilters,
-      generateMailtoLink,
+      deliverContract,
+      deliverTicket,
       sendSMS,
       sms_icon,
+      ticket_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
@@ -336,7 +376,8 @@ export default {
       previewTicket,
       mixTrack,
       contract,
-      emailBody
+      contractEmailBody,
+      ticketEmailBody
     }
   }
 }
@@ -361,7 +402,6 @@ export default {
 .logo {
   height: auto;
   width: 150px;
-  margin-right: 1rem;
 }
 
 h1 {
