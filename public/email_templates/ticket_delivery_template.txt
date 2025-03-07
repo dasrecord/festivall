@@ -1,0 +1,19 @@
+Congratulations {name}!
+
+Your ticket(s) for the upcoming Reunion Festival have been successfully processed.
+
+To access your digital ticket, please navigate to:
+https://festivall.ca/ticket/
+
+and input your ID_CODE: {id_code}
+
+Please present this digital ticket at the front gate.
+
+Looking forward to seeing you at the festival!
+
+Best regards,
+The Reunion Team
+
+**************************************
+Powered by Festivall
+**************************************
