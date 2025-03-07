@@ -8,6 +8,10 @@
     </div>
 
     <div class="controls">
+      <h2>Ticket Pool</h2>
+      <div class="buttons">
+        <button @click="loadApplicants('orders_2025', true)">Reunion Orders 2025</button>
+      </div>
       <h2>Talent Pool</h2>
       <div class="buttons">
         <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
@@ -18,8 +22,8 @@
         <button @click="loadApplicants('partywell')">PartyWell</button>
         <button @click="loadApplicants('festivall', true)">Festivall</button>
         <button @click="loadApplicants('reunion')">Reunion Static</button>
-        <button @click="loadApplicants('applications', true)">Reunion 2024</button>
-        <button @click="loadApplicants('applications_2025', true)">Reunion 2025</button>
+        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button>
+        <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
       </div>
     </div>
 
@@ -72,6 +76,7 @@
                 <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
               </a>
               <a
+                v-if="applicant.applicant_type"
                 :href="
                   generateMailtoLink(
                     applicant.email,
@@ -87,22 +92,27 @@
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" />
               <img
-                @click="sendSMS(applicant.phone, applicant.message); applicant.message = ''"
+                @click="sendSMS(applicant), (applicant.message = '')"
                 :src="sms_icon"
                 alt="Send SMS"
                 class="action-icon"
                 style="width: auto; height: 42px; transform: translateY(18px)"
               /><br />
-              <input type="text" v-model="applicant.additional_compensation" />
-              <img
-                @click="updateCompensation(applicant.id_code, applicant.additional_compensation); applicant.additional_compensation = ''"
-                :src="compensation_icon"
-                alt="Update Compensation"
-                class="action-icon"
-                style="width: auto; height: 32px; transform: translateY(12px)"
-              />
-              <br />
-              <button @click="generateContract(applicant.id_code)">Preview Contract</button>
+              <div v-if="applicant.applicant_type">
+                <input type="text" v-model="applicant.additional_compensation" />
+                <img
+                  @click="
+                    updateCompensation(applicant.id_code, applicant.additional_compensation),
+                      (applicant.additional_compensation = '')
+                  "
+                  :src="compensation_icon"
+                  alt="Update Compensation"
+                  class="action-icon"
+                  style="width: auto; height: 32px; transform: translateY(12px)"
+                />
+                <br />
+                <button @click="generateContract(applicant.id_code)">Preview Contract</button>
+              </div>
             </div>
           </div>
         </div>
@@ -173,7 +183,10 @@ export default {
       { property: 'childrens_area', value: '', label: "Children's Area" },
       { property: 'merch_table', value: '', label: 'Merch Table' },
       { property: 'float_crew', value: '', label: 'Float Crew' },
-      { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' }
+      { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' },
+      // ticket filters
+      { property: 'paid', value: true, label: 'Paid' },
+      { property: 'paid', value: false, label: 'Unpaid' }
     ])
 
     const relevantFilters = computed(() => {
