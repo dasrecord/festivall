@@ -172,6 +172,7 @@ export default {
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
       const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
+      // const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
       if (matchingOrder) {
         this.matchingOrder = matchingOrder
         console.log('Order found:', this.matchingOrder)
