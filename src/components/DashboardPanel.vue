@@ -70,25 +70,37 @@
             <p>{{ applicant.statement }}</p>
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
-
-            <div class="actions">
-              <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
-                <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
-              </a>
-              <a
-                v-if="applicant.applicant_type"
-                :href="
-                  generateMailtoLink(
-                    applicant.email,
-                    applicant.fullname,
-                    applicant.applicant_type,
-                    applicant.id_code
-                  )
-                "
-              >
-                <img :src="contract" alt="Book Applicant" class="action-icon" />
-              </a>
-            </div>
+          </div>
+          <div v-if="applicant.payment_type" class="ticket-content">
+            <p v-if="applicant.checked_in">Checked In</p>
+            <p v-if="applicant.meal_packages">Meal Packages: {{ applicant.meal_packages }}</p>
+            <p v-if="applicant.meal_tickets_remaining">
+              Meal Tickets Remaining: {{ applicant.meal_tickets_remaining }}
+            </p>
+            <p v-if="applicant.ticket_quantity">Ticket Quantity: {{ applicant.ticket_quantity }}</p>
+            <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
+            <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
+            <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
+            <p v-if="applicant.paid">Paid</p>
+            <p v-else>Unpaid</p>
+          </div>
+          <div class="actions">
+            <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
+              <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
+            </a>
+            <a
+              v-if="applicant.applicant_type"
+              :href="
+                generateMailtoLink(
+                  applicant.email,
+                  applicant.fullname,
+                  applicant.applicant_type,
+                  applicant.id_code
+                )
+              "
+            >
+              <img :src="contract" alt="Book Applicant" class="action-icon" />
+            </a>
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" />
               <img
