@@ -39,12 +39,7 @@
       <canvas ref="qrCanvas"></canvas>
     </div>
 
-    <img
-      class="footer"
-      :src="poster_footer"
-      style="width: 100%; margin-top: 2rem"
-      alt="Poster Footer"
-    />
+    <img class="footer" :src="poster_footer" style="width: 100%" alt="Poster Footer" />
   </div>
   <div v-else>
     <p>Loading...</p>
@@ -146,13 +141,16 @@ strong {
 .ticket-page {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  align-items: center;
+  padding: 0.5rem;
   background-color: white;
   color: black;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 1rem 1rem;
+
+  max-width: 100vw;
+  height: 100vh;
+  /* padding: 1rem 3rem; */
 }
 
 img {
@@ -168,6 +166,10 @@ h2 {
 
 .order-info {
   margin-top: 1rem;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 10px;
+  width: 250px;
+  padding: 0 1rem;
 }
 
 .order-info p {
@@ -180,6 +182,9 @@ h2 {
 .qr-code {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+}
+.footer {
+  max-width: 432px;
+  height: auto;
 }
 </style>
