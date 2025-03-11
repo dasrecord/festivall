@@ -163,7 +163,7 @@ export default {
     async submitForm() {
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/reunion_slack',
+          'https://relayproxy.vercel.app/reunion_services_slack',
           {
             text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nPreferred Contact Person: ${this.form.contact_point}\nMessage: ${this.form.message}`
           },

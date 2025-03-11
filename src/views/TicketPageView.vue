@@ -82,6 +82,7 @@ export default {
           console.log('Order data:', order.value) // Debug log
           await nextTick() // Wait for the DOM to update
           generateQRCode(order.value.id_code)
+          // generateQRCode(order.value.id_code_long)
         } else {
           console.error('No such document!')
           router.push({ name: 'EnterIDCode' })

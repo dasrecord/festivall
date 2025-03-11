@@ -4,7 +4,7 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import { ref } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
-import { setDoc } from 'firebase/firestore'
+import { setDoc, doc } from 'firebase/firestore'
 
 const form = ref({
   fullname: '',
@@ -28,7 +28,8 @@ const handlePhoneInput = (event) => {
 
 const addtoMailingList = async () => {
   try {
-    await setDoc(reunion_db, {
+    const docRef = doc(reunion_db, 'mailing_list', form.value.email)
+    await setDoc(docRef, {
       name: form.value.fullname,
       email: form.value.email
     })
@@ -41,26 +42,28 @@ const addtoMailingList = async () => {
 
 const submitForm = async () => {
   try {
-    const response = await axios.post(
-      'https://relayproxy.vercel.app/reunion_slack',
-      {
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:memo: ${form.value.message}`
-            }
+    const payload = {
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:memo: ${form.value.message}`
           }
-        ]
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
         }
+      ]
+    }
+
+    console.log('Sending payload:', JSON.stringify(payload)) // Add logging for debugging
+
+    const response = await axios.post('https://relayproxy.vercel.app/reunion_slack', payload, {
+      headers: {
+        'Content-Type': 'application/json'
       }
-    )
+    })
     console.log('Response status:', response.status)
+    console.log('Response data:', response.data)
+
     if (response.status >= 200 && response.status < 300) {
       alert('Your message has been sent successfully!')
       addtoMailingList()
@@ -75,6 +78,9 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Error sending message:', error)
+    if (error.response) {
+      console.error('Response data:', error.response.data)
+    }
     alert('Failed to send the message.')
   }
 }
