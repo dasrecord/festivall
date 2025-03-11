@@ -21,8 +21,8 @@
       FAMILY - FRIENDS - FOOD‍ <br /><br />
 
       <span class="bitcoin">
-        NO PRICE INCREASE IN 2025!‍
         <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
+        NO PRICE INCREASE IN 2025!‍
 
         <br /><br />
       </span>
