@@ -183,16 +183,7 @@
       </p>
     </div>
 
-    <button
-      @click="
-        () => {
-          saveContract()
-          addOrder()
-        }
-      "
-    >
-      SIGN & SUBMIT
-    </button>
+    <button @click="handleSubmit">SIGN & SUBMIT</button>
     <img
       class="footer"
       :src="poster_footer"
@@ -287,6 +278,12 @@ export default {
       }
     }
 
+    const handleSubmit = async () => {
+      await saveContract()
+      await addOrder()
+      router.push('reunionticket')
+    }
+
     onMounted(() => {
       const id_code = route.params.id_code
       loadApplicant(id_code)
@@ -300,6 +297,7 @@ export default {
       signature,
       saveContract,
       addOrder,
+      handleSubmit,
       currentDate
     }
   }
