@@ -13,7 +13,8 @@
     "format": "prettier --write src/",
     "convert-to-json": "node ./scripts/convert-to-json.js",
     "generate-qrs": "node ./scripts/generate-qrs.js",
-    "generate-physical-ticket": "node ./scripts/generate-physical-ticket.js"
+    "generate-physical-ticket": "node ./scripts/generate-physical-ticket.js",
+    "generate-invoice": "node ./scripts/generate-invoice.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
@@ -22,6 +23,7 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.13.2",
     "ical.js": "^2.1.0",
+    "jspdf": "^3.0.0",
     "puppeteer": "^24.4.0",
     "qrcode": "^1.5.4",
     "uuid": "^11.0.5",
