@@ -16,7 +16,7 @@
     />
     <p>
       The Reunion Slack team serves as a central hub for all communication and collaboration within
-      our organization. It is designed to be a (S)earchable (L)og of all (C)ompany (K)nowledge,
+      our organization. It is designed to be a (S)earchable (L)og of (A)ll (C)ompany (K)nowledge,
       ensuring that important information is easily accessible to everyone.
     </p>
     <p>
