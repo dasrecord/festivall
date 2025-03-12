@@ -133,7 +133,7 @@ const emailPaymentInstructions = async () => {
   }
 }
 
-const addTicket = async () => {
+const addOrder = async () => {
   try {
     await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), form.value)
     console.log('Document successfully written!')
@@ -153,7 +153,7 @@ const submitForm = async () => {
     generatePaymentInstructions()
     await textPaymentInstructions()
     await emailPaymentInstructions()
-    await addTicket()
+    await addOrder()
 
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_slack',
