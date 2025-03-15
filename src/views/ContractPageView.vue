@@ -283,11 +283,6 @@ export default {
     const handleSubmit = async () => {
       await saveContract()
       await addOrder()
-      if (applicant.value.applicant_type === 'Artist') {
-        router.push('reunionticket')
-      } else if (applicant.value.applicant_type === 'Volunteer') {
-        router.push('reunion-volunteer-instructions')
-      }
       router.push('reunionticket')
     }
 
