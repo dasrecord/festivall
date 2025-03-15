@@ -33,10 +33,10 @@
           &nbsp;{{ order.paid ? 'Paid' : 'Not Paid' }}</span
         >
       </p>
+
       <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
-        <RouterLink to="/reunion-volunteer-signup">
-          CLICK HERE FOR VOLUNTEER SIGNUP</RouterLink
-        >
+        <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
+        <RouterLink to="/reunion-volunteer-signup"> CLICK HERE FOR VOLUNTEER SIGNUP</RouterLink>
       </p>
     </div>
 
@@ -62,6 +62,7 @@ import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
+import volunteer_icon from '@/assets/images/icons/volunteer_black.png'
 
 export default {
   name: 'TicketPageView',
@@ -129,7 +130,8 @@ export default {
       order,
       qrCanvas,
       ticket_icon,
-      meals_icon
+      meals_icon,
+      volunteer_icon
     }
   }
 }

@@ -18,7 +18,7 @@
         </div>
         <div class="team">
           <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
-            FOOD TEAM SIGNUP [Minimum Two 2-Hour Shifts/Day]
+            FOOD TEAM SIGNUP 
           </button>
           <p>
             Food Team Volunteers are responsible for assisting with food preparation, serving, and
