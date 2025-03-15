@@ -29,6 +29,6 @@ export default {
   border-radius: 25px;
   padding: 1rem;
   box-shadow: inset 0 0 50px rgba(121, 188, 255, 0.25);
+  max-width: 300px;
 }
-
 </style>

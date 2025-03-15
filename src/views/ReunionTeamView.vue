@@ -105,7 +105,11 @@ export default {
           <h2>Chris</h2>
         </template>
         <template v-slot:role>
-          <p>Land & Infrastructure</p>
+          <h3>Land & Infrastructure</h3>
+          <p>
+            Chris brings the gift of the land to the project, ensuring that our festival has a true
+            home.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -123,7 +127,11 @@ export default {
           <h2>Brandon B.</h2>
         </template>
         <template v-slot:role>
-          <p>Construction & Bookings</p>
+          <h3>Construction & Bookings</h3>
+          <p>
+            Our talented lead builder, Brandon, has been instrumental in bringing our vision to life
+            with his exceptional construction skills and dedication.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -141,7 +149,11 @@ export default {
           <h2>Prasenjit</h2>
         </template>
         <template v-slot:role>
-          <p>DevOps & Technology</p>
+          <h3>DevOps & Technology</h3>
+          <p>
+            Our DevOps lead, Prasenjit, aims to deliver a seamless user experience for our artists &
+            attendees.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -159,8 +171,13 @@ export default {
           <h2>Corey</h2>
         </template>
         <template v-slot:role>
-          <p>Artist Changeovers</p>
-        </template>
+          <h3>Artist Changeovers</h3>
+          <p>
+            Corey is our go-to person for artist changeovers, ensuring smooth transitions between
+            acts. As a DJ himself, Corey understands the importance of timing and flow, making him
+            the perfect fit for this role.
+          </p></template
+        >
         <template v-slot:icon>
           <img
             :src="headphones_icon"
@@ -177,8 +194,12 @@ export default {
           <h2>Natalie</h2>
         </template>
         <template v-slot:role>
-          <p>Consultant & Ethos</p>
-        </template>
+          <h3>Consultant & Ethos</h3>
+          <p>
+            Natalie is our consultant and ethos lead, ensuring that our festival is aligned with our
+            core values and mission.
+          </p></template
+        >
         <template v-slot:icon>
           <img
             :src="ethos_icon"
@@ -195,7 +216,8 @@ export default {
           <h2>Kayla</h2>
         </template>
         <template v-slot:role>
-          <p>Vectors & Logos</p>
+          <h3>Vectors & Logos</h3>
+          <p>Kayla is a vector guru, the key to a crisp and fresh brand image.</p>
         </template>
         <template v-slot:icon>
           <img
@@ -213,7 +235,11 @@ export default {
           <h2>Christina</h2>
         </template>
         <template v-slot:role>
-          <p>Decorations & Vibe</p>
+          <h3>Decorations & Vibe</h3>
+          <p>
+            Christina is our decorations and vibe lead, ensuring that our festival is a feast for
+            the eyes and the soul.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -231,7 +257,11 @@ export default {
           <h2>Brandon and Liam</h2>
         </template>
         <template v-slot:role>
-          <p>Construction</p>
+          <h3>Construction</h3>
+          <p>
+            Brandon and Liam are our construction duo, working together to bring our festival to
+            life.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -249,7 +279,11 @@ export default {
           <h2>Janicka</h2>
         </template>
         <template v-slot:role>
-          <p>Community Building</p>
+          <h3>Community Building</h3>
+          <p>
+            Janicka is a social butterfly that networks, bringing people together and fostering a
+            sense of community.
+          </p>
         </template>
         <template v-slot:icon>
           <img :src="community_icon" alt="Community Icon" style="width: 75px; border-radius: 0" />
@@ -263,7 +297,8 @@ export default {
           <h2>Becca</h2>
         </template>
         <template v-slot:role>
-          <p>Graphic Design</p>
+          <h3>Graphic Design</h3>
+          <p>Becca designs our graphic assets, making sure our visuals are clear and consistent.</p>
         </template>
         <template v-slot:icon>
           <img :src="graphics_icon" alt="Graphics Icon" style="width: 75px; border-radius: 0" />
@@ -277,7 +312,11 @@ export default {
           <h2>Nish</h2>
         </template>
         <template v-slot:role>
-          <p>Photography & Resolume</p>
+          <h3>Photography & Resolume</h3>
+          <p>
+            Nish is our photography and Resolume expert, capturing the magic of the festival and
+            creating stunning visuals.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -295,7 +334,10 @@ export default {
           <h2>Arthur</h2>
         </template>
         <template v-slot:role>
-          <p>Soundtech</p>
+          <h3>Soundtech</h3>
+          <p>
+            Arthur is our trusted soundtech, ensuring that our festival sounds as good as it looks.
+          </p>
         </template>
         <template v-slot:icon>
           <img :src="soundtech_icon" alt="Soundtech Icon" style="width: 75px; border-radius: 0" />
@@ -309,7 +351,11 @@ export default {
           <h2>Yvo</h2>
         </template>
         <template v-slot:role>
-          <p>Guitar Tech & Soundtech</p>
+          <h3>Guitar Tech & Soundtech</h3>
+          <p>
+            Yvo is a versatile professional, adept at managing both guitar tech and soundtech
+            responsibilities with skill and style.
+          </p>
         </template>
         <template v-slot:icon>
           <img
@@ -327,7 +373,11 @@ export default {
           <h2>Angela</h2>
         </template>
         <template v-slot:role>
-          <p>Food Coordinator</p>
+          <h3>Food Coordinator</h3>
+          <p>
+            Angela ensures our festival-goers are well-fed and satisfied, bringing hearty culinary
+            experience to the event.
+          </p>
         </template>
         <template v-slot:icon>
           <img :src="food_icon" alt="Food Icon" style="width: 75px; border-radius: 0" />
@@ -341,7 +391,11 @@ export default {
           <h2>Andy</h2>
         </template>
         <template v-slot:role>
-          <p>Children's Coordinator</p>
+          <h3>Children's Coordinator</h3>
+          <p>
+            Andy is our children's coordinator, ensuring that our youngest festival-goers have a
+            safe and fun experience.
+          </p>
         </template>
         <template v-slot:icon>
           <img :src="playground_icon" alt="Playground Icon" style="width: 75px; border-radius: 0" />
@@ -383,7 +437,7 @@ export default {
 }
 img {
   display: inline;
-  max-width: 300px;
+  max-height: 300px;
   height: auto;
   border-radius: 15px;
 }
