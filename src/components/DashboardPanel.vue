@@ -79,6 +79,7 @@
           <div v-if="applicant.payment_type" class="ticket-content">
             <p v-if="applicant.paid">Paid</p>
             <p v-else>Unpaid</p>
+            <button @click="confirmPaid(applicant.id_code)">Confirm Paid</button><br />
             <p v-if="applicant.checked_in">Checked In</p>
             <p v-else>Not Checked In</p>
             <br />
@@ -107,7 +108,8 @@
               />
             </a>
           </div>
-          <div class="actions">
+          <div v-if="applicant.applicant_type !== 'inkind'"></div>
+          <div v-if="applicant.payment_type !== 'inkind'" class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
             </a>
@@ -331,9 +333,6 @@ export default {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
 
-    const previewTicket = (id_code) => {
-      router.push({ path: `/reunionticket/${id_code}` })
-    }
     const deliverContract = (email, fullname, role, id_code) => {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = contractEmailBody.value
@@ -342,6 +341,27 @@ export default {
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
       return `mailto:${email}?subject=${subject}&body=${body}`
+    }
+
+    const confirmPaid = async (id_code) => {
+      try {
+        const docRef = doc(reunion_db, 'orders_2025', id_code)
+        await updateDoc(docRef, {
+          paid: true
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.paid = true
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error updating paid status:', error)
+      }
+    }
+
+    const previewTicket = (id_code) => {
+      router.push({ path: `/reunionticket/${id_code}` })
     }
 
     const deliverTicket = (email, fullname, id_code) => {
@@ -376,6 +396,7 @@ export default {
       compensation_icon,
       updateCompensation,
       generateContract,
+      confirmPaid,
       previewTicket,
       mixTrack,
       contract,

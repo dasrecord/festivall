@@ -49,7 +49,7 @@
         </li>
         <ul class="front-gate">
           <li>
-            <strong>Front Gate Volunteers:</strong> [One 4-Hour Shift/Day]
+            <strong>Front Gate Volunteers:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
               Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
               providing information about the event. They are the first point of contact for
@@ -59,7 +59,7 @@
         </ul>
         <ul class="food-team">
           <li>
-            <strong>Food Team Volunteers:</strong> [Two 2-Hour Shifts/Day]
+            <strong>Food Team Volunteers:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
@@ -69,7 +69,7 @@
         </ul>
         <ul class="setup-crew">
           <li>
-            <strong>Setup Crew Volunteers:</strong> [One 8-Hour Shift PreShow]
+            <strong>Setup Crew Volunteers:</strong> [Minimum One 8-Hour Shift PreShow]
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
               items needed for the event. They help create a welcoming and festive atmosphere for
@@ -80,7 +80,7 @@
         </ul>
         <ul class="cleanup-crew">
           <li>
-            <strong>Cleanup Crew Volunteers:</strong> [One 8-Hour Shift PostShow]
+            <strong>Cleanup Crew Volunteers:</strong> [Minimum One 8-Hour Shift PostShow]
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
               after the event. They help pack up equipment, decorations, and other items, and ensure
@@ -91,7 +91,7 @@
         </ul>
         <ul class="stage-crew">
           <li>
-            <strong>Stage Crew Volunteers:</strong> [One 4-Hour Shift/Day]
+            <strong>Stage Crew Volunteers:</strong> [Minimum One 4-Hour Shift PerDay]
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
