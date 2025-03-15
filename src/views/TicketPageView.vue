@@ -28,9 +28,14 @@
         alt="Meal Icon"
       />
       <p>
-        <strong>Paid Status:</strong>
+        <strong>Payment Status:</strong>
         <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
           &nbsp;{{ order.paid ? 'Paid' : 'Not Paid' }}</span
+        >
+      </p>
+      <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
+        <RouterLink to="/reunion-volunteer-signup">
+          CLICK HERE FOR VOLUNTEER SIGNUP</RouterLink
         >
       </p>
     </div>
@@ -178,6 +183,15 @@ h2 {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+a {
+  color: var(--reunion-frog-green);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  background: none;
 }
 
 .qr-code {

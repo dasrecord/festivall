@@ -80,8 +80,10 @@
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
-    <p v-if="applicant.rates"><strong>Additional Compensation:</strong> {{ applicant.rates }}</p>
-    <p><strong>Balance Due:</strong> no later than 30 days after Event Date</p>
+    <p v-if="applicant.rates">
+      <strong>Additional Compensation:</strong> {{ applicant.rates
+      }}<strong>Balance Due:</strong> no later than 30 days after Event Date
+    </p>
 
     <h3>3. {{ applicant.applicant_type.toUpperCase() }} REQUIREMENTS</h3>
     <p>
@@ -265,7 +267,6 @@ export default {
           ...applicant.value,
           checked_in: false,
           paid: true,
-          payment_type: 'InKind',
           ticket_type: 'Weekend Pass',
           total_price: 0,
           ticket_quantity: applicant.value.applicant_type === 'Artist' ? 2 : 1,
@@ -281,6 +282,11 @@ export default {
     const handleSubmit = async () => {
       await saveContract()
       await addOrder()
+      if (applicant.value.applicant_type === 'Artist') {
+        router.push('reunionticket')
+      } else if (applicant.value.applicant_type === 'Volunteer') {
+        router.push('reunion-volunteer-instructions')
+      }
       router.push('reunionticket')
     }
 

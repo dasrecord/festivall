@@ -38,6 +38,7 @@ import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibili
 // import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
 import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
+import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
 
 const routes = [
   {
@@ -271,6 +272,47 @@ const routes = [
     name: 'reunionmealscanner',
     component: MealScanner,
     meta: { requiresAuth: true, showHeader: false }
+  },
+  {
+    path : '/reunion-volunteer-instructions',
+    name : 'reunion-volunteer-instructions',
+    component: ReunionVolunteerInstructions
+  },
+  {
+    path: '/reunion-volunteer-signup',
+    name: 'reunion-volunteer-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/AcZssZ2bQG0EOcqR7kFeMK4hgf33BZaGsC3B6uFPgyI=' }
+  },
+  {
+    path: '/reunion-frontgate-signup',
+    name: 'reunion-frontgate-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ14cUp_kw7XDZOpgtLfO9t4eAJho8O_jwTL5RO7TG8S03ejX_xZafzBTNsFloIimnW_ioUDkl1s' }
+  },
+  {
+    path: '/reunion-foodteam-signup',
+    name: 'reunion-foodteam-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3HJwOFBlAF2ninkICYzjQ8S9Mn6zuoDwV5trvBO5ilkjJ6UrXDRQt0gJSljvAoRTDIZ6fzIelz' }
+  },
+  {
+    path: '/reunion-stagecrew-signup',
+    name: 'reunion-stagecrew-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0G8ipWXeewiySQ1CFfoA7s0ReBQzvMnMSs2Bdyi-jar9AXO8WDzulHzrIIP2UVVL3iNzVOKg9S' }
+  },
+  {
+    path: '/reunion-setupcrew-signup',
+    name: 'reunion-setupcrew-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ160c_KP34OQwFWlr0pMQY8EgMzLZ1kFE_QqsH0LNsPd63eA2cBjQLuFPu7EgjzglFn9CWIU-e5' }
+  },
+  {
+    path: '/reunion-cleanupcrew-signup',
+    name: 'reunion-cleanupcrew-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2oH0RQRzM5NJKHD_yctNZNE9VPJJzEraRuywIbQzcJ70YPD98514kzV6gilAa6c-KTOegTHyPI' }
   },
   {
     path: '/stayconnected',

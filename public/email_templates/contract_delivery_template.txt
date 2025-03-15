@@ -6,7 +6,7 @@ Your talent and energy would be a perfect addition to our lineup.
 To e-sign your contract please navigate to:
 https://festivall.ca/contract
 
-and input your ID_CODE: {id_code}
+and enter your ID_CODE: {id_code}
 
 
 Looking forward to your positive response.
