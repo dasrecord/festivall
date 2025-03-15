@@ -273,6 +273,7 @@ export default {
           meal_packages: applicant.value.applicant_type === 'Volunteer' ? 2 : 0,
           meal_tickets_remaining: applicant.value.applicant_type === 'Volunteer' ? 4 : 0
         })
+        alert('Please enter your ID Code on the next page to access your ticket.')
         console.log('Order added successfully!')
       } catch (error) {
         console.error('Error adding order:', error)
