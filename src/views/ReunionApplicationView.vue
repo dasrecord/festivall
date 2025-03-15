@@ -178,7 +178,7 @@ const submitForm = async () => {
       <h1>Interested in performing at Reunion 2025?</h1>
       <h2>
         Please fill out the form below.<br />
-        If you have an existing
+        If you have a
         <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
         information,<br />
         please enter it first.<br /><br />
