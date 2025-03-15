@@ -7,8 +7,18 @@
       <h3>Please select as many roles and shifts as you are able to commit to.</h3>
       <div class="instructions">
         <div class="team">
+          <button @click="router.push('/reunion-volunteer-signup')" class="volunteer-button">
+            AL TEAMS SIGNUP
+          </button>
+          <p>
+            Usher Team Volunteers are responsible for guiding attendees to their seats, answering
+            questions, and providing assistance during the event. They help ensure that attendees
+            have a positive experience and know where to go for different activities and programs.
+          </p>
+        </div>
+        <div class="team">
           <button @click="router.push('/reunion-frontgate-signup')" class="volunteer-button">
-            FRONT GATE SIGNUP [Minimum One 4-Hour Shift/Day]
+            FRONT GATE SIGNUP [Minimum One 4-Hour Shift Per Day]
           </button>
           <p>
             Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
@@ -18,7 +28,7 @@
         </div>
         <div class="team">
           <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
-            FOOD TEAM SIGNUP 
+            FOOD TEAM SIGNUP [Minimum One 4-Hour Shift Per Day]
           </button>
           <p>
             Food Team Volunteers are responsible for assisting with food preparation, serving, and
@@ -50,7 +60,7 @@
         </div>
         <div class="team">
           <button @click="router.push('/reunion-stagecrew-signup')" class="volunteer-button">
-            STAGE CREW SIGNUP [Minimum One 4-Hour Shift/Day]
+            STAGE CREW SIGNUP [Minimum One 4-Hour Shift Per Day]
           </button>
           <p>
             Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
