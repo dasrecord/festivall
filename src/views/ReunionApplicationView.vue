@@ -5,7 +5,8 @@ import artist_icon from '../assets/images/icons/artist.png'
 import volunteer_icon from '../assets/images/icons/volunteer.png'
 import workshop_icon from '../assets/images/icons/workshop.png'
 import ticket_icon from '../assets/images/icons/ticket.png'
-import meal_icon from '../assets/images/icons/meals.png'
+import meal_ion from '../assets/images/icons/meals.png'
+import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -542,6 +543,9 @@ const submitForm = async () => {
         </div>
         <button type="submit">SUBMIT</button>
       </form>
+      <div class="footer">
+        <img :src="footer" alt="footer" style="width: 75%" />
+      </div>
     </h3>
   </div>
 </template>
@@ -740,5 +744,11 @@ table {
   h4 {
     font-size: 1rem;
   }
+}
+.footer {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 15px;
+  margin-top: 1rem;
 }
 </style>
