@@ -451,6 +451,9 @@ export default {
 </script>
 
 <style scoped>
+img {
+  margin: 0.5rem;
+}
 .dashboard {
   padding: 0.5rem;
   background-color: #1f1e22;
