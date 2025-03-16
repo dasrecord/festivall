@@ -77,9 +77,18 @@
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
           </div>
           <div v-if="applicant.payment_type" class="ticket-content">
-            <p v-if="applicant.paid">Paid</p>
-            <p v-else>Unpaid</p>
-            <button @click="confirmPaid(applicant.id_code)">Confirm Paid</button><br />
+            <p v-if="applicant.paid">
+              Paid<br />
+
+              <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
+            </p>
+            <p v-else>
+              Unpaid<br />
+
+              <button @click="confirmPaymentReceived(applicant.id_code)">
+                Confirm Payment Received</button
+              ><br />
+            </p>
             <p v-if="applicant.checked_in">Checked In</p>
             <p v-else>Not Checked In</p>
             <br />
@@ -169,6 +178,7 @@ import { sendSMS, sendEmail } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
+
 
 export default {
   name: 'DashboardPanel',
@@ -343,7 +353,7 @@ export default {
       return `mailto:${email}?subject=${subject}&body=${body}`
     }
 
-    const confirmPaid = async (id_code) => {
+    const confirmPaymentReceived = async (id_code) => {
       try {
         const docRef = doc(reunion_db, 'orders_2025', id_code)
         await updateDoc(docRef, {
@@ -352,6 +362,23 @@ export default {
         applicants.value = applicants.value.map((applicant) => {
           if (applicant.id_code === id_code) {
             applicant.paid = true
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error updating paid status:', error)
+      }
+    }
+
+    const revokeTicket = async (id_code) => {
+      try {
+        const docRef = doc(reunion_db, 'orders_2025', id_code)
+        await updateDoc(docRef, {
+          paid: false
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.paid = false
           }
           return applicant
         })
@@ -396,7 +423,8 @@ export default {
       compensation_icon,
       updateCompensation,
       generateContract,
-      confirmPaid,
+      confirmPaymentReceived,
+      revokeTicket,
       previewTicket,
       mixTrack,
       contract,
@@ -505,7 +533,7 @@ button:hover {
 .applicants.cards .applicant {
   width: 100%;
   max-width: 300px;
-  height: 300px;
+  height: 350px;
   align-items: center;
   text-align: center;
   overflow: hidden;

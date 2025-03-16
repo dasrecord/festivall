@@ -3,6 +3,7 @@ import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import ticket from '@/assets/images/icons/ticket.png'
 import meals from '@/assets/images/icons/meals.png'
+import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -352,6 +353,9 @@ onMounted(() => {
         </div>
         <button type="submit">SUBMIT</button>
       </form>
+      <div class="footer">
+        <img :src="footer" alt="footer" style="width: 75%" />
+      </div>
     </h3>
   </div>
 </template>
@@ -507,5 +511,11 @@ button:hover {
   button {
     font-size: 0.8rem;
   }
+}
+.footer {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 15px;
+  margin-top: 1rem;
 }
 </style>
