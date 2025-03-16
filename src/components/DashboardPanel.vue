@@ -93,12 +93,26 @@
             <p v-else>Not Checked In</p>
             <br />
             <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
-            <p v-if="applicant.ticket_quantity">Ticket Quantity: {{ applicant.ticket_quantity }}</p>
-            <br />
-            <p v-if="applicant.meal_packages">Meal Packages: {{ applicant.meal_packages }}</p>
-            <p v-if="applicant.meal_tickets_remaining">
-              Meal Tickets Remaining: {{ applicant.meal_tickets_remaining }}
+            <p><strong>Ticket Quantity:</strong>&nbsp;{{ applicant.ticket_quantity }}</p>
+            <img
+              v-for="n in Number(applicant.ticket_quantity)"
+              :key="n"
+              :src="ticket_icon"
+              style="height: auto; width: 32px; transform: rotate(-45deg)"
+              alt="Ticket Icon"
+            />
+
+            <p>
+              <strong>Meal Tickets Remaining:</strong>&nbsp;{{ applicant.meal_tickets_remaining }}
             </p>
+
+            <img
+              v-for="n in Number(applicant.meal_tickets_remaining)"
+              :key="n"
+              :src="meals_icon"
+              style="height: auto; width: 32px"
+              alt="Meal Icon"
+            />
             <br />
             <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
             <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
@@ -178,7 +192,7 @@ import { sendSMS, sendEmail } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
-
+import meal_icon from '@/assets/images/icons/meals.png'
 
 export default {
   name: 'DashboardPanel',
@@ -419,6 +433,7 @@ export default {
       sendSMS,
       sms_icon,
       ticket_icon,
+      meals_icon: meal_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
