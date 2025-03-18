@@ -6,6 +6,7 @@ import volunteer_icon from '../assets/images/icons/volunteer.png'
 import workshop_icon from '../assets/images/icons/workshop.png'
 import ticket_icon from '../assets/images/icons/ticket.png'
 import meal_icon from '../assets/images/icons/meals.png'
+import art_installation_icon from '../assets/images/icons/art_installation.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted } from 'vue'
@@ -288,6 +289,26 @@ const submitForm = async () => {
               <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-workshop-responsibilities" class="info"
                 >* Workshop Duties *</RouterLink
+              >
+            </h2>
+          </div>
+        </div>
+        <div class="applicant-type">
+          <div>
+            <img :src="art_installation_icon" alt="art installation" class="icon" />
+            <h1><span class="highlight">ART INSTALLATIONS</span><br /></h1>
+          </div>
+          <div>
+            <h2>
+              <img
+                :src="ticket_icon"
+                alt="ticket"
+                class="icon"
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
+              />
+              <h4>Weekend Pass<br /></h4>
+              <RouterLink to="/reunion-artinstallation-responsibilities" class="info"
+                >* Installation Duties *</RouterLink
               >
             </h2>
           </div>

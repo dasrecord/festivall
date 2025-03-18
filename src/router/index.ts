@@ -39,6 +39,7 @@ import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities
 import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
+import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 
 const routes = [
   {
@@ -233,6 +234,11 @@ const routes = [
     path: '/reunion-vendor-responsibilities',
     name: 'reunion-vendor-responsibilities',
     component: ReunionVendorResponsibilities
+  },
+  {
+    path: '/reunion-artinstallation-responsibilities',
+    name: 'reunion-artinstallation-responsibilities',
+    component: ReunionArtInstallationResponsibilitiesView
   },
   { 
     path: '/reunionlineup',
