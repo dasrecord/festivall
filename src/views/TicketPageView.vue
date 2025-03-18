@@ -36,8 +36,8 @@
 
       <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
         <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
-        <RouterLink to="/reunion-volunteer-signup">
-          CLICK HERE TO SELECT YOUR SHIFT TIMES</RouterLink
+        <RouterLink to="/reunion-volunteer-instructions">
+          CLICK HERE FOR VOLUNTEER INSTRUCTIONS</RouterLink
         >
       </p>
     </div>

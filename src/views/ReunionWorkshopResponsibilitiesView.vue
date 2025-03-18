@@ -39,14 +39,6 @@
             other participants and attendees.
           </p>
         </li>
-        <li>
-          <strong>Provide feedback and suggestions to help improve future workshops:</strong>
-          <p>
-            Your feedback is valuable to us. After the workshop, please provide any suggestions or
-            comments that can help us improve future workshops. Your insights and experiences can
-            contribute to making the Workshop experience better for everyone.
-          </p>
-        </li>
       </ul>
       <h3>
         If you have any questions or require further assistance, please contact us at

@@ -4,16 +4,20 @@
       <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION VOLUNTEER INSTRUCTIONS</h2>
-      <h3>Please select as many roles and shifts as you are able to commit to.</h3>
+      <h3>
+        In addition to the minimum shift requirements,<br />
+        we kindly encourage you to volunteer for as many roles and shifts as you can confidently and
+        safely commit to.
+      </h3>
       <div class="instructions">
         <div class="team">
           <button @click="router.push('/reunion-volunteer-signup')" class="volunteer-button">
-            AL TEAMS SIGNUP
+            ALL TEAMS SIGNUP
           </button>
           <p>
-            Usher Team Volunteers are responsible for guiding attendees to their seats, answering
-            questions, and providing assistance during the event. They help ensure that attendees
-            have a positive experience and know where to go for different activities and programs.
+            By selecting this option, you will be able to sign up for multiple teams and shifts
+            during the event. This option is ideal for volunteers who are flexible and willing to
+            help out in various capacities.
           </p>
         </div>
         <div class="team">
