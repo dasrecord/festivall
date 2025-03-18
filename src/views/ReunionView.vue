@@ -3,7 +3,13 @@
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
 
     <div class="title">
-      <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+      <img
+        :src="reunion_emblem"
+        alt="reunion"
+        class="reunion-emblem"
+        style="cursor: pointer"
+        @click="$router.push('/reunion')"
+      />
 
       <img
         class="frog"

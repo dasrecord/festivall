@@ -205,7 +205,13 @@ const submitForm = async () => {
   <div class="basic">
     <h3 class="application-form">
       <div class="splash">
-        <img :src="reunion_emblem" alt="reunion" class="reunion-emblem" />
+        <img
+          :src="reunion_emblem"
+          alt="reunion"
+          class="reunion-emblem"
+          style="cursor: pointer"
+          @click="$router.push('/reunion')"
+        />
         <img :src="frog_image" alt="frog" class="frog-image" />
       </div>
       <h1>Interested in performing at Reunion 2025?</h1>
