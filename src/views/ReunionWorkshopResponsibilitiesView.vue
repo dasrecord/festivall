@@ -111,6 +111,8 @@ li p {
 
 strong {
   color: #ffffff;
+  font-weight: bold;
+  font-size: medium;
 }
 
 a {
