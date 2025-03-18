@@ -44,6 +44,12 @@ const form = ref({
   statement: '',
   rates: '',
   volunteer_availability: [],
+  installation_title: '',
+  installation_description: '',
+  space_requirements: '',
+  other_requirements: '',
+  portfolio_url: '',
+  fixture_type: '',
   contract_signed: false
 })
 
@@ -159,7 +165,14 @@ const submitForm = async () => {
         workshop_description: '',
         vendor_type: '',
         statement: '',
-        volunteer_availability: []
+        volunteer_availability: [],
+        installation_title: '',
+        installation_description: '',
+        space_requirements: '',
+        other_requirements: '',
+        portfolio_url: '',
+        fixture_type: '',
+        contract_signed: false
       }
     } else {
       alert('Failed to submit the form.')
@@ -544,7 +557,7 @@ const submitForm = async () => {
 
         <div v-else-if="form.applicant_type === 'Art Installation'">
           <div class="form-section">
-            <label for="installation_title">Installation Title:</label>
+            <label for="installation_title">Title:</label>
             <input
               type="text"
               id="installation_title"
@@ -564,22 +577,40 @@ const submitForm = async () => {
             ></textarea>
           </div>
           <div class="form-section">
-            <label for="installation_requirements">Requirements:</label>
+            <label for="space_requirements">Space Requirements:</label>
             <textarea
-              id="installation_requirements"
-              v-model="form.installation_requirements"
-              placeholder="List any specific requirements for your installation (e.g., space, power)."
+              id="physical_space_requirements"
+              v-model="form.space_requirements"
+              placeholder="Specify the physical space requirements for your installation."
+              maxlength="500"
+              required
+            ></textarea>
+          </div>
+          <div class="form-section">
+            <label for="other_requirements">Other Requirements:</label>
+            <textarea
+              id="other_requirements"
+              v-model="form.other_requirements"
+              placeholder="Electricity, building materials, etc."
               maxlength="500"
             ></textarea>
           </div>
           <div class="form-section">
-            <label for="installation_photos_url">Photos/Portfolio URL:</label>
+            <label for="portfolio_url">Portfolio URL:</label>
             <input
               type="url"
-              id="installation_photos_url"
-              v-model="form.installation_photos_url"
+              id="portfolio_url"
+              v-model="form.portfolio_url"
               placeholder="Provide a link to photos or a portfolio of your installation."
             />
+          </div>
+          <div class="form-section">
+            <label for="fixture_type">Fixture Type:</label>
+            <select id="fixture_type" v-model="form.fixture_type" required>
+              <option value="" disabled>Is this a permanent or non-permanent fixture?</option>
+              <option value="Permanent">Permanent</option>
+              <option value="Non-permanent">Non-permanent</option>
+            </select>
           </div>
         </div>
 

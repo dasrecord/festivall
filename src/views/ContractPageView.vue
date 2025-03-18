@@ -240,6 +240,22 @@ export default {
       }
     }
 
+    const updateApplicaiton = async () => {
+      try {
+        const applicantDoc = doc(
+          collection(reunion_db, 'applications_2025'),
+          applicant.value.id_code
+        )
+        await setDoc(applicantDoc, {
+          ...applicant.value,
+          contract_signed: true
+        })
+        console.log('Application updated successfully!')
+      } catch (error) {
+        console.error('Error updating application:', error)
+      }
+    }
+
     const saveContract = async () => {
       if (!signature.value) {
         alert('Please enter your signature.')
@@ -265,6 +281,7 @@ export default {
         const orderDoc = doc(collection(reunion_db, 'orders_2025'), applicant.value.id_code)
         await setDoc(orderDoc, {
           ...applicant.value,
+          contract_signed: true,
           checked_in: false,
           paid: true,
           ticket_type: 'Weekend Pass',
@@ -281,6 +298,7 @@ export default {
     }
 
     const handleSubmit = async () => {
+      await updateApplicaiton()
       await saveContract()
       await addOrder()
       router.push('reunionticket')
@@ -297,6 +315,7 @@ export default {
       poster_footer,
       applicant,
       signature,
+      updateApplicaiton,
       saveContract,
       addOrder,
       handleSubmit,
