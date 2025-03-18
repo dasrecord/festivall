@@ -19,6 +19,7 @@ import showers from '@/assets/images/icons/showers.png'
 import speakers from '@/assets/images/icons/speakers.png'
 import target from '@/assets/images/icons/target.png'
 import ticket_scanner from '@/assets/images/icons/ticket_scanner.png'
+import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 
 export default {
   components: {
@@ -28,6 +29,7 @@ export default {
   },
   data() {
     return {
+      reunion_emblem: reunion_emblem,
       frogImage: FrogImage,
       bitcoin: bitcoin,
       campsite_parking: campsite_parking,
@@ -53,7 +55,13 @@ export default {
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
     <h1>
-      THE REUNION‍ <br />
+      <img
+        :src="reunion_emblem"
+        alt="reunion"
+        class="reunion-emblem"
+        style="cursor: pointer' max-width:600px"
+        @click="$router.push('/reunion')"
+      />
       <img :src="frogImage" alt="frog" class="frog-image" />
       <br />
     </h1>

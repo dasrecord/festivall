@@ -1,7 +1,13 @@
 <template>
   <div class="dark-theme">
     <div class="content">
-      <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
+      <img
+        :src="reunion_emblem"
+        alt="reunion"
+        class="reunion-emblem"
+        style="cursor: pointer"
+        @click="$router.push('/reunion')"
+      />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION ARTIST RESPONSIBILITIES</h2>
       <h3>As a Reunion Artist, you are expected to adhere to the following responsibilities:</h3>
