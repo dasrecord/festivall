@@ -74,7 +74,6 @@
           </p>
         </div>
       </div>
-
       <h3>
         If you have any questions or require further assistance, please contact us at
         <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
