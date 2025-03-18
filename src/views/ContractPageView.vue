@@ -240,7 +240,7 @@ export default {
       }
     }
 
-    const updateApplicaiton = async () => {
+    const updateApplication = async () => {
       try {
         const applicantDoc = doc(
           collection(reunion_db, 'applications_2025'),
@@ -298,7 +298,7 @@ export default {
     }
 
     const handleSubmit = async () => {
-      await updateApplicaiton()
+      await updateApplication()
       await saveContract()
       await addOrder()
       router.push('reunionticket')
@@ -315,7 +315,7 @@ export default {
       poster_footer,
       applicant,
       signature,
-      updateApplicaiton,
+      updateApplication,
       saveContract,
       addOrder,
       handleSubmit,
