@@ -370,7 +370,7 @@ const submitForm = async () => {
         <div class="form-section">
           <label for="applicant_type">Category:</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
-            <option value="" disabled>What kind of application is this?</option>
+            <option value="" disabled>What type of application is this  ?</option>
             <option value="Volunteer">Volunteer</option>
             <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
@@ -571,7 +571,7 @@ const submitForm = async () => {
             <textarea
               id="installation_description"
               v-model="form.installation_description"
-              placeholder="Please provide a detailed description of your installation."
+              placeholder="Provide a detailed description of your installation."
               maxlength="1000"
               required
             ></textarea>
@@ -601,7 +601,7 @@ const submitForm = async () => {
               type="url"
               id="portfolio_url"
               v-model="form.portfolio_url"
-              placeholder="Provide a link to photos or a portfolio of your installation."
+              placeholder="Provide a link to your portfolio or previous work."
             />
           </div>
           <div class="form-section">
@@ -625,7 +625,7 @@ const submitForm = async () => {
         <button type="submit">SUBMIT</button>
       </form>
       <div class="footer">
-        <img :src="footer" alt="footer" style="width: 75%" />
+        <img :src="footer" alt="footer" style="max-width: 600px" />
       </div>
     </h3>
   </div>

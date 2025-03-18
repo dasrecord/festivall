@@ -28,7 +28,9 @@
     <p>
       <strong>Venue:</strong> Reunion Festival Grounds (51°57'46.6"N 106°03'10.9"W 51.962948,
       -106.053036)<br />
-      <strong>Venue Address:</strong> Blucher No. 343, Elstow, Saskatchewan<br /><strong
+      <strong>Venue Address:</strong> Blucher No. 343, Elstow, Saskatchewan<br />
+      <strong>Venue Location/Directions:</strong> <a href="https://festivall.ca/reunionlocation" target="_blank">festivall.ca/reunionlocation</a><br />
+      <strong
         >Event Date: </strong
       >AUG 29, 2025 - SEPT 01, 2025
     </p>
