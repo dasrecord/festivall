@@ -7,44 +7,45 @@
       <h3>As a Reunion Volunteer, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
         <li>
-          <strong>Ensure that your contact information is up-to-date and accurate:</strong>
+          <strong>Join the Reunion Slack team:</strong>
           <p>
-            Regularly check and update your contact details to avoid any miscommunication. This
-            includes your email address, phone number, and any other relevant contact information.
+            Ensure you are part of the Reunion Slack team to stay updated with important
+            announcements, schedules, and communications.
           </p>
         </li>
         <li>
-          <strong
-            >Communicate promptly with the Reunion team regarding any changes or updates:</strong
-          >
+          <strong>Maintain communication with the festival team:</strong>
           <p>
-            If there are any changes to your availability or assigned tasks, please inform the
-            Reunion team as soon as possible. Prompt communication helps us manage the event
-            smoothly and efficiently.
+            Regularly check and respond to messages from the festival team to ensure smooth
+            coordination and address any updates or changes promptly.
           </p>
         </li>
         <li>
-          <strong>Participate in scheduled events and activities as agreed upon:</strong>
+          <strong>Complete minimum shift requirements:</strong>
           <p>
-            As a Reunion Volunteer, you are expected to participate in all scheduled events and
-            activities that you have agreed to. This includes meetings, training sessions, and any
-            other related activities.
+            Fulfill the minimum shift requirements as agreed upon to ensure the event runs
+            efficiently and all responsibilities are covered.
           </p>
         </li>
         <li>
-          <strong>Respect the venue and its rules during your participation:</strong>
+          <strong>Respect the venue and employ responsible behavior:</strong>
           <p>
-            Adhere to the rules and regulations of the venue where the event is being held. This
-            includes respecting the property, following safety guidelines, and being mindful of
-            other participants and attendees.
+            Adhere to the venue's rules and guidelines, respect the property, and demonstrate
+            responsible behavior throughout the event.
           </p>
         </li>
         <li>
-          <strong>Provide feedback and suggestions to help improve future events:</strong>
+          <strong>Actively promote the event:</strong>
           <p>
-            Your feedback is valuable to us. After the event, please provide any suggestions or
-            comments that can help us improve future events. Your insights and experiences can
-            contribute to making the Reunion experience better for everyone.
+            Help spread the word about the event through social media, word of mouth, or other means
+            to encourage attendance and participation.
+          </p>
+        </li>
+        <li>
+          <strong>Provide assistance and support to attendees:</strong>
+          <p>
+            Be available to assist attendees, provide information, and address any questions or
+            concerns to ensure a positive experience for all participants.
           </p>
         </li>
         <ul class="front-gate">
@@ -173,6 +174,8 @@ li p {
 
 strong {
   color: #ffffff;
+  font-weight: bold;
+  font-size: medium;
 }
 
 a {

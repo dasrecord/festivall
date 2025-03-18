@@ -24,19 +24,25 @@
           </p>
         </li>
         <li>
-          <strong>Participate in scheduled events and activities as agreed upon:</strong>
+          <strong>Ensure you are on time for your scheduled performance slot:</strong>
           <p>
-            As a Reunion Artist, you are expected to participate in all scheduled events and
-            activities that you have agreed to. This includes rehearsals, performances, and any
-            other related activities.
+            Punctuality is crucial to maintaining the event schedule. Please arrive on time and be
+            prepared for your performance to ensure a seamless experience for everyone involved.
           </p>
         </li>
         <li>
-          <strong>Respect the venue and its rules during your participation:</strong>
+          <strong>Actively promote the festival throughout the year:</strong>
           <p>
-            Adhere to the rules and regulations of the venue where the event is being held. This
-            includes respecting the property, following safety guidelines, and being mindful of
-            other participants and attendees.
+            Help us spread the word about the festival by sharing updates, announcements, and
+            promotional materials on your social media platforms and with your network.
+          </p>
+        </li>
+        <li>
+          <strong>Respect the venue, volunteers, and attendees:</strong>
+          <p>
+            Adhere to the rules and regulations of the venue, and treat all volunteers, staff, and
+            attendees with respect and kindness. Your cooperation helps create a positive
+            environment for everyone.
           </p>
         </li>
         <li>
@@ -119,6 +125,8 @@ li p {
 
 strong {
   color: #ffffff;
+  font-weight: bold;
+  font-size: medium;
 }
 
 a {
