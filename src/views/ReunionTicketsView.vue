@@ -198,6 +198,14 @@ onMounted(() => {
 </script>
 
 <template>
+  <a href="/">
+    <img
+      src="@/assets/images/festivall_emblem_white.png"
+      alt="Festivall Logo"
+      class="logo"
+      style="display: flex; align-items: center; height: auto; width: 100px; margin: auto"
+    />
+  </a>
   <div class="basic">
     <h3 class="application-form">
       <div class="splash">

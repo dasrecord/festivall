@@ -4,7 +4,7 @@ in the capacity of {role}.
 Your talent and energy would be a perfect addition to our lineup.
 
 To e-sign your contract please navigate to:
-https://festivall.ca/contract
+https://festivall.ca/reunioncontract
 
 and enter your ID_CODE: {id_code}
 

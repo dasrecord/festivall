@@ -5,7 +5,7 @@ import artist_icon from '../assets/images/icons/artist.png'
 import volunteer_icon from '../assets/images/icons/volunteer.png'
 import workshop_icon from '../assets/images/icons/workshop.png'
 import ticket_icon from '../assets/images/icons/ticket.png'
-import meal_ion from '../assets/images/icons/meals.png'
+import meal_icon from '../assets/images/icons/meals.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted } from 'vue'
@@ -172,6 +172,14 @@ const submitForm = async () => {
 }
 </script>
 <template>
+  <a href="/">
+    <img
+      src="@/assets/images/festivall_emblem_white.png"
+      alt="Festivall Logo"
+      class="logo"
+      style="display: flex; align-items: center; height: auto; width: 100px; margin: auto"
+    />
+  </a>
   <div class="basic">
     <h3 class="application-form">
       <div class="splash">
@@ -354,6 +362,7 @@ const submitForm = async () => {
             <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
             <option value="Vendor">Vendor</option>
+            <option value="Art Installation">Art Installation</option>
           </select>
         </div>
 
@@ -530,6 +539,47 @@ const submitForm = async () => {
               maxlength="1000"
               required
             ></textarea>
+          </div>
+        </div>
+
+        <div v-else-if="form.applicant_type === 'Art Installation'">
+          <div class="form-section">
+            <label for="installation_title">Installation Title:</label>
+            <input
+              type="text"
+              id="installation_title"
+              v-model="form.installation_title"
+              placeholder="What is the name of your installation?"
+              required
+            />
+          </div>
+          <div class="form-section">
+            <label for="installation_description">Description:</label>
+            <textarea
+              id="installation_description"
+              v-model="form.installation_description"
+              placeholder="Please provide a detailed description of your installation."
+              maxlength="1000"
+              required
+            ></textarea>
+          </div>
+          <div class="form-section">
+            <label for="installation_requirements">Requirements:</label>
+            <textarea
+              id="installation_requirements"
+              v-model="form.installation_requirements"
+              placeholder="List any specific requirements for your installation (e.g., space, power)."
+              maxlength="500"
+            ></textarea>
+          </div>
+          <div class="form-section">
+            <label for="installation_photos_url">Photos/Portfolio URL:</label>
+            <input
+              type="url"
+              id="installation_photos_url"
+              v-model="form.installation_photos_url"
+              placeholder="Provide a link to photos or a portfolio of your installation."
+            />
           </div>
         </div>
 

@@ -65,7 +65,9 @@
               </span>
             </h2>
             <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
-            <p v-if="applicant.applicant_type">{{ applicant.applicant_type }}</p>
+            <p v-if="applicant.applicant_type">
+              {{ applicant.applicant_type }}
+            </p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
             <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
@@ -77,12 +79,12 @@
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
           </div>
           <div v-if="applicant.payment_type" class="ticket-content">
-            <p v-if="applicant.paid">
+            <p v-if="applicant.paid" style="color: green">
               Paid<br />
 
               <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
             </p>
-            <p v-else>
+            <p v-else style="color: red">
               Unpaid<br />
 
               <button @click="confirmPaymentReceived(applicant.id_code)">
@@ -109,7 +111,7 @@
             <img
               v-for="n in Number(applicant.meal_tickets_remaining)"
               :key="n"
-              :src="meals_icon"
+              :src="meal_icon"
               style="height: auto; width: 32px"
               alt="Meal Icon"
             />
@@ -193,6 +195,7 @@ import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
 import meal_icon from '@/assets/images/icons/meals.png'
+import artist_icon from '@/assets/images/icons/artist.png'
 
 export default {
   name: 'DashboardPanel',
@@ -433,7 +436,8 @@ export default {
       sendSMS,
       sms_icon,
       ticket_icon,
-      meals_icon: meal_icon,
+      meal_icon,
+      artist_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
