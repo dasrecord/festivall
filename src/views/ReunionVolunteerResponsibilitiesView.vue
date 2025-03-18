@@ -53,9 +53,9 @@
           <li>
             <strong>Front Gate:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
-              Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
-              providing information about the event. They are the first point of contact for
-              attendees and play a crucial role in ensuring a positive experience for everyone.
+              Front Gate Volunteers are responsible for welcoming attendees and securing admission
+              using our in-house ticketing system.They are the first point of contact for attendees
+              and play a crucial role in ensuring a positive experience for everyone.
             </p>
           </li>
         </ul>
@@ -66,7 +66,8 @@
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
-              the event and maintain cleanliness and hygiene in the food service area.
+              the event and maintain cleanliness and hygiene in the food service area. Shifts are
+              structured as 1 hour of preparation, 2 hours of service, and 1 hour of cleanup.
             </p>
           </li>
         </ul>
