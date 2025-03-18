@@ -48,9 +48,10 @@
             concerns to ensure a positive experience for all participants.
           </p>
         </li>
-        <ul class="front-gate">
+        <ul class="crew">
+          <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
-            <strong>Front Gate Volunteers:</strong> [Minimum One 4-Hour Shift Per Day]
+            <strong>Front Gate:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
               Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
               providing information about the event. They are the first point of contact for
@@ -58,9 +59,10 @@
             </p>
           </li>
         </ul>
-        <ul class="food-team">
+        <ul class="crew">
+          <img :src="food_team_icon" alt="Food Team Icon" />
           <li>
-            <strong>Food Team Volunteers:</strong> [Minimum One 4-Hour Shift Per Day]
+            <strong>Food Team:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
@@ -68,9 +70,10 @@
             </p>
           </li>
         </ul>
-        <ul class="setup-crew">
+        <ul class="crew">
+          <img :src="setup_crew_icon" alt="Setup Crew Icon" />
           <li>
-            <strong>Setup Crew Volunteers:</strong> [Minimum One 8-Hour Shift PreShow]
+            <strong>Setup Crew:</strong> [Minimum One 8-Hour Shift PreShow]
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
               items needed for the event. They help create a welcoming and festive atmosphere for
@@ -79,9 +82,10 @@
             </p>
           </li>
         </ul>
-        <ul class="cleanup-crew">
+        <ul class="crew">
+          <img :src="cleanup_crew_icon" alt="Cleanup Crew Icon" />
           <li>
-            <strong>Cleanup Crew Volunteers:</strong> [Minimum One 8-Hour Shift PostShow]
+            <strong>Cleanup Crew:</strong> [Minimum One 8-Hour Shift PostShow]
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
               after the event. They help pack up equipment, decorations, and other items, and ensure
@@ -90,9 +94,10 @@
             </p>
           </li>
         </ul>
-        <ul class="stage-crew">
+        <ul class="crew">
+          <img :src="stage_crew_icon" alt="Stage Crew Icon" />
           <li>
-            <strong>Stage Crew Volunteers:</strong> [Minimum One 4-Hour Shift PerDay]
+            <strong>Stage Crew:</strong> [Minimum One 4-Hour Shift PerDay]
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
@@ -114,6 +119,11 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import setup_crew_icon from '../assets/images/icons/setup_crew.png'
+import stage_crew_icon from '../assets/images/icons/stage_crew.png'
+import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.png'
+import food_team_icon from '../assets/images/icons/meals.png'
+import front_gate_icon from '../assets/images/icons/front_gate.png'
 </script>
 
 <style scoped>
@@ -159,17 +169,29 @@ h3 {
 }
 
 ul {
-  list-style-type: disc;
+  list-style-type: none;
   padding-left: 1.5rem;
-}
-
-li {
-  margin-bottom: 1rem;
 }
 
 li p {
   margin: 0.5rem 0 1rem 0;
   color: #cccccc;
+}
+
+.crew {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  border: 1px solid var(--reunion-frog-green);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.crew img {
+  width: 64px;
+  height: auto;
+  margin: 0 1rem;
 }
 
 strong {

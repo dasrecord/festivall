@@ -3,40 +3,39 @@
     <div class="content">
       <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
       <img :src="frog_image" alt="Frog" class="frog-image" />
-      <h2>REUNION WORKSHOP RESPONSIBILITIES</h2>
-      <h3>As a Workshop Workshop, you are expected to adhere to the following responsibilities:</h3>
+      <h2>REUNION VENDOR RESPONSIBILITIES</h2>
+      <h3>As a Vendor, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
         <li>
-          <strong>Ensure that your contact information is up-to-date and accurate:</strong>
+          <strong
+            >Ensure that your vendor booth is set up on time and meets festival standards:</strong
+          >
           <p>
-            Regularly check and update your contact details to avoid any miscommunication. This
-            includes your email address, phone number, and any other relevant contact information.
+            Arrive early to set up your booth and ensure it complies with the festival's guidelines.
+            This includes safety measures, cleanliness, and visual appeal.
+          </p>
+        </li>
+        <li>
+          <strong>Maintain a professional and friendly demeanor with attendees:</strong>
+          <p>
+            Engage with festival attendees in a courteous and professional manner. Represent your
+            brand and the festival positively.
+          </p>
+        </li>
+        <li>
+          <strong>Adhere to the festival's rules and regulations for vendors:</strong>
+          <p>
+            Follow all vendor-specific rules, including those related to sales, waste management,
+            and booth operations. Ensure compliance with local laws and festival policies.
           </p>
         </li>
         <li>
           <strong
-            >Communicate promptly with the festival team regarding any changes or updates:</strong
+            >Communicate promptly with the festival team regarding any issues or concerns:</strong
           >
           <p>
-            If there are any changes to your availability or assigned tasks, please inform the
-            Workshop team as soon as possible. Prompt communication helps us manage the event
-            smoothly and efficiently.
-          </p>
-        </li>
-        <li>
-          <strong>Participate in scheduled workshops and activities as agreed upon:</strong>
-          <p>
-            As a Workshop Volunteer, you are expected to participate in all scheduled workshops and
-            activities that you have agreed to. This includes meetings, training sessions, and any
-            other related activities.
-          </p>
-        </li>
-        <li>
-          <strong>Respect the venue and its rules during your participation:</strong>
-          <p>
-            Adhere to the rules and regulations of the venue where the workshop is being held. This
-            includes respecting the property, following safety guidelines, and being mindful of
-            other participants and attendees.
+            If you encounter any problems or have questions during the event, notify the festival
+            team immediately to resolve them efficiently.
           </p>
         </li>
       </ul>

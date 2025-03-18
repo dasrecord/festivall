@@ -35,7 +35,7 @@ import HotspotView from '@/views/HotspotView.vue'
 import ReunionArtistResponsibilities from '@/views/ReunionArtistResponsibilitiesView.vue'
 import ReunionVolunteerResponsibilities from '@/views/ReunionVolunteerResponsibilitiesView.vue'
 import ReunionWorkshopResponsibilities from '@/views/ReunionWorkshopResponsibilitiesView.vue'
-// import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities.vue'
+import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilitiesView.vue'
 import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
@@ -229,11 +229,11 @@ const routes = [
     name: 'reunion-workshop-responsibilities',
     component: ReunionWorkshopResponsibilities
   },
-  // {
-  //   path: '/reunion-vendor-responsibilities',
-  //   name: 'reunion-vendor-responsibilities',
-  //   component: ReunionVendorResponsibilities
-  // },
+  {
+    path: '/reunion-vendor-responsibilities',
+    name: 'reunion-vendor-responsibilities',
+    component: ReunionVendorResponsibilities
+  },
   { 
     path: '/reunionlineup',
     name: 'reunionlineup',

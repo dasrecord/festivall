@@ -18,6 +18,7 @@ const form = ref({
   email: '',
   phone: '',
   ticket_type: '',
+  day_pass: '',
   ticket_quantity: 1,
   meal_packages: 0,
   meal_tickets_remaining: 0,
@@ -180,6 +181,7 @@ const submitForm = async () => {
         phone: '',
         ticket_type: '',
         ticket_quantity: 1,
+        day_pass: '',
         meal_packages: 1,
         payment_type: '',
         total_price: 0
@@ -251,7 +253,7 @@ onMounted(() => {
               <span class="highlight"> DAY PASS</span><br />
               $80 CAD/PERSON/DAY<br />
             </h2>
-            <h3>(Valid from 12:00PM - 12:00AM on any day)</h3>
+            <h3>(Valid from 12:00PM - 12:00PM the following day)</h3>
           </div>
           <div class="ticket">
             <img :src="meals_image" alt="meals" class="icon" />
@@ -340,6 +342,15 @@ onMounted(() => {
             min="1"
             required
           />
+        </div>
+        <div class="form-section" v-if="form.ticket_type === 'Day Pass'">
+          <label for="day_selection">Select Day:</label>
+          <select id="day_selection" v-model="form.selected_day" required>
+            <option value="" disabled>Select a day</option>
+            <option value="Friday">Friday, August 29th, 2025</option>
+            <option value="Saturday">Saturday, August 30th, 2025</option>
+            <option value="Sunday">Sunday, August 31st, 2025</option>
+          </select>
         </div>
         <div class="form-section">
           <label for="meal_packages">Meal Packages:</label>
