@@ -40,7 +40,11 @@ const form = ref({
   volunteer_type: '',
   workshop_title: '',
   workshop_description: '',
+  workshop_requirements: '',
   vendor_type: '',
+  vendor_description: '',
+  vendor_requirements: '',
+  vendor_url: '',
   statement: '',
   rates: '',
   volunteer_availability: [],
@@ -163,7 +167,11 @@ const submitForm = async () => {
         volunteer_type: '',
         workshop_title: '',
         workshop_description: '',
+        workshop_requirements: '',
         vendor_type: '',
+        vendor_description: '',
+        vendor_requirements: '',
+        vendor_url: '',
         statement: '',
         volunteer_availability: [],
         installation_title: '',
@@ -370,12 +378,12 @@ const submitForm = async () => {
         <div class="form-section">
           <label for="applicant_type">Category:</label>
           <select id="applicant_type" v-model="form.applicant_type" required>
-            <option value="" disabled>What type of application is this  ?</option>
+            <option value="" disabled>What type of application is this?</option>
             <option value="Volunteer">Volunteer</option>
             <option value="Artist">Artist</option>
             <option value="Workshop">Workshop</option>
-            <option value="Vendor">Vendor</option>
             <option value="Art Installation">Art Installation</option>
+            <option value="Vendor">Vendor</option>
           </select>
         </div>
 
@@ -435,19 +443,6 @@ const submitForm = async () => {
                 Sept 1
               </span>
             </div>
-          </div>
-        </div>
-
-        <div v-else-if="form.applicant_type === 'Vendor'">
-          <div class="form-section">
-            <label for="vendor_type">Vendor Type:</label>
-            <select id="vendor_type" v-model="form.vendor_type" required>
-              <option value="" disabled>What type of vendor are you?</option>
-              <option value="Food">Food</option>
-              <option value="Merchandise">Merchandise</option>
-              <option value="Artisan">Artisan</option>
-              <option value="Service">Service</option>
-            </select>
           </div>
         </div>
 
@@ -553,6 +548,16 @@ const submitForm = async () => {
               required
             ></textarea>
           </div>
+          <div class="form-section">
+            <label for="workshop_requirements">Requirements:</label>
+            <textarea
+              id="workshop_requirements"
+              v-model="form.workshop_requirements"
+              placeholder="Specify the requirements for your workshop."
+              maxlength="500"
+              required
+            ></textarea>
+          </div>
         </div>
 
         <div v-else-if="form.applicant_type === 'Art Installation'">
@@ -565,6 +570,14 @@ const submitForm = async () => {
               placeholder="What is the name of your installation?"
               required
             />
+          </div>
+          <div class="form-section">
+            <label for="fixture_type">Fixture Type:</label>
+            <select id="fixture_type" v-model="form.fixture_type" required>
+              <option value="" disabled>Is this a permanent or non-permanent fixture?</option>
+              <option value="Permanent">Permanent</option>
+              <option value="Non-permanent">Non-permanent</option>
+            </select>
           </div>
           <div class="form-section">
             <label for="installation_description">Description:</label>
@@ -604,13 +617,46 @@ const submitForm = async () => {
               placeholder="Provide a link to your portfolio or previous work."
             />
           </div>
+        </div>
+
+        <div v-else-if="form.applicant_type === 'Vendor'">
           <div class="form-section">
-            <label for="fixture_type">Fixture Type:</label>
-            <select id="fixture_type" v-model="form.fixture_type" required>
-              <option value="" disabled>Is this a permanent or non-permanent fixture?</option>
-              <option value="Permanent">Permanent</option>
-              <option value="Non-permanent">Non-permanent</option>
+            <label for="vendor_type">Vendor Type:</label>
+            <select id="vendor_type" v-model="form.vendor_type" required>
+              <option value="" disabled>What type of vendor are you?</option>
+              <option value="Food">Food</option>
+              <option value="Merchandise">Merchandise</option>
+              <option value="Artisan">Artisan</option>
+              <option value="Service">Service</option>
             </select>
+          </div>
+          <div class="form-section">
+            <label for="vendor_description">Vendor Description:</label>
+            <textarea
+              id="vendor_description"
+              v-model="form.vendor_description"
+              placeholder="Provide a brief description of your products or services."
+              maxlength="500"
+              required
+            ></textarea>
+          </div>
+          <div class="form-section">
+            <label for="vendor_requirements">Requirements:</label>
+            <textarea
+              id="vendor_requirements"
+              v-model="form.vendor_requirements"
+              placeholder="Specify any requirements for your vendor setup (e.g., electricity, space)."
+              maxlength="500"
+            ></textarea>
+          </div>
+          <div class="form-section">
+            <label for="vendor_url">Vendor URL:</label>
+            <input
+              type="url"
+              id="vendor_url"
+              v-model="form.vendor_url"
+              placeholder="Provide a link to your vendor website or product page."
+            />
           </div>
         </div>
 
