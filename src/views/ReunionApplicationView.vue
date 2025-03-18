@@ -7,6 +7,8 @@ import workshop_icon from '../assets/images/icons/workshop.png'
 import ticket_icon from '../assets/images/icons/ticket.png'
 import meal_icon from '../assets/images/icons/meals.png'
 import art_installation_icon from '../assets/images/icons/art_installation.png'
+import vendor_icon from '../assets/images/icons/vendor.png'
+import profit_icon from '../assets/images/icons/profit.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted } from 'vue'
@@ -315,6 +317,21 @@ const submitForm = async () => {
               <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-artinstallation-responsibilities" class="info"
                 >* Installation Duties *</RouterLink
+              >
+            </h2>
+          </div>
+        </div>
+        <div class="applicant-type">
+          <div>
+            <img :src="vendor_icon" alt="vendor" class="icon" />
+            <h1><span class="highlight">VENDORS</span><br /></h1>
+          </div>
+          <div>
+            <h2>
+              <img :src="profit_icon" alt="profit" class="icon" />
+              <h4>Keep 100% Profit<br /></h4>
+              <RouterLink to="/reunion-vendor-responsibilities" class="info"
+                >* Vendor Duties *</RouterLink
               >
             </h2>
           </div>
@@ -736,14 +753,13 @@ const submitForm = async () => {
 }
 
 .applicant-type {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 15px;
-  padding: 0.5rem;
-  margin: 0.5rem;
+  padding: 1rem;
+  margin: 1rem;
 }
 .icon {
   width: 50px;
