@@ -1,11 +1,24 @@
 <template>
   <div class="dark-theme">
     <div class="content">
-      <img :src="reunion_emblem" alt="Reunion Emblem" class="reunion-emblem" />
+      <img
+        :src="reunion_emblem"
+        alt="reunion"
+        class="reunion-emblem"
+        style="cursor: pointer"
+        @click="$router.push('/reunion')"
+      />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION VENDOR RESPONSIBILITIES</h2>
       <h3>As a Vendor, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
+        <li>
+          <strong>Purchase festival passes as part of your participation:</strong>
+          <p>
+            Vendors are required to purchase festival passes. This allows you to keep 100% of your
+            profits while supporting the festival.
+          </p>
+        </li>
         <li>
           <strong
             >Ensure that your vendor booth is set up on time and meets festival standards:</strong

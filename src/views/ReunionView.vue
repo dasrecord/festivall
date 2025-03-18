@@ -125,7 +125,7 @@ a:hover {
 }
 .reunion-emblem {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 1rem 0;
 }
 .title {

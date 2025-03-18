@@ -48,6 +48,8 @@ import playground_icon from '@/assets/images/icons/playground.png'
 
 import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
 
+import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+
 export default {
   name: 'ReunionTeamView',
   components: {
@@ -58,6 +60,7 @@ export default {
   },
   data() {
     return {
+      reunion_emblem,
       Chris,
       land_icon,
       Brandon,
@@ -94,7 +97,13 @@ export default {
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
-    <h1>THE REUNION‍<br /></h1>
+    <img
+      :src="reunion_emblem"
+      alt="reunion"
+      class="reunion-emblem"
+      style="cursor: pointer; max-width: 600px; border-radius: 0"
+      @click="$router.push('/reunion')"
+    />
     <h2>Meet Our Festival Team<br /></h2>
     <div class="cards">
       <TeamCard>
