@@ -21,7 +21,15 @@ useHead({
 <template>
   <header v-show="$route.meta.showHeader">
     <div class="wrapper">
-      <HelloWorld msg="FESTIV-ALL" />
+      <!-- <HelloWorld msg="FESTIV-ALL" /> -->
+      <a href="/">
+        <img
+          src="@/assets/images/festivall_emblem_white.png"
+          alt="Festivall Logo"
+          class="logo"
+          style="display: flex; align-items: center; height: auto; width: 100px"
+        />
+      </a>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
@@ -70,7 +78,7 @@ nav {
   font-size: 16px;
 
   text-align: center;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 }
 nav a:hover {
   color: white;
