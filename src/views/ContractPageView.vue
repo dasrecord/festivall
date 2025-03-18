@@ -40,8 +40,8 @@
       determined no later than 14 days before Event Date
     </p>
     <p v-if="applicant.applicant_type === 'Volunteer'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      4HR volunteer shift during Event Date<br />
+      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong>
+      Minimum one volunteer shift during or before Event Date<br />
       <strong>Shift Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
       determined no later than 14 days before Event Date
     </p>
