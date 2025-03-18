@@ -362,7 +362,7 @@ onMounted(() => {
         <button type="submit">SUBMIT</button>
       </form>
       <div class="footer">
-        <img :src="footer" alt="footer" style="width: 75%" />
+        <img :src="footer" alt="footer" style="max-width: 700px" />
       </div>
     </h3>
   </div>
