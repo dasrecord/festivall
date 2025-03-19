@@ -55,16 +55,16 @@
 
     <DetailsPanel>
       <template #link1>
-        <router-link to="/reunionfamily">Learn more</router-link>
+        <RouterLink to="/reunionfamily">Learn more</RouterLink>
       </template>
       <template #link2>
-        <router-link to="/reunionteam">Meet the team</router-link>
+        <RouterLink to="/reunionteam">Meet the team</RouterLink>
       </template>
       <template #link3>
-        <router-link to="/reunionsoundsystem">our custom soundsystem.</router-link>
+        <RouterLink to="/reunionsoundsystem">our custom soundsystem.</RouterLink>
       </template>
       <template #link4>
-        <router-link to="/reunionamenities">amenities.</router-link>
+        <RouterLink to="/reunionamenities">amenities.</RouterLink>
       </template>
     </DetailsPanel>
     <CalltoAction />
