@@ -241,19 +241,19 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-10px) translateX(12px)"
+                style="transform: rotate(-45deg) translateY(-10px) translateX(12px); scale: 0.8"
               /><img
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-10px) translateX(12px)"
+                style="transform: rotate(-45deg) translateY(-10px) translateX(12px); scale: 0.8"
               />
               <h4>
                 Weekend Pass<br />
                 + 1 Guest<br />
               </h4>
               <RouterLink to="/reunion-artist-responsibilities" class="info"
-                >* Artist Duties *</RouterLink
+                >*Artist Duties*</RouterLink
               >
             </h2>
           </div>
@@ -269,14 +269,14 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
-              /><img :src="meal_icon" alt="meal" class="icon" />
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px); scale: 0.8"
+              /><img :src="meal_icon" alt="meal" class="icon" style="scale: 0.8" />
               <h4>
                 Weekend Pass<br />
                 + 1 Meal Package/DayWorked<br />
               </h4>
               <RouterLink to="/reunion-volunteer-responsibilities" class="info"
-                >* Volunteer Duties *</RouterLink
+                >*Volunteer Duties*</RouterLink
               >
             </h2>
           </div>
@@ -292,11 +292,11 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px); scale: 0.8"
               />
               <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-workshop-responsibilities" class="info"
-                >* Workshop Duties *</RouterLink
+                >*Workshop Duties*</RouterLink
               >
             </h2>
           </div>
@@ -312,11 +312,11 @@ const submitForm = async () => {
                 :src="ticket_icon"
                 alt="ticket"
                 class="icon"
-                style="transform: rotate(-45deg) translateY(-12px) translateX(12px)"
+                style="transform: rotate(-45deg) translateY(-12px) translateX(12px); scale: 0.8"
               />
               <h4>Weekend Pass<br /></h4>
               <RouterLink to="/reunion-artinstallation-responsibilities" class="info"
-                >* Installation Duties *</RouterLink
+                >*Installation Duties*</RouterLink
               >
             </h2>
           </div>
@@ -328,13 +328,10 @@ const submitForm = async () => {
           </div>
           <div>
             <h2>
-              <img :src="profit_icon" alt="profit" class="icon" />
-              <h4>
-                Keep 100%<br />
-                of Profits<br />
-              </h4>
+              <img :src="profit_icon" alt="profit" class="icon" style="scale: 0.8" />
+              <h4>Keep 100% of Profits<br /></h4>
               <RouterLink to="/reunion-vendor-responsibilities" class="info"
-                >* Vendor Duties *</RouterLink
+                >*Vendor Duties*</RouterLink
               >
             </h2>
           </div>
