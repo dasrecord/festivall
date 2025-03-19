@@ -69,7 +69,16 @@ const fetchApplicantData = async (id_code) => {
     if (docSnap.exists()) {
       form.value = { ...form.value, ...docSnap.data() }
     } else {
-      console.log('No such document!')
+      console.log('No such document in applications!')
+
+      // Try fetching from 'orders' collection
+      const ordersDocRef = doc(reunion_db, 'orders', id_code)
+      const ordersDocSnap = await getDoc(ordersDocRef)
+      if (ordersDocSnap.exists()) {
+        form.value = { ...form.value, ...ordersDocSnap.data() }
+      } else {
+        console.log('No such document in orders!')
+      }
     }
   } catch (error) {
     console.error('Error fetching document:', error)
