@@ -14,6 +14,7 @@ import {
 } from '@/assets/images/soundsystem'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
+import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 
 export default {
   components: {
@@ -23,6 +24,7 @@ export default {
     CalltoAction
   },
   data: () => ({
+    reunion_emblem,
     slides: [image1, image2, image3, image4, image5, image6, image7, image8, image9]
   })
 }
@@ -30,7 +32,13 @@ export default {
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
-    <h1>THE REUNION‍</h1>
+    <img
+      :src="reunion_emblem"
+      alt="reunion"
+      class="reunion-emblem"
+      style="max-width: 600px; height: auto; cursor: pointer"
+      @click="$router.push('/reunion')"
+    />
     <h2>Soundsystem <br /></h2>
     <h3>
       Our festival is proud to present a bespoke soundsystem built with highest quality components

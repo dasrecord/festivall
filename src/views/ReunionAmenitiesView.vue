@@ -59,7 +59,7 @@ export default {
         :src="reunion_emblem"
         alt="reunion"
         class="reunion-emblem"
-        style="cursor: pointer' max-width:600px"
+        style="cursor: pointer; max-width: 600px"
         @click="$router.push('/reunion')"
       />
       <img :src="frogImage" alt="frog" class="frog-image" />

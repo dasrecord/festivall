@@ -1,7 +1,13 @@
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
-    <h1>THE REUNION‍</h1>
+    <img
+      :src="reunion_emblem"
+      alt="reunion"
+      class="reunion-emblem"
+      style="max-width: 600px; height: auto; cursor: pointer"
+      @click="$router.push('/reunion')"
+    />
     <h2>About Our Festival</h2>
     <h3>
       The Reunion is an independent electronic music festival located just outside Saskatoon. We
@@ -35,6 +41,7 @@ import CountdownTimer from '@/components/CountdownTimer.vue'
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
+import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 
 // Dynamically import all images from the @/assets/images directory
 const images = import.meta.glob('@/assets/images/reunion_about/*.jpg')
@@ -48,6 +55,7 @@ export default {
   },
   data() {
     return {
+      reunion_emblem,
       slides: []
     }
   },
