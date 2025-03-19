@@ -329,7 +329,10 @@ const submitForm = async () => {
           <div>
             <h2>
               <img :src="profit_icon" alt="profit" class="icon" />
-              <h4>Keep 100% Profit<br /></h4>
+              <h4>
+                Keep 100%<br />
+                of Profits<br />
+              </h4>
               <RouterLink to="/reunion-vendor-responsibilities" class="info"
                 >* Vendor Duties *</RouterLink
               >
