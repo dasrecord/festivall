@@ -312,7 +312,12 @@ const submitForm = async () => {
         </div>
         <div class="applicant-type">
           <div>
-            <img :src="art_installation_icon" alt="art installation" class="icon" />
+            <img
+              :src="art_installation_icon"
+              alt="art installation"
+              class="icon"
+              style="scale: 1.3; transform: translateY(-5px)"
+            />
             <h1><span class="highlight">ART INSTALLATIONS</span><br /></h1>
           </div>
           <div>
