@@ -779,7 +779,7 @@ const submitForm = async () => {
 
 .application-form {
   width: 80vw;
-  padding: 1rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 15px;
 }
@@ -869,6 +869,12 @@ table {
 }
 
 @media (max-width: 600px) {
+  .applicant-type {
+    padding: 0.5rem;
+  }
+  h1 {
+    font-size: large;
+  }
   .application-form {
     width: 100%;
     padding: 0.5rem;
