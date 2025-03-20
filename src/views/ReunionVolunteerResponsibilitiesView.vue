@@ -159,7 +159,7 @@ import front_gate_icon from '../assets/images/icons/front_gate.png'
 }
 
 .reunion-emblem {
-  width: 75%;
+  max-width: 600px;
   margin-bottom: 1rem;
 }
 

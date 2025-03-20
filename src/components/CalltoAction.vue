@@ -8,19 +8,32 @@ export default {
 
 <template>
   <div class="call-to-action">
-    <RouterLink to="/reunionapplication" class="link">
-      <h1 class="volunteer">
-        <span style="color: white">Want to volunteer?‍</span><br />
-        APPLY NOW
-      </h1>
-    </RouterLink>
-
     <RouterLink to="/reuniontickets">
       <h1 class="tickets">
         <span style="color: white">Ready to buy tickets?‍</span><br />
         BUY TICKETS
       </h1>
     </RouterLink>
+    <RouterLink to="/reunionapplication" class="link">
+      <h1 class="volunteer">
+        <span style="color: white">Looking to volunteer?‍</span><br />
+        APPLY NOW
+      </h1>
+    </RouterLink>
+
+    <a href="https://instagram.com/reunion_festival">
+      <h1 class="">
+        <span style="color: white">Need our socials‍?</span><br />
+        CLICK HERE
+      </h1>
+    </a>
+
+    <a href="https://share.hsforms.com/117WsKaz0SWyxu6YNh8RI4geax3l">
+      <h1 class="mailing-list">
+        <span style="color: white">Want to joing our mailing list?</span><br />
+        SIGN UP
+      </h1>
+    </a>
   </div>
 </template>
 
@@ -49,14 +62,15 @@ h1 {
   margin: 0.5rem;
 }
 /* top corners rounded */
-.volunteer,
+
+.tickets,
 .lineup {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
 
 /* bottom corners rounded */
-.tickets,
+.mailing-list,
 .contact {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
