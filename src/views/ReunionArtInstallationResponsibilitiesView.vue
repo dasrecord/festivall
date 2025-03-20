@@ -85,7 +85,7 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 }
 
 .reunion-emblem {
-  width: 75%;
+  max-width: 600px;
   margin-bottom: 1rem;
 }
 

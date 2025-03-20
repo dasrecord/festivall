@@ -108,7 +108,7 @@ const router = useRouter()
 }
 
 .reunion-emblem {
-  width: 75%;
+  max-width: 600px;
   margin-bottom: 1rem;
 }
 .content {
