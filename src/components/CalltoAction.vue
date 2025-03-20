@@ -30,7 +30,7 @@ export default {
 
     <a href="https://share.hsforms.com/117WsKaz0SWyxu6YNh8RI4geax3l">
       <h1 class="mailing-list">
-        <span style="color: white">Want to joing our mailing list?</span><br />
+        <span style="color: white">Want to join our mailing list?</span><br />
         SIGN UP
       </h1>
     </a>
