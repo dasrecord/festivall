@@ -60,7 +60,7 @@
             <strong>Front Gate:</strong> [Minimum One 4-Hour Shift Per Day]
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
-              using our in-house ticketing system.They are the first point of contact for attendees
+              using our in-house ticketing system. They are the first point of contact for attendees
               and play a crucial role in ensuring a positive experience for everyone.
             </p>
           </li>
@@ -117,7 +117,7 @@
 
       <h3>
         If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
+        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
     </div>
   </div>
@@ -177,7 +177,7 @@ h3 {
 
 ul {
   list-style-type: none;
-  padding-left: 1.5rem;
+  padding-left: 0;
 }
 
 li p {

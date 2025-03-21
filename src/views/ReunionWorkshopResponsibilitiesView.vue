@@ -48,7 +48,7 @@
       </ul>
       <h3>
         If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
+        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
     </div>
   </div>
@@ -102,8 +102,8 @@ h3 {
 }
 
 ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
+  list-style-type: none;
+  padding-left: 0;
 }
 
 li {

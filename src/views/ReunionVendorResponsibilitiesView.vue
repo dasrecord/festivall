@@ -10,7 +10,7 @@
       />
       <img :src="frog_image" alt="Frog" class="frog-image" />
       <h2>REUNION VENDOR RESPONSIBILITIES</h2>
-      <h3>As a Vendor, you are expected to adhere to the following responsibilities:</h3>
+      <h3>As a Reunion Vendor, you are expected to adhere to the following responsibilities:</h3>
       <ul class="responsibilities">
         <li>
           <strong>Purchase festival passes as part of your participation:</strong>
@@ -54,7 +54,7 @@
       </ul>
       <h3>
         If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
+        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
     </div>
   </div>
@@ -108,8 +108,8 @@ h3 {
 }
 
 ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
+  list-style-type: none;
+  padding-left: 0;
 }
 
 li {
