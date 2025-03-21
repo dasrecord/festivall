@@ -43,12 +43,12 @@
           />
           <div>
             <button @click="router.push('/reunion-frontgate-signup')" class="volunteer-button">
-              FRONT GATE SIGNUP [Minimum One 4-Hour Shift Per Day]
+              FRONT GATE SIGNUP<br />[Minimum One 4-Hour Shift Per Day]
             </button>
             <p>
-              Front Gate Volunteers are responsible for welcoming attendees, checking tickets, and
-              providing information about the event. They are the first point of contact for
-              attendees and play a crucial role in ensuring a positive experience for everyone.
+              Front Gate Volunteers are responsible for welcoming attendees and securing admission
+              using our in-house ticketing system. They are the first point of contact for attendees
+              and play a crucial role in ensuring a positive experience for everyone.
             </p>
           </div>
         </div>
@@ -61,7 +61,7 @@
           />
           <div>
             <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
-              FOOD TEAM SIGNUP [Minimum One 4-Hour Shift Per Day]
+              FOOD TEAM SIGNUP<br />[Minimum One 4-Hour Shift Per Day]
             </button>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
@@ -79,7 +79,7 @@
           />
           <div>
             <button @click="router.push('/reunion-setupcrew-signup')" class="volunteer-button">
-              SETUP CREW SIGNUP [Minimum One 8-Hour Shift PreShow]
+              SETUP CREW SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
             </button>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
@@ -98,7 +98,7 @@
           />
           <div>
             <button @click="router.push('/reunion-cleanupcrew-signup')" class="volunteer-button">
-              CLEANUP CREW SIGNUP [Minimum One 8-Hour Shift PostShow]
+              CLEANUP CREW SIGNUP<br />[Minimum One 8-Hour Shift PostShow]
             </button>
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
@@ -117,7 +117,7 @@
           />
           <div>
             <button @click="router.push('/reunion-stagecrew-signup')" class="volunteer-button">
-              STAGE CREW SIGNUP [Minimum One 4-Hour Shift Per Day]
+              STAGE CREW SIGNUP<br />[Minimum One 4-Hour Shift Per Day]
             </button>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
@@ -130,7 +130,7 @@
       </div>
       <h3>
         If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>.
+        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
     </div>
   </div>
@@ -169,6 +169,10 @@ const router = useRouter()
 }
 .content {
   width: 80vw;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
   padding: 1rem;
   border: 1px solid #444;
   border-radius: 15px;
@@ -183,6 +187,7 @@ const router = useRouter()
 .instructions {
   text-align: left;
   margin-top: 1rem;
+  max-width: 700px;
 }
 
 .crew {
