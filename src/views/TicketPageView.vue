@@ -159,7 +159,7 @@ strong {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   max-width: 100vw;
-  height: 100vh;
+  height: auto;
   /* padding: 1rem 3rem; */
 }
 
