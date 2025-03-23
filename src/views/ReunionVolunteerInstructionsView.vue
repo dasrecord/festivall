@@ -128,7 +128,7 @@
           </div>
         </div>
       </div>
-      <h3>
+      <h3 style="margin-top: 1rem">
         If you have any questions or require further assistance, please contact us at
         <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
@@ -184,6 +184,7 @@ const router = useRouter()
   max-width: 250px;
   margin-bottom: 1rem;
 }
+
 .instructions {
   text-align: left;
   margin-top: 1rem;
@@ -220,13 +221,26 @@ a:hover {
 }
 
 .volunteer-button {
+  width: 100%;
   background-color: var(--reunion-frog-green);
   color: #ffffff;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 5px;
   margin-bottom: 0.5rem;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.volunteer-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 600px) {

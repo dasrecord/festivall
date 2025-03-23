@@ -23,7 +23,7 @@ export const sendSMS = async (phone, message) => {
       body: JSON.stringify(payload)
     });
 
-    alert('SMS sent successfully!');
+    alert(`SMS sent  to ${phone} successfully!`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok ' + response.statusText);
@@ -59,7 +59,7 @@ export const sendEmail = async (email, subject, message) => {
       body: JSON.stringify(payload)
     });
 
-    alert('Email sent successfully!');
+    alert(`Email sent to ${email} successfully!`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok ' + response.statusText);
