@@ -154,7 +154,7 @@
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" />
               <img
-                @click="sendSMS(applicant), (applicant.message = '')"
+                @click="sendSMS(applicant.phone, applicant.message), (applicant.message = '')"
                 :src="sms_icon"
                 alt="Send SMS"
                 class="action-icon"
