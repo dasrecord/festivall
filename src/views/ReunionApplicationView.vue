@@ -111,15 +111,25 @@ const handlePhoneInput = (event) => {
 const submitForm = async () => {
   if (submitting.value) return
   submitting.value = true
+
   form.value.raw_phone = form.value.phone.replace(/\D/g, '')
+
   try {
-    if (!form.value.id_code) {
+    // Generate `id_code_long` based on user-provided `id_code` or create a new one
+    if (form.value.id_code) {
+      // Use the provided `id_code` as the prefix for the UUID
+      const uuidSuffix = uuidv4().slice(5) // Generate the remaining characters of the UUID
+      form.value.id_code_long = `${form.value.id_code}${uuidSuffix}`
+    } else {
+      // Generate a completely new UUID and use the first 5 characters as the `id_code`
       form.value.id_code_long = uuidv4()
       form.value.id_code = form.value.id_code_long.slice(0, 5)
     }
 
+    // Add the applicant to the database
     await addApplicant()
 
+    // Send the application to the Slack webhook
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_applications',
       {
@@ -128,7 +138,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.formatted_phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.track_mix_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.formatted_phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.mix_track_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
@@ -139,10 +149,13 @@ const submitForm = async () => {
         }
       }
     )
+
     if (response.status === 200) {
       alert(
         'Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.'
       )
+
+      // Send SMS and email notifications if applicable
       if (form.value.phone) {
         await sendSMS(form.value.phone, `Thank you for applying to Reunion 2025!`)
       }
@@ -154,6 +167,7 @@ const submitForm = async () => {
         )
       }
 
+      // Reset the form after successful submission
       form.value = {
         id_code_long: '',
         id_code: '',
@@ -185,6 +199,7 @@ const submitForm = async () => {
         vendor_requirements: '',
         vendor_url: '',
         statement: '',
+        rates: '',
         volunteer_availability: [],
         installation_title: '',
         installation_description: '',

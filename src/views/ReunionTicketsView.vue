@@ -88,12 +88,13 @@ const calculateTotalPrice = () => {
   }
   form.value.total_price = totalPrice
 }
+
 const generatePaymentInstructions = () => {
-  if (form.value.payment_type === 'e-transfer') {
-    paymentInstructions.value = `Please e-transfer $${form.value.total_price} CAD to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
+  if (form.value.payment_type === 'etransfer') {
+    paymentInstructions.value = `Please etransfer $${form.value.total_price} CAD to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
   } else {
-    const bitcoinPrice = (form.value.total_price / btcRate.value).toFixed(8)
-    paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${bitcoinPrice}&currency=BTC \nYour 25% discount will automatically be applied in the payment portal.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
+    // const bitcoinPrice = (form.value.total_price / btcRate.value).toFixed(8)
+    paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
   }
 }
 const textPaymentInstructions = async () => {
@@ -112,7 +113,7 @@ const textPaymentInstructions = async () => {
       }
     )
   } catch (error) {
-    console.error('Error textn payment instructions:', error)
+    console.error('Error texting payment instructions:', error)
   }
 }
 const emailPaymentInstructions = async () => {
@@ -131,7 +132,7 @@ const emailPaymentInstructions = async () => {
       }
     )
   } catch (error) {
-    console.error('Error sending payment instructions:', error)
+    console.error('Error emailing payment instructions:', error)
   }
 }
 
@@ -394,13 +395,15 @@ onMounted(() => {
         </div>
         <div class="total">
           <div v-if="form.payment_type === 'etransfer'">
-            Total Price: ${{ form.total_price }} CAD<br />
+            Total Fiat Price: ${{ form.total_price }} CAD<br />
             <span v-if="form.payment_type === 'etransfer'">
-              You could save ${{ (form.total_price * 0.25).toFixed(2) }} CAD by paying with Bitcoin!
+              (You could save ${{ (form.total_price * 0.25).toFixed(2) }} CAD by paying with
+              Bitcoin!)
             </span>
           </div>
           <div v-else-if="form.payment_type === 'bitcoin'">
-            Total Price: {{ ((form.total_price * 0.75) / btcRate).toFixed(8) }} BTC
+            Total Price: {{ (form.total_price / btcRate).toFixed(8) }} BTC<br />
+            (25% Discount Applied)
           </div>
         </div>
         <button type="submit">CONFIRM</button>

@@ -57,7 +57,7 @@
         <ul class="crew">
           <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
-            <strong>Front Gate:</strong> [Minimum One 4-Hour Shift Per Day]
+            <strong>Front Gate:</strong> [Minimum Three 2-Hour Shifts/Weekend]
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
               using our in-house ticketing system. They are the first point of contact for attendees
@@ -68,7 +68,7 @@
         <ul class="crew">
           <img :src="food_team_icon" alt="Food Team Icon" />
           <li>
-            <strong>Food Team:</strong> [Minimum One 4-Hour Shift Per Day]
+            <strong>Food Team:</strong> [Minimum Two 4-Hour Shifts Weekend]
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
@@ -104,7 +104,7 @@
         <ul class="crew">
           <img :src="stage_crew_icon" alt="Stage Crew Icon" />
           <li>
-            <strong>Stage Crew:</strong> [Minimum One 4-Hour Shift PerDay]
+            <strong>Stage Crew:</strong> [Minimum Two 4-Hour Shifts Per Weekend]
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
