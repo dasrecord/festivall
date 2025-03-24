@@ -33,13 +33,16 @@
           &nbsp;{{ order.paid ? 'Paid' : 'Not Paid' }}</span
         >
       </p>
-
-      <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
-        <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
-        <RouterLink to="/reunion-volunteer-instructions">
-          CLICK HERE FOR VOLUNTEER INSTRUCTIONS</RouterLink
-        >
-      </p>
+      <div class="links">
+        <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
+          <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
+          <RouterLink to="/reunion-volunteer-instructions">Volunteer Instructions</RouterLink>
+        </p>
+        <p>
+          <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
+          <RouterLink to="/reunionlocation">Festival Location</RouterLink>
+        </p>
+      </div>
     </div>
 
     <div class="qr-code">
@@ -64,7 +67,8 @@ import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
-import volunteer_icon from '@/assets/images/icons/volunteer_black.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import location_icon from '@/assets/images/icons/location.png'
 
 export default {
   name: 'TicketPageView',
@@ -133,7 +137,8 @@ export default {
       qrCanvas,
       ticket_icon,
       meals_icon,
-      volunteer_icon
+      volunteer_icon,
+      location_icon
     }
   }
 }
@@ -178,7 +183,7 @@ h2 {
   margin-top: 1rem;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
-  width: 250px;
+  max-width: 80%;
   padding: 0 1rem;
 }
 
@@ -189,10 +194,25 @@ h2 {
   align-items: center;
 }
 
-a {
-  color: var(--reunion-frog-green);
-  text-decoration: none;
+.links {
+  display: flex;
+  flex-direction: row;
+  color: white;
 }
+
+.links p {
+  background-color: var(--reunion-frog-green);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  margin: 0.5rem;
+}
+
+a {
+  color: white;
+  /* text-decoration: underline; */
+}
+
 a:hover {
   text-decoration: underline;
   background: none;
