@@ -491,6 +491,7 @@ img {
   margin: 0.5rem;
 }
 .dashboard {
+  width: 100vw;
   padding: 0.5rem;
   background-color: #1f1e22;
   color: #f0f4f8;
