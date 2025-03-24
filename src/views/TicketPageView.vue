@@ -162,14 +162,9 @@ strong {
   color: black;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
   max-width: 100vw;
   height: auto;
   /* padding: 1rem 3rem; */
-}
-
-img {
-  margin: 0 auto;
 }
 
 h1,
@@ -177,14 +172,16 @@ h2 {
   color: var(--reunion-frog-green);
   text-align: center;
   font-weight: bold;
+  margin: 0;
+  padding: 0;
 }
 
 .order-info {
-  margin-top: 1rem;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
-  max-width: 80%;
+  max-width: 85%;
   padding: 0 1rem;
+  z-index: 2;
 }
 
 .order-info p {
@@ -196,21 +193,20 @@ h2 {
 
 .links {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   color: white;
 }
 
 .links p {
   background-color: var(--reunion-frog-green);
   color: white;
+  display: flex;
+  justify-content: center;
   border-radius: 10px;
   padding: 0.5rem 0.5rem;
-  width: 50%;
-  margin: 0.5rem 0.1rem;
-  gap: 0.5rem;
 }
 
-a {
+.links a {
   color: white;
   /* text-decoration: underline; */
 }
@@ -223,6 +219,8 @@ a:hover {
 .qr-code {
   display: flex;
   justify-content: center;
+  margin-top: -10px;
+  z-index: 1;
 }
 .footer {
   max-width: 432px;
