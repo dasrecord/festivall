@@ -57,28 +57,44 @@
         <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
           <div class="applicant-content">
             <h2>
+              <!-- ACT NAME OR FULLNAME -->
+
               <a v-if="applicant.url" :href="applicant.url" target="_blank">
                 {{ applicant.act_name || applicant.full_name }}
               </a>
+              <!-- EMAIL PREFIX FALL BACK -->
               <span v-else>
                 {{ applicant.fullname || applicant.email.split('@')[0] }}
               </span>
             </h2>
+            <!-- ID CODE -->
             <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
+            <!-- ACT TYPE -->
             <p v-if="applicant.applicant_type">
               {{ applicant.applicant_type }}
             </p>
+            <!-- GENRE -->
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
+            <!-- VOLUNTEER TYPE -->
             <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
+            <!-- WORKSHOP TITLE -->
             <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
+            <!-- WORKSHOP DESCRIPTION -->
             <p v-if="applicant.workshop_description">{{ applicant.workshop_description }}</p>
 
+            <!-- BIO -->
             <p>{{ applicant.bio }}</p>
+            <!-- STATEMENT -->
             <p>{{ applicant.statement }}</p>
+            <!-- COMMENTS -->
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
+            <!-- RATES -->
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
           </div>
+
+          <!-- TICKET DATA -->
           <div v-if="applicant.payment_type" class="ticket-content">
+            <!-- PAID STATUS -->
             <p v-if="applicant.paid" style="color: green">
               Paid<br />
 
@@ -91,10 +107,13 @@
                 Confirm Payment Received</button
               ><br />
             </p>
+            <!-- CHECKED IN STATUS -->
             <p v-if="applicant.checked_in">Checked In</p>
             <p v-else>Not Checked In</p>
             <br />
+            <!-- TICKET TYPE -->
             <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
+            <!-- TICKET QUANTITY -->
             <p><strong>Ticket Quantity:</strong>&nbsp;{{ applicant.ticket_quantity }}</p>
             <img
               v-for="n in Number(applicant.ticket_quantity)"
@@ -103,7 +122,7 @@
               style="height: auto; width: 32px; transform: rotate(-45deg)"
               alt="Ticket Icon"
             />
-
+            <!-- MEAL TICKETS REMAINING -->
             <p>
               <strong>Meal Tickets Remaining:</strong>&nbsp;{{ applicant.meal_tickets_remaining }}
             </p>
@@ -116,9 +135,12 @@
               alt="Meal Icon"
             />
             <br />
+            <!-- TOTAL PRICE -->
             <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
+            <!-- PAYMENT TYPE -->
             <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
             <br />
+            <!-- PREVIEW TICKET -->
             <button @click="previewTicket(applicant.id_code)">Preview Ticket</button><br />
             <a
               :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
@@ -133,7 +155,7 @@
               />
             </a>
           </div>
-          <div v-if="applicant.applicant_type !== 'inkind'"></div>
+          <!-- DASHBOARD ACTIONS-->
           <div v-if="applicant.payment_type !== 'inkind'" class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
