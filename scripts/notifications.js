@@ -103,8 +103,6 @@ export const sendReunionFrontGate = async (message) => {
       { headers }
     );
 
-    alert('Sent to Slack successfully!');
-
     console.log('Response data:', response.data); // Log the response data for debugging
   } catch (error) {
     console.error('There was a problem with the axios operation:', error);
@@ -141,9 +139,6 @@ export const sendReunionApplications = async (message) => {
       payload,
       { headers }
     );
-
-    alert('Sent to Slack successfully!');
-
     console.log('Response data:', response.data); // Log the response data for debugging
   } catch (error) {
     console.error('There was a problem with the axios operation:', error);
