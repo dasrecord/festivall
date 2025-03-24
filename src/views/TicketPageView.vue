@@ -203,9 +203,11 @@ h2 {
 .links p {
   background-color: var(--reunion-frog-green);
   color: white;
-  padding: 0.5rem;
-  border-radius: 5px;
-  margin: 0.5rem;
+  border-radius: 10px;
+  padding: 0.5rem 0.5rem;
+  width: 50%;
+  margin: 0.5rem 0.1rem;
+  gap: 0.5rem;
 }
 
 a {
@@ -225,5 +227,13 @@ a:hover {
 .footer {
   max-width: 432px;
   height: auto;
+}
+
+.paid {
+  color: green;
+}
+
+.not-paid {
+  color: red;
 }
 </style>
