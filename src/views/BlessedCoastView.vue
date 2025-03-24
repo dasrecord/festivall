@@ -22,7 +22,7 @@
       traditional, ancestral and unceded territory of the Coast Salish peoples - Skwxwú7mesh
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
-    <video controls :src="videoSrc" class="responsive-video">
+    <video controls :src="videoSrc" class="responsive-video" allowfullscreen>
       Your browser does not support the video tag.
     </video>
     <div class="contact-form">
@@ -203,6 +203,7 @@ export default {
   height: auto;
   border-radius: 10px;
   margin-bottom: 1rem;
+  max-width: 100%;
 }
 
 h1,
