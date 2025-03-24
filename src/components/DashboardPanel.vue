@@ -412,6 +412,7 @@ export default {
           }
           return applicant
         })
+        alert('Payment status updated successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
       }
@@ -429,6 +430,7 @@ export default {
           }
           return applicant
         })
+        alert('Ticket revoked successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
       }
