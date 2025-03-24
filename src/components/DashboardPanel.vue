@@ -220,7 +220,7 @@ import { reunion_db } from '@/firebase'
 import mixTrack from '@/assets/images/icons/mix_track.png'
 import contract from '@/assets/images/icons/contract.png'
 import { useRoute, useRouter } from 'vue-router'
-import { sendSMS, sendEmail } from '/scripts/notifications.js'
+import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
@@ -410,6 +410,9 @@ export default {
           if (applicant.id_code === id_code) {
             applicant.paid = true
           }
+          sendReunionApplications(
+            `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+          )
           return applicant
         })
         alert('Payment status updated successfully.')
@@ -428,6 +431,9 @@ export default {
           if (applicant.id_code === id_code) {
             applicant.paid = false
           }
+          sendReunionApplications(
+            `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+          )
           return applicant
         })
         alert('Ticket revoked successfully.')
