@@ -333,7 +333,12 @@ onMounted(() => {
         </div>
         <div class="form-section">
           <label for="ticket_type">Ticket Type:</label>
-          <select id="ticket_type" v-model="form.ticket_type" required>
+          <select
+            id="ticket_type"
+            v-model="form.ticket_type"
+            @change="calculateTotalPrice"
+            required
+          >
             <option value="" disabled>What kind of tickets would you like?</option>
             <option value="Weekend Pass">Weekend Pass - $140 CAD</option>
             <option value="Day Pass">Day Pass - $80 CAD</option>
@@ -346,6 +351,7 @@ onMounted(() => {
             id="ticket_quantity"
             v-model="form.ticket_quantity"
             min="1"
+            @input="calculateTotalPrice"
             required
           />
         </div>
@@ -365,18 +371,39 @@ onMounted(() => {
             id="meal_packages"
             v-model="form.meal_packages"
             min="0"
-            @input="form.meal_tickets_remaining = form.meal_packages * 2"
+            @input="
+              () => {
+                calculateMealTickets()
+                calculateTotalPrice()
+              }
+            "
           />
         </div>
         <div class="form-section">
           <label for="payment_type">Payment Type:</label>
-          <select id="payment_type" v-model="form.payment_type" required>
+          <select
+            id="payment_type"
+            v-model="form.payment_type"
+            @change="calculateTotalPrice"
+            required
+          >
             <option value="" disabled>Choose a payment method.</option>
             <option value="etransfer">E-transfer</option>
             <option value="bitcoin">Bitcoin (25% off)</option>
           </select>
         </div>
-        <button type="submit">SUBMIT</button>
+        <div class="total">
+          <div v-if="form.payment_type === 'etransfer'">
+            Total Price: ${{ form.total_price }} CAD<br />
+            <span v-if="form.payment_type === 'etransfer'">
+              You could save ${{ (form.total_price * 0.25).toFixed(2) }} CAD by paying with Bitcoin!
+            </span>
+          </div>
+          <div v-else-if="form.payment_type === 'bitcoin'">
+            Total Price: {{ ((form.total_price * 0.75) / btcRate).toFixed(8) }} BTC
+          </div>
+        </div>
+        <button type="submit">CONFIRM</button>
       </form>
       <div class="footer">
         <img :src="footer" alt="footer" style="max-width: 700px" />

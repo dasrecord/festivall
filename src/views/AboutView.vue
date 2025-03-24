@@ -8,11 +8,27 @@
       the Canadian electronic music circuit. <br /><br />
       <div class="label">Current Activities<br /></div>
       <ul class="current-activities">
-        <li>clinical teacher at the University of Saskatchewan College of Medicine</li>
-        <li>resident DJ on rotation at Bokeh on the Plaza in Saskatoon</li>
-        <li>sotware developer for small businesses and entrepreneurs</li>
-        <li>composer and producer for the internationally acclaimed Mike Saint-Jules</li>
-        <li>devops engineer for several independent electronic music festivals</li>
+        <!-- <li>clinical teacher at the University of Saskatchewan College of Medicine</li> -->
+        <li>
+          <img :src="devops_icon" alt="devops icon" style="width: 24px; height: auto" />
+          sotware developer for small businesses and entrepreneurs
+        </li>
+        <li>
+          <img :src="headphones_icon" alt="headphones icon" style="width: 24px; height: auto" />
+          resident DJ at Finn's @ The Parktown Hotel
+        </li>
+        <li>
+          <img :src="headphones_icon" alt="headphones icon" style="width: 24px; height: auto" />
+          rotation DJ at Bokeh on the Plaza
+        </li>
+        <li>
+          <img :src="music_icon" alt="music icon" style="width: 24px; height: auto" />
+          composer and producer for the internationally acclaimed Mike Saint-Jules
+        </li>
+        <li>
+          <img :src="devops_icon" alt="devops icon" style="width: 24px; height: auto" />
+          devops engineer for several independent electronic music festivals
+        </li>
         <br />
       </ul>
       Behind the scenes, I am the A&R for Evolved Music Group, an international artist management
@@ -47,6 +63,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import music_icon from '@/assets/images/icons/artist.png'
+import devops_icon from '@/assets/images/icons/devops.png'
+import headphones_icon from '@/assets/images/icons/headphones.png'
+import vector_icon from '@/assets/images/icons/vectors.png'
 
 const images = import.meta.glob('../assets/images/das_record/playbills/*.*')
 const imageList = ref([])
@@ -73,6 +93,18 @@ onMounted(async () => {
   max-width: 50vw;
   border-radius: 50%;
 }
+li {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+}
+
+li img {
+  margin-right: 10px;
+}
+
 h1,
 .label {
   color: var(--festivall-baby-blue);
@@ -106,9 +138,10 @@ h1,
   gap: 0.5rem;
 }
 
-img {
+.playbills img {
   border-radius: 15px;
 }
+
 @media (min-width: 1024px) {
   .about {
     display: flex;
