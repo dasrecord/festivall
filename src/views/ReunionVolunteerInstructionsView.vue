@@ -61,7 +61,7 @@
           />
           <div>
             <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
-              FOOD TEAM SIGNUP<br />[Minimum One 4-Hour Shift Per Day]
+              FOOD TEAM SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
@@ -117,7 +117,7 @@
           />
           <div>
             <button @click="router.push('/reunion-stagecrew-signup')" class="volunteer-button">
-              STAGE CREW SIGNUP<br />[Minimum One 4-Hour Shift Per Day]
+              STAGE CREW SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
