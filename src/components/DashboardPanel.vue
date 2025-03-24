@@ -136,7 +136,15 @@
             />
             <br />
             <!-- TOTAL PRICE -->
-            <p v-if="applicant.total_price">Total Price: {{ applicant.total_price }}</p>
+
+            <p v-if="applicant.total_price">
+              Total Price:
+              <span
+                v-if="applicant.payment_type === 'inkind' || applicant.payment_type === 'etransfer'"
+                >$</span
+              >{{ applicant.total_price }}
+              <span v-if="applicant.payment_type === 'bitcoin'">BTC</span>
+            </p>
             <!-- PAYMENT TYPE -->
             <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
             <br />
