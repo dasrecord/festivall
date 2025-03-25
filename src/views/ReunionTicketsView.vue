@@ -159,9 +159,9 @@ const submitForm = async () => {
     await addOrder()
 
     const response = await axios.post(
-      'https://relayproxy.vercel.app/reunion_slack',
+      'https://relayproxy.vercel.app/reunion_sales',
       {
-        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:currency_exchange: ${form.value.payment_type}\n:id: ${form.value.id_code}\n:dollar $${form.value.total_price}`
+        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n${form.value.payment_type === 'etransfer' ? ':currency_exchange: $' + form.value.total_price : ':bitcoin: ' + (form.value.total_price / btcRate.value).toFixed(8) + ' BTC'}`
       },
       {
         headers: {
