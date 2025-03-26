@@ -8,7 +8,7 @@ import Chris from '@/assets/images/reunion_team/Chris.jpg'
 import land_icon from '@/assets/images/icons/land.png'
 
 import Brandon from '@/assets/images/reunion_team/Brandon.jpg'
-import construction_icon from '@/assets/images/icons/construction.png'
+import flame_icon from '@/assets/images/icons/flame.png'
 
 import Prasenjit from '@/assets/images/reunion_team/Prasenjit.jpg'
 import devops_icon from '@/assets/images/icons/devops.png'
@@ -64,7 +64,7 @@ export default {
       Chris,
       land_icon,
       Brandon,
-      construction_icon,
+      flame_icon,
       Prasenjit,
       devops_icon,
       Corey,
@@ -144,9 +144,9 @@ export default {
         </template>
         <template v-slot:icon>
           <img
-            :src="construction_icon"
-            alt="Construction Icon"
-            style="width: 75px; border-radius: 0; border-radius: 0"
+            :src="flame_icon"
+            alt="Flame Icon"
+            style="width: auto; height: 75px; border-radius: 0; border-radius: 0"
           />
         </template>
       </TeamCard>
