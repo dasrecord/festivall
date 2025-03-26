@@ -198,9 +198,12 @@ h2 {
 }
 
 .order-info img {
-  margin: 0.3rem 0.6rem 0.9rem 0;
+  margin: 0 0.5rem 0.7rem 0;
 }
 
+.order-info .links img {
+  margin: 0;
+}
 .links {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
