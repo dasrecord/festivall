@@ -40,6 +40,7 @@ import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
+import ReunionMapView from '@/views/ReunionMapView.vue'
 
 const routes = [
   {
@@ -337,6 +338,11 @@ const routes = [
     name: 'reunionlocation',
     component: ExternalRedirect,
     props: { url: 'https://goo.gl/maps/rTyyip88oiJygiTU9' }
+  },
+  {
+    path: '/reunionmap',
+    name: 'reunionmap',
+    component: ReunionMapView
   },
   {
     path: '/reunionslack',
