@@ -191,10 +191,14 @@ h2 {
 }
 
 .order-info p {
-  margin: 0.5rem 0;
+  margin: 0 0 0.5rem 0;
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.order-info img {
+  margin: 0.3rem 0.6rem 0.9rem 0;
 }
 
 .links {
