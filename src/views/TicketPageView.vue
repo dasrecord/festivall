@@ -42,6 +42,10 @@
           <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
           <RouterLink to="/reunionlocation">Festival Location</RouterLink>
         </p>
+        <p>
+          <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
+          <RouterLink to="/reunionmap">Festival Grounds Map</RouterLink>
+        </p>
       </div>
     </div>
 
@@ -69,6 +73,7 @@ import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import location_icon from '@/assets/images/icons/location.png'
+import map_icon from '@/assets/images/icons/grounds_map.png'
 
 export default {
   name: 'TicketPageView',
@@ -138,7 +143,8 @@ export default {
       ticket_icon,
       meals_icon,
       volunteer_icon,
-      location_icon
+      location_icon,
+      map_icon
     }
   }
 }
@@ -201,7 +207,7 @@ h2 {
   background-color: var(--reunion-frog-green);
   color: white;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   border-radius: 10px;
   padding: 0.5rem 0.5rem;
 }
