@@ -136,7 +136,7 @@ export default {
           <h2>Brandon B.</h2>
         </template>
         <template v-slot:role>
-          <h3>Construction & Bookings</h3>
+          <h3>Guadian of the Flame</h3>
           <p>
             Our talented lead builder, Brandon, has been instrumental in bringing our vision to life
             with his exceptional construction skills and dedication.
