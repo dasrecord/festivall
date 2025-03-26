@@ -44,7 +44,7 @@
         </p>
         <p>
           <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
-          <RouterLink to="/reunionmap">Festival Grounds Map</RouterLink>
+          <RouterLink to="/reunion-tickets">Festival Grounds Map</RouterLink>
         </p>
       </div>
     </div>
@@ -185,8 +185,8 @@ h2 {
 .order-info {
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
-  max-width: 85%;
-  padding: 0 1rem;
+  /* max-width: 85%; */
+  padding: 1rem 1rem;
   z-index: 2;
 }
 
@@ -198,8 +198,9 @@ h2 {
 }
 
 .links {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
   color: white;
 }
 
@@ -210,6 +211,7 @@ h2 {
   justify-content: space-evenly;
   border-radius: 10px;
   padding: 0.5rem 0.5rem;
+  margin: 0;
 }
 
 .links a {
