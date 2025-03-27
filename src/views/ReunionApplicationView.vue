@@ -250,7 +250,7 @@ const submitForm = async () => {
       </h2>
       <h4 class="disclaimer">
         <div>
-          <h1>Compensenation Schedule:<br /></h1>
+          <h1>Compensation Schedule:<br /></h1>
         </div>
         *Please note that submitting this form does not guarantee a performance slot at Reunion
         2025.<br /><br />
