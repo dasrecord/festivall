@@ -1,5 +1,5 @@
 <script setup>
-import reunion_map from '@/assets/images/reunion_map.svg'
+import reunion_map from '@/assets/images/reunion_map_(helvetica).svg'
 </script>
 
 <template>
@@ -11,12 +11,12 @@ import reunion_map from '@/assets/images/reunion_map.svg'
 </template>
 
 <style scoped>
-body {
-  font-family: 'Awesome Lathusca', sans-serif;
+.map-container {
+  font-family: 'Helvetica', sans-serif;
 }
 .map-container {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: auto;
   overflow: hidden;
   background-color: white;
 }

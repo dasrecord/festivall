@@ -44,7 +44,7 @@
         </p>
         <p>
           <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
-          <RouterLink to="/reunion-tickets">Festival Grounds Map</RouterLink>
+          <RouterLink to="/reunionmap">Festival Grounds Map</RouterLink>
         </p>
       </div>
     </div>
