@@ -47,6 +47,7 @@ import Andy from '@/assets/images/reunion_team/Andy.jpg'
 import playground_icon from '@/assets/images/icons/playground.png'
 
 import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
+import construction_icon from '@/assets/images/icons/construction.png'
 
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 
@@ -89,7 +90,8 @@ export default {
       food_icon,
       Andy,
       playground_icon,
-      Brandon_and_Liam
+      Brandon_and_Liam,
+      construction_icon
     }
   }
 }
@@ -172,27 +174,23 @@ export default {
           />
         </template>
       </TeamCard>
+
       <TeamCard>
         <template v-slot:headshot>
-          <img :src="Corey" alt="Corey" />
+          <img :src="Angela" alt="Angela" />
         </template>
         <template v-slot:name>
-          <h2>Corey</h2>
+          <h2>Angela</h2>
         </template>
         <template v-slot:role>
-          <h3>Artist Changeovers</h3>
+          <h3>Food Coordinator</h3>
           <p>
-            Corey is our go-to person for artist changeovers, ensuring smooth transitions between
-            acts. As a DJ himself, Corey understands the importance of timing and flow, making him
-            the perfect fit for this role.
-          </p></template
-        >
+            Angela ensures our festival-goers are well-fed and satisfied, bringing hearty culinary
+            experience to the event.
+          </p>
+        </template>
         <template v-slot:icon>
-          <img
-            :src="headphones_icon"
-            alt="Headphones Icon"
-            style="width: 75px; border-radius: 0; border-radius: 0"
-          />
+          <img :src="food_icon" alt="Food Icon" style="width: 75px; border-radius: 0" />
         </template>
       </TeamCard>
       <TeamCard>
@@ -300,6 +298,29 @@ export default {
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
+          <img :src="Corey" alt="Corey" />
+        </template>
+        <template v-slot:name>
+          <h2>Corey</h2>
+        </template>
+        <template v-slot:role>
+          <h3>Artist Changeovers</h3>
+          <p>
+            Corey is our go-to person for artist changeovers, ensuring smooth transitions between
+            acts. As a DJ himself, Corey understands the importance of timing and flow, making him
+            the perfect fit for this role.
+          </p></template
+        >
+        <template v-slot:icon>
+          <img
+            :src="headphones_icon"
+            alt="Headphones Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
+      </TeamCard>
+      <TeamCard>
+        <template v-slot:headshot>
           <img :src="Becca" alt="Becca" />
         </template>
         <template v-slot:name>
@@ -374,24 +395,7 @@ export default {
           />
         </template>
       </TeamCard>
-      <TeamCard>
-        <template v-slot:headshot>
-          <img :src="Angela" alt="Angela" />
-        </template>
-        <template v-slot:name>
-          <h2>Angela</h2>
-        </template>
-        <template v-slot:role>
-          <h3>Food Coordinator</h3>
-          <p>
-            Angela ensures our festival-goers are well-fed and satisfied, bringing hearty culinary
-            experience to the event.
-          </p>
-        </template>
-        <template v-slot:icon>
-          <img :src="food_icon" alt="Food Icon" style="width: 75px; border-radius: 0" />
-        </template>
-      </TeamCard>
+
       <TeamCard>
         <template v-slot:headshot>
           <img :src="Andy" alt="Andy" />
