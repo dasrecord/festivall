@@ -57,7 +57,7 @@
         <ul class="crew">
           <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
-            <strong>Front Gate:</strong> [Minimum Three 2-Hour Shifts/Weekend]
+            <strong>Front Gate:</strong><br />[Minimum Three 2-Hour Shifts Per Weekend]
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
               using our in-house ticketing system. They are the first point of contact for attendees
@@ -68,7 +68,7 @@
         <ul class="crew">
           <img :src="food_team_icon" alt="Food Team Icon" />
           <li>
-            <strong>Food Team:</strong> [Minimum Two 4-Hour Shifts Weekend]
+            <strong>Food Team:</strong><br />[Minimum Two 4-Hour Shifts Per Weekend]
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
@@ -80,7 +80,7 @@
         <ul class="crew">
           <img :src="setup_crew_icon" alt="Setup Crew Icon" />
           <li>
-            <strong>Setup Crew:</strong> [Minimum One 8-Hour Shift PreShow]
+            <strong>Setup Crew:</strong><br />[Minimum One 8-Hour Shift PreShow]
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
               items needed for the event. They help create a welcoming and festive atmosphere for
@@ -92,7 +92,7 @@
         <ul class="crew">
           <img :src="cleanup_crew_icon" alt="Cleanup Crew Icon" />
           <li>
-            <strong>Cleanup Crew:</strong> [Minimum One 8-Hour Shift PostShow]
+            <strong>Cleanup Crew:</strong><br />[Minimum One 8-Hour Shift PostShow]
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
               after the event. They help pack up equipment, decorations, and other items, and ensure
@@ -104,7 +104,8 @@
         <ul class="crew">
           <img :src="stage_crew_icon" alt="Stage Crew Icon" />
           <li>
-            <strong>Stage Crew:</strong> [Minimum Two 4-Hour Shifts Per Weekend]
+            <strong>Stage Crew:</strong><br />
+            [Minimum Two 4-Hour Shifts Per Weekend]
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
@@ -115,7 +116,7 @@
         </ul>
       </ul>
 
-      <h3>
+      <h3 style="margin-top: 1rem">
         If you have any questions or require further assistance, please contact us at
         <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
       </h3>
@@ -169,8 +170,7 @@ import front_gate_icon from '../assets/images/icons/front_gate.png'
   margin-bottom: 1rem;
 }
 
-h2,
-h3 {
+h2 {
   color: var(--reunion-frog-green);
   text-shadow: 0px 0px 5px rgb(255, 255, 255, 0.3);
 }
@@ -182,6 +182,7 @@ ul {
 
 li p {
   margin: 0.5rem 0 1rem 0;
+  text-transform: none;
   color: #cccccc;
 }
 
@@ -199,6 +200,9 @@ li p {
   width: 64px;
   height: auto;
   margin: 0 1rem;
+}
+.crew li {
+  text-transform: uppercase;
 }
 
 strong {
