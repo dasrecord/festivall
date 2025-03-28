@@ -1,9 +1,31 @@
 <template>
   <h1>REUNION 2025 TICKET SCANNER</h1>
-  <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
+  <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
-    <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
+    <div class="utilities">
+      <button @click="refreshPage">Refresh Scanner</button>
+      <button @showInstructions="true">Front Gate Instructions</button>
+    </div>
 
+    <div v-if="showInstructions" class="modal">
+      <div class="modal-content">
+        <h3>Front Gate Instructions</h3>
+        <div>
+          <p>1. Welcome the guest warmly and introduce yourself.</p>
+          <p>2. Kindly ask the guest to present their Festivall QR Code for scanning.</p>
+          <p>
+            3. If a match is found and the status is "Paid," admit the appropriate number of persons
+            checking in or out.
+          </p>
+          <p>
+            4. If the status is "Unpaid" or there is an error, please radio the admin team for
+            assistance.
+          </p>
+        </div>
+
+        <button @click="showInstructions = false">Close</button>
+      </div>
+    </div>
     <h3>
       Scan Result:<br />
       {{ fullResult }}<br /><br />
@@ -18,8 +40,20 @@
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br /><br />
-      Admit: {{ matchingOrder.ticket_quantity }}<br />
-      Paid: {{ paidStatus(matchingOrder) }} <br />
+      Admit:
+      <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
+        <img
+          src="@/assets/images/icons/ticket.png"
+          alt="Ticket"
+          style="width: 24px; margin-right: 5px"
+        />
+      </span>
+      <br />
+      Paid:
+      <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
+        {{ paidStatus(matchingOrder) }}</span
+      >
+      <br />
       Status: {{ currentStatus(matchingOrder) }} <br /><br />
     </p>
     <button
@@ -135,7 +169,8 @@ export default {
       scanResult: null,
       orders: [],
       matchingOrder: null,
-      filter: 'all'
+      filter: 'all',
+      showInstructions: false
     }
   },
 
@@ -223,6 +258,32 @@ export default {
 </script>
 
 <style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+.modal-content {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+  font-size: larger;
+}
+.modal-content p {
+  font-size: medium;
+}
+button {
+  margin-top: 10px;
+}
 h1,
 h2 {
   text-align: center;
@@ -259,10 +320,17 @@ button {
   margin: 1rem;
   border-radius: 20px;
 }
-.refresh-button {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
+
+.utilities {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.utilities button {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
+  padding: 0.5rem;
 }
 .panel-button {
   width: 100%;
