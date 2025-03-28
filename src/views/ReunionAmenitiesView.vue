@@ -20,6 +20,7 @@ import speakers from '@/assets/images/icons/speakers.png'
 import target from '@/assets/images/icons/target.png'
 import ticket_scanner from '@/assets/images/icons/ticket_scanner.png'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import arcade from '@/assets/images/icons/arcade.png'
 
 export default {
   components: {
@@ -45,7 +46,8 @@ export default {
       showers: showers,
       speakers: speakers,
       target: target,
-      ticket_scanner: ticket_scanner
+      ticket_scanner: ticket_scanner,
+      arcade: arcade
     }
   }
 }
@@ -62,8 +64,8 @@ export default {
         style="cursor: pointer; max-width: 600px"
         @click="$router.push('/reunion')"
       />
-      <img :src="frogImage" alt="frog" class="frog-image" />
       <br />
+      <img :src="frogImage" alt="frog" class="frog-image" />
     </h1>
     <h2>AMENITIES & INFO:</h2>
     <div class="amenities">
@@ -124,6 +126,10 @@ export default {
         <span>Nerf gun battle arena‍</span>
       </div>
       <div class="amenity">
+        <img :src="arcade" alt="arcade" class="amenity-icon" />
+        <span>Retro video game arcade</span>
+      </div>
+      <div class="amenity">
         <img :src="paw" alt="paw" class="amenity-icon" />
         <span>Leave pets at home.</span>
       </div>
@@ -174,7 +180,7 @@ export default {
 
 .amenity-icon {
   height: auto;
-  width: 50px;
+  width: 64px;
   padding: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
