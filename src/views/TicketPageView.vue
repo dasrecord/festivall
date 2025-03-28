@@ -2,9 +2,7 @@
   <div class="ticket-page" v-if="order">
     <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
-
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
-
     <h2>Your Digital Ticket</h2>
     <div class="order-info">
       <p><strong>Full Name:</strong>&nbsp;{{ order.fullname }}</p>

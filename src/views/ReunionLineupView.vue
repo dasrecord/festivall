@@ -20,7 +20,7 @@
       <div v-if="showDays.friday" class="day">
         <h2>Friday</h2>
         <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar.ics"
+          filePath="/data/calendars/reunion_artist_calendar_2024.ics"
           :startDate="new Date('2024-08-30T14:00:00')"
           :endDate="new Date('2024-08-31T02:00:00')"
         />
@@ -30,7 +30,7 @@
       <div v-if="showDays.saturday" class="day">
         <h2>Saturday</h2>
         <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar.ics"
+          filePath="/data/calendars/reunion_artist_calendar_2024.ics"
           :startDate="new Date('2024-08-31T14:00:00')"
           :endDate="new Date('2024-09-01T02:00:00')"
         />
@@ -40,7 +40,7 @@
       <div v-if="showDays.sunday" class="day">
         <h2>Sunday</h2>
         <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar.ics"
+          filePath="/data/calendars/reunion_artist_calendar_2024.ics"
           :startDate="new Date('2024-09-01T14:00:00')"
           :endDate="new Date('2024-09-02T02:00:00')"
         />
