@@ -101,8 +101,7 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
   margin-bottom: 1rem;
 }
 
-h2,
-h3 {
+h2 {
   color: var(--reunion-frog-green);
   text-shadow: 0px 0px 5px rgb(255, 255, 255, 0.3);
 }

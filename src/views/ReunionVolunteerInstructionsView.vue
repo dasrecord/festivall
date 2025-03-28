@@ -43,7 +43,7 @@
           />
           <div>
             <button @click="router.push('/reunion-frontgate-signup')" class="volunteer-button">
-              FRONT GATE SIGNUP<br />[Minimum Three 2-Hour Shifts/Weekend]
+              FRONT GATE SIGNUP<br />[Minimum Three 2-Hour Shifts Per Weekend]
             </button>
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
