@@ -90,6 +90,12 @@
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
             <!-- RATES -->
             <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
+            <!-- SETTIME -->
+            <span v-if="applicant.settime"> Settime: {{ applicant.settime }} </span>
+            <!-- CLEAR SETTIME -->
+            <button v-if="applicant.settime" @click="clearSettime(applicant.id_code, '')">
+              Clear Settime
+            </button>
           </div>
 
           <!-- TICKET DATA -->
@@ -190,22 +196,37 @@
                 class="action-icon"
                 style="width: auto; height: 42px; transform: translateY(18px)"
               /><br />
-              <div v-if="applicant.applicant_type">
-                <input type="text" v-model="applicant.additional_compensation" />
-                <img
-                  @click="
-                    updateCompensation(applicant.id_code, applicant.additional_compensation),
-                      (applicant.additional_compensation = '')
-                  "
-                  :src="compensation_icon"
-                  alt="Update Compensation"
-                  class="action-icon"
-                  style="width: auto; height: 32px; transform: translateY(12px)"
-                />
-                <br />
-                <button @click="generateContract(applicant.id_code)">Preview Contract</button>
-              </div>
             </div>
+            <div v-if="applicant.applicant_type">
+              <input type="text" v-model="applicant.additional_compensation" />
+              <img
+                @click="
+                  updateCompensation(applicant.id_code, applicant.additional_compensation),
+                    (applicant.additional_compensation = '')
+                "
+                :src="compensation_icon"
+                alt="Update Compensation"
+                class="action-icon"
+                style="width: auto; height: 32px; transform: translateY(12px)"
+              />
+            </div>
+            <div
+              v-if="
+                applicant.applicant_type === 'Artist' || applicant.applicant_type === 'Workshop'
+              "
+            >
+              <input type="datetime-local" v-model="applicant.settime" />
+              <img
+                @click="
+                  updateSettime(applicant.id_code, applicant.settime), (applicant.settime = '')
+                "
+                :src="lineup_icon"
+                alt="Update Settime"
+                class="action-icon"
+                style="width: auto; height: 32px; transform: translateY(12px)"
+              />
+            </div>
+            <button @click="generateContract(applicant.id_code)">Preview Contract</button>
           </div>
         </div>
       </div>
@@ -226,6 +247,7 @@ import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
 import meal_icon from '@/assets/images/icons/meals.png'
 import artist_icon from '@/assets/images/icons/artist.png'
+import lineup_icon from '@/assets/images/icons/lineup.png'
 
 export default {
   name: 'DashboardPanel',
@@ -386,6 +408,40 @@ export default {
       }
     }
 
+    const updateSettime = async (id_code, settime) => {
+      try {
+        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        await updateDoc(docRef, {
+          settime: settime
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.settime = settime
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error updating settime:', error)
+      }
+    }
+
+    const clearSettime = async (id_code, settime) => {
+      try {
+        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        await updateDoc(docRef, {
+          settime: settime
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.settime = ''
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error clearing settime:', error)
+      }
+    }
+
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
@@ -479,6 +535,9 @@ export default {
       sendEmail,
       compensation_icon,
       updateCompensation,
+      lineup_icon,
+      updateSettime,
+      clearSettime,
       generateContract,
       confirmPaymentReceived,
       revokeTicket,
@@ -620,14 +679,13 @@ button:hover {
 
 .actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
   border-radius: 8px;
 }
 
 input {
-  width: 40%;
   padding: 0.4rem;
   margin-bottom: 0.5rem;
   border-radius: 6px;
