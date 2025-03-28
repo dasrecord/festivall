@@ -101,18 +101,21 @@
           <!-- TICKET DATA -->
           <div v-if="applicant.payment_type" class="ticket-content">
             <!-- PAID STATUS -->
-            <p v-if="applicant.paid" style="color: green">
+            <p v-if="applicant.paid" style="color: green; font-size: large">
               Paid<br />
 
               <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
             </p>
-            <p v-else style="color: red">
+            <p v-else style="color: red; font-size: large">
               Unpaid<br />
-
-              <button @click="confirmPaymentReceived(applicant.id_code)">
-                Confirm Payment Received</button
-              ><br />
+              <a @click="remindPayment(applicant.id_code)">
+                <img :src="reminder_icon" alt="Remind Payment" class="action-icon" />
+              </a>
             </p>
+            <button @click="confirmPaymentReceived(applicant.id_code)">
+              Confirm Payment Received
+            </button>
+            <br />
             <!-- CHECKED IN STATUS -->
             <p v-if="applicant.checked_in">Checked In</p>
             <p v-else>Not Checked In</p>
@@ -172,7 +175,7 @@
           <!-- DASHBOARD ACTIONS-->
           <div v-if="applicant.payment_type !== 'inkind'" class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
-              <img :src="mixTrack" alt="Listen to Mix/Track" class="action-icon" />
+              <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
             </a>
             <a
               v-if="applicant.applicant_type"
@@ -185,10 +188,18 @@
                 )
               "
             >
-              <img :src="contract" alt="Book Applicant" class="action-icon" />
+              <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
+            </a>
+
+            Status:
+            <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
+            <p v-else style="color: red; font-size: large">Not Signed</p>
+
+            <a v-if="applicant.applicant_type" @click="remindContract(applicant.id_code)">
+              <img :src="reminder_icon" alt="Remind Applicant" class="action-icon" />
             </a>
             <div v-if="applicant.phone" class="message-section">
-              <input type="text" v-model="applicant.message" />
+              <input type="text" v-model="applicant.message" placeholder="message user" />
               <img
                 @click="sendSMS(applicant.phone, applicant.message), (applicant.message = '')"
                 :src="sms_icon"
@@ -198,7 +209,11 @@
               /><br />
             </div>
             <div v-if="applicant.applicant_type">
-              <input type="text" v-model="applicant.additional_compensation" />
+              <input
+                type="text"
+                v-model="applicant.additional_compensation"
+                placeholder="update compensation"
+              />
               <img
                 @click="
                   updateCompensation(applicant.id_code, applicant.additional_compensation),
@@ -238,8 +253,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import mixTrack from '@/assets/images/icons/mix_track.png'
-import contract from '@/assets/images/icons/contract.png'
+import mixTrack_icon from '@/assets/images/icons/mix_track.png'
+import contract_icon from '@/assets/images/icons/contract.png'
 import { useRoute, useRouter } from 'vue-router'
 import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
@@ -248,6 +263,7 @@ import ticket_icon from '@/assets/images/icons/ticket.png'
 import meal_icon from '@/assets/images/icons/meals.png'
 import artist_icon from '@/assets/images/icons/artist.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
+import reminder_icon from '@/assets/images/icons/reminder.png'
 
 export default {
   name: 'DashboardPanel',
@@ -445,6 +461,27 @@ export default {
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
+    const remindContract = (id_code) => {
+      const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
+      if (applicant && applicant.phone) {
+        const message = `Hello ${applicant.fullname || 'there'}. This is a gentle reminder to sign your contract for Reunion 2025, if you haven't already.`
+        sendSMS(applicant.phone, message)
+        alert('Reminder sent successfully.')
+      } else {
+        alert('Phone number not available for this applicant.')
+      }
+    }
+
+    const remindPayment = (id_code) => {
+      const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
+      if (applicant && applicant.phone) {
+        const message = `Hello ${applicant.fullname || 'there'}. This is a gentle reminder to make your payment for Reunion 2025, if you haven't already.`
+        sendSMS(applicant.phone, message)
+        alert('Reminder sent successfully.')
+      } else {
+        alert('Phone number not available for this applicant.')
+      }
+    }
 
     const deliverContract = (email, fullname, role, id_code) => {
       const subject = encodeURIComponent('Reunion 2025')
@@ -539,11 +576,14 @@ export default {
       updateSettime,
       clearSettime,
       generateContract,
+      remindContract,
+      remindPayment,
       confirmPaymentReceived,
       revokeTicket,
       previewTicket,
-      mixTrack,
-      contract,
+      mixTrack_icon,
+      contract_icon,
+      reminder_icon,
       contractEmailBody,
       ticketEmailBody
     }
@@ -704,6 +744,7 @@ p {
 }
 
 a {
+  display: inline-block;
   color: var(--festivall-baby-blue);
   text-decoration: none;
   border-radius: 6px;
