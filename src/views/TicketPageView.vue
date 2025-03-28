@@ -40,11 +40,15 @@
         </p>
         <p>
           <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
-          <RouterLink to="/reunionlocation">Festival Location</RouterLink>
+          <RouterLink to="/reunionlocation">Location</RouterLink>
         </p>
         <p>
           <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
-          <RouterLink to="/reunionmap">Festival Grounds Map</RouterLink>
+          <RouterLink to="/reunionmap">Grounds Map</RouterLink>
+        </p>
+        <p>
+          <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
+          <RouterLink to="/reunionlineup">Lineup</RouterLink>
         </p>
       </div>
     </div>
@@ -74,6 +78,7 @@ import meals_icon from '@/assets/images/icons/meals_black.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
+import lineup_icon from '@/assets/images/icons/lineup.png'
 
 export default {
   name: 'TicketPageView',
@@ -144,7 +149,8 @@ export default {
       meals_icon,
       volunteer_icon,
       location_icon,
-      map_icon
+      map_icon,
+      lineup_icon
     }
   }
 }
@@ -215,7 +221,7 @@ h2 {
   background-color: var(--reunion-frog-green);
   color: white;
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
   border-radius: 10px;
   padding: 0.5rem 0.5rem;
   margin: 0;
