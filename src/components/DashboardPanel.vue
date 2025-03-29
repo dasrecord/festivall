@@ -101,6 +101,7 @@
           <!-- TICKET DATA -->
           <div v-if="applicant.payment_type" class="ticket-content">
             <!-- PAID STATUS -->
+            Payment Status:
             <p v-if="applicant.paid" style="color: green; font-size: large">
               Paid<br />
 
@@ -191,7 +192,7 @@
               <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
             </a>
 
-            Status:
+            Contract Status:
             <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
             <p v-else style="color: red; font-size: large">Not Signed</p>
 
