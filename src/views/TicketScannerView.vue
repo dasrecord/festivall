@@ -60,7 +60,7 @@
         </p>
       </div>
       <div>
-        <p>
+        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Payment Status:
           <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
             {{ paidStatus(matchingOrder) }}</span
@@ -108,7 +108,7 @@
       "
       @click="checkOut(matchingOrder)"
     >
-      Check Out 1 Ticket
+      Check Out 1
     </button>
   </div>
   <div class="at-a-glance">
@@ -261,10 +261,18 @@ export default {
       }
     },
     currentStatus(order) {
-      return order.checked_in ? 'Checked In' : 'Not Checked In'
+      if (order.checked_in) {
+        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
+      } else {
+        return 'Not Checked In'
+      }
     },
     paidStatus(order) {
-      return order.paid ? 'Paid' : 'Not Paid'
+      if (order.paid) {
+        return order.paid === 'true' ? 'Paid' : 'Not Paid'
+      } else {
+        return 'Not Paid'
+      }
     },
 
     async checkIn(order) {
@@ -395,7 +403,6 @@ button {
   justify-content: space-evenly;
   margin: 1rem;
 }
-
 .utilities {
   width: 100%;
   display: flex;
