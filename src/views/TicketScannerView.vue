@@ -16,6 +16,11 @@
 
     <div v-if="showInstructions" class="modal">
       <div class="modal-content">
+        <img
+          :src="festivall_emblem"
+          style="width: 100px; height: auto; margin: auto; display: block"
+          alt="Festivall Emblem"
+        />
         <h3><u>Front Gate Instructions</u></h3>
         <br />
         <div>
@@ -28,10 +33,9 @@
             checking in or out.
           </p>
           <br />
-          <p>
-            4. If the status is "Unpaid" or there is an error, please radio the admin team for
-            assistance.
-          </p>
+          <p>4. If the status is "Unpaid" collect the Total Price in cash.</p>
+          <br />
+          <p>5. Please radio the admin team if there are any issues.</p>
           <br />
         </div>
         <button @click="showInstructions = false">Close</button>
@@ -51,8 +55,7 @@
         </p>
         <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Matching Order: {{ matchingOrder.id_code }}
-        </p>
-        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+          <br />
           Name: {{ matchingOrder.fullname }} <br />
           Email: {{ matchingOrder.email }} <br />
           Phone: {{ matchingOrder.phone }} <br />
@@ -60,6 +63,10 @@
           <span v-if="matchingOrder.selected_day"
             >Valid starting {{ matchingOrder.selected_day }} for 24 Hours<br
           /></span>
+          Total Price:
+          <span v-if="matchingOrder.currency === 'BTC'"> {{ matchingOrder.total_price }} BTC </span>
+          <span v-else> ${{ matchingOrder.total_price }} CAD </span>
+          <br />
         </p>
       </div>
       <div>
@@ -69,7 +76,7 @@
             {{ paidStatus(matchingOrder) }}</span
           >
           <br />
-          Status: {{ currentStatus(matchingOrder) }} <br />
+          Current Status: {{ currentStatus(matchingOrder) }} <br />
           Admit:
           <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
             <img
@@ -343,15 +350,15 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: baseline;
   align-items: center;
   z-index: 10;
 }
 .modal-content {
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
   text-align: center;
   width: 80%;

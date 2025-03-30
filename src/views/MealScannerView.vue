@@ -16,11 +16,16 @@
 
     <div v-if="showInstructions" class="modal">
       <div class="modal-content">
+        <img
+          :src="festivall_emblem"
+          style="width: 100px; height: auto; margin: auto; display: block"
+          alt="Festivall Emblem"
+        />
         <h3><u> Meal Team Instructions </u></h3>
         <br />
         <p>1. Welcome and warmly introduce yourself.</p>
         <br />
-        <p>2. Ask the guest to present their Festivall ID code.</p>
+        <p>2. Kindly ask the guest to present their Festivall QR Code for scanning.</p>
         <br />
         <p>3. Redeem 1 meal ticket per meal ordered.</p>
         <br />
@@ -63,7 +68,7 @@
             {{ paidStatus(matchingOrder) }}</span
           >
           <br />
-          Status: {{ currentStatus(matchingOrder) }} <br />
+          Current Status: {{ currentStatus(matchingOrder) }} <br />
           Admit:
           <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
             <img
@@ -318,7 +323,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -326,7 +331,7 @@ export default {
   z-index: 10;
 }
 .modal-content {
-  padding: 20px;
+  padding: 10px;
   border-radius: 10px;
   text-align: center;
   width: 80%;
