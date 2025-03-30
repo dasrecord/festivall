@@ -326,7 +326,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: baseline;
   align-items: center;
   z-index: 10;
 }

@@ -11,40 +11,63 @@
         {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
       </p>
       <p v-if="order.ticket_type === 'Weekend Pass'">
-        <strong>Valid:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
+        <strong>Valid From:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
       </p>
 
       <p v-if="order.ticket_type === 'Day Pass'">
         <strong>Valid: </strong> 24 hours starting 12:00 PM {{ order.selected_day }}
       </p>
+      <div class="quantities">
+        <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
+        <img
+          v-for="n in Number(order.ticket_quantity)"
+          :key="n"
+          :src="ticket_icon"
+          style="height: auto; width: 32px; transform: rotate(-45deg)"
+          alt="Ticket Icon"
+        />
+      </div>
+      <div class="quantities">
+        <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
 
-      <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
-      <img
-        v-for="n in Number(order.ticket_quantity)"
-        :key="n"
-        :src="ticket_icon"
-        style="height: auto; width: 32px; transform: rotate(-45deg)"
-        alt="Ticket Icon"
-      />
+        <img
+          v-for="n in Number(order.meal_tickets_remaining)"
+          :key="n"
+          :src="meals_icon"
+          style="height: auto; width: 32px"
+          alt="Meal Icon"
+        />
+      </div>
 
-      <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
-
-      <img
-        v-for="n in Number(order.meal_tickets_remaining)"
-        :key="n"
-        :src="meals_icon"
-        style="height: auto; width: 32px"
-        alt="Meal Icon"
-      />
-
-      <p v-if="order && typeof order === 'object'">
+      <p
+        v-if="order && typeof order === 'object'"
+        style="
+          justify-content: center;
+          background-color: black;
+          color: white;
+          padding: 0.5rem;
+          border-radius: 5px;
+        "
+      >
         <strong>Payment Status:</strong>
         <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
           {{ order.paid ? 'Paid' : 'Not Paid' }}
         </span>
       </p>
-      <p v-if="order.checked_in"><strong>Status:</strong> Checked In</p>
-      <p v-else><strong>Status:</strong> Not Checked In</p>
+      <p
+        style="
+          justify-content: center;
+          background-color: black;
+          color: white;
+          padding: 0.5rem;
+          border-radius: 5px;
+        "
+      >
+        <strong>Status:</strong>
+        <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
+          {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
+        </span>
+      </p>
       <div class="links">
         <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
           <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
@@ -120,6 +143,7 @@ export default {
           generateQRCode(order.value.id_code_long) // Use long id_code for QR code generation
         } else {
           console.error('No such document!')
+          alert('No order found with this ID code. Please check your ID code and try again.')
           router.push({ name: 'EnterIDCode' })
         }
       } catch (error) {
@@ -268,5 +292,11 @@ a:hover {
 
 .not-paid {
   color: red;
+}
+.checked-in {
+  color: orange;
+}
+.not-checked-in {
+  color: yellow;
 }
 </style>
