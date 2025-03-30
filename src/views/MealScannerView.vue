@@ -5,6 +5,8 @@
     alt="Festivall Emblem"
   />
   <h1>REUNION 2025 MEAL SCANNER</h1>
+  <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
+  <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
   <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
     <div class="utilities">
@@ -261,9 +263,11 @@ export default {
       if (matchingOrder) {
         this.matchingOrder = matchingOrder
         console.log('Order found:', this.matchingOrder)
+        document.getElementById('success-sound').play()
       } else {
         this.matchingOrder = 'No Matching Order Found'
         console.log('Order not found:', this.matchingOrder)
+        document.getElementById('failure-sound').play()
       }
     },
     currentStatus(order) {
