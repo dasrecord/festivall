@@ -25,7 +25,7 @@
         style="height: auto; width: 32px"
         alt="Meal Icon"
       />
-      <p>
+      <p v-if="matchingOrder && typeof matchingOrder === 'object'">
         <strong>Payment Status:</strong>
         <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
           &nbsp;{{ order.paid ? 'Paid' : 'Not Paid' }}</span

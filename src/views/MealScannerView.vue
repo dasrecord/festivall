@@ -53,7 +53,7 @@
         </p>
       </div>
       <div>
-        <p>
+        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Payment Status:
           <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
             {{ paidStatus(matchingOrder) }}</span
@@ -84,6 +84,7 @@
         </p>
       </div>
     </div>
+
     <button
       class="panel-button"
       v-if="
