@@ -3,24 +3,29 @@
   <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
     <div class="utilities">
+      <button @click="showInstructions = true">Front Gate Instructions</button>
       <button @click="refreshPage">Refresh Scanner</button>
-      <button @showInstructions="true">Front Gate Instructions</button>
     </div>
 
     <div v-if="showInstructions" class="modal">
       <div class="modal-content">
-        <h3>Front Gate Instructions</h3>
+        <h3><u>Front Gate Instructions</u></h3>
+        <br />
         <div>
           <p>1. Welcome the guest warmly and introduce yourself.</p>
+          <br />
           <p>2. Kindly ask the guest to present their Festivall QR Code for scanning.</p>
+          <br />
           <p>
             3. If a match is found and the status is "Paid," admit the appropriate number of persons
             checking in or out.
           </p>
+          <br />
           <p>
             4. If the status is "Unpaid" or there is an error, please radio the admin team for
             assistance.
           </p>
+          <br />
         </div>
 
         <button @click="showInstructions = false">Close</button>
@@ -58,14 +63,18 @@
     </p>
     <button
       class="panel-button"
-      v-if="matchingOrder && typeof matchingOrder === 'object' && !matchingOrder.checked_in"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.ticket_quantity > 0"
       @click="checkIn(matchingOrder)"
     >
       Check In
     </button>
     <button
       class="panel-button"
-      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.checked_in"
+      v-if="
+        matchingOrder &&
+        typeof matchingOrder === 'object' &&
+        matchingOrder.ticket_quantity < matchingOrder.original_ticket_quantity
+      "
       @click="checkOut(matchingOrder)"
     >
       Check Out
@@ -224,26 +233,48 @@ export default {
     },
 
     async checkIn(order) {
-      const orderRef = doc(this.db, 'orders_2025', order.id_code)
-      await updateDoc(orderRef, {
-        checked_in: true
-      })
-      sendReunionFrontGate(
-        `:bust_in_silhouette: ${order.fullname} has checked in.\n:ticket: ${order.id_code}`
-      )
-      order.checked_in = true
+      if (!order.original_ticket_quantity) {
+        order.original_ticket_quantity = order.ticket_quantity
+      }
+
+      if (order.ticket_quantity > 0) {
+        const orderRef = doc(this.db, 'orders_2025', order.id_code)
+        await updateDoc(orderRef, {
+          checked_in: true,
+          original_ticket_quantity: order.original_ticket_quantity
+        })
+        sendReunionFrontGate(`:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}`)
+        order.checked_in = true
+        order.ticket_quantity -= 1
+      } else {
+        console.error('No tickets left to check in.')
+      }
     },
+
     async checkOut(order) {
-      const orderRef = doc(this.db, 'orders_2025', order.id_code)
-      await updateDoc(orderRef, {
-        checked_in: false
-      })
-      sendReunionSlackAdmin(`:bust_in_silhouette: ${order.fullname} has checked out.`)
-      order.checked_in = false
+      if (!order.original_ticket_quantity) {
+        order.original_ticket_quantity = order.ticket_quantity
+      }
+
+      if (order.ticket_quantity < order.original_ticket_quantity) {
+        const orderRef = doc(this.db, 'orders_2025', order.id_code)
+        await updateDoc(orderRef, {
+          checked_in: order.ticket_quantity + 1 > 0,
+          ticket_quantity: order.ticket_quantity + 1,
+          original_ticket_quantity: order.original_ticket_quantity
+        })
+        sendReunionFrontGate(`:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}`)
+        order.checked_in = order.ticket_quantity + 1 > 0
+        order.ticket_quantity += 1
+      } else {
+        console.error('Cannot check out more tickets than the original quantity.')
+      }
     },
+
     refreshPage() {
       window.location.reload()
     },
+
     toggleView() {
       if (this.filter === 'all') {
         this.filter = 'checkedIn'
@@ -283,6 +314,7 @@ export default {
 }
 button {
   margin-top: 10px;
+  width: 100%;
 }
 h1,
 h2 {
