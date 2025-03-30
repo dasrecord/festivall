@@ -6,9 +6,18 @@
     <h2>Your Digital Ticket</h2>
     <div class="order-info">
       <p><strong>Full Name:</strong> {{ order.fullname }}</p>
-      <p v-if="order.ticket_type"><strong>Ticket Type:</strong> {{ order.ticket_type }}</p>
-      <p v-if="order.selected_day"><strong> Ticket Type:</strong> Day Pass<br /></p>
-      Valid for 24 hours starting 12:00 P.M. {{ order.selected_day }}<br />
+      <p>
+        <strong>Ticket Type:</strong>
+        {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
+      </p>
+      <p v-if="order.ticket_type === 'Weekend Pass'">
+        <strong>Valid:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
+      </p>
+
+      <p v-if="order.ticket_type === 'Day Pass'">
+        <strong>Valid: </strong> 24 hours starting 12:00 PM {{ order.selected_day }}
+      </p>
+
       <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
       <img
         v-for="n in Number(order.ticket_quantity)"
