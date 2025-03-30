@@ -23,16 +23,18 @@
         <p>3. Redeem 1 meal ticket per meal ordered.</p>
         <br />
         <p>4. If the guest has no meal tickets remaining, please charge $15 cash per meal.</p>
+        <br />
         <p>5. Please radio the admin team if there are any issues.</p>
         <br />
         <button @click="showInstructions = false">Close</button>
       </div>
     </div>
     <div class="scan-result">
-      <h2>
+      <h2 v-if="fullResult">
         Scan Result:<br />
         {{ fullResult }}
       </h2>
+      <h2 v-else>Ready to Scan</h2>
     </div>
     <div class="order-details">
       <div>
@@ -375,7 +377,6 @@ button {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  margin: 1rem;
 }
 .utilities {
   width: 100%;
