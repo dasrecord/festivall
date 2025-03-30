@@ -27,7 +27,6 @@
           </p>
           <br />
         </div>
-
         <button @click="showInstructions = false">Close</button>
       </div>
     </div>
@@ -54,12 +53,23 @@
         />
       </span>
       <br />
-      Paid:
+      Payment Status:
       <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
         {{ paidStatus(matchingOrder) }}</span
       >
       <br />
-      Status: {{ currentStatus(matchingOrder) }} <br /><br />
+      Status: {{ currentStatus(matchingOrder) }} <br />
+      Meal Tickets Remaining:
+      <span v-if="matchingOrder.meal_tickets_remaining > 0" class="meals">
+        <img
+          v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
+          :key="n"
+          src="@/assets/images/icons/meals.png"
+          alt="Meal Ticket"
+          style="width: 24px"
+        />
+      </span>
+      <br />
     </p>
     <button
       class="panel-button"
@@ -297,6 +307,7 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 10;
@@ -312,7 +323,8 @@ export default {
 .modal-content p {
   font-size: medium;
 }
-button {
+
+.modal button {
   margin-top: 10px;
   width: 100%;
 }
