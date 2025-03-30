@@ -43,7 +43,11 @@
     <p v-if="matchingOrder && typeof matchingOrder === 'object'">
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
-      Phone: {{ matchingOrder.phone }} <br /><br />
+      Phone: {{ matchingOrder.phone }} <br />
+      Ticket Type: {{ matchingOrder.ticket_type }}<br />
+      <span v-if="matchingOrder.selected_day"
+        >Valid starting {{ matchingOrder.selected_day }} for 24 Hours<br
+      /></span>
       Admit:
       <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
         <img
@@ -146,6 +150,7 @@
           <p>{{ order.email }}</p>
           <p>{{ order.phone }}</p>
         </div>
+
         <div class="order-status">
           <h4>Admit {{ order.ticket_quantity }}</h4>
           <div class="tickets">

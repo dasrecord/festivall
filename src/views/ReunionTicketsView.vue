@@ -18,8 +18,8 @@ const form = ref({
   email: '',
   phone: '',
   ticket_type: '',
-  day_pass: '',
   ticket_quantity: 1,
+  selected_day: '',
   meal_packages: 0,
   meal_tickets_remaining: 0,
   payment_type: '',
@@ -182,7 +182,7 @@ const submitForm = async () => {
         phone: '',
         ticket_type: '',
         ticket_quantity: 1,
-        day_pass: '',
+        selected_day: '',
         meal_packages: 1,
         payment_type: '',
         total_price: 0
@@ -290,6 +290,7 @@ onMounted(() => {
         </div>
       </h4>
       <br />
+      <!-- FORM -->
       <form @submit.prevent="submitForm">
         <div class="form-section">
           <label for="id_code">ID_CODE:</label>
@@ -360,9 +361,9 @@ onMounted(() => {
           <label for="day_selection">Select Day:</label>
           <select id="day_selection" v-model="form.selected_day" required>
             <option value="" disabled>Select a day</option>
-            <option value="Friday">Friday, August 29th, 2025</option>
-            <option value="Saturday">Saturday, August 30th, 2025</option>
-            <option value="Sunday">Sunday, August 31st, 2025</option>
+            <option value="Friday, August 29th, 2025">Friday, August 29th, 2025</option>
+            <option value="Saturday, August 30th, 2025">Saturday, August 30th, 2025</option>
+            <option value="Sunday, August 31st, 2025">Sunday, August 31st, 2025</option>
           </select>
         </div>
         <div class="form-section">
