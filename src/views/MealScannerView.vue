@@ -13,11 +13,12 @@
         <br />
         <p>1. Welcome and warmly introduce yourself.</p>
         <br />
-        <p>2. Ask the guest to present their Festivall ID code</p>
+        <p>2. Ask the guest to present their Festivall ID code.</p>
         <br />
         <p>3. Redeem 1 meal ticket per meal ordered.</p>
         <br />
-        <p>4. If the guest has no meal tickets remaining, please charge $15 cash per meal</p>
+        <p>4. If the guest has no meal tickets remaining, please charge $15 cash per meal.</p>
+        <p>5. Please radio the admin team if there are any issues.</p>
         <br />
         <button @click="showInstructions = false">Close</button>
       </div>
