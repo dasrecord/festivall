@@ -101,8 +101,9 @@ export default {
           order.value = querySnapshot.docs[0].data()
           console.log('Order data:', order.value) // Debug log
           await nextTick() // Wait for the DOM to update
-          generateQRCode(order.value.id_code)
-          // generateQRCode(order.value.id_code_long)
+
+          // generateQRCode(order.value.id_code) // Use short id_code for QR code generation
+          generateQRCode(order.value.id_code_long) // Use long id_code for QR code generation
         } else {
           console.error('No such document!')
           router.push({ name: 'EnterIDCode' })
