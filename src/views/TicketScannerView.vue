@@ -97,7 +97,7 @@
       v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.ticket_quantity > 0"
       @click="checkIn(matchingOrder)"
     >
-      Check In
+      Check In 1 Ticket
     </button>
     <button
       class="panel-button"
@@ -108,7 +108,7 @@
       "
       @click="checkOut(matchingOrder)"
     >
-      Check Out
+      Check Out 1 Ticket
     </button>
   </div>
   <div class="at-a-glance">
