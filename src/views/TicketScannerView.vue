@@ -1,4 +1,9 @@
 <template>
+  <img
+    :src="festivall_emblem"
+    style="height: 50px; width: 75px; margin: auto; display: block"
+    alt="Festivall Emblem"
+  />
   <h1>REUNION 2025 TICKET SCANNER</h1>
   <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
@@ -30,51 +35,63 @@
         <button @click="showInstructions = false">Close</button>
       </div>
     </div>
-    <h3>
-      Scan Result:<br />
-      {{ fullResult }}<br /><br />
-    </h3>
-    <p v-if="matchingOrder && typeof matchingOrder === 'string'">
-      {{ matchingOrder }}
-    </p>
-    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
-      Matching Order: {{ matchingOrder.id_code }}
-    </p>
-    <p v-if="matchingOrder && typeof matchingOrder === 'object'">
-      Name: {{ matchingOrder.fullname }} <br />
-      Email: {{ matchingOrder.email }} <br />
-      Phone: {{ matchingOrder.phone }} <br />
-      Ticket Type: {{ matchingOrder.ticket_type }}<br />
-      <span v-if="matchingOrder.selected_day"
-        >Valid starting {{ matchingOrder.selected_day }} for 24 Hours<br
-      /></span>
-      Admit:
-      <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
-        <img
-          src="@/assets/images/icons/ticket.png"
-          alt="Ticket"
-          style="width: 24px; margin-right: 5px"
-        />
-      </span>
-      <br />
-      Payment Status:
-      <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
-        {{ paidStatus(matchingOrder) }}</span
-      >
-      <br />
-      Status: {{ currentStatus(matchingOrder) }} <br />
-      Meal Tickets Remaining:
-      <span v-if="matchingOrder.meal_tickets_remaining > 0" class="meals">
-        <img
-          v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
-          :key="n"
-          src="@/assets/images/icons/meals.png"
-          alt="Meal Ticket"
-          style="width: 24px"
-        />
-      </span>
-      <br />
-    </p>
+    <div class="scan-result">
+      <h2>
+        Scan Result:<br />
+        {{ fullResult }}
+      </h2>
+    </div>
+    <div class="order-details">
+      <div>
+        <p v-if="matchingOrder && typeof matchingOrder === 'string'">
+          {{ matchingOrder }}
+        </p>
+        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+          Matching Order: {{ matchingOrder.id_code }}
+        </p>
+        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+          Name: {{ matchingOrder.fullname }} <br />
+          Email: {{ matchingOrder.email }} <br />
+          Phone: {{ matchingOrder.phone }} <br />
+          Ticket Type: {{ matchingOrder.ticket_type }}<br />
+          <span v-if="matchingOrder.selected_day"
+            >Valid starting {{ matchingOrder.selected_day }} for 24 Hours<br
+          /></span>
+        </p>
+      </div>
+      <div>
+        <p>
+          Payment Status:
+          <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
+            {{ paidStatus(matchingOrder) }}</span
+          >
+          <br />
+          Status: {{ currentStatus(matchingOrder) }} <br />
+          Admit:
+          <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
+            <img
+              src="@/assets/images/icons/ticket.png"
+              alt="Ticket"
+              style="width: 24px; height: auto; transform: rotate(-45deg); margin: 5px"
+            />
+          </span>
+          <br />
+
+          Meal Tickets Remaining:
+          <span v-if="matchingOrder.meal_tickets_remaining > 0" class="meals">
+            <img
+              v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
+              :key="n"
+              src="@/assets/images/icons/meals.png"
+              alt="Meal Ticket"
+              style="width: 24px; height: auto; margin: 5px"
+            />
+          </span>
+          <br />
+        </p>
+      </div>
+    </div>
+
     <button
       class="panel-button"
       v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.ticket_quantity > 0"
@@ -230,8 +247,11 @@ export default {
     onDetect(result) {
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
-      const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
-      // const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
+      // Use short id_code for matching
+      // const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
+
+      // Use long id_code for matching
+      const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
       if (matchingOrder) {
         this.matchingOrder = matchingOrder
         console.log('Order found:', this.matchingOrder)
@@ -368,6 +388,12 @@ button {
   padding: 10px;
   margin: 1rem;
   border-radius: 20px;
+}
+.order-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 1rem;
 }
 
 .utilities {
