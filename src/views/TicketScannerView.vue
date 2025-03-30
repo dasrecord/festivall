@@ -69,6 +69,7 @@
           <br />
         </p>
       </div>
+
       <div>
         <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Payment Status:
@@ -76,8 +77,14 @@
             {{ paidStatus(matchingOrder) }}</span
           >
           <br />
-          Current Status: {{ currentStatus(matchingOrder) }} <br />
-          Admit:
+          Current Status:
+          <span
+            :style="{ color: currentStatus(matchingOrder) === 'Checked In' ? 'orange' : 'yellow' }"
+          >
+            {{ currentStatus(matchingOrder) }}
+          </span>
+          <br />
+          Admit: <br />
           <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
             <img
               src="@/assets/images/icons/ticket.png"
@@ -87,7 +94,7 @@
           </span>
           <br />
 
-          Meal Tickets Remaining:
+          Meal Tickets Remaining:<br />
           <span v-if="matchingOrder.meal_tickets_remaining > 0" class="meals">
             <img
               v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
