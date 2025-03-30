@@ -5,9 +5,11 @@
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
     <h2>Your Digital Ticket</h2>
     <div class="order-info">
-      <p><strong>Full Name:</strong>&nbsp;{{ order.fullname }}</p>
-      <p><strong>Ticket Type:</strong>&nbsp;{{ order.ticket_type }}</p>
-      <p><strong>Ticket Quantity:</strong>&nbsp;{{ order.ticket_quantity }}</p>
+      <p><strong>Full Name:</strong> {{ order.fullname }}</p>
+      <p v-if="order.ticket_type"><strong>Ticket Type:</strong> {{ order.ticket_type }}</p>
+      <p v-if="order.selected_day"><strong> Ticket Type:</strong> Day Pass<br /></p>
+      Valid for 24 hours starting 12:00 P.M. {{ order.selected_day }}<br />
+      <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
       <img
         v-for="n in Number(order.ticket_quantity)"
         :key="n"
@@ -16,7 +18,7 @@
         alt="Ticket Icon"
       />
 
-      <p><strong>Meal Tickets Remaining:</strong>&nbsp;{{ order.meal_tickets_remaining }}</p>
+      <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
 
       <img
         v-for="n in Number(order.meal_tickets_remaining)"
@@ -25,12 +27,15 @@
         style="height: auto; width: 32px"
         alt="Meal Icon"
       />
-      <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+
+      <p v-if="order && typeof order === 'object'">
         <strong>Payment Status:</strong>
         <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
-          &nbsp;{{ order.paid ? 'Paid' : 'Not Paid' }}</span
-        >
+          {{ order.paid ? 'Paid' : 'Not Paid' }}
+        </span>
       </p>
+      <p v-if="order.checked_in"><strong>Status:</strong> Checked In</p>
+      <p v-else><strong>Status:</strong> Not Checked In</p>
       <div class="links">
         <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
           <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
@@ -200,6 +205,7 @@ h2 {
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .order-info img {

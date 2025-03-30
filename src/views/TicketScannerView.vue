@@ -61,7 +61,7 @@
           Phone: {{ matchingOrder.phone }} <br />
           Ticket Type: {{ matchingOrder.ticket_type }}<br />
           <span v-if="matchingOrder.selected_day"
-            >Valid starting {{ matchingOrder.selected_day }} for 24 Hours<br
+            >Valid starting 12:00 PM {{ matchingOrder.selected_day }} for 24 Hours<br
           /></span>
           Total Price:
           <span v-if="matchingOrder.currency === 'BTC'"> {{ matchingOrder.total_price }} BTC </span>
