@@ -36,10 +36,11 @@
       </div>
     </div>
     <div class="scan-result">
-      <h2>
+      <h2 v-if="fullResult">
         Scan Result:<br />
         {{ fullResult }}
       </h2>
+      <h2 v-else>Ready to Scan</h2>
     </div>
     <div class="order-details">
       <div>
@@ -401,7 +402,6 @@ button {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  margin: 1rem;
 }
 .utilities {
   width: 100%;
