@@ -1,113 +1,27 @@
-<script>
-import { QrcodeStream } from 'vue-qrcode-reader'
-import { reunion_db } from '@/firebase'
-import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
-import IconFestivall from '@/components/icons/IconFestivall.vue'
-
-export default {
-  components: {
-    QrcodeStream,
-    IconFestivall
-  },
-  data() {
-    return {
-      db: reunion_db,
-      fullResult: null,
-      scanResult: null,
-      orders: [],
-      matchingOrder: null,
-      filter: 'all'
-    }
-  },
-  computed: {
-    filteredOrders() {
-      if (this.filter === 'all') {
-        return this.orders
-      } else this.filter === 'mealTickets'
-      {
-        return this.orders.filter((order) => order.meal_tickets_remaining > 0)
-      }
-    }
-  },
-  async created() {
-    try {
-      const ordersCollection = collection(this.db, 'orders') // fetch 2024 orders
-      // const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
-      const orderSnapshot = await getDocs(ordersCollection)
-      this.orders = orderSnapshot.docs.map((doc) => doc.data())
-    } catch (error) {
-      console.error('An error occurred in the created hook:', error)
-    }
-  },
-  methods: {
-    onInit(error) {
-      if (error) {
-        console.error('QR Code Reader initialization failed:', error)
-      } else {
-        console.log('QR Code Reader initialized.')
-      }
-    },
-    onDetect(result) {
-      this.fullResult = result[0].rawValue
-      if (typeof this.fullResult === 'string' && this.fullResult.includes('_')) {
-        this.scanResult = this.fullResult.split('_')[0]
-        const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
-        if (matchingOrder) {
-          this.matchingOrder = matchingOrder
-          console.log('Order found:', this.matchingOrder)
-        } else {
-          this.matchingOrder = 'No Matching Order Found'
-          console.log('Order not found:', this.matchingOrder)
-        }
-      }
-    },
-    currentStatus(order) {
-      if (order.checked_in) {
-        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
-      } else {
-        return 'Not Checked In'
-      }
-    },
-    paidStatus(order) {
-      if (order.paid) {
-        return order.paid === 'true' ? 'Paid' : 'Not Paid'
-      } else {
-        return 'Not Paid'
-      }
-    },
-    async decrementMealTickets(order, amount) {
-      if (order.meal_tickets_remaining >= amount) {
-        const orderRef = doc(this.db, 'orders', order.id_code)
-        await updateDoc(orderRef, {
-          meal_tickets_remaining: order.meal_tickets_remaining - amount
-        })
-        order.meal_tickets_remaining -= amount
-      } else {
-        console.log('Not enough meal tickets remaining.')
-      }
-    },
-    refreshPage() {
-      window.location.reload()
-    },
-    toggleView() {
-      if (this.filter === 'all') {
-        this.filter = 'mealTickets'
-      } else if (this.filter === 'mealTickets') {
-        this.filter = 'all'
-      } else {
-        this.filter = 'mealTickets'
-      }
-    }
-  }
-}
-</script>
-
 <template>
   <h1>REUNION 2025 MEAL SCANNER</h1>
-  <qrcode-stream class="qr" @init="onInit" @detect="onDetect" camera="environment"></qrcode-stream>
+  <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
-    <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
+    <div class="utilities">
+      <button @click="showInstructions = true">Meal Team Instructions</button>
+      <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
+    </div>
 
+    <div v-if="showInstructions" class="modal">
+      <div class="modal-content">
+        <h3><u> Meal Team Instructions </u></h3>
+        <br />
+        <p>1. Welcome and warmly introduce yourself.</p>
+        <br />
+        <p>2. Ask the guest to present their Festivall ID code</p>
+        <br />
+        <p>3. Redeem 1 meal ticket per meal ordered.</p>
+        <br />
+        <p>4. If the guest has no meal tickets remaining, please charge $15 cash per meal</p>
+        <br />
+        <button @click="showInstructions = false">Close</button>
+      </div>
+    </div>
     <h3>
       Scan Result:<br />
       {{ fullResult }}<br /><br />
@@ -122,11 +36,30 @@ export default {
       Name: {{ matchingOrder.fullname }} <br />
       Email: {{ matchingOrder.email }} <br />
       Phone: {{ matchingOrder.phone }} <br /><br />
-      Admit: {{ matchingOrder.quantity }}<br />
-
-      Paid: {{ paidStatus(matchingOrder) }} <br />
+      Admit:
+      <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
+        <img
+          src="@/assets/images/icons/ticket.png"
+          alt="Ticket"
+          style="width: 24px; margin-right: 5px"
+        /> </span
+      ><br />
+      Payment Status:
+      <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
+        {{ paidStatus(matchingOrder) }}</span
+      ><br />
       Status: {{ currentStatus(matchingOrder) }} <br />
-      Meal Tickets Remaining: {{ matchingOrder.meal_tickets_remaining }} <br /><br />
+      Meal Tickets Remaining:
+      <span v-if="matchingOrder.meal_tickets_remaining > 0" class="meals">
+        <img
+          v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
+          :key="n"
+          src="@/assets/images/icons/meals.png"
+          alt="Meal Ticket"
+          style="width: 24px"
+        />
+      </span>
+      <br />
     </p>
     <button
       class="panel-button"
@@ -153,31 +86,31 @@ export default {
         <div>
           <h4 style="color: green">Paid</h4>
           <h2>
-            {{ orders.filter((order) => order.paid === 'true').length }}
+            {{ orders.filter((order) => order.paid).length }}
           </h2>
         </div>
         <div>
           <h4 style="color: red">Not Paid</h4>
           <h2>
-            {{ orders.filter((order) => order.paid === 'false').length }}
+            {{ orders.filter((order) => !order.paid).length }}
           </h2>
         </div>
         <div>
           <h4 style="color: orange">Checked In</h4>
           <h2>
-            {{ orders.filter((order) => order.checked_in === 'true').length }}
+            {{ orders.filter((order) => order.checked_in).length }}
           </h2>
         </div>
         <div>
           <h4 style="color: yellow">Not Checked In</h4>
           <h2>
-            {{ orders.filter((order) => order.checked_in === 'false').length }}
+            {{ orders.filter((order) => !order.checked_in).length }}
           </h2>
         </div>
         <div>
-          <h4 style="color: var(--festivall-baby-blue)">Meal Tickets</h4>
+          <h4 style="color: white">Meal Tickets Remaining</h4>
           <h2>
-            {{ orders.reduce((sum, order) => sum + parseInt(order.meal_tickets_remaining, 10), 0) }}
+            {{ orders.reduce((total, order) => total + (order.meal_tickets_remaining || 0), 0) }}
           </h2>
         </div>
       </li>
@@ -203,10 +136,10 @@ export default {
           <p>{{ order.phone }}</p>
         </div>
         <div class="order-status">
-          <h4>Admit {{ order.quantity }}</h4>
+          <h4>Admit {{ order.ticket_quantity }}</h4>
           <div class="tickets">
             <img
-              v-for="n in parseInt(order.quantity)"
+              v-for="n in parseInt(order.ticket_quantity) || 0"
               :key="n"
               src="@/assets/images/icons/ticket.png"
               alt="Meal Ticket"
@@ -220,7 +153,7 @@ export default {
           <h4 v-if="order.meal_tickets_remaining > 0">Meal Tickets Remaining</h4>
           <div class="meals">
             <img
-              v-for="n in parseInt(order.meal_tickets_remaining)"
+              v-for="n in parseInt(order.meal_tickets_remaining) || 0"
               :key="n"
               src="@/assets/images/icons/meals.png"
               alt="Meal Ticket"
@@ -233,7 +166,144 @@ export default {
   </div>
 </template>
 
+<script>
+import { QrcodeStream } from 'vue-qrcode-reader'
+import { reunion_db } from '@/firebase'
+import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
+import IconFestivall from '@/components/icons/IconFestivall.vue'
+
+export default {
+  components: {
+    QrcodeStream,
+    IconFestivall
+  },
+  data() {
+    return {
+      db: reunion_db,
+      fullResult: null,
+      scanResult: null,
+      orders: [],
+      matchingOrder: null,
+      filter: 'all',
+      showInstructions: false
+    }
+  },
+  computed: {
+    filteredOrders() {
+      if (this.filter === 'all') {
+        return this.orders
+      } else this.filter === 'mealTickets'
+      {
+        return this.orders.filter((order) => order.meal_tickets_remaining > 0)
+      }
+    }
+  },
+  async created() {
+    try {
+      const ordersCollection = collection(this.db, 'orders_2025')
+      const orderSnapshot = await getDocs(ordersCollection)
+      this.orders = orderSnapshot.docs.map((doc) => {
+        const data = doc.data()
+        data.meal_tickets_remaining = parseInt(data.meal_tickets_remaining, 10) || 0
+        data.ticket_quantity = parseInt(data.ticket_quantity, 10) || 0
+        return data
+      })
+      console.log('Orders fetched:', this.orders)
+    } catch (error) {
+      console.error('An error occurred in the created hook:', error)
+    }
+  },
+  methods: {
+    onInit(error) {
+      if (error) {
+        console.error('QR Code Reader initialization failed:', error)
+      } else {
+        console.log('QR Code Reader initialized.')
+      }
+    },
+    onDetect(result) {
+      this.fullResult = result[0].rawValue
+      this.scanResult = this.fullResult
+      const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
+      if (matchingOrder) {
+        this.matchingOrder = matchingOrder
+        console.log('Order found:', this.matchingOrder)
+      } else {
+        this.matchingOrder = 'No Matching Order Found'
+        console.log('Order not found:', this.matchingOrder)
+      }
+    },
+    currentStatus(order) {
+      if (order.checked_in) {
+        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
+      } else {
+        return 'Not Checked In'
+      }
+    },
+    paidStatus(order) {
+      if (order.paid) {
+        return order.paid === 'true' ? 'Paid' : 'Not Paid'
+      } else {
+        return 'Not Paid'
+      }
+    },
+    async decrementMealTickets(order, amount) {
+      if ((parseInt(order.meal_tickets_remaining, 10) || 0) >= amount) {
+        const orderRef = doc(this.db, 'orders_2025', order.id_code)
+        await updateDoc(orderRef, {
+          meal_tickets_remaining: (parseInt(order.meal_tickets_remaining, 10) || 0) - amount
+        })
+        order.meal_tickets_remaining -= amount
+      } else {
+        console.log('Not enough meal tickets remaining.')
+      }
+    },
+    refreshPage() {
+      window.location.reload()
+    },
+    toggleView() {
+      if (this.filter === 'all') {
+        this.filter = 'mealTickets'
+      } else if (this.filter === 'mealTickets') {
+        this.filter = 'all'
+      } else {
+        this.filter = 'mealTickets'
+      }
+    }
+  }
+}
+</script>
+
 <style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+.modal-content {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+  font-size: larger;
+}
+.modal-content p {
+  font-size: medium;
+}
+.modal button {
+  margin-top: 10px;
+  width: 100%;
+}
+
 h1,
 h2 {
   text-align: center;
@@ -270,10 +340,16 @@ button {
   margin: 1rem;
   border-radius: 20px;
 }
-.refresh-button {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
+.utilities {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.utilities button {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
+  padding: 0.5rem;
 }
 .panel-button {
   width: 100%;
