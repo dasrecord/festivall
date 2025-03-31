@@ -41,7 +41,7 @@ import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 import ReunionMapView from '@/views/ReunionMapView.vue'
-import HairView from '@/views/HairView.vue'
+import OnyxView from '@/views/OnyxView.vue'
 
 const routes = [
   {
@@ -113,9 +113,9 @@ const routes = [
     meta: { showHeader: false }
   },
   {
-    path: '/hair',
-    name: 'hair',
-    component: HairView
+    path: '/onyx',
+    name: 'onyx',
+    component: OnyxView
   },
   {
     path: '/hotspot',
