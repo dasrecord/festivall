@@ -124,6 +124,8 @@ export default {
         const newVideoSrc = `/src/assets/videos/onyx/${videoName}`
         video.pause() // Pause the current video before changing the source
         video.src = newVideoSrc
+        this.form.enquiry =
+          videoName.split('.')[0].charAt(0).toUpperCase() + videoName.split('.')[0].slice(1)
 
         // Add an event listener to handle errors if the video file doesn't exist
         video.onerror = () => {
