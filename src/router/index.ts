@@ -41,6 +41,7 @@ import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 import ReunionMapView from '@/views/ReunionMapView.vue'
+import HairView from '@/views/HairView.vue'
 
 const routes = [
   {
@@ -110,6 +111,11 @@ const routes = [
     name :'das-record',
     component: DasRecordView,
     meta: { showHeader: false }
+  },
+  {
+    path: '/hair',
+    name: 'hair',
+    component: HairView
   },
   {
     path: '/hotspot',
