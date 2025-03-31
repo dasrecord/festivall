@@ -7,11 +7,11 @@
         Your browser does not support the video tag.
       </video>
       <div class="logo">
-        ONYX HAIR
+        ONYX
         <div class="video-buttons">
           <button @mouseover="changeVideo('hair.mp4')">Hair</button>
           <button @mouseover="changeVideo('photo.mp4')">Photo</button>
-          <!-- <button @mouseover="changeVideo('design.mp4')">Design</button> -->
+          <button @mouseover="changeVideo('design.mp4')">Design</button>
         </div>
       </div>
     </div>
