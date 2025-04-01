@@ -131,9 +131,13 @@ export default {
 
         source.src = newVideoSrc // Update the <source> element's src attribute
         video.load() // Reload the video with the new source
-        video.play().catch((error) => {
-          console.error('Error playing video:', error)
-        })
+
+        // Wait for the video to load before playing
+        video.onloadeddata = () => {
+          video.play().catch((error) => {
+            console.error('Error playing video:', error)
+          })
+        }
 
         this.form.enquiry = videoName.split('.')[0] // Update the form's enquiry field based on the video name
 
