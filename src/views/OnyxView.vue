@@ -7,7 +7,7 @@
         Your browser does not support the video tag.
       </video>
       <div class="logo">
-        ONYX
+        <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="video-buttons">
           <button @mouseover="changeVideo('Hair')">Hair</button>
           <button @mouseover="changeVideo('Photo')">Photo</button>
@@ -17,8 +17,9 @@
     </div>
 
     <!-- Form Section -->
-    <div class="form-section">
-      <form @submit.prevent="sendtorelay">
+
+    <div class="form-section" :class="{ hidden: !showForm }">
+      <form v-show="showForm" @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
           <input type="text" id="name" v-model="form.name" required autocomplete="off" />
@@ -58,7 +59,8 @@ export default {
         message: '',
         enquiry: '',
         contact_point: 'Nish'
-      }
+      },
+      showForm: true
     }
   },
   methods: {
@@ -112,6 +114,7 @@ export default {
         this.form.email = ''
         this.form.message = ''
         this.form.enquiry = ''
+        this.showForm = false
         console.log('Form submitted successfully:', response.data)
       } catch (error) {
         console.error('Error submitting form:', error)
@@ -137,6 +140,9 @@ export default {
           console.error('Error playing video:', error)
         })
       }
+    },
+    toggleForm() {
+      this.showForm = !this.showForm
     }
   }
 }
@@ -203,7 +209,16 @@ video {
   background-color: rgba(0, 0, 0, 0.9);
   z-index: 1;
   padding: 2rem;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
+
+.form-section.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
 input,
 select,
 textarea {
@@ -248,6 +263,10 @@ button:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  .form-section.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
   }
   .logo {
     width: 500px;
