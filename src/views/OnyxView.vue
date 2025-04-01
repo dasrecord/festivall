@@ -3,7 +3,7 @@
     <!-- Video Section -->
     <div class="video-section">
       <video autoplay muted loop>
-        <source src="/src/assets/videos/onyx/hair.mp4" type="video/mp4" />
+        <source src="/src/assets/videos/onyx/Hair.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <div class="logo">
