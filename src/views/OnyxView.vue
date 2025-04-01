@@ -3,15 +3,35 @@
     <!-- Video Section -->
     <div class="video-section">
       <video autoplay muted loop>
-        <source src="/src/assets/videos/onyx/Hair.mp4" type="video/mp4" />
+        <source src="/src/assets/videos/onyx/onyx_hair.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
+        <div class="splash-text" style="font-size: 0.8rem">
+          <p v-show="form.enquiry === 'Hair'" style="padding: 1rem">
+            Onyx seamlessly integrates hair artistry with 3D design, photography, and visual art,
+            drawing inspiration from global fashion runways, high-profile fashion weeks, and
+            editorial campaigns.
+          </p>
+          <p v-show="form.enquiry === 'Photo'" style="padding: 1rem">
+            From humble beginnings as a solo hair artist, Nish has grown to craft iconic looks for
+            New York Fashion Week and collaborate with renowned fashion houses in Las Vegas.
+          </p>
+          <p v-show="form.enquiry === 'Design'" style="padding: 1rem">
+            Leveraging extensive experience with Fortune 500 companies, Nish delivers innovative
+            media solutions, design direction, and art direction for projects ranging from creative
+            initiatives to large-scale enterprise strategies.
+          </p>
+        </div>
         <div class="video-buttons">
-          <button @mouseover="changeVideo('Design.mp4')" @click="toggleForm">Art & Design</button>
-          <button @mouseover="changeVideo('Hair.mp4')" @click="toggleForm">Hair</button>
-          <button @mouseover="changeVideo('Photo.mp4')" @click="toggleForm">Photography</button>
+          <button @mouseover="changeVideo('onyx_design.mp4')" @click="toggleForm">
+            Art & Design
+          </button>
+          <button @mouseover="changeVideo('onyx_hair.mp4')" @click="toggleForm">Hair</button>
+          <button @mouseover="changeVideo('onyx_photo.mp4')" @click="toggleForm">
+            Photography
+          </button>
         </div>
       </div>
     </div>
@@ -33,8 +53,8 @@
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Please select one</option>
             <option value="Hair">Hair</option>
-            <option value="Photography">Photography</option>
-            <option value="Art & Design">Art & Design</option>
+            <option value="Photo">Photo</option>
+            <option value="Design">Design</option>
           </select>
         </div>
         <div>
@@ -139,7 +159,14 @@ export default {
           })
         }
 
-        this.form.enquiry = videoName.split('.')[0] // Update the form's enquiry field based on the video name
+        // Map video names to enquiry types
+        const enquiryMap = {
+          'onyx_design.mp4': 'Design',
+          'onyx_hair.mp4': 'Hair',
+          'onyx_photo.mp4': 'Photo'
+        }
+
+        this.form.enquiry = enquiryMap[videoName] || '' // Update the form's enquiry field based on the video name
 
         // Add an event listener to handle errors if the video file doesn't exist
         video.onerror = () => {
