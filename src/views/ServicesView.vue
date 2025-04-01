@@ -81,9 +81,9 @@
       </h1>
       <p>Interested in learning about Bitcoin?<br />Schedule a free workshop.</p>
     </div>
-    <div id="emblem">
-      <img :src="festivall_emblem" alt="Festivall Emblem" />
-    </div>
+  </div>
+  <div id="emblem">
+    <img :src="festivall_emblem" alt="Festivall Emblem" />
   </div>
 </template>
 
@@ -105,13 +105,18 @@ export default {
 </script>
 
 <style scoped>
-.services {
+/* .services {
   height: 300px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+} */
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 .service {
   display: flex;
@@ -119,18 +124,19 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 20px;
+  padding: 10px;
   border: 1px solid white;
   border-radius: 5px;
-  width: 80%;
-  max-width: 80vw;
+
   margin: 1rem;
 }
 #bitcoin {
   color: #ff9900;
 }
 #emblem {
-  height: 64px;
+  height: auto;
+  width: 64px;
+  margin: 0 auto;
 }
 
 h1 {

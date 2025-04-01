@@ -29,7 +29,11 @@
           <img :src="devops_icon" alt="devops icon" style="width: 24px" />
           devops engineer for independent electronic music festivals
         </li>
-        <br />
+        <li>
+          <img :src="vector_icon" alt="vector icon" style="width: 24px" />
+          freelance graphic designer for brands and startups
+          <br />
+        </li>
       </ul>
       Behind the scenes, I am the A&R for Evolved Music Group, an international artist management
       agency and music firm, that supports artists with A&R and publishing consultants across
