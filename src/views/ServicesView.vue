@@ -44,6 +44,12 @@
     </div>
     <div class="service">
       <h1>
+        <RouterLink to="/onyx">Onyx</RouterLink>
+      </h1>
+      <p>Interested in a custom hair, photo, & design?<br />Check this out.</p>
+    </div>
+    <div class="service">
+      <h1>
         <a href="https://www.instagram.com/cakeawaysk">Cakeaway</a>
       </h1>
       <p>
