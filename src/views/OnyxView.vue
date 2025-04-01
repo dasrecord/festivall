@@ -9,9 +9,9 @@
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="video-buttons">
-          <button @mouseover="changeVideo('Hair')">Hair</button>
-          <button @mouseover="changeVideo('Photo')">Photo</button>
-          <button @mouseover="changeVideo('Design')">Design</button>
+            <button @mouseover="changeVideo('Hair')" @click="toggleForm">Hair</button>
+            <button @mouseover="changeVideo('Photo')" @click="toggleForm">Photo</button>
+            <button @mouseover="changeVideo('Design')" @click="toggleForm">Design</button>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@ export default {
         enquiry: '',
         contact_point: 'Nish'
       },
-      showForm: true
+      showForm: false
     }
   },
   methods: {
