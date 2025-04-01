@@ -9,9 +9,9 @@
       <div class="logo">
         ONYX
         <div class="video-buttons">
-          <button @mouseover="changeVideo('hair.mp4')">Hair</button>
-          <button @mouseover="changeVideo('photo.mp4')">Photo</button>
-          <button @mouseover="changeVideo('design.mp4')">Design</button>
+          <button @mouseover="changeVideo('Hair')">Hair</button>
+          <button @mouseover="changeVideo('Photo')">Photo</button>
+          <button @mouseover="changeVideo('Design')">Design</button>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">SUBMIT</button>
       </form>
     </div>
   </div>
@@ -121,11 +121,10 @@ export default {
     changeVideo(videoName) {
       const video = document.querySelector('video')
       if (video) {
-        const newVideoSrc = `/src/assets/videos/onyx/${videoName}`
+        const newVideoSrc = `/src/assets/videos/onyx/${videoName}.mp4`
         video.pause() // Pause the current video before changing the source
         video.src = newVideoSrc
-        this.form.enquiry =
-          videoName.split('.')[0].charAt(0).toUpperCase() + videoName.split('.')[0].slice(1)
+        this.form.enquiry = videoName
 
         // Add an event listener to handle errors if the video file doesn't exist
         video.onerror = () => {
@@ -169,7 +168,7 @@ video {
   position: absolute;
   top: 20%;
   text-align: center;
-  font-size: 5rem;
+  font-size: 4rem;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 1rem;
   border-radius: 15px;
@@ -255,6 +254,7 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-size: 5rem;
   }
 }
 </style>
