@@ -10,24 +10,24 @@
       <ul class="current-activities">
         <!-- <li>clinical teacher at the University of Saskatchewan College of Medicine</li> -->
         <li>
-          <img :src="devops_icon" alt="devops icon" style="width: 24px; height: auto" />
+          <img :src="devops_icon" alt="devops icon" style="width: 24px" />
           sotware developer for small businesses and entrepreneurs
         </li>
         <li>
-          <img :src="headphones_icon" alt="headphones icon" style="width: 24px; height: auto" />
+          <img :src="headphones_icon" alt="headphones icon" style="width: 24px" />
           resident DJ at Finn's @ The Parktown Hotel
         </li>
         <li>
-          <img :src="headphones_icon" alt="headphones icon" style="width: 24px; height: auto" />
-          rotation DJ at Bokeh on the Plaza
+          <img :src="headphones_icon" alt="headphones icon" style="width: 24px" />
+          rotation DJ @ Bokeh on the Plaza
         </li>
         <li>
-          <img :src="music_icon" alt="music icon" style="width: 24px; height: auto" />
+          <img :src="music_icon" alt="music icon" style="width: 24px" />
           composer and producer for the internationally acclaimed Mike Saint-Jules
         </li>
         <li>
-          <img :src="devops_icon" alt="devops icon" style="width: 24px; height: auto" />
-          devops engineer for several independent electronic music festivals
+          <img :src="devops_icon" alt="devops icon" style="width: 24px" />
+          devops engineer for independent electronic music festivals
         </li>
         <br />
       </ul>
@@ -93,6 +93,11 @@ onMounted(async () => {
   max-width: 50vw;
   border-radius: 50%;
 }
+ul {
+  padding: 0;
+  margin: 0;
+}
+
 li {
   list-style: none;
   display: flex;
