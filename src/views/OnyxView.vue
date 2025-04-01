@@ -57,7 +57,7 @@ export default {
         email: '',
         message: '',
         enquiry: '',
-        contact_point: 'Prasenjit'
+        contact_point: 'Nish'
       }
     }
   },
