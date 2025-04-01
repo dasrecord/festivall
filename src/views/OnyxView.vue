@@ -71,28 +71,28 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Name:* ${this.form.name}`
+              text: `:bust_in_silhouette: ${this.form.name}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Email:* ${this.form.email}`
+              text: `:email: ${this.form.email}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Enquiry:* ${this.form.enquiry}`
+              text: `:trident: ${this.form.enquiry}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Message:* ${this.form.message}`
+              text: `:memo: ${this.form.message}`
             }
           }
         ],
