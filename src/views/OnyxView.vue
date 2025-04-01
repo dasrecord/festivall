@@ -32,9 +32,9 @@
           <label for="enquiry">Enquiry:</label>
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Please select one</option>
-            <option>Hair</option>
-            <option>Photo</option>
-            <option>Design</option>
+            <option value="Hair">Hair</option>
+            <option value="Photo">Photo</option>
+            <option value="Design">Design</option>
           </select>
         </div>
         <div>
