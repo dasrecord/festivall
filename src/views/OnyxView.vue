@@ -123,11 +123,14 @@ export default {
     },
     changeVideo(videoName) {
       const video = document.querySelector('video')
-      if (video) {
+      const source = video.querySelector('source') // Get the <source> element inside the <video> tag
+
+      if (video && source) {
         const newVideoSrc = `/src/assets/videos/onyx/${videoName}`
-        video.pause() // Pause the current video before changing the source
-        video.src = newVideoSrc // Change the video source
-        video.load() // Load the new video source
+        console.log(`Changing video source to: ${newVideoSrc}`) // Debugging log
+
+        source.src = newVideoSrc // Update the <source> element's src attribute
+        video.load() // Reload the video with the new source
         video.play().catch((error) => {
           console.error('Error playing video:', error)
         })
@@ -139,11 +142,6 @@ export default {
           console.error(`Error loading video: ${newVideoSrc}`)
           alert('The selected video could not be loaded. Please try another.')
         }
-
-        video.load() // Reload the video with the new source
-        video.play().catch((error) => {
-          console.error('Error playing video:', error)
-        })
       }
     },
     toggleForm() {
