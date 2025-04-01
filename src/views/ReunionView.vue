@@ -27,8 +27,8 @@
       FAMILY - FRIENDS - FOOD‍ <br /><br />
 
       <span class="bitcoin">
-        <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
-        NO PRICE INCREASE IN 2025!‍
+        <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> NO PRICE
+        INCREASE IN 2025!‍
 
         <br /><br />
       </span>
@@ -38,8 +38,7 @@
       MEAL PLANS - $20 CAD/DAY<br />
       <span class="bitcoin">
         25% discount if you pay with bitcoin!‍
-        <img src="/public/bitcoin_favicon.ico" alt="bitcoin" style="height: 16px; width: 16px" />
-        <br />
+        <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> <br />
       </span>
     </h2>
     <div class="video-wrapper">
@@ -75,6 +74,7 @@
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import bitcoin_icon from '../assets/images/bitcoin.svg'
 import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'
@@ -90,6 +90,7 @@ export default {
     return {
       frogImage: frog_image,
       reunion_emblem: reunion_emblem,
+      bitcoin_icon: bitcoin_icon,
       clickCount: 0
     }
   },

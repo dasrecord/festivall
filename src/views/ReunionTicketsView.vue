@@ -4,6 +4,7 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import ticket from '@/assets/images/icons/ticket.png'
 import meals from '@/assets/images/icons/meals.png'
 import footer from '@/assets/images/poster_footer_v1.png'
+import bitcoin_icon from '../assets/images/bitcoin.svg'
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -14,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid'
 const form = ref({
   id_code_long: '',
   id_code: '',
+  referral_id_code: '',
   fullname: '',
   email: '',
   phone: '',
@@ -34,19 +36,29 @@ const meals_image = ref(meals)
 const btcRate = ref(0)
 const paymentInstructions = ref('')
 
-const fetchApplicantData = async (id_code) => {
+const validateReferralID = async (referral_id_code) => {
   try {
-    const docRef = doc(reunion_db, 'applications', id_code)
+    // Check 2025 Applications
+    const docRef = doc(reunion_db, 'applications_2025', referral_id_code)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      form.value = { ...form.value, ...docSnap.data() }
+      alert('Referral ID_CODE is valid!')
+      return
+    }
+
+    // Check 2025 Orders
+    const docRef2025 = doc(reunion_db, 'orders_2025', referral_id_code)
+    const docSnap2025 = await getDoc(docRef2025)
+    if (docSnap2025.exists()) {
+      alert('Referral ID_CODE is valid!')
     } else {
-      console.log('No such document!')
+      alert('Referral ID_CODE is not valid.')
     }
   } catch (error) {
-    console.error('Error fetching document:', error)
+    console.error('Error validating referral ID_CODE:', error)
   }
 }
+
 const formatPhoneNumber = (phone) => {
   const cleaned = ('' + phone).replace(/\D/g, '')
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
@@ -138,7 +150,10 @@ const emailPaymentInstructions = async () => {
 
 const addOrder = async () => {
   try {
-    await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), form.value)
+    await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), {
+      ...form.value,
+      referral_id_code: form.value.referral_id_code || null // Include referral ID_CODE
+    })
     console.log('Document successfully written!')
   } catch (error) {
     console.error('Error writing document:', error)
@@ -161,7 +176,11 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_sales',
       {
-        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n${form.value.payment_type === 'etransfer' ? ':currency_exchange: $' + form.value.total_price : ':bitcoin: ' + (form.value.total_price / btcRate.value).toFixed(8) + ' BTC'}`
+        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:label: ${form.value.referral_id_code || 'None'}\n${
+          form.value.payment_type === 'etransfer'
+            ? ':currency_exchange: $' + form.value.total_price
+            : ':bitcoin: ' + (form.value.total_price / btcRate.value).toFixed(8) + ' BTC'
+        }`
       },
       {
         headers: {
@@ -177,6 +196,7 @@ const submitForm = async () => {
       form.value = {
         id_code_long: '',
         id_code: '',
+        referral_id_code: '',
         fullname: '',
         email: '',
         phone: '',
@@ -234,12 +254,8 @@ onMounted(() => {
           *Youth 18 and under must be accompanied by an adult.*<br /><br />
           <div class="bitcoin">
             <h2>
-              <img
-                src="/public/bitcoin_favicon.ico"
-                alt="bitcoin"
-                style="height: 16px; width: 16px"
-              />
-              NO PRICE INCREASE IN 2025!
+              <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> NO PRICE
+              INCREASE IN 2025!
               <br />
             </h2>
           </div>
@@ -277,11 +293,7 @@ onMounted(() => {
           <div class="bitcoin">
             <h2>
               25% off if you pay in Bitcoin
-              <img
-                src="/public/bitcoin_favicon.ico"
-                alt="bitcoin"
-                style="height: 16px; width: 16px"
-              /><br />
+              <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /><br />
             </h2>
             <h3>
               <span id="btc-rate">Current Exchange Rate: ${{ btcRate }} CAD/BTC</span>
@@ -293,13 +305,13 @@ onMounted(() => {
       <!-- FORM -->
       <form @submit.prevent="submitForm">
         <div class="form-section">
-          <label for="id_code">ID_CODE:</label>
+          <label for="referral_id_code">Referral ID_CODE:</label>
           <input
             type="text"
-            id="id_code"
-            v-model="form.id_code"
+            id="referral_id_code"
+            v-model="form.referral_id_code"
             placeholder="Enter an Artist or Volunteer's ID_CODE if you know one!"
-            @blur="fetchApplicantData(form.id_code)"
+            @blur="validateReferralID(form.referral_id_code)"
           />
         </div>
         <div class="form-section">
