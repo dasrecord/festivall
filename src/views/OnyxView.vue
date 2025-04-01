@@ -9,9 +9,9 @@
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="video-buttons">
-          <button @mouseover="changeVideo('Hair')" @click="toggleForm">Hair</button>
-          <button @mouseover="changeVideo('Photo')" @click="toggleForm">Photo</button>
-          <button @mouseover="changeVideo('Design')" @click="toggleForm">Design</button>
+          <button @mouseover="changeVideo('Hair.mp4')" @click="toggleForm">Hair</button>
+          <button @mouseover="changeVideo('Photo.mp4')" @click="toggleForm">Photo</button>
+          <button @mouseover="changeVideo('Design.mp4')" @click="toggleForm">Design</button>
         </div>
       </div>
     </div>
@@ -124,10 +124,15 @@ export default {
     changeVideo(videoName) {
       const video = document.querySelector('video')
       if (video) {
-        const newVideoSrc = `/src/assets/videos/onyx/${videoName}.mp4`
-        // video.pause() // Pause the current video before changing the source
-        video.src = newVideoSrc
-        this.form.enquiry = videoName
+        const newVideoSrc = `/src/assets/videos/onyx/${videoName}`
+        video.pause() // Pause the current video before changing the source
+        video.src = newVideoSrc // Change the video source
+        video.load() // Load the new video source
+        video.play().catch((error) => {
+          console.error('Error playing video:', error)
+        })
+
+        this.form.enquiry = videoName.split('.')[0] // Update the form's enquiry field based on the video name
 
         // Add an event listener to handle errors if the video file doesn't exist
         video.onerror = () => {
