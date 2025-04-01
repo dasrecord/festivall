@@ -9,9 +9,9 @@
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="video-buttons">
-            <button @mouseover="changeVideo('Hair')" @click="toggleForm">Hair</button>
-            <button @mouseover="changeVideo('Photo')" @click="toggleForm">Photo</button>
-            <button @mouseover="changeVideo('Design')" @click="toggleForm">Design</button>
+          <button @mouseover="changeVideo('Hair')" @click="toggleForm">Hair</button>
+          <button @mouseover="changeVideo('Photo')" @click="toggleForm">Photo</button>
+          <button @mouseover="changeVideo('Design')" @click="toggleForm">Design</button>
         </div>
       </div>
     </div>
@@ -125,7 +125,7 @@ export default {
       const video = document.querySelector('video')
       if (video) {
         const newVideoSrc = `/src/assets/videos/onyx/${videoName}.mp4`
-        video.pause() // Pause the current video before changing the source
+        // video.pause() // Pause the current video before changing the source
         video.src = newVideoSrc
         this.form.enquiry = videoName
 
@@ -183,16 +183,16 @@ video {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   font-size: 1rem;
 }
 .video-buttons button {
   margin: 0 10px;
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   background-color: #000;
   color: #fff;
   border: 1px solid #fff;
-  border-radius: 5px;
+  border-radius: 9px;
   cursor: pointer;
 }
 .video-buttons button:hover {
