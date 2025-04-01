@@ -9,9 +9,9 @@
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="video-buttons">
+          <button @mouseover="changeVideo('Design.mp4')" @click="toggleForm">Art & Design</button>
           <button @mouseover="changeVideo('Hair.mp4')" @click="toggleForm">Hair</button>
-          <button @mouseover="changeVideo('Photo.mp4')" @click="toggleForm">Photo</button>
-          <button @mouseover="changeVideo('Design.mp4')" @click="toggleForm">Design</button>
+          <button @mouseover="changeVideo('Photo.mp4')" @click="toggleForm">Photography</button>
         </div>
       </div>
     </div>
@@ -33,8 +33,8 @@
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Please select one</option>
             <option value="Hair">Hair</option>
-            <option value="Photo">Photo</option>
-            <option value="Design">Design</option>
+            <option value="Photography">Photography</option>
+            <option value="Art & Design">Art & Design</option>
           </select>
         </div>
         <div>
