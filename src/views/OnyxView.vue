@@ -3,7 +3,7 @@
     <!-- Video Section -->
     <div class="video-section">
       <video autoplay muted loop>
-        <source src="/src/assets/videos/onyx/onyx_hair.mp4" type="video/mp4" />
+        <source src="/videos/onyx/onyx_hair.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
       <div class="logo">
@@ -130,11 +130,7 @@ export default {
           }
         )
         alert('Your message was received successfully!')
-        this.form.name = ''
-        this.form.email = ''
-        this.form.message = ''
-        this.form.enquiry = ''
-        this.showForm = false
+        this.resetForm()
         console.log('Form submitted successfully:', response.data)
       } catch (error) {
         console.error('Error submitting form:', error)
@@ -142,24 +138,29 @@ export default {
       }
     },
     changeVideo(videoName) {
+      const newVideoSrc = `/videos/onyx/${videoName}?v=${Date.now()}`
+      console.log(`Changing video source to: ${newVideoSrc}`)
       const video = document.querySelector('video')
-      const source = video.querySelector('source') // Get the <source> element inside the <video> tag
+      const source = video.querySelector('source')
 
       if (video && source) {
-        const newVideoSrc = `/src/assets/videos/onyx/${videoName}?v=${Date.now()}` // Add cache-busting query string
-        console.log(`Changing video source to: ${newVideoSrc}`) // Debugging log
+        source.src = newVideoSrc
+        video.load()
 
-        source.src = newVideoSrc // Update the <source> element's src attribute
-        video.load() // Reload the video with the new source
-
-        // Wait for the video to load before playing
         video.onloadeddata = () => {
           video.play().catch((error) => {
             console.error('Error playing video:', error)
           })
         }
 
-        // Add an event listener to handle errors if the video file doesn't exist
+        const enquiryMap = {
+          'onyx_design.mp4': 'Design',
+          'onyx_hair.mp4': 'Hair',
+          'onyx_photo.mp4': 'Photo'
+        }
+
+        this.form.enquiry = enquiryMap[videoName] || ''
+
         video.onerror = () => {
           console.error(`Error loading video: ${newVideoSrc}`)
           alert('The selected video could not be loaded. Please try another.')
@@ -168,6 +169,16 @@ export default {
     },
     toggleForm() {
       this.showForm = !this.showForm
+    },
+    resetForm() {
+      this.form = {
+        name: '',
+        email: '',
+        message: '',
+        enquiry: '',
+        contact_point: 'Nish'
+      }
+      this.showForm = false
     }
   }
 }
