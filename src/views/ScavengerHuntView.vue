@@ -1,10 +1,5 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
-    <!-- Score & Submit display -->
-    <div v-if="index === questions.length - 1" class="score">
-      <h3>Your Score: {{ calculateScore() }}/{{ questions.length }}</h3>
-      <button @click="sendScore">Submit Score</button>
-    </div>
     <div
       class="form-slide"
       v-for="(question, index) in questions"
@@ -44,6 +39,11 @@
           <button v-if="index > 0" @click="prevQuestion">Previous</button>
           <button v-if="index < questions.length - 1" @click="nextQuestion">Next</button>
         </div>
+      </div>
+      <!-- Score & Submit display -->
+      <div v-if="index === questions.length - 1" class="score">
+        <h3>Your Score: {{ calculateScore() }}/{{ questions.length }}</h3>
+        <button @click="sendScore">Submit Score</button>
       </div>
     </div>
   </div>
