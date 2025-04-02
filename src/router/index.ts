@@ -42,6 +42,7 @@ import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsVi
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
+import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
 
 const routes = [
   {
@@ -366,6 +367,11 @@ const routes = [
     name: 'reuniontrailer',
     component: ExternalRedirect,
     props: { url: 'https://youtu.be/xibNU7F_RKQ?si=OSSjz5IVD1O_5Eoz' }
+  },
+  {
+    path: '/scavengerhunt',
+    name: 'scavengerhunt',
+    component: ScavengerHuntView
   },
   {
     path: '/services',
