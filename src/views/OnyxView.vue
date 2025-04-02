@@ -146,7 +146,7 @@ export default {
       const source = video.querySelector('source') // Get the <source> element inside the <video> tag
 
       if (video && source) {
-        const newVideoSrc = `/src/assets/videos/onyx/${videoName}`
+        const newVideoSrc = `/src/assets/videos/onyx/${videoName}?v=${Date.now()}` // Add cache-busting query string
         console.log(`Changing video source to: ${newVideoSrc}`) // Debugging log
 
         source.src = newVideoSrc // Update the <source> element's src attribute
@@ -158,15 +158,6 @@ export default {
             console.error('Error playing video:', error)
           })
         }
-
-        // Map video names to enquiry types
-        const enquiryMap = {
-          'onyx_design.mp4': 'Design',
-          'onyx_hair.mp4': 'Hair',
-          'onyx_photo.mp4': 'Photo'
-        }
-
-        this.form.enquiry = enquiryMap[videoName] || '' // Update the form's enquiry field based on the video name
 
         // Add an event listener to handle errors if the video file doesn't exist
         video.onerror = () => {
