@@ -372,7 +372,7 @@ const routes = [
     path: '/scavengerhunt/:id_code',
     name: 'ScavengerHunt',
     component: ScavengerHuntView,
-    props: (route) => ({
+    props: (route: import('vue-router').RouteLocationNormalized) => ({
       id_code: route.params.id_code,
       fullName: route.query.fullName || 'Guest' // Default to 'Guest' if fullName is not provided
     })
