@@ -26,8 +26,8 @@
         <button @click="loadApplicants('rapture')">Rapture</button>
         <button @click="loadApplicants('partywell')">PartyWell</button>
         <button @click="loadApplicants('festivall', true)">Festivall</button>
-        <button @click="loadApplicants('reunion')">Reunion Static</button> -->
-        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button>
+        <button @click="loadApplicants('reunion')">Reunion Static</button>
+        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button> -->
         <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
       </div>
     </div>
@@ -56,23 +56,25 @@
       <div class="applicants" :class="viewStyle">
         <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
           <div class="applicant-content" :class="viewStyle">
-            <h2>
-              <!-- ACT NAME OR FULLNAME -->
+            <div class="name-section">
+              <h2>
+                <!-- ACT NAME OR FULLNAME -->
 
-              <a v-if="applicant.url" :href="applicant.url" target="_blank">
-                {{ applicant.act_name || applicant.full_name }}
-              </a>
-              <!-- EMAIL PREFIX FALL BACK -->
-              <span v-else>
-                {{ applicant.fullname || applicant.email.split('@')[0] }}
-              </span>
-            </h2>
-            <!-- ID CODE -->
-            <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
-            <!-- ACT TYPE -->
-            <p v-if="applicant.applicant_type">
-              {{ applicant.applicant_type }}
-            </p>
+                <a v-if="applicant.url" :href="applicant.url" target="_blank">
+                  {{ applicant.act_name || applicant.full_name }}
+                </a>
+                <!-- EMAIL PREFIX FALL BACK -->
+                <span v-else>
+                  {{ applicant.fullname || applicant.email.split('@')[0] }}
+                </span>
+              </h2>
+              <!-- ID CODE -->
+              <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
+              <!-- ACT TYPE -->
+              <p v-if="applicant.applicant_type">
+                {{ applicant.applicant_type }}
+              </p>
+            </div>
             <!-- GENRE -->
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <!-- VOLUNTEER TYPE -->
@@ -100,78 +102,100 @@
 
           <!-- TICKET DATA -->
           <div v-if="applicant.payment_type" class="ticket-content">
-            <!-- PAID STATUS -->
-            Payment Status:
-            <p v-if="applicant.paid" style="color: green; font-size: large">
-              Paid<br />
+            <div class="payment-section">
+              <!-- PAID STATUS -->
+              Payment Status:
+              <p v-if="applicant.paid" style="color: green; font-size: large">
+                Paid<br />
 
-              <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
-            </p>
-            <p v-else style="color: red; font-size: large">
-              Unpaid<br />
-              <a @click="remindPayment(applicant.id_code)">
-                <img :src="reminder_icon" alt="Remind Payment" class="action-icon" />
+                <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
+              </p>
+              <p v-else style="color: red; font-size: large">
+                Unpaid<br />
+                <a @click="remindPayment(applicant.id_code)">
+                  <img :src="reminder_icon" alt="Remind Payment" class="action-icon" />
+                </a>
+              </p>
+              <button @click="confirmPaymentReceived(applicant.id_code)">
+                Confirm Payment Received
+              </button>
+              <br />
+            </div>
+            <div class="checkedin-section">
+              <!-- CHECKED IN STATUS -->
+              <p v-if="applicant.checked_in">Checked In</p>
+              <p v-else>Not Checked In</p>
+
+              <!-- TICKET TYPE -->
+              <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
+            </div>
+            <div class="quantities-section">
+              <!-- TICKET QUANTITY -->
+              <div class="quantity">
+                <p><strong>Ticket Quantity:</strong>&nbsp;{{ applicant.ticket_quantity }}</p>
+                <div class="tickets">
+                  <img
+                    v-for="n in Number(applicant.ticket_quantity)"
+                    :key="n"
+                    :src="ticket_icon"
+                    style="width: 32px; transform: rotate(-45deg)"
+                    alt="Ticket Icon"
+                    class="ticket-icon"
+                  />
+                </div>
+              </div>
+              <!-- MEAL TICKETS REMAINING -->
+              <div class="quantity">
+                <p>
+                  <strong>Meal Tickets Remaining:</strong>&nbsp;{{
+                    applicant.meal_tickets_remaining
+                  }}
+                </p>
+                <div class="meals">
+                  <img
+                    v-for="n in Number(applicant.meal_tickets_remaining)"
+                    :key="n"
+                    :src="meal_icon"
+                    style="width: 32px"
+                    alt="Meal Icon"
+                    class="meal-icon"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="revenue-section">
+              <!-- TOTAL PRICE -->
+              <p v-if="applicant.total_price">
+                Total Price:
+                <span
+                  v-if="
+                    applicant.payment_type === 'inkind' || applicant.payment_type === 'etransfer'
+                  "
+                  >$</span
+                >{{ applicant.total_price }}
+                <span v-if="applicant.payment_type === 'bitcoin'">BTC</span>
+              </p>
+              <!-- PAYMENT TYPE -->
+              <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
+              <br />
+            </div>
+            <div class="preview-section">
+              <!-- PREVIEW TICKET -->
+              <button @click="previewTicket(applicant.id_code)">Preview Ticket</button>
+              <a
+                :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
+                target="_blank"
+                style="display: inline-block"
+              >
+                <img
+                  :src="ticket_icon"
+                  alt="Deliver Ticket"
+                  class="action-icon"
+                  style="width: auto; height: 32px"
+                />
               </a>
-            </p>
-            <button @click="confirmPaymentReceived(applicant.id_code)">
-              Confirm Payment Received
-            </button>
-            <br />
-            <!-- CHECKED IN STATUS -->
-            <p v-if="applicant.checked_in">Checked In</p>
-            <p v-else>Not Checked In</p>
-            <br />
-            <!-- TICKET TYPE -->
-            <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
-            <!-- TICKET QUANTITY -->
-            <p><strong>Ticket Quantity:</strong>&nbsp;{{ applicant.ticket_quantity }}</p>
-            <img
-              v-for="n in Number(applicant.ticket_quantity)"
-              :key="n"
-              :src="ticket_icon"
-              style="height: auto; width: 32px; transform: rotate(-45deg)"
-              alt="Ticket Icon"
-            />
-            <!-- MEAL TICKETS REMAINING -->
-            <p>
-              <strong>Meal Tickets Remaining:</strong>&nbsp;{{ applicant.meal_tickets_remaining }}
-            </p>
-
-            <img
-              v-for="n in Number(applicant.meal_tickets_remaining)"
-              :key="n"
-              :src="meal_icon"
-              style="height: auto; width: 32px"
-              alt="Meal Icon"
-            />
-            <br />
-            <!-- TOTAL PRICE -->
-
-            <p v-if="applicant.total_price">
-              Total Price:
-              <span
-                v-if="applicant.payment_type === 'inkind' || applicant.payment_type === 'etransfer'"
-                >$</span
-              >{{ applicant.total_price }}
-              <span v-if="applicant.payment_type === 'bitcoin'">BTC</span>
-            </p>
-            <!-- PAYMENT TYPE -->
-            <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
-            <br />
-            <!-- PREVIEW TICKET -->
-            <button @click="previewTicket(applicant.id_code)">Preview Ticket</button><br />
-            <a
-              :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
-              target="_blank"
-              style="display: inline-block"
-            >
-              <img
-                :src="ticket_icon"
-                alt="Deliver Ticket"
-                class="action-icon"
-                style="height: 42px; width: auto"
-              />
-            </a>
+            </div>
           </div>
           <!-- DASHBOARD ACTIONS-->
           <div v-if="applicant.payment_type !== 'inkind'" class="actions">
@@ -200,7 +224,7 @@
               <img :src="reminder_icon" alt="Remind Applicant" class="action-icon" />
             </a>
             <div v-if="applicant.phone" class="message-section">
-              <input type="text" v-model="applicant.message" placeholder="message user" />
+              <input type="text" v-model="applicant.message" placeholder="message applicant" />
               <img
                 @click="sendSMS(applicant.phone, applicant.message), (applicant.message = '')"
                 :src="sms_icon"
@@ -209,7 +233,7 @@
                 style="width: auto; height: 42px; transform: translateY(18px)"
               /><br />
             </div>
-            <div v-if="applicant.applicant_type">
+            <div v-if="applicant.applicant_type" class="compensation-section">
               <input
                 type="text"
                 v-model="applicant.additional_compensation"
@@ -226,10 +250,12 @@
                 style="width: auto; height: 32px; transform: translateY(12px)"
               />
             </div>
+
             <div
               v-if="
                 applicant.applicant_type === 'Artist' || applicant.applicant_type === 'Workshop'
               "
+              class="settime-section"
             >
               <input type="datetime-local" v-model="applicant.settime" />
               <img
@@ -680,15 +706,15 @@ button:hover {
 .applicant {
   background-color: #444;
   padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.9);
   transition: transform 0.3s ease;
   width: 100%;
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  text-align: left;
+  text-align: left; */
 }
 
 .applicants.cards .applicant {
@@ -704,14 +730,49 @@ button:hover {
   border: 1px solid var(--festivall-baby-blue);
 }
 
+/* .applicants.cards .payment-section, */
+.applicants.cards .quantities-section,
+.applicants.cards .preview-section,
+.applicants.cards .ticket-section,
+.applicants.cards .checkedin-section,
+.applicants.cards .revenue-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  justify-items: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+
 .applicants.rows .applicant,
 .applicants.rows .applicant-content,
 .applicants.rows .ticket-content,
-.applicants.rows .actions {
+.applicants.rows .quantities,
+.applicants.rows .message-section,
+.applicants.rows .compensation-section,
+.applicants.rows .settime-section,
+.applicants.rows .tickets,
+.applicants.rows .meals,
+.applicants.rows .actions,
+.applicants.rows .action-icon,
+.applicants.rows img,
+.applicants.rows p,
+.applicants.rows input {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  gap: 0.5rem;
   justify-content: space-between;
+  align-items: center;
+}
+
+.applicants.rows .payment-section,
+.applicants.rows .quantities-section,
+.applicants.rows .revenue-section {
+  flex-direction: column;
+  align-items: center;
 }
 
 .applicant:hover {
