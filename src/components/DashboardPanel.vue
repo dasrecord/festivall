@@ -201,19 +201,6 @@
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
             </a>
-            <a
-              v-if="applicant.applicant_type"
-              :href="
-                deliverContract(
-                  applicant.email,
-                  applicant.fullname,
-                  applicant.applicant_type,
-                  applicant.id_code
-                )
-              "
-            >
-              <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
-            </a>
 
             Contract Status:
             <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
@@ -267,7 +254,22 @@
                 style="width: auto; height: 32px; transform: translateY(12px)"
               />
             </div>
-            <button @click="generateContract(applicant.id_code)">Preview Contract</button>
+            <div class="contract-section">
+              <button @click="generateContract(applicant.id_code)">Preview Contract</button>
+              <a
+                v-if="applicant.applicant_type"
+                :href="
+                  deliverContract(
+                    applicant.email,
+                    applicant.fullname,
+                    applicant.applicant_type,
+                    applicant.id_code
+                  )
+                "
+              >
+                <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
