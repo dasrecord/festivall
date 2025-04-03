@@ -60,7 +60,7 @@ export default {
       questions: [
         {
           text: 'Welcome to the Scavenger Hunt! Get ready to test your wits and have fun solving puzzles. Click "Next" to begin!',
-          type: 'text'
+          type: 'information'
         },
         {
           text: 'Welcome to the Scavenger Hunt!\nYour first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
@@ -88,8 +88,9 @@ export default {
           type: 'text'
         },
         {
-          text: 'Decode this cipher: If A=1, B=2, C=3, ..., then what does 8-5-12-12-15 spell?',
-          answer: 'Hello',
+          text: 'Decode this cipher: What is "Reunion" in Morse code?',
+          subtext: 'Hint: Use periods .\n dashes -\n and spaces to separate letters.',
+          answer: '.-. . ..- -. .. --- -.',
           type: 'text'
         },
         {
@@ -100,6 +101,31 @@ export default {
         {
           text: 'Sequence puzzle: Separated by commas, what are the next five numbers in this sequence? 2, 4, 8, 16, 32',
           answer: '64,128,256,512,1024',
+          type: 'text'
+        },
+        {
+          text: "Magic Word Challenge: Find our children's coordinator? and ask him for the magic word.",
+          answer: 'friendship',
+          type: 'text'
+        },
+        {
+          text: 'Find the Festival Organizer: Ask the festival organizer for the secret code.',
+          answer: 'celebrate',
+          type: 'text'
+        },
+        {
+          text: 'Trivia Hunt: Locate the information booth and ask for the trivia question of the day.',
+          answer: 'knowledge',
+          type: 'text'
+        },
+        {
+          text: 'Photo Task: Take a photo with one of the festival mascots and ask them for the next clue.',
+          answer: 'smile',
+          type: 'text'
+        },
+        {
+          text: 'Interactive Puzzle: Visit the main stage and ask the host for the interactive puzzle. Look for the secret code.',
+          answer: 'star',
           type: 'text'
         },
 
@@ -202,15 +228,16 @@ export default {
 }
 
 .form-slide {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  color: white;
   transition:
     transform 1.2s ease,
     opacity 1.5s ease;
@@ -234,7 +261,7 @@ export default {
 }
 
 .question {
-  background-color: rgba(0, 0, 0, 0.288);
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
@@ -263,7 +290,7 @@ button {
   margin: 1rem;
   border: none;
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   cursor: pointer;
   font-size: 1rem;
