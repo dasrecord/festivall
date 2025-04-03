@@ -73,12 +73,12 @@ export default {
       backgroundImage: faded_frog,
       questions: [
         {
-          text: `Welcome, ${this.fullName}!\n Get ready to test your wits and have fun solving puzzles.`,
+          text: `Welcome, ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers, and onsite quests. The highest scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
         {
-          text: 'Your first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
+          text: 'Your first challenge is to identify the next letter in this sequence:\n O, T, T, F, F, S, S, ?',
           answer: 'E',
           type: 'text',
           category: 'Sequence Challenge'
@@ -87,7 +87,7 @@ export default {
           text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of 1010?',
           answer: '10',
           type: 'text',
-          category: 'Math Quesiton'
+          category: 'Math Question'
         },
         {
           text: 'What is the next number in this sequence:\n0, 1, 1, 2, 3, 5, 8, 13, ?',
@@ -96,64 +96,59 @@ export default {
           category: 'Sequence Challenge'
         },
         {
-          text: 'Solve this riddle:\nThe poor have it, the rich want it, and if you eat it you die. What is it?',
+          text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'Nothing',
           type: 'text',
           category: 'Riddle'
         },
         {
-          text: 'Decode this cipher:\nWhat is "Reunion" in Morse code?',
+          text: 'DWhat is "Reunion" in Morse code?',
           subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
           category: 'Decoding'
         },
         {
-          text: 'Trivia Question:\nWhat is the largest planet in our solar system?',
+          text: 'What is the largest planet in our solar system?',
           answer: 'Jupiter',
           type: 'text',
           category: 'Trivia'
         },
         {
-          text: 'Trivia Question:\nWhat is the chemical symbol for gold?',
+          text: 'What is the chemical symbol for gold?',
           answer: 'Au',
           type: 'text',
           category: 'Trivia'
         },
         {
-          text: 'Sequence puzzle:\nSeparated by commas, what are the next five numbers in this sequence?\n2, 4, 8, 16, 32',
+          text: 'Separated by commas, what are the next five numbers in this sequence?\n2, 4, 8, 16, 32',
           answer: '64,128,256,512,1024',
           type: 'text',
           category: 'Sequence Challenge'
         },
         {
-          text: "Magic Word Challenge:\nFind our children's coordinator and ask him for the magic word.",
+          text: "Find our children's coordinator and ask him for the magic word.",
           answer: 'friendship',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'Location Challenge:\nLook for the symbol of knowledge at the festival.',
+          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
+          // subtext: 'Hint: where did you get your warm welcome?',
           answer: 'brain',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'Interactive Puzzle:\nVisit the main stage and ask the host for the interactive puzzle. Look for the secret code.',
+          text: 'Visit the main stage and look for the secret symbol.',
           answer: 'star',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'Final Challenge:\nFind the hidden treasure at the festival and take a selfie with it.',
-          answer: 'treasure',
-          type: 'text',
-          category: 'Quest'
-        },
-        {
-          text: 'Congratulations!\nYou have completed the scavenger hunt.\nYour final task is to find the hidden frog and take a selfie with it.',
+          text: 'You have completed the scavenger hunt.\nYour final task is to find the hidden frog and take a selfie with it.',
           type: 'information',
-          category: 'Conclusion'
+          category: 'Congratulations!'
         }
       ],
       answers: [], // Tracks user answers
