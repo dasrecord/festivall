@@ -51,6 +51,7 @@
 
 <script>
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
+import { ssrIncludeBooleanAttr } from 'vue/server-renderer'
 
 export default {
   data() {
@@ -58,8 +59,12 @@ export default {
       currentQuestion: 0,
       backgroundImage: faded_frog,
       questions: [
+      {
+        text: 'Welcome to the Scavenger Hunt! Get ready to test your wits and have fun solving puzzles. Click "Next" to begin!',
+        type: 'text', 
+      },
         {
-          text: 'Welcome to the Scavenger Hunt! Your first challenge is to identify the next number in this sequence:\n O, T, T, F, S, S, ?',
+          text: 'Welcome to the Scavenger Hunt!\nYour first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
           answer: 'E',
           type: 'text'
         },
