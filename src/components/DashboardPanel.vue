@@ -19,14 +19,14 @@
       </div>
       <h2>Talent Pool</h2>
       <div class="buttons">
-        <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
+        <!-- <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
         <button @click="loadApplicants('impact')">Impact</button>
         <button @click="loadApplicants('cream_collective')">Cream Collective</button>
         <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button>
         <button @click="loadApplicants('rapture')">Rapture</button>
         <button @click="loadApplicants('partywell')">PartyWell</button>
         <button @click="loadApplicants('festivall', true)">Festivall</button>
-        <button @click="loadApplicants('reunion')">Reunion Static</button>
+        <button @click="loadApplicants('reunion')">Reunion Static</button> -->
         <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button>
         <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
       </div>
@@ -55,7 +55,7 @@
       <h2>Current View <br />{{ filteredApplicants.length }}</h2>
       <div class="applicants" :class="viewStyle">
         <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
-          <div class="applicant-content">
+          <div class="applicant-content" :class="viewStyle">
             <h2>
               <!-- ACT NAME OR FULLNAME -->
 
@@ -702,6 +702,16 @@ button:hover {
   overflow-y: auto;
   padding: 0.5rem;
   border: 1px solid var(--festivall-baby-blue);
+}
+
+.applicants.rows .applicant,
+.applicants.rows .applicant-content,
+.applicants.rows .ticket-content,
+.applicants.rows .actions {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .applicant:hover {
