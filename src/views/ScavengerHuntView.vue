@@ -78,64 +78,58 @@ export default {
           type: 'text'
         },
         {
-          text: 'Binary puzzle again! What is the binary representation of the decimal number 15?',
+          text: 'Binary puzzle again!\nWhat is the binary representation of the decimal number 15?',
           answer: '1111',
           type: 'text'
         },
         {
-          text: 'Solve this riddle: The poor have it, the rich want it, and if you eat it you die. What is it?',
+          text: 'Solve this riddle:\nThe poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'Nothing',
           type: 'text'
         },
         {
           text: 'Decode this cipher: What is "Reunion" in Morse code?',
-          subtext: 'Hint: Use periods .\n dashes -\n and spaces to separate letters.',
+          subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text'
         },
         {
-          text: 'Riddle: I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?',
-          answer: 'Echo',
+          text: 'Trivia Question:\nWhat is the capital of France?',
+          answer: 'Paris',
           type: 'text'
         },
         {
-          text: 'Sequence puzzle: Separated by commas, what are the next five numbers in this sequence? 2, 4, 8, 16, 32',
+          text: 'Trivia Question:\nWhat is the largest planet in our solar system?',
+          answer: 'Jupiter',
+          type: 'text'
+        },
+        {
+          text: 'Trivia Question:\nWhat is the chemical symbol for gold?',
+          answer: 'Au',
+          type: 'text'
+        },
+        {
+          text: 'Sequence puzzle:\nSeparated by commas, what are the next five numbers in this sequence? 2, 4, 8, 16, 32',
           answer: '64,128,256,512,1024',
           type: 'text'
         },
         {
-          text: "Magic Word Challenge: Find our children's coordinator? and ask him for the magic word.",
+          text: "Magic Word Challenge:\nFind our children's coordinator and ask him for the magic word.",
           answer: 'friendship',
           type: 'text'
         },
         {
-          text: 'Find the Festival Organizer: Ask the festival organizer for the secret code.',
-          answer: 'celebrate',
+          text: 'Location Challenge:\nLook for the symbol of knowledge at the festival.',
+          answer: 'brain',
           type: 'text'
         },
         {
-          text: 'Trivia Hunt: Locate the information booth and ask for the trivia question of the day.',
-          answer: 'knowledge',
-          type: 'text'
-        },
-        {
-          text: 'Photo Task: Take a photo with one of the festival mascots and ask them for the next clue.',
-          answer: 'smile',
-          type: 'text'
-        },
-        {
-          text: 'Interactive Puzzle: Visit the main stage and ask the host for the interactive puzzle. Look for the secret code.',
+          text: 'Interactive Puzzle:\nVisit the main stage and ask the host for the interactive puzzle. Look for the secret code.',
           answer: 'star',
           type: 'text'
         },
-
         {
-          text: 'Riddle: I can be cracked, made, told, and played. What am I?',
-          answer: 'Joke',
-          type: 'text'
-        },
-        {
-          text: 'Riddle: The more of this you take, the more you leave behind. What is it?',
+          text: 'Riddle:\nThe more of this you take, the more you leave behind. What is it?',
           answer: 'Footsteps',
           type: 'text'
         }
