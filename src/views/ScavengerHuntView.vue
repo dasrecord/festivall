@@ -73,12 +73,12 @@ export default {
       backgroundImage: faded_frog,
       questions: [
         {
-          text: `Welcome, ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers, and onsite quests. The highest scores at the end of the festival will be entered to win some bitcoin!`,
+          text: `Welcome, ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
         {
-          text: 'Your first challenge is to identify the next letter in this sequence:\n O, T, T, F, F, S, S, ?',
+          text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
           answer: 'E',
           type: 'text',
           category: 'Sequence Challenge'
@@ -90,7 +90,7 @@ export default {
           category: 'Math Question'
         },
         {
-          text: 'What is the next number in this sequence:\n0, 1, 1, 2, 3, 5, 8, 13, ?',
+          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
           answer: '21',
           type: 'text',
           category: 'Sequence Challenge'
@@ -102,7 +102,7 @@ export default {
           category: 'Riddle'
         },
         {
-          text: 'DWhat is "Reunion" in Morse code?',
+          text: 'What is "Reunion" in Morse code?',
           subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
@@ -121,7 +121,7 @@ export default {
           category: 'Trivia'
         },
         {
-          text: 'Separated by commas, what are the next five numbers in this sequence?\n2, 4, 8, 16, 32',
+          text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
           answer: '64,128,256,512,1024',
           type: 'text',
           category: 'Sequence Challenge'
@@ -134,7 +134,6 @@ export default {
         },
         {
           text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
-          // subtext: 'Hint: where did you get your warm welcome?',
           answer: 'brain',
           type: 'text',
           category: 'Quest'
@@ -142,6 +141,12 @@ export default {
         {
           text: 'Visit the main stage and look for the secret symbol.',
           answer: 'star',
+          type: 'text',
+          category: 'Quest'
+        },
+        {
+          text: 'Where would you find Allium sativum?',
+          answer: 'garlic',
           type: 'text',
           category: 'Quest'
         },
