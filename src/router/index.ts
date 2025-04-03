@@ -369,9 +369,13 @@ const routes = [
     props: { url: 'https://youtu.be/xibNU7F_RKQ?si=OSSjz5IVD1O_5Eoz' }
   },
   {
-    path: '/scavengerhunt',
-    name: 'scavengerhunt',
-    component: ScavengerHuntView
+    path: '/scavengerhunt/:id_code',
+    name: 'ScavengerHunt',
+    component: ScavengerHuntView,
+    props: (route) => ({
+      id_code: route.params.id_code,
+      fullName: route.query.fullName || 'Guest' // Default to 'Guest' if fullName is not provided
+    })
   },
   {
     path: '/services',

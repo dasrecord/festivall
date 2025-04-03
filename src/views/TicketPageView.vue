@@ -88,7 +88,15 @@
         </p>
         <p>
           <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-          <RouterLink to="/scavengerhunt">Scavenger Hunt</RouterLink>
+          <RouterLink
+            :to="{
+              name: 'ScavengerHunt',
+              params: { id_code: order.id_code },
+              query: { fullName: order.fullname.split(' ')[0] }
+            }"
+          >
+            Scavenger Hunt
+          </RouterLink>
         </p>
       </div>
     </div>
