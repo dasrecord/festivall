@@ -732,6 +732,8 @@ button:hover {
 .applicants.cards .ticket-section,
 .applicants.cards .checkedin-section,
 .applicants.cards .message-section,
+.applicants.cards .compensation-section,
+.applicants.cards .settime-section,
 .applicants.cards .revenue-section,
 .applicants.cards .contract-section {
   display: grid;
@@ -793,14 +795,9 @@ button:hover {
 }
 
 .actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 10px;
-  background-color: #444;
-  border: 1px solid var(--festivall-baby-blue);
 }
 
 input {
