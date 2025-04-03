@@ -73,7 +73,7 @@ export default {
       backgroundImage: faded_frog,
       questions: [
         {
-          text: `Welcome, ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
+          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
@@ -145,13 +145,13 @@ export default {
           category: 'Quest'
         },
         {
-          text: 'Where would you find Allium sativum?',
+          text: 'Locate one piece of Allium sativum and bring it to Devops ',
           answer: 'garlic',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'You have completed the scavenger hunt.\nYour final task is to find the hidden frog and take a selfie with it.',
+          text: 'You have completed the scavenger hunt',
           type: 'information',
           category: 'Congratulations!'
         }

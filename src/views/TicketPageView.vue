@@ -342,16 +342,20 @@ a:hover {
 }
 
 .paid {
-  color: green;
+  color: limegreen;
+  font-weight: bold;
 }
 
 .not-paid {
   color: red;
+  font-weight: bold;
 }
 .checked-in {
   color: orange;
+  font-weight: bold;
 }
 .not-checked-in {
   color: yellow;
+  font-weight: bold;
 }
 </style>
