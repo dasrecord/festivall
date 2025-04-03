@@ -1,5 +1,6 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
+    <!-- Question Slides -->
     <div
       class="form-slide"
       v-for="(question, index) in questions"
@@ -11,6 +12,7 @@
       }"
     >
       <div class="question">
+        <h1 v-html="formatText(question.category)"></h1>
         <h2 v-html="formatText(question.text)"></h2>
         <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
 
@@ -37,12 +39,23 @@
         <!-- Navigation buttons -->
         <div class="controls">
           <button v-if="index > 0" @click="prevQuestion">Previous</button>
+          {{ index + 1 }}/{{ questions.length }}
           <button v-if="index < questions.length - 1" @click="nextQuestion">Next</button>
+          <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
         </div>
       </div>
-      <!-- Score & Submit display -->
-      <div v-if="index === questions.length - 1" class="score">
+    </div>
+
+    <!-- Score Slide -->
+    <div
+      class="form-slide"
+      :class="{ active: currentQuestion === 'score', previous: currentQuestion !== 'score' }"
+      v-if="currentQuestion === 'score' || currentQuestion === questions.length"
+    >
+      <div class="score">
+        <h2>Great job, {{ fullName }}!</h2>
         <h3>Your Score: {{ calculateScore() }}/{{ questions.length }}</h3>
+        <button @click="restartHunt">Go Back</button>
         <button @click="sendScore">Submit Score</button>
       </div>
     </div>
@@ -53,90 +66,103 @@
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
 
 export default {
+  props: ['id_code', 'fullName'],
   data() {
     return {
-      currentQuestion: 0,
+      currentQuestion: 0, // Tracks the current slide (index or 'score')
       backgroundImage: faded_frog,
       questions: [
         {
-          text: 'Welcome to the Reunion Scavenger Hunt!\n Get ready to test your wits and have fun solving puzzles.',
-          type: 'information'
+          text: `Welcome, ${this.fullName}!\n Get ready to test your wits and have fun solving puzzles.`,
+          type: 'information',
+          category: 'Reunion\nScavenger Hunt'
         },
         {
           text: 'Your first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
           answer: 'E',
-          type: 'text'
+          type: 'text',
+          category: 'Sequence Challenge'
         },
         {
           text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of 1010?',
           answer: '10',
-          type: 'text'
+          type: 'text',
+          category: 'Math Quesiton'
         },
         {
           text: 'What is the next number in this sequence:\n0, 1, 1, 2, 3, 5, 8, 13, ?',
           answer: '21',
-          type: 'text'
+          type: 'text',
+          category: 'Sequence Challenge'
         },
         {
           text: 'Solve this riddle:\nThe poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'Nothing',
-          type: 'text'
+          type: 'text',
+          category: 'Riddle'
         },
         {
           text: 'Decode this cipher:\nWhat is "Reunion" in Morse code?',
           subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
-          type: 'text'
-        },
-        {
-          text: 'Trivia Question:\nWhat is the capital of France?',
-          answer: 'Paris',
-          type: 'text'
+          type: 'text',
+          category: 'Decoding'
         },
         {
           text: 'Trivia Question:\nWhat is the largest planet in our solar system?',
           answer: 'Jupiter',
-          type: 'text'
+          type: 'text',
+          category: 'Trivia'
         },
         {
           text: 'Trivia Question:\nWhat is the chemical symbol for gold?',
           answer: 'Au',
-          type: 'text'
+          type: 'text',
+          category: 'Trivia'
         },
         {
-          text: 'Sequence puzzle:\nSeparated by commas, what are the next five numbers in this sequence? 2, 4, 8, 16, 32',
+          text: 'Sequence puzzle:\nSeparated by commas, what are the next five numbers in this sequence?\n2, 4, 8, 16, 32',
           answer: '64,128,256,512,1024',
-          type: 'text'
+          type: 'text',
+          category: 'Sequence Challenge'
         },
         {
           text: "Magic Word Challenge:\nFind our children's coordinator and ask him for the magic word.",
           answer: 'friendship',
-          type: 'text'
+          type: 'text',
+          category: 'Quest'
         },
         {
           text: 'Location Challenge:\nLook for the symbol of knowledge at the festival.',
           answer: 'brain',
-          type: 'text'
+          type: 'text',
+          category: 'Quest'
         },
         {
           text: 'Interactive Puzzle:\nVisit the main stage and ask the host for the interactive puzzle. Look for the secret code.',
           answer: 'star',
-          type: 'text'
+          type: 'text',
+          category: 'Quest'
         },
         {
-          text: 'Riddle:\nThe more of them you take, the more you leave behind. What is it?',
-          answer: 'Footsteps',
-          type: 'text'
+          text: 'Final Challenge:\nFind the hidden treasure at the festival and take a selfie with it.',
+          answer: 'treasure',
+          type: 'text',
+          category: 'Quest'
+        },
+        {
+          text: 'Congratulations!\nYou have completed the scavenger hunt.\nYour final task is to find the hidden frog and take a selfie with it.',
+          type: 'information',
+          category: 'Conclusion'
         }
       ],
-
-      answers: [],
+      answers: [], // Tracks user answers
       feedback: [] // Tracks feedback for each question (correct/incorrect)
     }
   },
   methods: {
     nextQuestion() {
-      if (this.currentQuestion < this.questions.length - 1) {
+      if (this.currentQuestion < this.questions.length) {
         this.currentQuestion++
       }
     },
@@ -144,6 +170,12 @@ export default {
       if (this.currentQuestion > 0) {
         this.currentQuestion--
       }
+    },
+    restartHunt() {
+      this.currentQuestion = 0
+    },
+    showScoreSlide() {
+      this.currentQuestion = 'score' // Switch to the score slide
     },
     checkAnswer(index) {
       const userAnswer = this.answers[index]?.trim().toLowerCase()
@@ -156,15 +188,20 @@ export default {
       }
     },
     calculateScore() {
-      // Calculate the score based on the number of correct answers
       return this.feedback.filter((status) => status === 'correct').length
     },
     async sendScore() {
       const score = this.calculateScore()
       const payload = {
-        user: 'Anonymous', // Replace with user data if available
-        score: score,
-        totalQuestions: this.questions.length
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `:id: ${this.id_code}\n:ballot_box_with_check: ${score}/${this.questions.length}`
+            }
+          }
+        ]
       }
 
       try {
@@ -186,13 +223,6 @@ export default {
         alert('An error occurred while submitting your score.')
       }
     },
-    completeHunt() {
-      const score = this.calculateScore()
-      alert(
-        `Congratulations! You have completed the scavenger hunt! Your score is ${score}/${this.questions.length}.`
-      )
-      this.sendScore() // Send the score when the hunt is completed
-    },
     formatText(text) {
       return text.replace(/\n/g, '<br>')
     }
@@ -211,9 +241,6 @@ export default {
   background-size: cover;
   background-position: center;
   font-family: 'League Spartan', sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
 }
 
 .form-slide {
@@ -254,9 +281,17 @@ export default {
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
-  width: 67%;
+  width: 80%;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  align-items: center;
 }
 
 input {
@@ -276,7 +311,7 @@ input:focus {
 
 button {
   padding: 0.75rem 1rem;
-  margin: 1rem;
+  /* margin: 1rem; */
   border: none;
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.6);
@@ -303,5 +338,15 @@ button:hover {
 .incorrect {
   color: red;
   font-weight: bold;
+}
+
+.score {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 67%;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 </style>
