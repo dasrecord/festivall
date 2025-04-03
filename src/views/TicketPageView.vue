@@ -18,25 +18,33 @@
         <strong>Valid: </strong> 24 hours starting 12:00 PM {{ order.selected_day }}
       </p>
       <div class="quantities">
-        <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
-        <div class="icons">
-          <img
-            v-for="n in Number(order.ticket_quantity)"
-            :key="n"
-            :src="ticket_icon"
-            style="height: auto; width: 32px; transform: rotate(-45deg)"
-            alt="Ticket Icon"
-          />
+        <div class="quantity">
+          <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
+          <div class="icons">
+            <img
+              v-for="n in Number(order.ticket_quantity)"
+              :key="n"
+              :src="ticket_icon"
+              style="
+                height: auto;
+                width: 32px;
+                transform: translateY(8px) translateX(5px) rotate(-45deg);
+              "
+              alt="Ticket Icon"
+            />
+          </div>
         </div>
-        <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
-        <div class="icons">
-          <img
-            v-for="n in Number(order.meal_tickets_remaining)"
-            :key="n"
-            :src="meals_icon"
-            style="height: auto; width: 32px"
-            alt="Meal Icon"
-          />
+        <div class="quantity">
+          <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
+          <div class="icons">
+            <img
+              v-for="n in Number(order.meal_tickets_remaining)"
+              :key="n"
+              :src="meals_icon"
+              style="height: auto; width: 32px"
+              alt="Meal Icon"
+            />
+          </div>
         </div>
       </div>
 
@@ -211,6 +219,7 @@ export default {
 <style scoped>
 * {
   font-family: 'Helvetica', sans-serif;
+  /* border: 1px solid lime; */
 }
 
 strong {
@@ -229,6 +238,13 @@ strong {
   max-width: 100vw;
   height: auto;
   /* padding: 1rem 3rem; */
+}
+.ticket-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* justify-content: center; */
+  margin-bottom: 1rem;
 }
 
 h1,
@@ -263,9 +279,21 @@ h2 {
 .quantities {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
+.quantity {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 10px;
+}
+
 .type {
   display: flex;
   flex-direction: row;
