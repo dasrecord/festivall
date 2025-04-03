@@ -59,11 +59,11 @@ export default {
       backgroundImage: faded_frog,
       questions: [
         {
-          text: 'Welcome to the Scavenger Hunt! Get ready to test your wits and have fun solving puzzles. Click "Next" to begin!',
+          text: 'Welcome to the Reunion Scavenger Hunt!\n Get ready to test your wits and have fun solving puzzles.',
           type: 'information'
         },
         {
-          text: 'Welcome to the Scavenger Hunt!\nYour first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
+          text: 'Your first challenge is to identify the next number in this sequence:\n O, T, T, F, F, S, S, ?',
           answer: 'E',
           type: 'text'
         },
@@ -78,17 +78,12 @@ export default {
           type: 'text'
         },
         {
-          text: 'Binary puzzle again!\nWhat is the binary representation of the decimal number 15?',
-          answer: '1111',
-          type: 'text'
-        },
-        {
           text: 'Solve this riddle:\nThe poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'Nothing',
           type: 'text'
         },
         {
-          text: 'Decode this cipher: What is "Reunion" in Morse code?',
+          text: 'Decode this cipher:\nWhat is "Reunion" in Morse code?',
           subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text'
@@ -129,7 +124,7 @@ export default {
           type: 'text'
         },
         {
-          text: 'Riddle:\nThe more of this you take, the more you leave behind. What is it?',
+          text: 'Riddle:\nThe more of them you take, the more you leave behind. What is it?',
           answer: 'Footsteps',
           type: 'text'
         }
