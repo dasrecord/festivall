@@ -19,24 +19,25 @@
       </p>
       <div class="quantities">
         <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
-        <img
-          v-for="n in Number(order.ticket_quantity)"
-          :key="n"
-          :src="ticket_icon"
-          style="height: auto; width: 32px; transform: rotate(-45deg)"
-          alt="Ticket Icon"
-        />
-      </div>
-      <div class="quantities">
+        <div class="icons">
+          <img
+            v-for="n in Number(order.ticket_quantity)"
+            :key="n"
+            :src="ticket_icon"
+            style="height: auto; width: 32px; transform: rotate(-45deg)"
+            alt="Ticket Icon"
+          />
+        </div>
         <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
-
-        <img
-          v-for="n in Number(order.meal_tickets_remaining)"
-          :key="n"
-          :src="meals_icon"
-          style="height: auto; width: 32px"
-          alt="Meal Icon"
-        />
+        <div class="icons">
+          <img
+            v-for="n in Number(order.meal_tickets_remaining)"
+            :key="n"
+            :src="meals_icon"
+            style="height: auto; width: 32px"
+            alt="Meal Icon"
+          />
+        </div>
       </div>
 
       <p
@@ -85,6 +86,10 @@
           <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
           <RouterLink to="/reunionlineup">Lineup</RouterLink>
         </p>
+        <p>
+          <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
+          <RouterLink to="/scavengerhunt">Scavenger Hunt</RouterLink>
+        </p>
       </div>
     </div>
 
@@ -114,6 +119,7 @@ import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
+import quiz_icon from '@/assets/images/icons/quiz.png'
 
 export default {
   name: 'TicketPageView',
@@ -187,7 +193,8 @@ export default {
       volunteer_icon,
       location_icon,
       map_icon,
-      lineup_icon
+      lineup_icon,
+      quiz_icon
     }
   }
 }
@@ -245,6 +252,17 @@ h2 {
   margin: 0 0.5rem 0.7rem 0;
 }
 
+.quantities {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+.type {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 .order-info .links img {
   margin: 0;
 }
@@ -267,6 +285,7 @@ h2 {
 
 .links a {
   color: white;
+  padding: 0;
   /* text-decoration: underline; */
 }
 
