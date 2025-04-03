@@ -146,11 +146,7 @@
               </div>
               <!-- MEAL TICKETS REMAINING -->
               <div class="quantity">
-                <p>
-                  <strong>Meal Tickets Remaining:</strong>&nbsp;{{
-                    applicant.meal_tickets_remaining
-                  }}
-                </p>
+                <p><strong>Meal Tickets:</strong>&nbsp;{{ applicant.meal_tickets_remaining }}</p>
                 <div class="meals">
                   <img
                     v-for="n in Number(applicant.meal_tickets_remaining)"
@@ -216,7 +212,7 @@
                 :src="sms_icon"
                 alt="Send SMS"
                 class="action-icon"
-                style="width: auto; height: 42px; transform: translateY(18px)"
+                style="width: auto; height: 42px"
               /><br />
             </div>
             <div v-if="applicant.applicant_type" class="compensation-section">
@@ -233,7 +229,7 @@
                 :src="compensation_icon"
                 alt="Update Compensation"
                 class="action-icon"
-                style="width: auto; height: 32px; transform: translateY(12px)"
+                style="width: auto; height: 32px"
               />
             </div>
 
@@ -251,7 +247,7 @@
                 :src="lineup_icon"
                 alt="Update Settime"
                 class="action-icon"
-                style="width: auto; height: 32px; transform: translateY(12px)"
+                style="width: auto; height: 32px"
               />
             </div>
             <div class="contract-section">
@@ -735,13 +731,22 @@ button:hover {
 .applicants.cards .preview-section,
 .applicants.cards .ticket-section,
 .applicants.cards .checkedin-section,
-.applicants.cards .revenue-section {
+.applicants.cards .message-section,
+.applicants.cards .revenue-section,
+.applicants.cards .contract-section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  align-items: center;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
   padding: 0.5rem;
   border-radius: 10px;
+  background-color: #444;
+  border: 1px solid var(--festivall-baby-blue);
+
+  width: 100%;
+  max-width: 300px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .applicants.rows .applicant,
@@ -788,11 +793,14 @@ button:hover {
 }
 
 .actions {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background-color: #444;
+  border: 1px solid var(--festivall-baby-blue);
 }
 
 input {
