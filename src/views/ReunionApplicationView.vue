@@ -239,15 +239,15 @@ const submitForm = async () => {
           @click="$router.push('/reunion')"
         />
         <img :src="frog_image" alt="frog" class="frog-image" />
+        <h1>Interested in performing at Reunion 2025?</h1>
+        <h3>
+          Please fill out the form below.<br />
+          If you have a
+          <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
+          information,<br />
+          please enter it first.<br /><br />
+        </h3>
       </div>
-      <h1>Interested in performing at Reunion 2025?</h1>
-      <h2>
-        Please fill out the form below.<br />
-        If you have a
-        <span class="highlight">Festivall ID_CODE</span> and would like us to use your existing
-        information,<br />
-        please enter it first.<br /><br />
-      </h2>
       <h4 class="disclaimer">
         <div>
           <h1>Compensation Schedule:<br /></h1>
@@ -461,7 +461,7 @@ const submitForm = async () => {
         </div>
 
         <!-- Conditional Form Sections -->
-        <div v-if="form.applicant_type === 'Volunteer'">
+        <div v-show="form.applicant_type === 'Volunteer'">
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
@@ -519,7 +519,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-else-if="form.applicant_type === 'Artist'">
+        <div v-show="form.applicant_type === 'Artist'">
           <div class="form-section">
             <label for="act_type">Act Type:</label>
             <select id="act_type" v-model="form.act_type" required>
@@ -601,7 +601,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-else-if="form.applicant_type === 'Workshop'">
+        <div v-show="form.applicant_type === 'Workshop'">
           <div class="form-section">
             <label for="workshop_title">Title:</label>
             <input
@@ -633,7 +633,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-else-if="form.applicant_type === 'Art Installation'">
+        <div v-show="form.applicant_type === 'Art Installation'">
           <div class="form-section">
             <label for="installation_title">Title:</label>
             <input
@@ -692,7 +692,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-else-if="form.applicant_type === 'Vendor'">
+        <div v-show="form.applicant_type === 'Vendor'">
           <div class="form-section">
             <label for="vendor_type">Vendor Type:</label>
             <select id="vendor_type" v-model="form.vendor_type" required>
@@ -827,6 +827,7 @@ label {
   padding: 10px;
   background-color: var(--reunion-frog-green);
   color: white;
+  font-weight: bold;
   border-radius: 15px 0 0 15px;
 }
 
@@ -851,14 +852,16 @@ input[type='checkbox'] {
 .checkboxes {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 5px;
+  /* grid-template-rows: repeat(2, auto); */
+  gap: 3px;
   justify-items: center;
   align-items: center;
   text-align: center;
 }
 
 .checkbox-label {
+  display: flex;
+  align-items: center;
   font-size: 0.8rem;
 }
 button {
@@ -916,6 +919,7 @@ table {
     height: auto;
     padding: 5px;
     border-radius: 15px 15px 0 0;
+    font-weight: bold;
   }
 
   input,
