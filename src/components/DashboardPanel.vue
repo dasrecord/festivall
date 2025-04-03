@@ -186,7 +186,6 @@
               <a
                 :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
                 target="_blank"
-                style="display: inline-block"
               >
                 <img
                   :src="ticket_icon"
@@ -730,7 +729,6 @@ button:hover {
   border: 1px solid var(--festivall-baby-blue);
 }
 
-/* .applicants.cards .payment-section, */
 .applicants.cards .quantities-section,
 .applicants.cards .preview-section,
 .applicants.cards .ticket-section,
@@ -738,8 +736,6 @@ button:hover {
 .applicants.cards .revenue-section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  justify-items: center;
   align-items: center;
   margin-bottom: 0.5rem;
   padding: 0.5rem;
@@ -752,6 +748,7 @@ button:hover {
 .applicants.rows .quantities,
 .applicants.rows .message-section,
 .applicants.rows .compensation-section,
+.applicants.rows .revenue-section,
 .applicants.rows .settime-section,
 .applicants.rows .tickets,
 .applicants.rows .meals,
@@ -764,7 +761,6 @@ button:hover {
   flex-wrap: wrap;
   flex-direction: row;
   gap: 0.5rem;
-  justify-content: space-between;
   align-items: center;
 }
 
