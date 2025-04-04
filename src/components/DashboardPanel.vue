@@ -14,15 +14,15 @@
       </div>
       <h2>Talent Pool</h2>
       <div class="buttons">
-        <!-- <button @click="loadApplicants('blessed_coast')">Blessed Coast</button>
-        <button @click="loadApplicants('impact')">Impact</button>
-        <button @click="loadApplicants('cream_collective')">Cream Collective</button>
-        <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button>
-        <button @click="loadApplicants('rapture')">Rapture</button>
-        <button @click="loadApplicants('partywell')">PartyWell</button>
-        <button @click="loadApplicants('festivall', true)">Festivall</button>
-        <button @click="loadApplicants('reunion')">Reunion Static</button>
-        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button> -->
+        <!-- <button @click="loadApplicants('blessed_coast')">Blessed Coast</button> -->
+        <!-- <button @click="loadApplicants('impact')">Impact</button> -->
+        <!-- <button @click="loadApplicants('cream_collective')">Cream Collective</button> -->
+        <!-- <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button> -->
+        <!-- <button @click="loadApplicants('rapture')">Rapture</button> -->
+        <!-- <button @click="loadApplicants('partywell')">PartyWell</button> -->
+        <!-- <button @click="loadApplicants('festivall', true)">Festivall</button> -->
+        <!-- <button @click="loadApplicants('reunion')">Reunion Static</button> -->
+        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button>
         <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
       </div>
     </div>
@@ -48,7 +48,7 @@
 
     <div class="dashboard-panel">
       <div>
-        <button @click="generateLineup">Generate Lineup</button>
+        <!-- <button @click="generateLineup">Download .ics</button> -->
       </div>
       <h2>Current View <br />{{ filteredApplicants.length }}</h2>
       <div class="applicants" :class="viewStyle">
