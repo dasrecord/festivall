@@ -12,7 +12,7 @@
       v-if="order.ticket_type === 'Day Pass'"
       :targetYear="2025"
       :targetMonth="7"
-      :targetDay="order.selected_day.split(',')[1].split(' ')[2].split('t')[0]"
+      :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
@@ -115,10 +115,16 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink to="/reunionlineup">
+        <RouterLink v-if="new Date() >= new Date(2025, 7, 26)" to="#">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            Lineup
+            2025 Lineup
+          </p>
+        </RouterLink>
+        <RouterLink v-else to="/reunionlineup">
+          <p>
+            <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
+            Last Year's Lineup
           </p>
         </RouterLink>
         <RouterLink
