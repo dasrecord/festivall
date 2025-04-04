@@ -2,7 +2,7 @@
   <div class="basic">
     <img
       :src="reunion_emblem"
-      alt="reunion"
+      alt="Reunion Emblem"
       class="reunion-emblem"
       style="cursor: pointer; max-width: 600px"
       @click="$router.push('/reunion')"
@@ -16,55 +16,97 @@
         <button @click="toggleDay('sunday')">Sunday</button>
       </div>
 
-      <!-- Friday Content -->
+      <!-- Day sections with filtered events -->
       <div v-if="showDays.friday" class="day">
         <h2>Friday</h2>
-        <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar_2025.ics"
-          :startDate="new Date('2025-08-29T14:00:00')"
-          :endDate="new Date('2025-08-30T02:00:00')"
-        />
+        <lineup-day :events="getFridayEvents" :loading="loading" />
       </div>
 
-      <!-- Saturday Content -->
       <div v-if="showDays.saturday" class="day">
         <h2>Saturday</h2>
-        <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar_2025.ics"
-          :startDate="new Date('2025-08-30T14:00:00')"
-          :endDate="new Date('2025-08-31T02:00:00')"
-        />
+        <lineup-day :events="getSaturdayEvents" :loading="loading" />
       </div>
 
-      <!-- Sunday Content -->
       <div v-if="showDays.sunday" class="day">
         <h2>Sunday</h2>
-        <CalendarModule
-          filePath="/data/calendars/reunion_artist_calendar_2025.ics"
-          :startDate="new Date('2025-08-31T14:00:00')"
-          :endDate="new Date('2025-09-01T02:00:00')"
-        />
+        <lineup-day :events="getSundayEvents" :loading="loading" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import CalendarModule from '@/components/CalendarModule.vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
+import LineupDay from '@/components/CalendarModule.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 
-// Reactive object to track visibility of each day's content
+// Reactive state
+const loading = ref(false)
+const events = ref([])
+
 const showDays = reactive({
   friday: false,
   saturday: false,
   sunday: false
 })
 
-// Function to toggle visibility of a specific day
+// Fetch events from Firestore
+const fetchEvents = async () => {
+  loading.value = true
+  try {
+    const q = query(
+      collection(reunion_db, 'applications_2025')
+      // where('contract_signed', '==', true)
+    )
+    const snapshot = await getDocs(q)
+    events.value = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      mix_track_url: doc.data().mix_track_url || null // Ensure mix_track_url is mapped
+    }))
+
+    // Sort events by settime after fetching
+    events.value.sort((a, b) => new Date(a.settime) - new Date(b.settime))
+  } catch (error) {
+    console.error('Error fetching events:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Filter events by day
+const getFridayEvents = computed(() =>
+  events.value.filter((event) => {
+    const date = new Date(event.settime)
+    return date.getMonth() === 7 && date.getDate() === 29 // August 29
+  })
+)
+
+const getSaturdayEvents = computed(() =>
+  events.value.filter((event) => {
+    const date = new Date(event.settime)
+    return date.getMonth() === 7 && date.getDate() === 30 // August 30
+  })
+)
+
+const getSundayEvents = computed(() =>
+  events.value.filter((event) => {
+    const date = new Date(event.settime)
+    return date.getMonth() === 7 && date.getDate() === 31 // August 31
+  })
+)
+
+// Toggle day visibility
 const toggleDay = (day) => {
   showDays[day] = !showDays[day]
 }
+
+// Fetch events on component mount
+onMounted(() => {
+  fetchEvents()
+})
 </script>
 
 <style scoped>
