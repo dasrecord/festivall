@@ -27,8 +27,8 @@
 
               <!-- Mix Track URL -->
               <a
-                v-if="event.applicant.mixTrackUrl"
-                :href="event.applicant.mixTrackUrl"
+                v-if="event.applicant && event.applicant.mixtrackurl"
+                :href="event.applicant.mixtrackurl"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mix-track-link"
@@ -86,21 +86,38 @@ const extractApplicantData = (vevent) => {
   const applicant = {}
   const properties = vevent.getAllProperties()
 
+  // Debug: Log all properties
+  console.log(
+    'All properties:',
+    properties.map((p) => ({ name: p.name, value: p.getFirstValue() }))
+  )
+
   properties.forEach((prop) => {
-    const name = prop.name
+    const name = prop.name.toUpperCase() // Normalize to uppercase for comparison
     if (name.startsWith('X-APPLICANT-')) {
-      const key = name.replace('X-APPLICANT-', '').toLowerCase()
+      // Convert property name to camelCase
+      const key = name
+        .replace('X-APPLICANT-', '')
+        .toLowerCase()
+        .replace(/-./g, (match) => match[1].toUpperCase())
+
       const value = prop.getFirstValue()
 
-      // Convert property names to camelCase
-      const camelKey = key.toLowerCase().replace(/-(.)/g, (_, c) => c.toUpperCase())
-      applicant[camelKey] = value || null
+      // Debug: Log each property transformation
+      console.log(`Converting ${name} to ${key} with value:`, value)
+
+      // Only set non-empty values
+      if (value) {
+        applicant[key] = value
+      }
     }
   })
 
-  return Object.keys(applicant).length ? applicant : null
-}
+  // Debug: Log final object
+  console.log('Final applicant object:', applicant)
 
+  return Object.keys(applicant).length > 0 ? applicant : null
+}
 // Parse individual event
 const parseEvent = (vevent) => {
   const event = new ICAL.Event(vevent)
@@ -222,7 +239,7 @@ watch(
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  background: #f5f5f5;
+
   border-radius: 4px;
   text-decoration: none;
   color: inherit;
