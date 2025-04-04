@@ -1,17 +1,19 @@
 <template>
   <div class="ticket-page" v-if="order">
     <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
+    <CountdownTimer :targetYear="2025" :targetMonth="7" :targetDay="29" />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
     <h2>Your Digital Ticket</h2>
+
     <div class="order-info">
-      <p><strong>Full Name:</strong> {{ order.fullname }}</p>
       <p>
+        <strong>Full Name:</strong> {{ order.fullname }}
         <strong>Ticket Type:</strong>
         {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
       </p>
       <p v-if="order.ticket_type === 'Weekend Pass'">
-        <strong>Valid From:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
+        <strong>Valid:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
       </p>
 
       <p v-if="order.ticket_type === 'Day Pass'">
@@ -19,7 +21,7 @@
       </p>
       <div class="quantities">
         <div class="quantity">
-          <p><strong>Ticket Quantity:</strong>{{ order.ticket_quantity }}</p>
+          <p><strong>Admit:</strong>{{ order.ticket_quantity }}</p>
           <div class="icons">
             <img
               v-for="n in Number(order.ticket_quantity)"
@@ -35,7 +37,7 @@
           </div>
         </div>
         <div class="quantity">
-          <p><strong>Meal Tickets Remaining:</strong>{{ order.meal_tickets_remaining }}</p>
+          <p><strong>Meal Tickets:</strong>{{ order.meal_tickets_remaining }}</p>
           <div class="icons">
             <img
               v-for="n in Number(order.meal_tickets_remaining)"
@@ -78,34 +80,46 @@
         </span>
       </p>
       <div class="links">
-        <p v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'">
-          <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
-          <RouterLink to="/reunion-volunteer-instructions">Volunteer Instructions</RouterLink>
-        </p>
-        <p>
-          <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
-          <RouterLink to="/reunionlocation">Location</RouterLink>
-        </p>
-        <p>
-          <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
-          <RouterLink to="/reunionmap">Grounds Map</RouterLink>
-        </p>
-        <p>
-          <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-          <RouterLink to="/reunionlineup">Lineup</RouterLink>
-        </p>
-        <p>
-          <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-          <RouterLink
-            :to="{
-              name: 'ScavengerHunt',
-              params: { id_code: order.id_code },
-              query: { fullName: order.fullname.split(' ')[0] }
-            }"
-          >
+        <RouterLink
+          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
+          style="grid-column: span 2"
+          to="/reunion-volunteer-instructions"
+        >
+          <p>
+            <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
+            Volunteer Instructions
+          </p>
+        </RouterLink>
+        <RouterLink to="/reunionlocation">
+          <p>
+            <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
+            Location
+          </p>
+        </RouterLink>
+        <RouterLink to="/reunionmap">
+          <p>
+            <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
+            Grounds Map
+          </p>
+        </RouterLink>
+        <RouterLink to="/reunionlineup">
+          <p>
+            <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
+            Lineup
+          </p>
+        </RouterLink>
+        <RouterLink
+          :to="{
+            name: 'ScavengerHunt',
+            params: { id_code: order.id_code },
+            query: { fullName: order.fullname.split(' ')[0] }
+          }"
+        >
+          <p>
+            <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
             Scavenger Hunt
-          </RouterLink>
-        </p>
+          </p>
+        </RouterLink>
       </div>
     </div>
 
@@ -136,9 +150,13 @@ import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 
 export default {
   name: 'TicketPageView',
+  components: {
+    CountdownTimer
+  },
 
   setup() {
     const route = useRoute()
@@ -221,6 +239,10 @@ export default {
   font-family: 'Helvetica', sans-serif;
   /* border: 1px solid lime; */
 }
+.countdowntimer {
+  background-color: var(--reunion-frog-green);
+  color: white;
+}
 
 strong {
   font-weight: bold;
@@ -257,7 +279,6 @@ h2 {
 }
 
 .order-info {
-  background-color: white;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
   /* max-width: 85%; */
@@ -316,7 +337,7 @@ h2 {
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem 0 0.3rem 0;
   margin: 0;
 }
 
