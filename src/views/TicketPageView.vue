@@ -177,7 +177,6 @@ export default {
 
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
-          console.log('Order data:', order.value) // Debug log
           await nextTick() // Wait for the DOM to update
 
           // generateQRCode(order.value.id_code) // Use short id_code for QR code generation
@@ -198,12 +197,8 @@ export default {
         QRCode.toCanvas(qrCanvas.value, text, { width: 200, height: 200 }, (error) => {
           if (error) {
             console.error('Error generating QR code:', error)
-          } else {
-            console.log('QR code generated successfully') // Debug log
           }
         })
-      } else {
-        console.error('QR canvas element is not available') // Debug log
       }
     }
 
