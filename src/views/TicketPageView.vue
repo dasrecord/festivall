@@ -115,18 +115,19 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2025, 7, 26)" to="#">
+        <RouterLink v-if="new Date() >= new Date(2025, 7, 26)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
             2025 Lineup
           </p>
         </RouterLink>
-        <RouterLink v-else to="/reunionlineup">
+        <RouterLink v-else to="#">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Last Year's Lineup
+            Lineup TBA
           </p>
         </RouterLink>
+
         <RouterLink
           v-if="new Date() >= new Date(2025, 7, 26)"
           :to="{
