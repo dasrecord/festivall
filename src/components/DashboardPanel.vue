@@ -515,9 +515,15 @@ export default {
               applicant.email
                 ? `ATTENDEE;CN=${applicant.full_name || applicant.act_name || 'Guest'};RSVP=TRUE:mailto:${applicant.email}`
                 : '',
-              `X-APPLICANT-DATA:${JSON.stringify(applicant)
-                .replace(/[\n\r]/g, '\\n')
-                .replace(/,/g, '\\,')}`,
+              `X-APPLICANT-ID:${applicant.id_code || ''}`,
+              `X-APPLICANT-NAME:${applicant.full_name || applicant.act_name || ''}`,
+              `X-APPLICANT-EMAIL:${applicant.email || ''}`,
+              `X-APPLICANT-TYPE:${applicant.applicant_type || ''}`,
+              `X-APPLICANT-ACTNAME:${applicant.act_name || ''}`,
+              `X-APPLICANT-ACTDESCRIPTION:${applicant.act_description || ''}`,
+              `X-APPLICANT-MIXTRACKURL:${applicant.mix_track_url || ''}`,
+              `X-APPLICANT-WORKSHOPTITLE:${applicant.workshop_title || ''}`,
+              `X-APPLICANT-WORKSHOPDESCRIPTION:${applicant.workshop_description || ''}`,
 
               'END:VEVENT'
             ]

@@ -1,30 +1,56 @@
 <template>
-  <div class="ics-viewer">
-    <ul v-if="filteredEvents.length">
-      <li v-for="(event, index) in filteredEvents" :key="index">
-        <p>{{ event.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</p>
-        <h3>{{ event.summary }}</h3>
-        <p v-if="event.applicant">{{ parseApplicantData(event.applicant) }}</p>
+  <div class="calendar-module">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loading">Loading calendar data...</div>
 
-        <a
-          v-if="event.applicant && event.applicant.mix_track_url"
-          :href="event.applicant.mix_track_url"
-          rel="noopener noreferrer"
-        >
-          <img :src="music_icon" alt="Music Icon" style="width: 36px; height: auto" />
-        </a>
-      </li>
-    </ul>
-    <p v-else>No events found for the selected date range.</p>
+    <!-- Error State -->
+    <div v-else-if="error" class="error">
+      {{ error }}
+    </div>
+
+    <!-- Events List -->
+    <div v-else class="events-list">
+      <ul v-if="filteredEvents.length">
+        <li v-for="event in filteredEvents" :key="event.uid" class="event-item">
+          <div class="event-time">
+            {{ formatTime(event.startDate) }}
+          </div>
+
+          <div class="event-details">
+            <h3>{{ event.summary }}</h3>
+            <p v-if="event.description">{{ event.description }}</p>
+
+            <!-- Applicant Details -->
+            <div v-if="event.applicant" class="applicant-details">
+              <p v-if="event.applicant.name">Presenter: {{ event.applicant.name }}</p>
+              <p v-if="event.applicant.type">Type: {{ event.applicant.type }}</p>
+
+              <!-- Mix Track URL -->
+              <a
+                v-if="event.applicant.mixTrackUrl"
+                :href="event.applicant.mixTrackUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mix-track-link"
+              >
+                <img :src="music_icon" alt="Music" class="icon" />
+                Listen to Mix
+              </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <p v-else class="no-events">No events scheduled for this time period.</p>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import ICAL from 'ical.js'
-import { defineProps } from 'vue'
 import music_icon from '@/assets/images/icons/artist.png'
 
+// Props
 const props = defineProps({
   startDate: {
     type: Date,
@@ -40,102 +66,174 @@ const props = defineProps({
   }
 })
 
+// Reactive state
 const events = ref([])
+const isLoading = ref(false)
+const error = ref(null)
 
-// Fetch the ICS file and parse its data
-const fetchIcsFile = async (filePath) => {
-  try {
-    const response = await fetch(filePath)
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ICS file: ${response.statusText}`)
+// Time formatting utility
+const formatTime = (date) => {
+  if (!date) return 'TBA'
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
+// Extract applicant data from X-APPLICANT-* fields
+const extractApplicantData = (vevent) => {
+  const applicant = {}
+  const properties = vevent.getAllProperties()
+
+  properties.forEach((prop) => {
+    const name = prop.name
+    if (name.startsWith('X-APPLICANT-')) {
+      const key = name.replace('X-APPLICANT-', '').toLowerCase()
+      const value = prop.getFirstValue()
+
+      // Convert property names to camelCase
+      const camelKey = key.toLowerCase().replace(/-(.)/g, (_, c) => c.toUpperCase())
+      applicant[camelKey] = value || null
     }
-    const data = await response.text()
-    parseIcsData(data)
-  } catch (error) {
-    console.error('Error fetching the ICS file:', error)
+  })
+
+  return Object.keys(applicant).length ? applicant : null
+}
+
+// Parse individual event
+const parseEvent = (vevent) => {
+  const event = new ICAL.Event(vevent)
+  const applicant = extractApplicantData(vevent)
+
+  return {
+    uid: event.uid,
+    summary: event.summary,
+    description: event.description,
+    startDate: event.startDate?.toJSDate() || null,
+    endDate: event.endDate?.toJSDate() || null,
+    location: event.location,
+    applicant
   }
 }
 
-// Parse the ICS data and extract events
-const parseIcsData = (data) => {
+// Fetch and parse ICS file
+const fetchIcsFile = async (filePath) => {
+  isLoading.value = true
+  error.value = null
+
   try {
+    const response = await fetch(filePath)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch calendar data: ${response.statusText}`)
+    }
+
+    const data = await response.text()
     const jcalData = ICAL.parse(data)
     const comp = new ICAL.Component(jcalData)
     const vevents = comp.getAllSubcomponents('vevent')
 
-    events.value = vevents.map((vevent) => {
-      const event = new ICAL.Event(vevent)
-      return {
-        uid: event.uid,
-        summary: event.summary,
-        startDate: new Date(event.startDate.toJSDate()),
-        endDate: new Date(event.endDate.toJSDate()),
-        applicant: parseCustomField(vevent, 'X-APPLICANT-DATA') // Extract custom field
-      }
-    })
-  } catch (error) {
-    console.error('Error parsing ICS data:', error)
+    events.value = vevents.map(parseEvent)
+  } catch (err) {
+    console.error('Calendar loading error:', err)
+    error.value = 'Failed to load calendar data. Please try again later.'
+  } finally {
+    isLoading.value = false
   }
 }
 
-// Extract custom fields from the VEVENT component
-const parseCustomField = (vevent, fieldName) => {
-  try {
-    const fieldValue = vevent.getFirstPropertyValue(fieldName)
-    return fieldValue ? JSON.parse(fieldValue) : null
-  } catch (error) {
-    console.error(`Error parsing custom field "${fieldName}":`, error)
-    return null
-  }
-}
-
-// Format and display applicant data
-const parseApplicantData = (applicant) => {
-  if (typeof applicant === 'object') {
-    return `Applicant: ${applicant.name || 'Unknown'}`
-  }
-  return applicant
-}
-
-// Filter events based on the provided date range
+// Filter events by date range
 const filteredEvents = computed(() => {
   return events.value
     .filter((event) => {
+      if (!event.startDate || !event.endDate) return false
       return event.startDate >= props.startDate && event.endDate <= props.endDate
     })
-    .sort((a, b) => a.startDate - b.startDate) // Sort events by start date
+    .sort((a, b) => a.startDate - b.startDate)
 })
 
-// Fetch the ICS file when the component is mounted
+// Initialize on mount
 onMounted(() => {
   fetchIcsFile(props.filePath)
 })
 
-// Watch for changes in the filePath prop and refetch the ICS file
+// Watch for file path changes
 watch(
   () => props.filePath,
-  (newFilePath) => {
-    fetchIcsFile(newFilePath)
+  (newPath) => {
+    fetchIcsFile(newPath)
   }
 )
 </script>
 
 <style scoped>
-.ics-viewer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.ics-viewer ul {
-  list-style-type: none;
-  padding: 0;
-}
-.ics-viewer li {
+.calendar-module {
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.loading,
+.error,
+.no-events {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.events-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-item {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 6px;
-  border-radius: 6px;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.event-time {
+  min-width: 100px;
+  color: #666;
+}
+
+.event-details {
+  flex: 1;
+}
+
+.event-details h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.applicant-details {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.mix-track-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mix-track-link:hover {
+  background: #eee;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
 }
 </style>

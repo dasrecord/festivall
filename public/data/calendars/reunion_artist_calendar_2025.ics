@@ -8,7 +8,7 @@ X-WR-TIMEZONE:America/Regina
 X-WR-CALDESC:Lineup for Reunion 2025
 BEGIN:VEVENT
 UID:c3ad7aaf-52cb-4f04-ada3-0616a63d9b39
-DTSTAMP:20250404T074018Z
+DTSTAMP:20250404T081932Z
 DTSTART:20250830T003000Z
 DTEND:20250830T013000Z
 SUMMARY:Bitcoin - A Technical Primer
@@ -18,6 +18,14 @@ STATUS:CONFIRMED
 SEQUENCE:0
 TRANSP:OPAQUE
 ATTENDEE;CN=Guest;RSVP=TRUE:mailto:dasrecord@protonmail.com
-X-APPLICANT-DATA:{"fullname":"Prasenjit Das"\,"country":"Canada"\,"postal_code":"S7H5C9"\,"city":"Saskatoon"\,"act_description":""\,"settime":"2025-08-29T18:30"\,"phone":"3064916040"\,"rates":"a bottle"\,"raw_phone":"3064916040"\,"press_kit_url":""\,"email":"dasrecord@protonmail.com"\,"act_name":""\,"mix_track_url":"https://open.spotify.com/track/5loBw8PvbyUDNhagi4HE7S?si=b510df78081c40e4"\,"social_url":""\,"id_code_long":"c3ad7aaf-52cb-4f04-ada3-0616a63d9b39"\,"region":"SK"\,"formatted_phone":"(306)491-6040"\,"act_website":""\,"workshop_description":"An introduction to wallets\, addresses\, and keys."\,"statement":""\,"vendor_type":""\,"id_code":"c3ad7"\,"street_address":"26 Dragan Crescent"\,"contract_signed":false\,"logo_url":""\,"workshop_title":"Bitcoin - A Technical Primer"\,"applicant_type":"Workshop"\,"volunteer_type":""\,"act_type":""\,"message":""}
+X-APPLICANT-ID:c3ad7
+X-APPLICANT-NAME:
+X-APPLICANT-EMAIL:dasrecord@protonmail.com
+X-APPLICANT-TYPE:Workshop
+X-APPLICANT-ACTNAME:
+X-APPLICANT-ACTDESCRIPTION:
+X-APPLICANT-MIXTRACKURL:https://open.spotify.com/track/5loBw8PvbyUDNhagi4HE7S?si=b510df78081c40e4
+X-APPLICANT-WORKSHOPTITLE:Bitcoin - A Technical Primer
+X-APPLICANT-WORKSHOPDESCRIPTION:An introduction to wallets, addresses, and keys.
 END:VEVENT
 END:VCALENDAR
