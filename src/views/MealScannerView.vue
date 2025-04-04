@@ -116,7 +116,7 @@
             {{ orders.length }}
           </h2>
         </div>
-        <div>
+        <!-- <div>
           <h4 style="color: green">Paid</h4>
           <h2>
             {{ orders.filter((order) => order.paid).length }}
@@ -127,7 +127,7 @@
           <h2>
             {{ orders.filter((order) => !order.paid).length }}
           </h2>
-        </div>
+        </div> -->
         <div>
           <h4 style="color: orange">Checked In</h4>
           <h2>
@@ -182,7 +182,9 @@
           <h4 :style="{ color: paidStatus(order) === 'Paid' ? 'green' : 'red' }">
             {{ paidStatus(order) }}
           </h4>
-          <h4>{{ currentStatus(order) }}</h4>
+          <h4 :style="{ color: currentStatus(order) === 'Checked In' ? 'orange' : 'yellow' }">
+            {{ currentStatus(order) }}
+          </h4>
           <h4 v-if="order.meal_tickets_remaining > 0">Meal Tickets Remaining</h4>
           <div class="meals">
             <img

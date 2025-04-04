@@ -199,7 +199,9 @@
           <h4 :style="{ color: paidStatus(order) === 'Paid' ? 'green' : 'red' }">
             {{ paidStatus(order) }}
           </h4>
-          <h4>{{ currentStatus(order) }}</h4>
+          <h4 :style="{ color: currentStatus(order) === 'Checked In' ? 'orange' : 'yellow' }">
+            {{ currentStatus(order) }}
+          </h4>
         </div>
       </li>
     </ul>
