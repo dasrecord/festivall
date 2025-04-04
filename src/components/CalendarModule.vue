@@ -17,18 +17,27 @@
           </div>
 
           <div class="event-details">
-            <h3>{{ event.summary }}</h3>
-            <p v-if="event.description">{{ event.description }}</p>
             <!-- Mix Track URL -->
-            <a
-              v-if="event.applicant && event.applicant.mixtrackurl"
-              :href="event.applicant.mixtrackurl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="mix-track-link"
-            >
-              <img :src="music_icon" alt="Music" class="icon" />
-            </a>
+
+            <h3>
+              <a
+                v-if="event.applicant && event.applicant.mixtrackurl"
+                :href="event.applicant.mixtrackurl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mix-track-link"
+              >
+                <img :src="music_icon" alt="Music" class="icon" />
+              </a>
+              <div
+                v-else-if="event.applicant && event.applicant.type === 'Workshop'"
+                class="workshop-icon"
+              >
+                <img :src="workshop_icon" alt="Workshop" class="icon" />
+              </div>
+              {{ event.summary }}
+            </h3>
+            <p v-if="event.description">{{ event.description }}</p>
           </div>
         </li>
       </ul>
