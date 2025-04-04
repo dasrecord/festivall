@@ -134,7 +134,12 @@
             Scavenger Hunt
           </p>
         </RouterLink>
-        
+        <RouterLink v-else to="#">
+          <p>
+            <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
+            More coming soon!
+          </p>
+        </RouterLink>
       </div>
     </div>
 
