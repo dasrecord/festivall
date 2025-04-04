@@ -34,6 +34,7 @@ const form = ref({
   applicant_type: '',
   act_type: '',
   act_name: '',
+  genre: '',
   act_description: '',
   mix_track_url: '',
   act_website: '',
@@ -184,6 +185,7 @@ const submitForm = async () => {
         applicant_type: '',
         act_type: '',
         act_name: '',
+        genre: '',
         act_description: '',
         mix_track_url: '',
         act_website: '',
@@ -544,6 +546,28 @@ const submitForm = async () => {
             />
           </div>
           <div class="form-section">
+            <label for="genre">Genre:</label>
+            <select id="genre" v-model="form.genre" required>
+              <option value="" disabled>Select your genre</option>
+              <option value="House">House</option>
+              <option value="Techno">Techno</option>
+              <option value="Trance">Trance</option>
+              <option value="Drum and Bass">Drum and Bass</option>
+              <option value="Hip Hop">Hip Hop</option>
+              <option value="Garage">Garage</option>
+              <option value="Dubstep">Dubstep</option>
+              <option value="Ambient">Ambient</option>
+              <option value="Electro">Electro</option>
+              <option value="Synthwave">Synthwave</option>
+              <option value="Future Bass">Future Bass</option>
+              <option value="Trap">Trap</option>
+              <option value="Hardstyle">Hardstyle</option>
+              <option value="Progressive">Progressive</option>
+              <option value="Chillout">Chillout</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-section">
             <label for="act_description">Description:</label>
             <textarea
               id="act_description"
@@ -559,7 +583,7 @@ const submitForm = async () => {
               type="url"
               id="mix_track_url"
               v-model="form.mix_track_url"
-              placeholder="We want to see and hear your act!"
+              placeholder="This link will be shown on the artist lineup page."
               required
             />
           </div>
@@ -569,7 +593,7 @@ const submitForm = async () => {
               type="url"
               id="act_website_url"
               v-model="form.act_website"
-              placeholder="Etner your artist website here if you have one."
+              placeholder="Enter your artist website here if you have one."
             />
           </div>
           <div class="form-section">
