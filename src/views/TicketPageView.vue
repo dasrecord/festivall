@@ -122,6 +122,7 @@
           </p>
         </RouterLink>
         <RouterLink
+          v-if="new Date() >= new Date(2025, 7, 26)"
           :to="{
             name: 'ScavengerHunt',
             params: { id_code: order.id_code },
@@ -133,6 +134,7 @@
             Scavenger Hunt
           </p>
         </RouterLink>
+        
       </div>
     </div>
 
