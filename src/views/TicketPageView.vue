@@ -257,6 +257,7 @@ h2 {
 }
 
 .order-info {
+  background-color: white;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
   /* max-width: 85%; */
