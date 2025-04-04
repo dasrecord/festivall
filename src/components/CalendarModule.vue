@@ -14,25 +14,28 @@
         <li v-for="event in events" :key="event.id" class="event-item">
           <div class="event-time">
             {{ formatTime(event.settime) }}
+            <a
+              v-if="event.mix_track_url"
+              :href="event.mix_track_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mix-track-link"
+            >
+              <img :src="music_icon" alt="Music" class="icon" />
+              LISTEN
+              <img :src="listen_icon" alt="Listen" class="icon" />
+            </a>
           </div>
 
           <div class="event-details">
             <!-- Mix Track URL -->
             <h3>
-              <a
-                v-if="event.mix_track_url"
-                :href="event.mix_track_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mix-track-link"
-              >
-                <img :src="music_icon" alt="Music" class="icon" />
-              </a>
-              {{ event.workshop_title || event.act_name || 'Untitled Event' }}
+              {{ event.act_name || event.workshop_title || 'Untitled Event' }}
             </h3>
+            <p v-if="event.genre">Genre: {{ event.genre }}</p>
             <p>
               {{
-                event.workshop_description || event.act_description || 'No description available'
+                event.act_description || event.workshop_description || 'No description available'
               }}
             </p>
           </div>
@@ -46,6 +49,7 @@
 <script setup>
 import { defineProps } from 'vue'
 import music_icon from '@/assets/images/icons/artist.png'
+import listen_icon from '@/assets/images/icons/mix_track.png'
 
 // Props
 const props = defineProps({
@@ -111,6 +115,8 @@ const formatTime = (timestamp) => {
 }
 
 .event-time {
+  display: flex;
+  flex-direction: column;
   font-size: larger;
   min-width: 100px;
 }
@@ -131,10 +137,11 @@ const formatTime = (timestamp) => {
   border-radius: 4px;
   text-decoration: none;
   color: inherit;
+  border: 1px solid rgba(0, 255, 0, 0.375);
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: auto;
 }
 </style>
