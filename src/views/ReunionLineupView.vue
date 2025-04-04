@@ -14,6 +14,7 @@
         <button @click="toggleDay('friday')">Friday</button>
         <button @click="toggleDay('saturday')">Saturday</button>
         <button @click="toggleDay('sunday')">Sunday</button>
+        <button @click="toggleDay('monday')">Monday</button>
       </div>
 
       <!-- Day sections with filtered events -->
@@ -30,6 +31,11 @@
       <div v-if="showDays.sunday" class="day">
         <h2>Sunday</h2>
         <lineup-day :events="getSundayEvents" :loading="loading" />
+      </div>
+
+      <div v-if="showDays.monday" class="day">
+        <h2>Monday</h2>
+        <lineup-day :events="getMondayEvents" :loading="loading" />
       </div>
     </div>
   </div>
@@ -49,7 +55,8 @@ const events = ref([])
 const showDays = reactive({
   friday: false,
   saturday: false,
-  sunday: false
+  sunday: false,
+  monday: false
 })
 
 // Fetch events from Firestore
@@ -95,6 +102,12 @@ const getSundayEvents = computed(() =>
   events.value.filter((event) => {
     const date = new Date(event.settime)
     return date.getMonth() === 7 && date.getDate() === 31 // August 31
+  })
+)
+const getMondayEvents = computed(() =>
+  events.value.filter((event) => {
+    const date = new Date(event.settime)
+    return date.getMonth() === 8 && date.getDate() === 1 // September 1
   })
 )
 
