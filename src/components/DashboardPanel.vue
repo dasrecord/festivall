@@ -207,7 +207,7 @@
                 alt="Send SMS"
                 class="action-icon"
                 style="width: auto; height: 42px"
-              /><br />
+              />
             </div>
             <div v-if="applicant.applicant_type" class="compensation-section">
               <input
@@ -739,8 +739,8 @@ button:hover {
   border-radius: 10px;
   background-color: #444;
   border: 1px solid var(--festivall-baby-blue);
-
   width: 100%;
+  align-items: center;
   max-width: 300px;
   height: 100%;
   overflow: hidden;
@@ -797,7 +797,7 @@ button:hover {
 
 input {
   padding: 0.4rem;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   border-radius: 6px;
   border: 1px solid var(--festivall-baby-blue);
 }

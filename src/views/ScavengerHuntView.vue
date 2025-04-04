@@ -73,7 +73,7 @@ export default {
       backgroundImage: faded_frog,
       questions: [
         {
-          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combinaiton of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
+          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
