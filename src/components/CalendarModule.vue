@@ -19,24 +19,16 @@
           <div class="event-details">
             <h3>{{ event.summary }}</h3>
             <p v-if="event.description">{{ event.description }}</p>
-
-            <!-- Applicant Details -->
-            <div v-if="event.applicant" class="applicant-details">
-              <p v-if="event.applicant.name">Presenter: {{ event.applicant.name }}</p>
-              <p v-if="event.applicant.type">Type: {{ event.applicant.type }}</p>
-
-              <!-- Mix Track URL -->
-              <a
-                v-if="event.applicant && event.applicant.mixtrackurl"
-                :href="event.applicant.mixtrackurl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mix-track-link"
-              >
-                <img :src="music_icon" alt="Music" class="icon" />
-                Listen to Mix
-              </a>
-            </div>
+            <!-- Mix Track URL -->
+            <a
+              v-if="event.applicant && event.applicant.mixtrackurl"
+              :href="event.applicant.mixtrackurl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mix-track-link"
+            >
+              <img :src="music_icon" alt="Music" class="icon" />
+            </a>
           </div>
         </li>
       </ul>
@@ -49,6 +41,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import ICAL from 'ical.js'
 import music_icon from '@/assets/images/icons/artist.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 
 // Props
 const props = defineProps({
@@ -87,10 +80,10 @@ const extractApplicantData = (vevent) => {
   const properties = vevent.getAllProperties()
 
   // Debug: Log all properties
-  console.log(
-    'All properties:',
-    properties.map((p) => ({ name: p.name, value: p.getFirstValue() }))
-  )
+  // console.log(
+  //   'All properties:',
+  // properties.map((p) => ({ name: p.name, value: p.getFirstValue() }))
+  // )
 
   properties.forEach((prop) => {
     const name = prop.name.toUpperCase() // Normalize to uppercase for comparison
@@ -104,7 +97,7 @@ const extractApplicantData = (vevent) => {
       const value = prop.getFirstValue()
 
       // Debug: Log each property transformation
-      console.log(`Converting ${name} to ${key} with value:`, value)
+      // console.log(`Converting ${name} to ${key} with value:`, value)
 
       // Only set non-empty values
       if (value) {
@@ -114,7 +107,7 @@ const extractApplicantData = (vevent) => {
   })
 
   // Debug: Log final object
-  console.log('Final applicant object:', applicant)
+  // console.log('Final applicant object:', applicant)
 
   return Object.keys(applicant).length > 0 ? applicant : null
 }
@@ -217,8 +210,8 @@ watch(
 }
 
 .event-time {
+  font-size: larger;
   min-width: 100px;
-  color: #666;
 }
 
 .event-details {
@@ -243,10 +236,6 @@ watch(
   border-radius: 4px;
   text-decoration: none;
   color: inherit;
-}
-
-.mix-track-link:hover {
-  background: #eee;
 }
 
 .icon {
