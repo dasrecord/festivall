@@ -1,7 +1,19 @@
 <template>
   <div class="ticket-page" v-if="order">
     <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
-    <CountdownTimer :targetYear="2025" :targetMonth="7" :targetDay="29" />
+
+    <CountdownTimer
+      v-if="order.ticket_type === 'Weekend Pass'"
+      :targetYear="2025"
+      :targetMonth="7"
+      :targetDay="29"
+    />
+    <CountdownTimer
+      v-if="order.ticket_type === 'Day Pass'"
+      :targetYear="2025"
+      :targetMonth="7"
+      :targetDay="order.selected_day.split(',')[1].split(' ')[2].split('t')[0]"
+    />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
     <h2>Your Digital Ticket</h2>
@@ -278,7 +290,7 @@ h2 {
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
   /* max-width: 85%; */
-  padding: 1rem 1rem;
+  padding: 0.5rem 0.5rem;
   z-index: 2;
 }
 
