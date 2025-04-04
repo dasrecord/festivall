@@ -84,21 +84,22 @@
           v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
+          id="volunteer-instructions"
         >
           <p>
-            <img :src="volunteer_icon" style="height: auto; width: 32px" alt="Volunteer Icon" />
+            <img :src="volunteer_icon" style="height: auto; width: 36px" alt="Volunteer Icon" />
             Volunteer Instructions
           </p>
         </RouterLink>
         <RouterLink to="/reunionlocation">
           <p>
-            <img :src="location_icon" style="height: 32px; width: auto" alt="Location Icon" />
+            <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
             Location
           </p>
         </RouterLink>
         <RouterLink to="/reunionmap">
           <p>
-            <img :src="map_icon" style="height: auto; width: 32px" alt="Grounds Map" />
+            <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
             Grounds Map
           </p>
         </RouterLink>
