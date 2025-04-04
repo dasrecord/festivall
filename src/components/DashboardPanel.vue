@@ -2,12 +2,7 @@
   <div class="dashboard">
     <div class="banner">
       <a href="/">
-        <img
-          src="@/assets/images/festivall_emblem_white.png"
-          alt="Festivall Logo"
-          class="logo"
-          style="display: flex; align-items: center"
-        />
+        <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
       </a>
       <h1>DASHBOARD</h1>
     </div>
@@ -174,7 +169,6 @@
               </p>
               <!-- PAYMENT TYPE -->
               <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
-              <br />
             </div>
             <div class="preview-section">
               <!-- PREVIEW TICKET -->
@@ -628,7 +622,8 @@ img {
 
 .banner {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   background-color: #333;
   padding: 1rem;
@@ -637,7 +632,7 @@ img {
 
 .logo {
   height: auto;
-  width: 150px;
+  width: 100px;
 }
 
 h1 {
