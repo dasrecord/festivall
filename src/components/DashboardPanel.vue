@@ -47,6 +47,9 @@
     </div>
 
     <div class="dashboard-panel">
+      <div>
+        <button @click="generateLineup">Generate Lineup</button>
+      </div>
       <h2>Current View <br />{{ filteredApplicants.length }}</h2>
       <div class="applicants" :class="viewStyle">
         <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
@@ -476,6 +479,63 @@ export default {
       }
     }
 
+    const generateLineup = () => {
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Festivall//Lineup//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:Reunion Artist Lineup',
+        'X-WR-TIMEZONE:America/Regina',
+        'X-WR-CALDESC:Lineup for Reunion 2025',
+        ...filteredApplicants.value
+          .filter((applicant) => applicant.settime)
+          .map((applicant) => {
+            const startTime =
+              new Date(applicant.settime).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+            const endTime =
+              new Date(new Date(applicant.settime).getTime() + 3600000)
+                .toISOString()
+                .replace(/[-:]/g, '')
+                .split('.')[0] + 'Z' // Adds 1 hour to the start time
+
+            return [
+              'BEGIN:VEVENT',
+              `UID:${applicant.id_code_long || applicant.email || Math.random().toString(36).substring(2)}`,
+              `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+              `DTSTART:${startTime}`,
+              `DTEND:${endTime}`,
+              `SUMMARY:${applicant.act_name || applicant.workshop_title || applicant.full_name}`,
+              `DESCRIPTION:${applicant.act_description || applicant.workshop_description || applicant.bio}`,
+              `LOCATION:https://festivall.ca/reunionlocation`,
+              'STATUS:CONFIRMED',
+              'SEQUENCE:0',
+              'TRANSP:OPAQUE',
+              applicant.email
+                ? `ATTENDEE;CN=${applicant.full_name || applicant.act_name || 'Guest'};RSVP=TRUE:mailto:${applicant.email}`
+                : '',
+              `X-APPLICANT-DATA:${JSON.stringify(applicant)
+                .replace(/[\n\r]/g, '\\n')
+                .replace(/,/g, '\\,')}`,
+
+              'END:VEVENT'
+            ]
+              .filter(Boolean)
+              .join('\n') // Filters out empty lines
+          }),
+        'END:VCALENDAR'
+      ].join('\n')
+
+      const blob = new Blob([icsContent], { type: 'text/calendar' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'lineup.ics'
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
@@ -593,6 +653,7 @@ export default {
       lineup_icon,
       updateSettime,
       clearSettime,
+      generateLineup,
       generateContract,
       remindContract,
       remindPayment,
