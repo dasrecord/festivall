@@ -109,8 +109,8 @@ const formatTime = (timestamp) => {
   display: flex;
   gap: 0.3rem;
   padding: 1rem;
-  border-top: 1px solid #aaa;
-  border-bottom: 1px solid #aaa;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
   border-radius: 10px;
 }
 
@@ -137,7 +137,7 @@ const formatTime = (timestamp) => {
   border-radius: 4px;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(0, 255, 0, 0.375);
+  border: 1px solid rgba(0, 255, 0);
 }
 
 .icon {
