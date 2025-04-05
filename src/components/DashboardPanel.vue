@@ -247,7 +247,16 @@
               />
 
               <p v-if="applicant.settime">
-                Settime: {{ new Date(applicant.settime).toLocaleString() }}
+                Settime:
+                {{
+                  new Date(applicant.settime).toLocaleString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    year: '4-digit',
+                    month: 'numeric',
+                    day: 'numeric'
+                  })
+                }}
                 <button @click="clearSettime(applicant.id_code, '')">Clear Settime</button>
               </p>
             </div>
@@ -529,7 +538,7 @@ export default {
               `DTSTART:${startTime}`,
               `DTEND:${endTime}`,
               `SUMMARY:${applicant.act_name || applicant.workshop_title || applicant.full_name}`,
-              `DESCRIPTION:${applicant.act_description || applicant.workshop_description || applicant.bio}`,
+              `DESCRIPTION:${applicant.mix_track_url || ''}`,
               `LOCATION:https://festivall.ca/reunionlocation`,
               'STATUS:CONFIRMED',
               'SEQUENCE:0',
@@ -567,12 +576,13 @@ export default {
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
+
     const remindContract = (id_code) => {
       const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
       if (applicant && applicant.phone) {
         const message = `Hello ${applicant.fullname || 'there'}. This is a gentle reminder to sign your contract for Reunion 2025, if you haven't already.`
         sendSMS(applicant.phone, message)
-        alert('Reminder sent successfully.')
+        alert('Contract reminder sent successfully.')
       } else {
         alert('Phone number not available for this applicant.')
       }
@@ -583,7 +593,7 @@ export default {
       if (applicant && applicant.phone) {
         const message = `Hello ${applicant.fullname || 'there'}. This is a gentle reminder to make your payment for Reunion 2025, if you haven't already.`
         sendSMS(applicant.phone, message)
-        alert('Reminder sent successfully.')
+        alert('Payment reminder sent successfully.')
       } else {
         alert('Phone number not available for this applicant.')
       }

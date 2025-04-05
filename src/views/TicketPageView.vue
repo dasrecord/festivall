@@ -93,7 +93,7 @@
       </p>
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
+          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Artist'"
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"
@@ -103,17 +103,27 @@
             Volunteer Instructions
           </p>
         </RouterLink>
-        <RouterLink v-if="order.applicant_type === 'Artist'" style="grid-column: span 2" to="#">
-          <p>
-            <!-- <img :src="lineup_icon" style="height: auto; width: 36px" alt="Artist Icon" /> -->
-            Your Set Time:
+        <RouterLink
+          v-if="order.applicant_type === 'Artist' || order.applicant_type === 'Workshop'"
+          style="grid-column: span 2"
+          to="#"
+          @click.prevent="downloadSettime"
+        >
+          <p style="text-align: center">
+            <img
+              :src="order.applicant_type === 'Artist' ? dj_icon : workshop_icon"
+              style="height: auto; width: 36px"
+              :alt="order.applicant_type + ' Icon'"
+            />
+            Your Set Time<br />
             {{
               new Date(order.settime).toLocaleString([], {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                hour12: true
               })
             }}
           </p>
@@ -188,6 +198,8 @@ import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import dj_icon from '@/assets/images/icons/dj.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
@@ -243,6 +255,56 @@ export default {
       }
     }
 
+    const downloadSettime = () => {
+      if (!order.value || !order.value.settime) {
+        alert('Set time information not available')
+        return
+      }
+
+      // Get the set time start date
+      const startDate = new Date(order.value.settime)
+      // Set end time 1 hour after start
+      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
+
+      // Format dates for iCalendar (YYYYMMDDTHHmmssZ)
+      const formatDate = (date) => {
+        return date.toISOString().replace(/-|:|\.\d+/g, '')
+      }
+
+      const startFormatted = formatDate(startDate)
+      const endFormatted = formatDate(endDate)
+
+      // Create the iCalendar content
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Festivall//Reunion Festival//EN',
+        'BEGIN:VEVENT',
+        `DTSTART:${startFormatted}`,
+        `DTEND:${endFormatted}`,
+        `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
+        'LOCATION:Reunion Festival',
+        `DESCRIPTION:Your set time at Reunion Festival ${new Date().getFullYear()}`,
+        `UID:${order.value.id_code_long}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n')
+
+      // Create blob and trigger download
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `reunion_festival_set_time.ics`)
+      document.body.appendChild(link)
+      link.click()
+
+      // Clean up
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    }
+
     onMounted(() => {
       const id_code = route.params.id_code
       if (id_code) {
@@ -259,9 +321,12 @@ export default {
       poster_footer,
       order,
       qrCanvas,
+      downloadSettime,
       ticket_icon,
       meals_icon,
       volunteer_icon,
+      workshop_icon,
+      dj_icon,
       location_icon,
       map_icon,
       lineup_icon,

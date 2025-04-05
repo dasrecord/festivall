@@ -19,22 +19,22 @@
 
       <!-- Day sections with filtered events -->
       <div v-if="showDays.friday" class="day">
-        <h2>Friday</h2>
+        <h2>FRIDAY</h2>
         <lineup-day :events="getFridayEvents" :loading="loading" />
       </div>
 
       <div v-if="showDays.saturday" class="day">
-        <h2>Saturday</h2>
+        <h2>SATURDAY</h2>
         <lineup-day :events="getSaturdayEvents" :loading="loading" />
       </div>
 
       <div v-if="showDays.sunday" class="day">
-        <h2>Sunday</h2>
+        <h2>SUNDAY</h2>
         <lineup-day :events="getSundayEvents" :loading="loading" />
       </div>
 
       <div v-if="showDays.monday" class="day">
-        <h2>Monday</h2>
+        <h2>MONDAY</h2>
         <lineup-day :events="getMondayEvents" :loading="loading" />
       </div>
     </div>
