@@ -88,14 +88,6 @@
             <p>{{ applicant.statement }}</p>
             <!-- COMMENTS -->
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
-            <!-- RATES -->
-            <span v-if="applicant.rates"> Fee: {{ applicant.rates }} </span>
-            <!-- SETTIME -->
-            <span v-if="applicant.settime"> Settime: {{ applicant.settime }} </span>
-            <!-- CLEAR SETTIME -->
-            <button v-if="applicant.settime" @click="clearSettime(applicant.id_code, '')">
-              Clear Settime
-            </button>
           </div>
 
           <!-- TICKET DATA -->
@@ -228,6 +220,13 @@
                 class="action-icon"
                 style="width: auto; height: 32px"
               />
+
+              <p v-if="applicant.rates">
+                Fee: {{ applicant.rates }}
+                <button @click="clearCompensation(applicant.id_code, '')">
+                  Clear Compensation
+                </button>
+              </p>
             </div>
 
             <div
@@ -246,6 +245,11 @@
                 class="action-icon"
                 style="width: auto; height: 32px"
               />
+
+              <p v-if="applicant.settime">
+                Settime: {{ new Date(applicant.settime).toLocaleString() }}
+                <button @click="clearSettime(applicant.id_code, '')">Clear Settime</button>
+              </p>
             </div>
             <div class="contract-section">
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
@@ -285,6 +289,7 @@ import meal_icon from '@/assets/images/icons/meals.png'
 import artist_icon from '@/assets/images/icons/artist.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import reminder_icon from '@/assets/images/icons/reminder.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 
 export default {
   name: 'DashboardPanel',
@@ -442,6 +447,23 @@ export default {
         })
       } catch (error) {
         console.error('Error updating compensation:', error)
+      }
+    }
+
+    const clearCompensation = async (id_code, additional_compensation) => {
+      try {
+        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        await updateDoc(docRef, {
+          rates: additional_compensation
+        })
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.additional_compensation = ''
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error clearing compensation:', error)
       }
     }
 
@@ -653,9 +675,11 @@ export default {
       ticket_icon,
       meal_icon,
       artist_icon,
+      workshop_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
+      clearCompensation,
       lineup_icon,
       updateSettime,
       clearSettime,
@@ -861,10 +885,13 @@ button:hover {
   flex-direction: column;
   gap: 0.5rem;
 }
+.actions img {
+  margin: auto;
+}
 
+input [type='datetime-local'],
 input {
   padding: 0.4rem;
-  /* margin-bottom: 0.5rem; */
   border-radius: 6px;
   border: 1px solid var(--festivall-baby-blue);
 }
@@ -888,8 +915,8 @@ a {
 }
 
 .action-icon {
-  height: 42px;
   width: 42px;
+  height: auto;
   cursor: pointer;
   margin: 3px;
 }

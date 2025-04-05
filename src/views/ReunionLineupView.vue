@@ -64,8 +64,8 @@ const fetchEvents = async () => {
   loading.value = true
   try {
     const q = query(
-      collection(reunion_db, 'applications_2025')
-      // where('contract_signed', '==', true)
+      collection(reunion_db, 'applications_2025'),
+      where('contract_signed', '==', true)
     )
     const snapshot = await getDocs(q)
     events.value = snapshot.docs.map((doc) => ({
