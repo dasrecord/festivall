@@ -103,6 +103,21 @@
             Volunteer Instructions
           </p>
         </RouterLink>
+        <RouterLink v-if="order.applicant_type === 'Artist'" style="grid-column: span 2" to="#">
+          <p>
+            <!-- <img :src="lineup_icon" style="height: auto; width: 36px" alt="Artist Icon" /> -->
+            Your Set Time:
+            {{
+              new Date(order.settime).toLocaleString([], {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+            }}
+          </p>
+        </RouterLink>
         <RouterLink to="/reunionlocation">
           <p>
             <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
