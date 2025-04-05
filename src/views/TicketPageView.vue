@@ -30,7 +30,8 @@
       </p>
 
       <p v-if="order.ticket_type === 'Day Pass'">
-        <strong>Valid: </strong> 24 hours starting 12:00 PM {{ order.selected_day }}
+        <strong>Valid: </strong> 12:00 PM {{ order.selected_day }}
+        for 24H
       </p>
       <div class="quantities">
         <div class="quantity">
