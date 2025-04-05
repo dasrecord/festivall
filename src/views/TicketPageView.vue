@@ -16,8 +16,9 @@
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
-    <h2>Your Digital Ticket</h2>
 
+    <h2>Your Digital Ticket<br /></h2>
+    <h2>#{{ order.id_code }}</h2>
     <div class="order-info">
       <p>
         <strong>Full Name:</strong> {{ order.fullname }}
@@ -93,7 +94,7 @@
       </p>
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Artist'"
+          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"
@@ -105,8 +106,8 @@
         </RouterLink>
         <RouterLink
           v-if="
-            order.payment_type &&
-            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop')
+            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop') &&
+            order.settime
           "
           style="grid-column: span 2"
           to="#"
