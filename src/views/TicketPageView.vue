@@ -104,7 +104,10 @@
           </p>
         </RouterLink>
         <RouterLink
-          v-if="order.applicant_type === 'Artist' || order.applicant_type === 'Workshop'"
+          v-if="
+            order.payment_type &&
+            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop')
+          "
           style="grid-column: span 2"
           to="#"
           @click.prevent="downloadSettime"
@@ -115,7 +118,7 @@
               style="height: auto; width: 36px"
               :alt="order.applicant_type + ' Icon'"
             />
-            Your Set Time<br />
+            Your Set Time:
             {{
               new Date(order.settime).toLocaleString([], {
                 year: 'numeric',
@@ -341,6 +344,7 @@ export default {
   font-family: 'Helvetica', sans-serif;
   /* border: 1px solid lime; */
 }
+
 .countdowntimer {
   background-color: var(--reunion-frog-green);
   color: white;

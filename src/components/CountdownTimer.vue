@@ -11,7 +11,7 @@
     <div class="unit">{{ millisecondsLeft }}</div>
     <div>&nbsp;ms</div>
 
-    <div>&nbsp;&nbsp;&nbsp;UNTIL</div>
+    <div>&nbsp;&nbsp;UNTIL&nbsp;&nbsp;</div>
   </div>
 </template>
 
@@ -87,7 +87,6 @@ export default {
 
 .countdowntimer .unit {
   display: flex;
-  flex-direction: column;
   margin-left: 10px;
   width: 20px;
   justify-content: center;
