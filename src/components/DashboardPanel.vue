@@ -32,7 +32,7 @@
       <div class="buttons">
         <button
           v-for="filter in relevantFilters"
-          :key="filter.property"
+          :key="`${filter.property}-${filter.value}`"
           @click="applyFilter(filter.property, filter.value)"
         >
           {{ filter.label }}
@@ -252,7 +252,7 @@
                   new Date(applicant.settime).toLocaleString([], {
                     hour: '2-digit',
                     minute: '2-digit',
-                    year: '4-digit',
+                    year: 'numeric',
                     month: 'numeric',
                     day: 'numeric'
                   })
@@ -833,7 +833,7 @@ button:hover {
 .applicants.cards .revenue-section,
 .applicants.cards .contract-section {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 2fr 1fr;
   gap: 0.5rem;
   margin-top: 0.5rem;
   padding: 0.5rem;
