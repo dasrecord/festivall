@@ -93,7 +93,7 @@
       </p>
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Artist'"
+          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"

@@ -145,7 +145,7 @@ export default {
           category: 'Quest'
         },
         {
-          text: 'Locate one piece of Allium sativum and bring it to Devops ',
+          text: 'Locate our Food Coordinator for your final question. ',
           answer: 'garlic',
           type: 'text',
           category: 'Quest'
@@ -172,7 +172,7 @@ export default {
       }
     },
     restartHunt() {
-      this.currentQuestion = 0
+      this.currentQuestion = 1
     },
     showScoreSlide() {
       this.currentQuestion = 'score' // Switch to the score slide

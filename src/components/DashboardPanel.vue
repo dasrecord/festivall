@@ -5,6 +5,22 @@
         <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
       </a>
       <h1>DASHBOARD</h1>
+      <div class="scanner-links">
+        <RouterLink to="/reunionticketscanner" class="scanner-link">
+          <img
+            :src="ticket_icon"
+            alt="Ticket Scanner"
+            class="action-icon"
+            style="transform: translateY(8px) rotate(-45deg); width: 32px"
+          />
+          Ticket Scanner
+        </RouterLink>
+
+        <RouterLink to="/reunionmealscanner" class="scanner-link">
+          <img :src="meal_icon" alt="Meal Scanner" class="action-icon" style="width: 32px" />
+          Meal Scanner
+        </RouterLink>
+      </div>
     </div>
 
     <div class="controls">
@@ -823,22 +839,19 @@ button:hover {
   border: 1px solid var(--festivall-baby-blue);
 }
 
-.applicants.cards .quantities-section,
 .applicants.cards .preview-section,
 .applicants.cards .ticket-section,
-.applicants.cards .checkedin-section,
 .applicants.cards .message-section,
 .applicants.cards .compensation-section,
 .applicants.cards .settime-section,
-.applicants.cards .revenue-section,
 .applicants.cards .contract-section {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 1fr;
   gap: 0.5rem;
   margin-top: 0.5rem;
   padding: 0.5rem;
   border-radius: 10px;
-  background-color: #444;
+  /* background-color: #444; */
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
   align-items: center;
@@ -846,10 +859,26 @@ button:hover {
   height: 100%;
   overflow: hidden;
 }
+.applicants.cards .checkedin-section,
+.applicants.cards .revenue-section,
+.applicants.cards .quantities-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  /* background-color: #444; */
+  border: 1px solid var(--festivall-baby-blue);
+  width: 100%;
+  align-items: center;
+}
 
 .applicants.rows .applicant,
 .applicants.rows .applicant-content,
 .applicants.rows .ticket-content,
+.applicants.rows .preview-section,
+.applicants.rows .contract-section,
 .applicants.rows .quantities,
 .applicants.rows .message-section,
 .applicants.rows .compensation-section,
@@ -929,5 +958,22 @@ a {
   height: auto;
   cursor: pointer;
   margin: 3px;
+}
+.scanner-links {
+  display: flex;
+
+  gap: 1rem;
+}
+.scanner-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: var(--festivall-baby-blue);
+  background-color: #444;
+  padding: 0.5rem;
+  border-radius: 10px;
 }
 </style>

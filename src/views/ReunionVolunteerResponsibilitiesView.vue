@@ -57,7 +57,8 @@
         <ul class="crew">
           <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
-            <strong>Front Gate:</strong><br />[Minimum Three 2-Hour Shifts Per Weekend]
+            <strong>Front Gate:</strong><br />
+            <p class="minimum">[Minimum Three 2-Hour Shifts Per Weekend]</p>
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
               using our in-house ticketing system. They are the first point of contact for attendees
@@ -68,7 +69,8 @@
         <ul class="crew">
           <img :src="food_team_icon" alt="Food Team Icon" />
           <li>
-            <strong>Food Team:</strong><br />[Minimum Two 4-Hour Shifts Per Weekend]
+            <strong>Food Team:</strong><br />
+            <p class="minimum">[Minimum Two 4-Hour Shifts Per Weekend]</p>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
@@ -80,7 +82,8 @@
         <ul class="crew">
           <img :src="setup_crew_icon" alt="Setup Crew Icon" />
           <li>
-            <strong>Setup Crew:</strong><br />[Minimum One 8-Hour Shift PreShow]
+            <h1><strong>Setup Crew:</strong><br /></h1>
+            <p class="minimum">[Minimum One 8-Hour Shift PreShow]</p>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
               items needed for the event. They help create a welcoming and festive atmosphere for
@@ -92,7 +95,8 @@
         <ul class="crew">
           <img :src="cleanup_crew_icon" alt="Cleanup Crew Icon" />
           <li>
-            <strong>Cleanup Crew:</strong><br />[Minimum One 8-Hour Shift PostShow]
+            <strong>Cleanup Crew:</strong><br />
+            <p class="minimum">[Minimum One 8-Hour Shift PostShow]</p>
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
               after the event. They help pack up equipment, decorations, and other items, and ensure
@@ -105,7 +109,7 @@
           <img :src="stage_crew_icon" alt="Stage Crew Icon" />
           <li>
             <strong>Stage Crew:</strong><br />
-            [Minimum Two 4-Hour Shifts Per Weekend]
+            <p class="minimum">[Minimum Two 4-Hour Shifts Per Weekend]</p>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
@@ -185,6 +189,16 @@ li p {
   text-transform: none;
   color: #cccccc;
 }
+.minimum {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  font-size: large;
+  /* color: var(--reunion-frog-green); */
+  font-weight: bold;
+  margin: 0.5rem 0 1rem 0;
+}
 
 .crew {
   display: flex;
@@ -199,7 +213,7 @@ li p {
 .crew img {
   width: 64px;
   height: auto;
-  margin: 0 1rem;
+  margin: 0 2rem 0 1rem;
 }
 .crew li {
   text-transform: uppercase;
