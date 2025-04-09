@@ -56,12 +56,10 @@
         <button @click="clearFilters">Clear Filters</button>
       </div>
     </div>
-
     <div class="view-toggle">
       <label> <input type="radio" value="rows" v-model="viewStyle" /> Rows </label>
       <label> <input type="radio" value="cards" v-model="viewStyle" /> Cards </label>
     </div>
-
     <div class="dashboard-panel">
       <div>
         <!-- <button @click="generateLineup">Download .ics</button> -->
@@ -73,12 +71,16 @@
             <div class="name-section">
               <h2>
                 <!-- ACT NAME OR FULLNAME -->
-
-                <a v-if="applicant.url" :href="applicant.url" target="_blank">
+                <a
+                  v-if="applicant.url"
+                  :href="applicant.url"
+                  target="_blank"
+                  style="text-decoration: underline"
+                >
                   {{ applicant.act_name || applicant.full_name }}
                 </a>
                 <!-- EMAIL PREFIX FALL BACK -->
-                <span v-else>
+                <span v-else style="text-decoration: underline">
                   {{ applicant.fullname || applicant.email.split('@')[0] }}
                 </span>
               </h2>
@@ -94,7 +96,9 @@
             <!-- VOLUNTEER TYPE -->
             <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
             <!-- WORKSHOP TITLE -->
-            <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
+            <p v-if="applicant.workshop_title" style="text-decoration: underline">
+              {{ applicant.workshop_title }}
+            </p>
             <!-- WORKSHOP DESCRIPTION -->
             <p v-if="applicant.workshop_description">{{ applicant.workshop_description }}</p>
 
@@ -105,7 +109,6 @@
             <!-- COMMENTS -->
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
           </div>
-
           <!-- TICKET DATA -->
           <div v-if="applicant.payment_type" class="ticket-content">
             <div class="payment-section">
@@ -131,7 +134,6 @@
               <!-- CHECKED IN STATUS -->
               <p v-if="applicant.checked_in">Checked In</p>
               <p v-else>Not Checked In</p>
-
               <!-- TICKET TYPE -->
               <p v-if="applicant.ticket_type">Ticket Type: {{ applicant.ticket_type }}</p>
             </div>
@@ -202,7 +204,6 @@
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
             </a>
-
             Contract Status:
             <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
             <p v-else style="color: red; font-size: large">Not Signed</p>
@@ -261,7 +262,6 @@
                 class="action-icon"
                 style="width: auto; height: 32px"
               />
-
               <p v-if="applicant.settime">
                 Settime:
                 {{
