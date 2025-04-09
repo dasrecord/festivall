@@ -16,26 +16,27 @@
         <button @click="toggleDay('sunday')">Sunday</button>
         <button @click="toggleDay('monday')">Monday</button>
       </div>
+      <div class="days">
+        <!-- Day sections with filtered events -->
+        <div v-if="showDays.friday" class="day">
+          <h2>FRIDAY</h2>
+          <lineup-day :events="getFridayEvents" :loading="loading" />
+        </div>
 
-      <!-- Day sections with filtered events -->
-      <div v-if="showDays.friday" class="day">
-        <h2>FRIDAY</h2>
-        <lineup-day :events="getFridayEvents" :loading="loading" />
-      </div>
+        <div v-if="showDays.saturday" class="day">
+          <h2>SATURDAY</h2>
+          <lineup-day :events="getSaturdayEvents" :loading="loading" />
+        </div>
 
-      <div v-if="showDays.saturday" class="day">
-        <h2>SATURDAY</h2>
-        <lineup-day :events="getSaturdayEvents" :loading="loading" />
-      </div>
+        <div v-if="showDays.sunday" class="day">
+          <h2>SUNDAY</h2>
+          <lineup-day :events="getSundayEvents" :loading="loading" />
+        </div>
 
-      <div v-if="showDays.sunday" class="day">
-        <h2>SUNDAY</h2>
-        <lineup-day :events="getSundayEvents" :loading="loading" />
-      </div>
-
-      <div v-if="showDays.monday" class="day">
-        <h2>MONDAY</h2>
-        <lineup-day :events="getMondayEvents" :loading="loading" />
+        <div v-if="showDays.monday" class="day">
+          <h2>MONDAY</h2>
+          <lineup-day :events="getMondayEvents" :loading="loading" />
+        </div>
       </div>
     </div>
   </div>
@@ -129,8 +130,16 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
 }
+.days {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
 .day {
+  width: 100%;
   padding: 0.5rem;
   margin-bottom: 1rem;
   background-color: var(--reunion-light-gray);
