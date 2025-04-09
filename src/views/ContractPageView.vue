@@ -88,7 +88,7 @@
     </ul>
     <p v-if="applicant.rates">
       <strong>Additional Compensation:</strong> {{ applicant.rates
-      }}<strong>Balance Due:</strong> no later than 30 days after Event Date
+      }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date
     </p>
 
     <h3>3. {{ applicant.applicant_type.toUpperCase() }} REQUIREMENTS</h3>
