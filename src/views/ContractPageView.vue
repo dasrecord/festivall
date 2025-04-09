@@ -29,10 +29,10 @@
       <strong>Venue:</strong> Reunion Festival Grounds (51°57'46.6"N 106°03'10.9"W 51.962948,
       -106.053036)<br />
       <strong>Venue Address:</strong> Blucher No. 343, Elstow, Saskatchewan<br />
-      <strong>Venue Location/Directions:</strong> <a href="https://festivall.ca/reunionlocation" target="_blank">festivall.ca/reunionlocation</a><br />
-      <strong
-        >Event Date: </strong
-      >AUG 29, 2025 - SEPT 01, 2025
+      <strong>Venue Location/Directions:</strong>
+      <a href="https://festivall.ca/reunionlocation" target="_blank">festivall.ca/reunionlocation</a
+      ><br />
+      <strong>Event Date: </strong>AUG 29, 2025 - SEPT 01, 2025
     </p>
     <p v-if="applicant.applicant_type === 'Artist'">
       <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
@@ -42,10 +42,14 @@
       determined no later than 14 days before Event Date
     </p>
     <p v-if="applicant.applicant_type === 'Volunteer'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong>
-      Minimum one volunteer shift during or before Event Date<br />
-      <strong>Shift Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
-      determined no later than 14 days before Event Date
+      <strong>Minimum shifts for {{ applicant.applicant_type.toUpperCase() }} Services:</strong
+      ><br />
+      Minimum Shifts by Team:<br />
+      Front Gate: [Three 2-Hour Shifts Per Weekend]<br />
+      Food Team: [Two 4-Hour Shifts Per Weekend]<br />
+      Setup Crew: [One 8-Hour Shift PreShow]<br />
+      Cleanup Crew: [One 8-Hour Shift PostShow]<br />
+      Stage Crew: [Two 4-Hour Shifts Per Weekend]<br />
     </p>
     <p v-if="applicant.applicant_type === 'Workshop'">
       <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
@@ -178,16 +182,18 @@
         v-model="signature"
         :placeholder="applicant.fullname"
         required
+        style="width: 100%"
       />
+      <button @click="handleSubmit" style="width: 100%; max-width: 400px">SIGN & SUBMIT</button>
     </div>
     <div v-else>
-      <p>
-        Thank you, {{ applicant.fullname }}. Your contract has been signed on
-        {{ applicant.signedAt }}.
-      </p>
+      <p>Thank you, {{ applicant.fullname }}.</p>
+      <span v-if="applicant.signedAt"
+        >Your contract has been signed on
+        {{ applicant.signedAt }}
+      </span>
     </div>
 
-    <button @click="handleSubmit">SIGN & SUBMIT</button>
     <img
       class="footer"
       :src="poster_footer"
