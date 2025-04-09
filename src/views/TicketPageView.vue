@@ -16,8 +16,9 @@
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
-    <h2>Your Digital Ticket</h2>
 
+    <h2>Your Digital Ticket<br /></h2>
+    <h2>#{{ order.id_code }}</h2>
     <div class="order-info">
       <p>
         <strong>Full Name:</strong> {{ order.fullname }}
@@ -29,7 +30,8 @@
       </p>
 
       <p v-if="order.ticket_type === 'Day Pass'">
-        <strong>Valid: </strong> 24 hours starting 12:00 PM {{ order.selected_day }}
+        <strong>Valid: </strong> 12:00 PM {{ order.selected_day }}
+        for 24H
       </p>
       <div class="quantities">
         <div class="quantity">
@@ -105,8 +107,8 @@
         </RouterLink>
         <RouterLink
           v-if="
-            order.payment_type &&
-            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop')
+            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop') &&
+            order.settime
           "
           style="grid-column: span 2"
           to="#"
