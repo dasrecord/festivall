@@ -14,6 +14,7 @@
       <div class="question">
         <h1 v-html="formatText(question.category)"></h1>
         <h2 v-html="formatText(question.text)"></h2>
+        <img v-if="question.image" :src="question.image" alt="Question Image" />
         <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
 
         <!-- Input for answers -->
@@ -64,6 +65,7 @@
 
 <script>
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
+import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -71,6 +73,8 @@ export default {
     return {
       currentQuestion: 0, // Tracks the current slide (index or 'score')
       backgroundImage: faded_frog,
+      chess_1: chess_1,
+
       questions: [
         {
           text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
@@ -131,6 +135,14 @@ export default {
           answer: 'friendship',
           type: 'text',
           category: 'Quest'
+        },
+        {
+          text: 'White to move and checkmate in two moves.',
+          subtext: 'Hint: Only the frist move is required using chess notation.',
+          answer: 'Ra6',
+          type: 'text',
+          image: chess_1,
+          category: 'Chess Puzzle'
         },
         {
           text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
@@ -284,6 +296,12 @@ export default {
   width: 80%;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+img {
+  max-width: 350px;
+  height: auto;
+  margin: 1rem 0;
 }
 
 .controls {
