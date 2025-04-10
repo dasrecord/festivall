@@ -220,6 +220,65 @@ const submitForm = async () => {
     submitting.value = false
   }
 }
+
+onMounted(() => {
+  if (import.meta.env.MODE === 'development') {
+    // Mock data for testing in development mode
+    form.value = {
+      id_code_long: 'a2c4e-' + uuidv4().slice(5),
+      id_code: 'a2c4e',
+      fullname: 'Prasenjit Das',
+      email: 'dasrecord@protonmail.com',
+      phone: '306-491-6040',
+      street_address: '736 Henry Dayday Road',
+      city: 'Saskatoon',
+      province: 'Saskatchewan',
+      country: 'Canada',
+      postal_code: 'S7W1E2',
+      formatted_phone: '(123)456-7890',
+      payment_type: 'inkind',
+      applicant_types: ['Artist', 'Volunteer', 'Workshop', 'Art Installation', 'Vendor'],
+      act_type: 'DJ',
+      act_name: 'Das Record',
+      genre: 'Ambient',
+      act_description: 'Live Piano over Liquid Drum and Bass',
+      mix_track_url: 'https://soundcloud.com/dasrecord/das-record-the-smirk-bootleg',
+      act_website: 'https://festivall.ca/dasrecord',
+      social_url: 'https://instagram.com/dasrecord',
+      press_kit_url: 'https://festivall.ca/about',
+      logo_url: 'https://1drv.ms/u/s!AmQS9nkxDiX4gehuc_5c2T_hUphbIQ?e=77rWMu',
+      volunteer_type: 'Stage Crew',
+      workshop_title: 'Bitcoin - Part 2',
+      workshop_description: 'An introduction to wallets & keys.',
+      workshop_requirements: 'Whiteboard or projector, 1 vocal mic.',
+      vendor_type: 'Merchandise',
+      vendor_description: 'Branded Hoodies',
+      vendor_requirements: 'Table for display.',
+      vendor_url: 'https://festivall.ca/reunion',
+      statement:
+        'Skill is hitting that others cannot hit, genius is hitting that others cannot see.',
+      rates: 'A bottle of amaretto.',
+      volunteer_availability: [
+        'Aug 25',
+        'Aug 26',
+        'Aug 27',
+        'Aug 28',
+        'Aug 29',
+        'Aug 30',
+        'Aug 31',
+        'Sept 1'
+      ],
+      installation_title: 'Video Game Arcade',
+      installation_description: 'A linux based retro video game arcade station.',
+      space_requirements: 'Indoor setting.',
+      other_requirements: '2 chairs and power access.',
+      portfolio_url: 'https://festivall.ca/',
+      fixture_type: 'Non-permanent',
+      contract_signed: false
+    }
+  }
+  console.log(form.value)
+})
 </script>
 <template>
   <a href="/">
@@ -417,7 +476,7 @@ const submitForm = async () => {
           <input
             type="text"
             id="address"
-            v-model="form.address"
+            v-model="form.street_address"
             placeholder="123 Main St."
             required
           />
@@ -802,7 +861,7 @@ const submitForm = async () => {
           <label for="statement">Statement:</label>
           <textarea
             id="statement"
-            v-model="form.message"
+            v-model="form.statement"
             placeholder="Leave a personal statement to the festival team. Tell us what sets you apart from other applicants."
           ></textarea>
         </div>
