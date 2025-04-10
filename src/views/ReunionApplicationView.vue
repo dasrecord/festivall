@@ -492,7 +492,7 @@ const submitForm = async () => {
         </div>
 
         <!-- Conditional Form Sections -->
-        <div v-show="form.applicant_type === 'Volunteer'">
+        <div v-show="form.applicant_types.includes('Volunteer')">
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
@@ -550,7 +550,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-show="form.applicant_type === 'Artist'">
+        <div v-show="form.applicant_types.includes('Artist')">
           <div class="form-section">
             <label for="act_type">Act Type:</label>
             <select id="act_type" v-model="form.act_type" required>
@@ -654,7 +654,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-show="form.applicant_type === 'Workshop'">
+        <div v-show="form.applicant_types.includes('Workshop')">
           <div class="form-section">
             <label for="workshop_title">Title:</label>
             <input
@@ -686,7 +686,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-show="form.applicant_type === 'Art Installation'">
+        <div v-show="form.applicant_types.includes('Art Installation')">
           <div class="form-section">
             <label for="installation_title">Title:</label>
             <input
@@ -745,7 +745,7 @@ const submitForm = async () => {
           </div>
         </div>
 
-        <div v-show="form.applicant_type === 'Vendor'">
+        <div v-show="form.applicant_types.includes('Vendor')">
           <div class="form-section">
             <label for="vendor_type">Vendor Type:</label>
             <select id="vendor_type" v-model="form.vendor_type" required>
