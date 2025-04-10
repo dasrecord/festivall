@@ -331,21 +331,31 @@ export default {
     const viewStyle = ref('cards') // Default view style
     const filters = ref([
       { property: 'applicant_type', value: 'Artist', label: 'Artists' },
+      { property: 'applicant_types', value: 'Artist', label: 'Artists' },
+
+      { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
+      { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers' },
+
+      { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
+      { property: 'applicant_types', value: 'Workshop', label: 'Workshops' },
+
+      { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations' },
+
+      { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
+      { property: 'applicant_types', value: 'Vendor', label: 'Vendors' },
+
       { property: 'applicant_type', value: 'Musician', label: 'Musicians' },
       { property: 'act_type', value: 'Musician', label: 'Musicians' },
       { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
-      { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
       { property: 'applicant_type', value: 'DJ', label: 'DJs' },
       { property: 'act_type', value: 'dj', label: 'DJs' },
       { property: 'applicant_type', value: 'DJ/Band', label: 'DJ/Band' },
       { property: 'act_type', value: 'Live Band', label: 'Live Bands' },
-      { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
       { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew' },
       { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew' },
       { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew' },
       { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate' },
       { property: 'volunteer_type', value: 'Food Team', label: 'Food Team' },
-      { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
       { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
       { property: 'applicant_type', value: 'Art Vendor', label: 'Art Vendors' },
       { property: 'applicant_type', value: 'Event Manager', label: 'Event Manager' },
@@ -388,10 +398,17 @@ export default {
     const relevantFilters = computed(() => {
       return filters.value.filter((filter) => {
         return applicants.value.some((applicant) => {
+          const prop = applicant[filter.property]
           if (filter.value === '') {
-            return applicant[filter.property] !== undefined && applicant[filter.property] !== ''
+            return prop !== undefined && prop !== ''
           }
-          return applicant[filter.property] === filter.value
+          if (Array.isArray(prop)) {
+            return prop.includes(filter.value) // Check if the array includes the value
+          }
+          if (typeof prop === 'string') {
+            return prop === filter.value // Check if the string matches the value
+          }
+          return false
         })
       })
     })
@@ -427,20 +444,22 @@ export default {
 
     const applyFilter = (property, value) => {
       filteredApplicants.value = applicants.value.filter((applicant) => {
-        if (Array.isArray(applicant[property])) {
-          return (
-            applicant[property].includes(value), // Check if the array includes the value
-            console.log('Applicant Data:', applicants.value),
-            console.log('Filters:', filters.value)
-          )
+        const prop = applicant[property]
+        if (Array.isArray(prop)) {
+          return prop.includes(value) // Check if the array includes the value
+        }
+        if (typeof prop === 'string') {
+          if (value === '') {
+            return prop.trim() !== '' // Match non-empty strings
+          }
+          return prop === value // Check if the string matches the value
         }
         if (value === '') {
-          return applicant[property] !== undefined && applicant[property] !== ''
+          return prop !== undefined && prop !== '' // Handle empty filter values for non-strings
         }
-        return applicant[property] === value
+        return false
       })
     }
-
     const clearFilters = () => {
       filteredApplicants.value = applicants.value
     }
