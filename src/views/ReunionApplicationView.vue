@@ -454,6 +454,11 @@ const submitForm = async () => {
           <label for="applicant_type">Categories:</label>
           <div class="checkboxes">
             <span class="checkbox-label">
+              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
+              Artist
+            </span>
+
+            <span class="checkbox-label">
               <input
                 type="checkbox"
                 id="volunteer"
@@ -462,10 +467,7 @@ const submitForm = async () => {
               />
               Volunteer
             </span>
-            <span class="checkbox-label">
-              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
-              Artist
-            </span>
+
             <span class="checkbox-label">
               <input
                 type="checkbox"
@@ -492,65 +494,9 @@ const submitForm = async () => {
         </div>
 
         <!-- Conditional Form Sections -->
-        <div v-show="form.applicant_types.includes('Volunteer')">
-          <div class="form-section">
-            <label for="volunteer_type">Volunteer Type:</label>
-            <select id="volunteer_type" v-model="form.volunteer_type" required>
-              <option value="" disabled>What team are you interested in?</option>
-              <option value="Setup Crew">Setup Crew</option>
-              <option value="Cleanup Crew">Cleanup Crew</option>
-              <option value="Stage Crew">Stage Crew</option>
-              <option value="Front Gate">Front Gate</option>
-              <option value="Food Team">Food Team</option>
-            </select>
-          </div>
-          <div class="form-section">
-            <label for="volunteer_availability">Availability:</label>
-            <div class="checkboxes">
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 25" />
-                Aug 25
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 26" />
-                Aug 26
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 27" />
-                Aug 27
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 28" />
-                Aug 28
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 29" />
-                Aug 29
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 30" />
-                Aug 30
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 31" />
-                Aug 31
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 1" />
-                Sept 1
-              </span>
-            </div>
-          </div>
-        </div>
-
+        <!-- ARTIST -->
         <div v-show="form.applicant_types.includes('Artist')">
+          ARTIST SECTION
           <div class="form-section">
             <label for="act_type">Act Type:</label>
             <select id="act_type" v-model="form.act_type" required>
@@ -654,7 +600,69 @@ const submitForm = async () => {
           </div>
         </div>
 
+        <!-- VOLUNTEER -->
+        <div v-show="form.applicant_types.includes('Volunteer')">
+          VOLUNTEER SECTION
+          <div class="form-section">
+            <label for="volunteer_type">Volunteer Type:</label>
+            <select id="volunteer_type" v-model="form.volunteer_type" required>
+              <option value="" disabled>What team are you interested in?</option>
+              <option value="Setup Crew">Setup Crew</option>
+              <option value="Cleanup Crew">Cleanup Crew</option>
+              <option value="Stage Crew">Stage Crew</option>
+              <option value="Front Gate">Front Gate</option>
+              <option value="Food Team">Food Team</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="volunteer_availability">Availability:</label>
+            <div class="checkboxes">
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 25" />
+                Aug 25
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 26" />
+                Aug 26
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 27" />
+                Aug 27
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 28" />
+                Aug 28
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 29" />
+                Aug 29
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 30" />
+                Aug 30
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 31" />
+                Aug 31
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 1" />
+                Sept 1
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSHOP -->
         <div v-show="form.applicant_types.includes('Workshop')">
+          WORKSHOP SECTION
           <div class="form-section">
             <label for="workshop_title">Title:</label>
             <input
@@ -686,7 +694,9 @@ const submitForm = async () => {
           </div>
         </div>
 
+        <!-- ART INSTALLATION -->
         <div v-show="form.applicant_types.includes('Art Installation')">
+          ART INSTALLATION SECTION
           <div class="form-section">
             <label for="installation_title">Title:</label>
             <input
@@ -745,7 +755,9 @@ const submitForm = async () => {
           </div>
         </div>
 
+        <!-- VENDOR -->
         <div v-show="form.applicant_types.includes('Vendor')">
+          VENDOR SECTION
           <div class="form-section">
             <label for="vendor_type">Vendor Type:</label>
             <select id="vendor_type" v-model="form.vendor_type" required>
@@ -904,8 +916,7 @@ input[type='checkbox'] {
 }
 .checkboxes {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* grid-template-rows: repeat(2, auto); */
+  grid-template-columns: repeat(5, 1fr);
   gap: 3px;
   justify-items: center;
   align-items: center;
@@ -983,6 +994,12 @@ table {
     padding: 5px;
     margin: 5px 0;
     border-radius: 0 0 15px 15px;
+  }
+
+  .checkboxes {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   button {
