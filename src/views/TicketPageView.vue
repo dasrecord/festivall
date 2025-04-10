@@ -105,17 +105,16 @@
             Volunteer Instructions
           </p>
         </RouterLink>
-        <RouterLink
+        <div
           v-if="
             (order.applicant_types.includes('Artist') ||
               order.applicant_types.includes('Workshop')) &&
             order.settime
           "
-          style="grid-column: span 2"
-          to="#"
+          style="grid-column: span 2; cursor: pointer"
           @click.prevent="downloadSettime"
         >
-          <p style="text-align: center">
+          <p style="text-align: center; text-decoration: underline">
             <img
               :src="order.applicant_types.includes('Artist') ? dj_icon : workshop_icon"
               style="height: auto; width: 36px"
@@ -133,7 +132,7 @@
               })
             }}
           </p>
-        </RouterLink>
+        </div>
         <RouterLink to="/reunionlocation">
           <p>
             <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
