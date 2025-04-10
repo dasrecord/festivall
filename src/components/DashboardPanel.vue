@@ -38,7 +38,7 @@
         <!-- <button @click="loadApplicants('partywell')">PartyWell</button> -->
         <!-- <button @click="loadApplicants('festivall', true)">Festivall</button> -->
         <!-- <button @click="loadApplicants('reunion')">Reunion Static</button> -->
-        <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button>
+        <!-- <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button> -->
         <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
       </div>
     </div>
@@ -87,8 +87,8 @@
               <!-- ID CODE -->
               <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
               <!-- ACT TYPE -->
-              <p v-if="applicant.applicant_type">
-                {{ applicant.applicant_type }}
+              <p v-if="applicant.applicant_types && applicant.applicant_types.length">
+                {{ applicant.applicant_types.join(', ') }}
               </p>
             </div>
             <!-- GENRE -->
@@ -208,7 +208,10 @@
             <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
             <p v-else style="color: red; font-size: large">Not Signed</p>
 
-            <a v-if="applicant.applicant_type" @click="remindContract(applicant.id_code)">
+            <a
+              v-if="applicant.applicant_types && applicant.applicant_types.length"
+              @click="remindContract(applicant.id_code)"
+            >
               <img :src="reminder_icon" alt="Remind Applicant" class="action-icon" />
             </a>
             <div v-if="applicant.phone" class="message-section">
@@ -221,7 +224,10 @@
                 style="width: auto; height: 42px"
               />
             </div>
-            <div v-if="applicant.applicant_type" class="compensation-section">
+            <div
+              v-if="applicant.applicant_types && applicant.applicant_types.length"
+              class="compensation-section"
+            >
               <input
                 type="text"
                 v-model="applicant.additional_compensation"
@@ -248,7 +254,8 @@
 
             <div
               v-if="
-                applicant.applicant_type === 'Artist' || applicant.applicant_type === 'Workshop'
+                applicant.applicant_types.includes('Artist') ||
+                applicant.applicant_types.includes('Workshop')
               "
               class="settime-section"
             >
@@ -279,12 +286,12 @@
             <div class="contract-section">
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
               <a
-                v-if="applicant.applicant_type"
+                v-if="applicant.applicant_types && applicant.applicant_types.length"
                 :href="
                   deliverContract(
                     applicant.email,
                     applicant.fullname,
-                    applicant.applicant_type,
+                    applicant.applicant_types.join(', and '), // Join roles into a string
                     applicant.id_code
                   )
                 "
@@ -420,6 +427,13 @@ export default {
 
     const applyFilter = (property, value) => {
       filteredApplicants.value = applicants.value.filter((applicant) => {
+        if (Array.isArray(applicant[property])) {
+          return (
+            applicant[property].includes(value), // Check if the array includes the value
+            console.log('Applicant Data:', applicants.value),
+            console.log('Filters:', filters.value)
+          )
+        }
         if (value === '') {
           return applicant[property] !== undefined && applicant[property] !== ''
         }
@@ -475,11 +489,11 @@ export default {
       }
     }
 
-    const clearCompensation = async (id_code, additional_compensation) => {
+    const clearCompensation = async (id_code) => {
       try {
         const docRef = doc(reunion_db, 'applications_2025', id_code)
         await updateDoc(docRef, {
-          rates: additional_compensation
+          rates: ''
         })
         applicants.value = applicants.value.map((applicant) => {
           if (applicant.id_code === id_code) {
@@ -509,11 +523,11 @@ export default {
       }
     }
 
-    const clearSettime = async (id_code, settime) => {
+    const clearSettime = async (id_code) => {
       try {
         const docRef = doc(reunion_db, 'applications_2025', id_code)
         await updateDoc(docRef, {
-          settime: settime
+          settime: ''
         })
         applicants.value = applicants.value.map((applicant) => {
           if (applicant.id_code === id_code) {
@@ -615,11 +629,11 @@ export default {
       }
     }
 
-    const deliverContract = (email, fullname, role, id_code) => {
+    const deliverContract = (email, fullname, roles, id_code) => {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = contractEmailBody.value
         .replace('{name}', fullname || '')
-        .replace('{role}', role || '')
+        .replace('{roles}', roles || '') // Roles already joined as a string
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
       return `mailto:${email}?subject=${subject}&body=${body}`

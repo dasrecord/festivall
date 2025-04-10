@@ -1,6 +1,6 @@
 Congratulations {name}!
 We would like to invite you to participate at our upcoming festival
-in the capacity of {role}.
+in the capacity of {roles}.
 Your talent and energy would be a perfect addition to our lineup.
 
 To e-sign your contract please navigate to:

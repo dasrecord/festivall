@@ -31,7 +31,7 @@ const form = ref({
   postal_code: '',
   formatted_phone: '',
   payment_type: 'inkind',
-  applicant_type: '',
+  applicant_types: [],
   act_type: '',
   act_name: '',
   genre: '',
@@ -451,15 +451,44 @@ const submitForm = async () => {
           />
         </div>
         <div class="form-section">
-          <label for="applicant_type">Category:</label>
-          <select id="applicant_type" v-model="form.applicant_type" required>
-            <option value="" disabled>What type of application is this?</option>
-            <option value="Volunteer">Volunteer</option>
-            <option value="Artist">Artist</option>
-            <option value="Workshop">Workshop</option>
-            <option value="Art Installation">Art Installation</option>
-            <option value="Vendor">Vendor</option>
-          </select>
+          <label for="applicant_type">Categories:</label>
+          <div class="checkboxes">
+            <span class="checkbox-label">
+              <input
+                type="checkbox"
+                id="volunteer"
+                value="Volunteer"
+                v-model="form.applicant_types"
+              />
+              Volunteer
+            </span>
+            <span class="checkbox-label">
+              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
+              Artist
+            </span>
+            <span class="checkbox-label">
+              <input
+                type="checkbox"
+                id="workshop"
+                value="Workshop"
+                v-model="form.applicant_types"
+              />
+              Workshop
+            </span>
+            <span class="checkbox-label">
+              <input
+                type="checkbox"
+                id="art_installation"
+                value="Art Installation"
+                v-model="form.applicant_types"
+              />
+              Art Installation
+            </span>
+            <span class="checkbox-label">
+              <input type="checkbox" id="vendor" value="Vendor" v-model="form.applicant_types" />
+              Vendor
+            </span>
+          </div>
         </div>
 
         <!-- Conditional Form Sections -->
