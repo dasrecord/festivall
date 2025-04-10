@@ -3,13 +3,13 @@
     <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
     <h1>
       Reunion Festival<br />
-      {{ applicant.applicant_type }} Contract
+      {{ applicant.applicant_types.join(' and ') }} Contract
     </h1>
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
     <!-- <h2>Powered by Festivall</h2> -->
     <h3 class="preamble">PREAMBLE</h3>
     <p>
-      This {{ applicant.applicant_type.toUpperCase().toUpperCase() }} Contract (the “Contract”) is
+      This {{ applicant.applicant_types.join(' and ').toUpperCase() }} Contract (the “Contract”) is
       entered into <strong>{{ currentDate }}</strong> (the “Effective Date”), by and between
       <strong>REUNION FESTIVAL</strong>, with an address of
       <strong>Blucher No. 343, Elstow, Saskatchewan</strong> (the “REUNION FESTIVAL”) and
@@ -18,10 +18,10 @@
       <strong
         >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region }},
         {{ applicant.country }}, {{ applicant.postal_code }}</strong
-      >, (the "{{ applicant.applicant_type.toUpperCase() }}"), also individually referred to as (the
-      “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to engage the
-      {{ applicant.applicant_type.toUpperCase() }} to provide
-      {{ applicant.applicant_type.toUpperCase() }} services.
+      >, (the "{{ applicant.applicant_types.join(' and ').toUpperCase() }}"), also individually
+      referred to as (the “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to
+      engage the {{ applicant.applicant_types.join(' and ').toUpperCase() }} to provide
+      {{ applicant.applicant_types.join(' and ').toUpperCase() }} services.
     </p>
 
     <h3 class="red">1. EVENT DATE & DESCRIPTION</h3>
@@ -34,16 +34,14 @@
       ><br />
       <strong>Event Date: </strong>AUG 29, 2025 - SEPT 01, 2025
     </p>
-    <p v-if="applicant.applicant_type === 'Artist'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      60-90min DJ/performance set during Event Date by {{ applicant.act_type }} -
-      {{ applicant.act_name }}<br />
-      <strong>Set Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
-      determined no later than 14 days before Event Date
+    <p v-if="applicant.applicant_types.includes('Artist')">
+      <strong>Event Hours for ARTIST Services:</strong> One 60-90min DJ/performance set during Event
+      Date by {{ applicant.act_type }} - {{ applicant.act_name }}<br />
+      <strong>Set Time of ARTIST Services:</strong> to be determined no later than 14 days before
+      Event Date
     </p>
-    <p v-if="applicant.applicant_type === 'Volunteer'">
-      <strong>Minimum shifts for {{ applicant.applicant_type.toUpperCase() }} Services:</strong
-      ><br />
+    <p v-if="applicant.applicant_types.includes('Volunteer')">
+      <strong>Minimum shifts for VOLUNTEER Services:</strong><br />
       Minimum Shifts by Team:<br />
       Front Gate: [Three 2-Hour Shifts Per Weekend]<br />
       Food Team: [Two 4-Hour Shifts Per Weekend]<br />
@@ -51,36 +49,44 @@
       Cleanup Crew: [One 8-Hour Shift PostShow]<br />
       Stage Crew: [Two 4-Hour Shifts Per Weekend]<br />
     </p>
-    <p v-if="applicant.applicant_type === 'Workshop'">
-      <strong>Event Hours for {{ applicant.applicant_type.toUpperCase() }} Services:</strong> One
-      60-90min workshop during Event Date entitled<br />
+    <p v-if="applicant.applicant_types.includes('Workshop')">
+      <strong>Event Hours for WORKSHOP Services:</strong>
+      One 60-90min workshop during Event Date entitled<br />
       {{ applicant.workshop_title }} - {{ applicant.workshop_description }}<br />
-      <strong>Workshop Time of {{ applicant.applicant_type.toUpperCase() }} Services:</strong> to be
-      determined no later than 14 days before Event Date
+      <strong>Workshop Time of WORKSHOP Services:</strong>
+      to be determined no later than 14 days before Event Date
+    </p>
+    <p v-if="applicant.applicant_types.includes('Art Installation')">
+      <strong>Event Hours for ART INSTALLATION Services:</strong>
+      Art installation operational during Event Hours<br />
+      <strong>Installation Title:</strong> {{ applicant.installation_title }}<br />
+      <strong>Fixture Type:</strong> {{ applicant.fixture_type }}
+    </p>
+    <p v-if="applicant.applicant_types.includes('Vendor')">
+      <strong>Vendor Requirements:</strong> {{ applicant.vendor_requirements }}
     </p>
 
     <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
     <p><strong>Compensation for Services:</strong></p>
-
-    <ul v-if="applicant.applicant_type === 'Artist'">
-      <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
+    <ul v-if="applicant.applicant_types.includes('Artist')">
+      <li>One complementary weekend pass for ARTIST</li>
       <li>One complementary weekend pass for GUEST</li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
-    <ul v-if="applicant.applicant_type === 'Volunteer'">
-      <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
+    <ul v-if="applicant.applicant_types.includes('Volunteer')">
+      <li>One complementary weekend pass for VOLUNTEER</li>
       <li>One complementary meal package for each festival day worked</li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
-    <ul v-if="applicant.applicant_type === 'Workshop'">
-      <li>One complementary weekend pass for {{ applicant.applicant_type.toUpperCase() }}</li>
+    <ul v-if="applicant.applicant_types.includes('Workshop')">
+      <li>One complementary weekend pass for WORKSHOP</li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
@@ -91,12 +97,13 @@
       }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date
     </p>
 
-    <h3>3. {{ applicant.applicant_type.toUpperCase() }} REQUIREMENTS</h3>
+    <h3>3. {{ applicant.applicant_types.join(' and ').toUpperCase() }} REQUIREMENTS</h3>
     <p>
-      The {{ applicant.applicant_type.toUpperCase() }} requires the following equipment to provide
-      {{ applicant.applicant_type.toUpperCase() }} Services:
+      The {{ applicant.applicant_types.join(' and ').toUpperCase() }} requires the following
+      equipment to provide {{ applicant.applicant_types.join(' and ').toUpperCase() }} Services:
     </p>
-    <ul v-if="applicant.applicant_type === 'Artist'">
+    <ul v-if="applicant.applicant_types.includes('Artist')">
+      ARTIST REQUIREMENTS
       <li><strong>Flat table/surface 36” in height</strong></li>
       <li><strong>Standard DJ Setup</strong></li>
       <li><strong>Pioneer S9 mixer</strong></li>
@@ -105,18 +112,34 @@
       <li><strong>Adequate booth sound level</strong></li>
       <li><strong>2 Standard 120V Power Sockets</strong></li>
     </ul>
-    <ul v-if="applicant.applicant_type === 'Volunteer'">
+    <ul v-if="applicant.applicant_types.includes('Volunteer')">
+      VOLUNTEER REQUIREMENTS
       <li><strong>In-house Ticket Scanner, Seating, and Shade for Front Gate</strong></li>
       <li><strong>Access to walkie-talkie for team communications</strong></li>
       <li><strong>Water/Juice for refreshment</strong></li>
     </ul>
-    <ul v-if="applicant.applicant_type === 'Workshop'">
+    <ul v-if="applicant.applicant_types.includes('Workshop')">
+      WORKSHOP REQUIREMENTS
       <li><strong>Adequate ground space for workshop activities</strong></li>
       <li><strong>Including space for audience participation if required</strong></li>
       <li><strong>Access to microphone with signal flow to main speaker system</strong></li>
       <li>
         <strong>Access to stage management or available DJ to play music</strong>
       </li>
+    </ul>
+    <ul v-if="applicant.applicant_types.includes('Art Installation')">
+      ART INSTALLATION REQUIREMENTS
+      <li><strong>Access to 120V power</strong></li>
+      <li><strong>Access to water</strong></li>
+      <li><strong>Access to walkie-talkie for team communications</strong></li>
+      <li><strong>Access to shade</strong></li>
+    </ul>
+    <ul v-if="applicant.applicant_types.includes('Vendor')">
+      VENDOR REQUIREMENTS
+      <li><strong>Access to 120V power</strong></li>
+      <li><strong>Access to water</strong></li>
+      <li><strong>Access to walkie-talkie for team communications</strong></li>
+      <li><strong>Access to shade</strong></li>
     </ul>
 
     <h3>4. CANCELLATION</h3>
@@ -128,13 +151,13 @@
     </p>
 
     <p>
-      By {{ applicant.applicant_type.toUpperCase() }}. The
-      {{ applicant.applicant_type.toUpperCase() }} may cancel this Agreement at any time. If the
-      {{ applicant.applicant_type.toUpperCase() }} cancels, it must provide a suitable, replacement
-      {{ applicant.applicant_type.toUpperCase() }}, subject to the REUNION FESTIVAL's approval,
-      which shall be obtained in writing. In the alternative, the
-      {{ applicant.applicant_type.toUpperCase() }} shall refund all monies previously paid by the
-      REUNION FESTIVAL.
+      By {{ applicant.applicant_types.join(' and ').toUpperCase() }}. The
+      {{ applicant.applicant_types.join(' and ').toUpperCase() }} may cancel this Agreement at any
+      time. If the {{ applicant.applicant_types.join(' and ').toUpperCase() }} cancels, it must provide
+      a suitable, replacement {{ applicant.applicant_types.join(' and ').toUpperCase() }}, subject to
+      the REUNION FESTIVAL's approval, which shall be obtained in writing. In the alternative, the
+      {{ applicant.applicant_types.join(' and ').toUpperCase() }} shall refund all monies previously
+      paid by the REUNION FESTIVAL.
     </p>
     <ul>
       <li>
@@ -294,9 +317,9 @@ export default {
           paid: true,
           ticket_type: 'Weekend Pass',
           total_price: 0,
-          ticket_quantity: applicant.value.applicant_type === 'Artist' ? 2 : 1,
-          meal_packages: applicant.value.applicant_type === 'Volunteer' ? 2 : 0,
-          meal_tickets_remaining: applicant.value.applicant_type === 'Volunteer' ? 4 : 0
+          ticket_quantity: applicant.value.applicant_types.includes('Artist') ? 2 : 1,
+          meal_packages: applicant.value.applicant_types.includes('Volunteer') ? 2 : 0,
+          meal_tickets_remaining: applicant.value.applicant_types.includes('Volunteer') ? 4 : 0
         })
         alert('Please enter your ID Code on the next page to access your ticket.')
         console.log('Order added successfully!')

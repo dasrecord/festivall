@@ -95,7 +95,7 @@
       </p>
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_type === 'Volunteer'"
+          v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"
@@ -107,7 +107,8 @@
         </RouterLink>
         <RouterLink
           v-if="
-            (order.applicant_type === 'Artist' || order.applicant_type === 'Workshop') &&
+            (order.applicant_types.includes('Artist') ||
+              order.applicant_types.includes('Workshop')) &&
             order.settime
           "
           style="grid-column: span 2"
@@ -116,9 +117,9 @@
         >
           <p style="text-align: center">
             <img
-              :src="order.applicant_type === 'Artist' ? dj_icon : workshop_icon"
+              :src="order.applicant_types.includes('Artist') ? dj_icon : workshop_icon"
               style="height: auto; width: 36px"
-              :alt="order.applicant_type + ' Icon'"
+              :alt="order.applicant_types.includes('Artist') ? 'Artist Icon' : 'Workshop Icon'"
             />
             Your Set Time:
             {{
