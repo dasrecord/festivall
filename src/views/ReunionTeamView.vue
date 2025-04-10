@@ -306,9 +306,8 @@ export default {
         <template v-slot:role>
           <h3>Artist Changeovers</h3>
           <p>
-            Corey is our go-to person for artist changeovers, ensuring smooth transitions between
-            acts. As a DJ himself, Corey understands the importance of timing and flow, making him
-            the perfect fit for this role.
+            As a DJ himself, Corey understands the importance of timing and flow, making him the
+            perfect fit for this role.
           </p></template
         >
         <template v-slot:icon>
