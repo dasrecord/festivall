@@ -217,6 +217,25 @@ const submitForm = async () => {
 
 onMounted(() => {
   fetchBtcRate()
+  if (import.meta.env.MODE === 'development') {
+    form.value = {
+      id_code_long: '1b3d5' + uuidv4().slice(5),
+      id_code: '1b3d5',
+      referral_id_code: 'a2c4e',
+      fullname: 'Prasenjit Das',
+      email: 'dasrecord@protonmail.com',
+      phone: '(306)491-6040',
+      ticket_type: 'Weekend Pass',
+      ticket_quantity: 2,
+      selected_day: '',
+      meal_packages: 1,
+      meal_tickets_remaining: 2,
+      payment_type: 'etransfer',
+      total_price: 300,
+      paid: false,
+      checked_in: false
+    }
+  }
 })
 </script>
 
