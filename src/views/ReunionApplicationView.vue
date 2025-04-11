@@ -139,7 +139,7 @@ const submitForm = async () => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.formatted_phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_type}\n:cd: ${form.value.mix_track_url}\n:memo: ${form.value.message}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
+              text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.formatted_phone}\n:globe_with_meridians: ${form.value.city}\n:trident: ${form.value.applicant_types.join(', ')}\n:cd: ${form.value.mix_track_url}\n:memo: ${form.value.statement}\n:id: ${form.value.id_code}\n:bookmark_tabs: <https://festivall.ca/dashboard|Dashboard>`
             }
           }
         ]
@@ -311,14 +311,13 @@ onMounted(() => {
       </div>
       <h4 class="disclaimer">
         <div>
-          <h1>Compensation Schedule:<br /></h1>
+          <h1>Compensation Schedule:</h1>
         </div>
-        *Please note that submitting this form does not guarantee a performance slot at Reunion
-        2025.<br /><br />
+        *Please note that submitting this form does not guarantee a performance slot.<br /><br />
         <div class="applicant-type">
           <div>
             <img :src="artist_icon" alt="artist" class="icon" />
-            <h1><span class="highlight">ARTISTS</span><br /></h1>
+            <h1><span class="highlight">ARTISTS</span></h1>
           </div>
           <div>
             <h2>
@@ -346,7 +345,7 @@ onMounted(() => {
         <div class="applicant-type">
           <div>
             <img :src="volunteer_icon" alt="volunteer" class="icon" />
-            <h1><span class="highlight">VOLUNTEERS</span><br /></h1>
+            <h1><span class="highlight">VOLUNTEERS</span></h1>
           </div>
           <div>
             <h2>
@@ -369,7 +368,7 @@ onMounted(() => {
         <div class="applicant-type">
           <div>
             <img :src="workshop_icon" alt="workshop" class="icon" />
-            <h1><span class="highlight">WORKSHOPS</span><br /></h1>
+            <h1><span class="highlight">WORKSHOPS</span></h1>
           </div>
           <div>
             <h2>
@@ -394,7 +393,7 @@ onMounted(() => {
               class="icon"
               style="scale: 1.3; transform: translateY(-5px)"
             />
-            <h1><span class="highlight">ART INSTALLATIONS</span><br /></h1>
+            <h1><span class="highlight">ART INSTALLATIONS</span></h1>
           </div>
           <div>
             <h2>
@@ -785,7 +784,7 @@ onMounted(() => {
             ></textarea>
           </div>
           <div class="form-section">
-            <label for="space_requirements">Space Requirements:</label>
+            <label for="space_requirements">Requirements:</label>
             <textarea
               id="physical_space_requirements"
               v-model="form.space_requirements"

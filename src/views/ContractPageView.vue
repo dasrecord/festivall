@@ -16,7 +16,7 @@
       <strong>{{ applicant.fullname }}</strong
       >, with an address of
       <strong
-        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.region }},
+        >{{ applicant.street_address }}, {{ applicant.city }}, {{ applicant.province }},
         {{ applicant.country }}, {{ applicant.postal_code }}</strong
       >, (the "{{ applicant.applicant_types.join(' and ').toUpperCase() }}"), also individually
       referred to as (the “Party”) and collectively, (the “Parties). The REUNION FESTIVAL wishes to
@@ -41,8 +41,7 @@
       Event Date
     </p>
     <p v-if="applicant.applicant_types.includes('Volunteer')">
-      <strong>Minimum shifts for VOLUNTEER Services:</strong><br />
-      Minimum Shifts by Team:<br />
+      <strong>Minimum shifts for VOLUNTEER Services by Team:</strong><br />
       Front Gate: [Three 2-Hour Shifts Per Weekend]<br />
       Food Team: [Two 4-Hour Shifts Per Weekend]<br />
       Setup Crew: [One 8-Hour Shift PreShow]<br />
@@ -58,7 +57,7 @@
     </p>
     <p v-if="applicant.applicant_types.includes('Art Installation')">
       <strong>Event Hours for ART INSTALLATION Services:</strong>
-      Art installation operational during Event Hours<br />
+      Art installation operational during Event Date<br />
       <strong>Installation Title:</strong> {{ applicant.installation_title }}<br />
       <strong>Fixture Type:</strong> {{ applicant.fixture_type }}
     </p>
@@ -69,24 +68,22 @@
     <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
     <p><strong>Compensation for Services:</strong></p>
-    <ul v-if="applicant.applicant_types.includes('Artist')">
-      <li>One complementary weekend pass for ARTIST</li>
-      <li>One complementary weekend pass for GUEST</li>
-      <li>
-        $20 Referral bonus for every weekend pass sold using the ID_CODE:
-        <strong>{{ applicant.id_code }}</strong>
+    <ul>
+      <li v-if="applicant.applicant_types.includes('Artist')">
+        One complementary weekend pass for ARTIST
       </li>
-    </ul>
-    <ul v-if="applicant.applicant_types.includes('Volunteer')">
-      <li>One complementary weekend pass for VOLUNTEER</li>
-      <li>One complementary meal package for each festival day worked</li>
-      <li>
-        $20 Referral bonus for every weekend pass sold using the ID_CODE:
-        <strong>{{ applicant.id_code }}</strong>
+      <li v-if="applicant.applicant_types.includes('Artist')">
+        One complementary weekend pass for GUEST
       </li>
-    </ul>
-    <ul v-if="applicant.applicant_types.includes('Workshop')">
-      <li>One complementary weekend pass for WORKSHOP</li>
+      <li v-if="applicant.applicant_types.includes('Volunteer')">
+        One complementary weekend pass for VOLUNTEER
+      </li>
+      <li v-if="applicant.applicant_types.includes('Volunteer')">
+        One complementary meal package for each festival day worked
+      </li>
+      <li v-if="applicant.applicant_types.includes('Workshop')">
+        One complementary weekend pass for WORKSHOP
+      </li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
@@ -130,16 +127,10 @@
     <ul v-if="applicant.applicant_types.includes('Art Installation')">
       ART INSTALLATION REQUIREMENTS
       <li><strong>Access to 120V power</strong></li>
-      <li><strong>Access to water</strong></li>
-      <li><strong>Access to walkie-talkie for team communications</strong></li>
-      <li><strong>Access to shade</strong></li>
     </ul>
     <ul v-if="applicant.applicant_types.includes('Vendor')">
       VENDOR REQUIREMENTS
       <li><strong>Access to 120V power</strong></li>
-      <li><strong>Access to water</strong></li>
-      <li><strong>Access to walkie-talkie for team communications</strong></li>
-      <li><strong>Access to shade</strong></li>
     </ul>
 
     <h3>4. CANCELLATION</h3>
@@ -153,11 +144,11 @@
     <p>
       By {{ applicant.applicant_types.join(' and ').toUpperCase() }}. The
       {{ applicant.applicant_types.join(' and ').toUpperCase() }} may cancel this Agreement at any
-      time. If the {{ applicant.applicant_types.join(' and ').toUpperCase() }} cancels, it must provide
-      a suitable, replacement {{ applicant.applicant_types.join(' and ').toUpperCase() }}, subject to
-      the REUNION FESTIVAL's approval, which shall be obtained in writing. In the alternative, the
-      {{ applicant.applicant_types.join(' and ').toUpperCase() }} shall refund all monies previously
-      paid by the REUNION FESTIVAL.
+      time. If the {{ applicant.applicant_types.join(' and ').toUpperCase() }} cancels, it must
+      provide a suitable, replacement {{ applicant.applicant_types.join(' and ').toUpperCase() }},
+      subject to the REUNION FESTIVAL's approval, which shall be obtained in writing. In the
+      alternative, the {{ applicant.applicant_types.join(' and ').toUpperCase() }} shall refund all
+      monies previously paid by the REUNION FESTIVAL.
     </p>
     <ul>
       <li>
