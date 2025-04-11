@@ -123,14 +123,22 @@
       <li>
         <strong>Access to stage management or available DJ to play music</strong>
       </li>
+      <li>
+        <strong>{{ applicant.workshop_requirements }}</strong>
+      </li>
     </ul>
     <ul v-if="applicant.applicant_types.includes('Art Installation')">
       ART INSTALLATION REQUIREMENTS
-      <li><strong>Access to 120V power</strong></li>
+      <li>
+        <strong>{{ applicant.other_requirements }}</strong>
+      </li>
     </ul>
     <ul v-if="applicant.applicant_types.includes('Vendor')">
       VENDOR REQUIREMENTS
-      <li><strong>Access to 120V power</strong></li>
+
+      <li>
+        <strong>{{ applicant.vendor_requirements }}</strong>
+      </li>
     </ul>
 
     <h3>4. CANCELLATION</h3>
