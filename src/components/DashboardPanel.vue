@@ -77,7 +77,7 @@
                   target="_blank"
                   style="text-decoration: underline"
                 >
-                  {{ applicant.act_name || applicant.full_name }}
+                  {{ applicant.act_name || applicant.fullname }}
                 </a>
                 <!-- EMAIL PREFIX FALL BACK -->
                 <span v-else style="text-decoration: underline">
@@ -85,7 +85,7 @@
                 </span>
               </h2>
               <!-- ID CODE -->
-              <p v-if="applicant.id_code" class="id_code">{{ applicant.id_code }}</p>
+              <p v-if="applicant.id_code" class="id_code">#{{ applicant.id_code }}</p>
               <!-- ACT TYPE -->
               <p v-if="applicant.applicant_types && applicant.applicant_types.length">
                 {{ applicant.applicant_types.join(', ') }}
