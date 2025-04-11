@@ -72,7 +72,7 @@
               <h2>
                 <!-- ACT NAME OR FULLNAME -->
                 <a
-                  v-if="applicant.url"
+                  v-if="applicant.url || applicant.act_website"
                   :href="applicant.url"
                   target="_blank"
                   style="text-decoration: underline"
@@ -110,7 +110,13 @@
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
           </div>
           <!-- TICKET DATA -->
-          <div v-if="applicant.payment_type" class="ticket-content">
+          <div
+            v-if="
+              (applicant.payment_type === 'inkind' && applicant.contract_signed === true) ||
+              (applicant.payment_type !== 'inkind' && applicant.paid === true)
+            "
+            class="ticket-content"
+          >
             <div class="payment-section">
               <!-- PAID STATUS -->
               Payment Status:
@@ -143,7 +149,7 @@
                 <p><strong>Ticket Quantity:</strong>&nbsp;{{ applicant.ticket_quantity }}</p>
                 <div class="tickets">
                   <img
-                    v-for="n in Number(applicant.ticket_quantity)"
+                    v-for="n in Number(applicant.ticket_quantity) || 0"
                     :key="n"
                     :src="ticket_icon"
                     style="width: 32px; transform: rotate(-45deg)"
@@ -157,7 +163,7 @@
                 <p><strong>Meal Tickets:</strong>&nbsp;{{ applicant.meal_tickets_remaining }}</p>
                 <div class="meals">
                   <img
-                    v-for="n in Number(applicant.meal_tickets_remaining)"
+                    v-for="n in Number(applicant.meal_tickets_remaining) || 0"
                     :key="n"
                     :src="meal_icon"
                     style="width: 32px"
@@ -200,7 +206,7 @@
             </div>
           </div>
           <!-- DASHBOARD ACTIONS-->
-          <div v-if="applicant.payment_type !== 'inkind'" class="actions">
+          <div v-if="applicant.payment_type === 'inkind'" class="actions">
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
             </a>
