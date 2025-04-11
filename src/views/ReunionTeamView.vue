@@ -13,7 +13,7 @@ import flame_icon from '@/assets/images/icons/flame.png'
 import Prasenjit from '@/assets/images/reunion_team/Prasenjit.jpg'
 import devops_icon from '@/assets/images/icons/devops.png'
 
-import Corey from '@/assets/images/reunion_team/Corey.jpg'
+import Cory from '@/assets/images/reunion_team/Cory.jpg'
 import headphones_icon from '@/assets/images/icons/headphones.png'
 
 import Janicka from '@/assets/images/reunion_team/Janicka.jpg'
@@ -68,7 +68,7 @@ export default {
       flame_icon,
       Prasenjit,
       devops_icon,
-      Corey,
+      Cory,
       headphones_icon,
       Janicka,
       community_icon,
@@ -298,15 +298,15 @@ export default {
       </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
-          <img :src="Corey" alt="Corey" />
+          <img :src="Cory" alt="Cory" />
         </template>
         <template v-slot:name>
-          <h2>Corey</h2>
+          <h2>Cory</h2>
         </template>
         <template v-slot:role>
           <h3>Artist Changeovers</h3>
           <p>
-            As a DJ himself, Corey understands the importance of timing and flow, making him the
+            As a DJ himself, Cory understands the importance of timing and flow, making him the
             perfect fit for this role.
           </p></template
         >
