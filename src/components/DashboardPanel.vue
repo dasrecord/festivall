@@ -113,7 +113,7 @@
           <div
             v-if="
               (applicant.payment_type === 'inkind' && applicant.contract_signed === true) ||
-              (applicant.payment_type !== 'inkind' && applicant.paid === true)
+              applicant.payment_type !== 'inkind'
             "
             class="ticket-content"
           >

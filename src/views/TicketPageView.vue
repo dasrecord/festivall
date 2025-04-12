@@ -107,8 +107,8 @@
         </RouterLink>
         <div
           v-if="
-            (order.applicant_types.includes('Artist') ||
-              order.applicant_types.includes('Workshop')) &&
+            (order.applicant_types?.includes('Artist') ||
+              order.applicant_types?.includes('Workshop')) &&
             order.settime
           "
           style="grid-column: span 2; cursor: pointer"
@@ -116,9 +116,9 @@
         >
           <p style="text-align: center; text-decoration: underline">
             <img
-              :src="order.applicant_types.includes('Artist') ? dj_icon : workshop_icon"
+              :src="order.applicant_types?.includes('Artist') ? dj_icon : workshop_icon"
               style="height: auto; width: 36px"
-              :alt="order.applicant_types.includes('Artist') ? 'Artist Icon' : 'Workshop Icon'"
+              :alt="order.applicant_types?.includes('Artist') ? 'Artist Icon' : 'Workshop Icon'"
             />
             Your Set Time:
             {{
