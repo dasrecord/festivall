@@ -93,6 +93,19 @@
           {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
         </span>
       </p>
+      <p
+        v-if="referralEarnings > 0"
+        style="
+          justify-content: center;
+          background-color: black;
+          color: white;
+          padding: 0.5rem;
+          border-radius: 5px;
+        "
+      >
+        <strong>Referral Earnings:</strong>
+        <span>${{ referralEarnings }}</span>
+      </p>
       <div class="links">
         <RouterLink
           v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
@@ -222,6 +235,27 @@ export default {
     const router = useRouter()
     const order = ref(null)
     const qrCanvas = ref(null)
+    const referralEarnings = ref(0) // Initialize referral earnings
+
+    const calculateReferralEarnings = async (id_code) => {
+      try {
+        const q = query(
+          collection(reunion_db, 'orders_2025'),
+          where('referral_id_code', '==', id_code),
+          where('ticket_type', '==', 'Weekend Pass')
+        )
+        const querySnapshot = await getDocs(q)
+
+        let totalEarnings = 0
+        querySnapshot.forEach(() => {
+          totalEarnings += 20
+        })
+
+        referralEarnings.value = totalEarnings // Update the reactive variable
+      } catch (error) {
+        console.error('Error calculating referral earnings:', error)
+      }
+    }
 
     const loadOrder = async (id_code) => {
       try {
@@ -229,16 +263,22 @@ export default {
           throw new Error('ID code is undefined')
         }
 
-        // Check if the order is found in the orders_2025 collection
+        console.log('ID Code in loadOrder:', id_code) // Log the ID code being used
+
+        // Query the orders collection
         const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
+          console.log('Loaded Order:', order.value) // Log the loaded order
           await nextTick() // Wait for the DOM to update
 
-          // generateQRCode(order.value.id_code) // Use short id_code for QR code generation
-          generateQRCode(order.value.id_code_long) // Use long id_code for QR code generation
+          // Generate QR code
+          generateQRCode(order.value.id_code_long)
+
+          // Calculate referral earnings
+          await calculateReferralEarnings(order.value.id_code) // Call the function here
         } else {
           console.error('No such document!')
           alert('No order found with this ID code. Please check your ID code and try again.')
@@ -312,8 +352,10 @@ export default {
 
     onMounted(() => {
       const id_code = route.params.id_code
+      referralEarnings.value = 20
       if (id_code) {
         loadOrder(id_code)
+        console.log(referralEarnings.value)
       } else {
         console.error('ID code is missing from route parameters')
         router.push({ name: 'EnterIDCode' })
@@ -326,6 +368,8 @@ export default {
       poster_footer,
       order,
       qrCanvas,
+      referralEarnings,
+      calculateReferralEarnings,
       downloadSettime,
       ticket_icon,
       meals_icon,
