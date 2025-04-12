@@ -63,49 +63,50 @@
           </div>
         </div>
       </div>
-
-      <p
-        v-if="order && typeof order === 'object'"
-        style="
-          justify-content: center;
-          background-color: black;
-          color: white;
-          padding: 0.5rem;
-          border-radius: 5px;
-        "
-      >
-        <strong>Payment Status:</strong>
-        <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
-          {{ order.paid ? 'Paid' : 'Not Paid' }}
-        </span>
-      </p>
-      <p
-        style="
-          justify-content: center;
-          background-color: black;
-          color: white;
-          padding: 0.5rem;
-          border-radius: 5px;
-        "
-      >
-        <strong>Status:</strong>
-        <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
-          {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
-        </span>
-      </p>
-      <p
-        v-if="referralEarnings > 0"
-        style="
-          justify-content: center;
-          background-color: black;
-          color: white;
-          padding: 0.5rem;
-          border-radius: 5px;
-        "
-      >
-        <strong>Referral Earnings:</strong>
-        <span>${{ referralEarnings }}</span>
-      </p>
+      <div class="status-bar">
+        <p
+          v-if="order && typeof order === 'object'"
+          style="
+            justify-content: center;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+          "
+        >
+          <strong>Payment Status:</strong>
+          <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
+            {{ order.paid ? 'Paid' : 'Not Paid' }}
+          </span>
+        </p>
+        <p
+          style="
+            justify-content: center;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+          "
+        >
+          <strong>Status:</strong>
+          <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
+            {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
+          </span>
+        </p>
+        <p
+          v-if="referralEarnings > 0"
+          style="
+            justify-content: center;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+          "
+        >
+          <strong>Referral Earnings:</strong>
+          <span>${{ referralEarnings }}</span>
+        </p>
+      </div>
       <div class="links">
         <RouterLink
           v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
@@ -239,16 +240,17 @@ export default {
 
     const calculateReferralEarnings = async (id_code) => {
       try {
-        const q = query(
+        const referralQuery = query(
           collection(reunion_db, 'orders_2025'),
-          where('referral_id_code', '==', id_code),
-          where('ticket_type', '==', 'Weekend Pass')
+          where('referral_id_code', '==', id_code)
         )
-        const querySnapshot = await getDocs(q)
+
+        const referralSnapshot = await getDocs(referralQuery)
 
         let totalEarnings = 0
-        querySnapshot.forEach(() => {
-          totalEarnings += 20
+        referralSnapshot.forEach((doc) => {
+          const ticketType = doc.data().ticket_type
+          totalEarnings += ticketType === 'Weekend Pass' ? 20 : ticketType === 'Day Pass' ? 10 : 0
         })
 
         referralEarnings.value = totalEarnings // Update the reactive variable
@@ -263,22 +265,19 @@ export default {
           throw new Error('ID code is undefined')
         }
 
-        console.log('ID Code in loadOrder:', id_code) // Log the ID code being used
-
         // Query the orders collection
         const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
-          console.log('Loaded Order:', order.value) // Log the loaded order
-          await nextTick() // Wait for the DOM to update
+          await nextTick()
 
           // Generate QR code
           generateQRCode(order.value.id_code_long)
 
           // Calculate referral earnings
-          await calculateReferralEarnings(order.value.id_code) // Call the function here
+          await calculateReferralEarnings(order.value.id_code)
         } else {
           console.error('No such document!')
           alert('No order found with this ID code. Please check your ID code and try again.')
@@ -355,9 +354,7 @@ export default {
       referralEarnings.value = 20
       if (id_code) {
         loadOrder(id_code)
-        console.log(referralEarnings.value)
       } else {
-        console.error('ID code is missing from route parameters')
         router.push({ name: 'EnterIDCode' })
       }
     })
