@@ -94,11 +94,16 @@ const calculateTotalPrice = () => {
   } else if (form.value.ticket_type === 'Day Pass') {
     ticketPrice = 80
   }
+
+  // Calculate total fiat price
   let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * 20
+
   if (form.value.payment_type === 'bitcoin') {
     totalPrice *= 0.75 // Apply 25% discount
+    form.value.total_price = (totalPrice / btcRate.value).toFixed(8) // Store Bitcoin price
+  } else {
+    form.value.total_price = totalPrice // Store fiat price
   }
-  form.value.total_price = totalPrice
 }
 
 const generatePaymentInstructions = () => {
@@ -155,7 +160,11 @@ const addOrder = async () => {
   try {
     await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), {
       ...form.value,
-      referral_id_code: form.value.referral_id_code || null // Include referral ID_CODE
+      referral_id_code: form.value.referral_id_code || null, // Include referral ID_CODE
+      total_price:
+        form.value.payment_type === 'bitcoin'
+          ? parseFloat(form.value.total_price) // Store Bitcoin price as a number
+          : form.value.total_price // Store fiat price
     })
     console.log('Document successfully written!')
   } catch (error) {
@@ -179,9 +188,9 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_sales',
       {
-        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:label: ${form.value.referral_id_code || 'None'}\n${
+        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:id: ${form.value.id_code}\n:label: ${form.value.referral_id_code || 'None'}\n${
           form.value.payment_type === 'etransfer'
-            ? ':currency_exchange: $' + form.value.total_price
+            ? ':moneybag: $' + form.value.total_price
             : ':bitcoin: ' + (form.value.total_price / btcRate.value).toFixed(8) + ' BTC'
         }`
       },
@@ -222,19 +231,19 @@ onMounted(() => {
   fetchBtcRate()
   if (import.meta.env.MODE === 'development') {
     form.value = {
-      id_code_long: '1b3d5' + uuidv4().slice(5),
-      id_code: '1b3d5',
-      referral_id_code: 'a2c4e',
-      fullname: 'Prasenjit Das',
+      id_code_long: 'a2c4e' + uuidv4().slice(5),
+      id_code: 'a2c4e',
+      referral_id_code: '1b3d5',
+      fullname: 'Second Ticket',
       email: 'dasrecord@protonmail.com',
       phone: '(306)491-6040',
-      ticket_type: 'Weekend Pass',
-      ticket_quantity: 2,
-      selected_day: '',
-      meal_packages: 1,
-      meal_tickets_remaining: 2,
-      payment_type: 'etransfer',
-      total_price: 300,
+      ticket_type: 'Day Pass',
+      ticket_quantity: 1,
+      selected_day: 'Saturday, August 30th, 2025',
+      meal_packages: 0,
+      meal_tickets_remaining: 0,
+      payment_type: 'bitcoin',
+      total_price: 0.00051006,
       paid: false,
       checked_in: false
     }
