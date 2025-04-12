@@ -7,6 +7,7 @@ import footer from '@/assets/images/poster_footer_v1.png'
 import bitcoin_icon from '../assets/images/bitcoin.svg'
 
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
 import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
@@ -35,6 +36,8 @@ const meals_image = ref(meals)
 
 const btcRate = ref(0)
 const paymentInstructions = ref('')
+
+const route = useRoute()
 
 const validateReferralID = async (referral_id_code) => {
   try {
@@ -229,24 +232,31 @@ const submitForm = async () => {
 
 onMounted(() => {
   fetchBtcRate()
-  if (import.meta.env.MODE === 'development') {
-    form.value = {
-      id_code_long: 'a2c4e' + uuidv4().slice(5),
-      id_code: 'a2c4e',
-      referral_id_code: '1b3d5',
-      fullname: 'Second Ticket',
-      email: 'dasrecord@protonmail.com',
-      phone: '(306)491-6040',
-      ticket_type: 'Day Pass',
-      ticket_quantity: 1,
-      selected_day: 'Saturday, August 30th, 2025',
-      meal_packages: 0,
-      meal_tickets_remaining: 0,
-      payment_type: 'bitcoin',
-      total_price: 0.00051006,
-      paid: false,
-      checked_in: false
-    }
+  // if (import.meta.env.MODE === 'development') {
+  //   form.value = {
+  //     id_code_long: 'a2c4e' + uuidv4().slice(5),
+  //     id_code: 'a2c4e',
+  //     referral_id_code: '1b3d5',
+  //     fullname: 'Second Ticket',
+  //     email: 'dasrecord@protonmail.com',
+  //     phone: '(306)491-6040',
+  //     ticket_type: 'Day Pass',
+  //     ticket_quantity: 1,
+  //     selected_day: 'Saturday, August 30th, 2025',
+  //     meal_packages: 0,
+  //     meal_tickets_remaining: 0,
+  //     payment_type: 'bitcoin',
+  //     total_price: 0.00051006,
+  //     paid: false,
+  //     checked_in: false
+  //   }
+  // }
+  const id_code = route.params.id_code
+  if (id_code) {
+    form.value.referral_id_code = id_code
+    console.log('Prefilled referral_id_code:', id_code)
+  } else {
+    console.log('No referral ID_CODE provided in the URL.')
   }
 })
 </script>

@@ -18,7 +18,7 @@
     <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
 
     <h2>Your Digital Ticket<br /></h2>
-    <h2>#{{ order.id_code }}</h2>
+
     <div class="order-info">
       <p>
         <strong>Full Name:</strong> {{ order.fullname }}
@@ -94,6 +94,7 @@
           </span>
         </p>
         <p
+          @click="showReferralModal = true"
           v-if="referralEarnings > 0"
           style="
             justify-content: center;
@@ -107,6 +108,25 @@
           <span>${{ referralEarnings }}</span>
         </p>
       </div>
+
+      <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
+        <div class="modal-content">
+          <h2>Referral Earnings</h2>
+          <p>
+            You have earned ${{ referralEarnings }} so far from your referrals!<br />
+            Share your referral link with friends and family to earn more!
+          </p>
+
+          <p>Your referral link is:</p>
+          <h3>
+            <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
+              >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }}
+            </a>
+          </h3>
+          <button @click="showReferralModal = false">Close</button>
+        </div>
+      </div>
+
       <div class="links">
         <RouterLink
           v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
@@ -236,7 +256,8 @@ export default {
     const router = useRouter()
     const order = ref(null)
     const qrCanvas = ref(null)
-    const referralEarnings = ref(0) // Initialize referral earnings
+    const referralEarnings = ref(0)
+    const showReferralModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -367,6 +388,7 @@ export default {
       qrCanvas,
       referralEarnings,
       calculateReferralEarnings,
+      showReferralModal,
       downloadSettime,
       ticket_icon,
       meals_icon,
@@ -419,7 +441,8 @@ strong {
 }
 
 h1,
-h2 {
+h2,
+a {
   color: var(--reunion-frog-green);
   text-align: center;
   font-weight: bold;
@@ -528,5 +551,41 @@ a:hover {
 .not-checked-in {
   color: yellow;
   font-weight: bold;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  align-items: center;
+  z-index: 10;
+}
+.modal-content {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  place-content: center;
+  text-align: center;
+  color: white;
+}
+
+button {
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  border-radius: 25px;
+  padding: 1rem;
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
+  position: relative;
+  background-color: var(--q-color-primary);
+  color: white;
 }
 </style>

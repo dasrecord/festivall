@@ -276,6 +276,11 @@ const routes = [
     component: ReunionTicketsView
   },
   {
+    path: '/reuniontickets/:id_code',
+    name: 'reuniontickets-id',
+    component: ReunionTicketsView
+  },
+  {
     path: '/reunionticketscanner',
     name: 'reunionticketscanner',
     component: TicketScanner,
