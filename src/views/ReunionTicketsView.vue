@@ -240,13 +240,13 @@ onMounted(() => {
   //     fullname: 'Second Ticket',
   //     email: 'dasrecord@protonmail.com',
   //     phone: '(306)491-6040',
-  //     ticket_type: 'Day Pass',
+  //     ticket_type: 'Weekend Pass',
   //     ticket_quantity: 1,
   //     selected_day: 'Saturday, August 30th, 2025',
   //     meal_packages: 0,
   //     meal_tickets_remaining: 0,
   //     payment_type: 'bitcoin',
-  //     total_price: 0.00051006,
+  //     total_price: calculateTotalPrice(),
   //     paid: false,
   //     checked_in: false
   //   }
@@ -450,14 +450,16 @@ onMounted(() => {
         <div class="total">
           <div v-if="form.payment_type === 'etransfer'">
             Total Fiat Price: ${{ form.total_price }} CAD<br />
-            <span v-if="form.payment_type === 'etransfer'">
+            <span v-if="form.payment_type === 'etransfer'" class="bitcoin">
               (You could save ${{ (form.total_price * 0.25).toFixed(2) }} CAD by paying with
-              Bitcoin!)
+              Bitcoin)
+              <br />
+              <a class="highlight" href="https://festivall.ca/bitcoinmeetup">Click here</a> to book
+              a free workshop with us.
             </span>
           </div>
           <div v-else-if="form.payment_type === 'bitcoin'">
-            Total Price: {{ (form.total_price / btcRate).toFixed(8) }} BTC<br />
-            (25% Discount Applied)
+            Total Price: {{ form.total_price }} BTC (25% Discount Applied)
           </div>
         </div>
         <button type="submit">CONFIRM</button>
