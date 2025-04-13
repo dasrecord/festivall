@@ -33,8 +33,12 @@
             checking in or out.
           </p>
           <br />
-          <p>4. If the status is "Unpaid" collect the Total Price in cash.</p>
+          <p>
+            4. If the status is "Unpaid" collect the Total Price in cash. A $10/ticket fee will be
+            added for unpaid orders.
+          </p>
           <br />
+
           <p>5. Please radio the admin team if there are any issues.</p>
           <br />
         </div>
@@ -64,8 +68,34 @@
             >Valid starting 12:00 PM {{ matchingOrder.selected_day }} for 24 Hours<br
           /></span>
           Total Price:
-          <span v-if="matchingOrder.currency === 'BTC'"> {{ matchingOrder.total_price }} BTC </span>
-          <span v-else> ${{ matchingOrder.total_price }} CAD </span>
+          <span v-if="matchingOrder.paid">
+            <span v-if="matchingOrder.currency === 'BTC'">
+              {{ matchingOrder.total_price }} BTC
+            </span>
+            <span v-else> ${{ matchingOrder.total_price }} CAD </span>
+          </span>
+          <span v-else style="color: red">
+            <span v-if="matchingOrder.currency === 'BTC'">
+              {{
+                (
+                  parseFloat(matchingOrder.total_price) +
+                  matchingOrder.ticket_quantity * 10
+                ).toFixed(2)
+              }}
+              BTC
+            </span>
+
+            <span v-else>
+              ${{
+                (
+                  parseFloat(matchingOrder.total_price) +
+                  matchingOrder.ticket_quantity * 10
+                ).toFixed(2)
+              }}
+              CAD </span
+            ><br />
+            $10/ticket fee added for unpaid orders
+          </span>
           <br />
         </p>
       </div>
