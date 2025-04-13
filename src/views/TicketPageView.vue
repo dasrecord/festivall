@@ -51,6 +51,7 @@
             />
           </div>
         </div>
+
         <div class="quantity">
           <p><strong>Meal Tickets:</strong>{{ order.meal_tickets_remaining }}</p>
           <div class="icons">
@@ -138,7 +139,7 @@
           ><br />
 
           <h3 v-if="order.paid === false">
-            <strong>Payment Instructions:</strong>
+            <strong style="text-decoration: underline">Payment Instructions:</strong>
             <br />
             To complete your payment, please send <strong>${{ order.total_price }}</strong> to the
             following email address:
@@ -149,7 +150,7 @@
             <br />
             <strong>{{ order.id_code }}</strong>
             <br /><br />
-            <strong>Additional Information:</strong>
+            <strong style="text-decoration: underline">Additional Information:</strong>
             <br />
             We only accept cash and bitcoin at the Front Gate
             <br />
@@ -187,13 +188,13 @@
             {{ order.checked_in ? 'Checked In' : 'Not Checked In' }} </span
           ><br />
           <h3 v-if="order.checked_in === false">
-            <strong>Check-In Instructions:</strong>
+            <strong style="text-decoration: underline">Check-In Instructions:</strong>
             <br />
             Present your QR code at the Front Gate along with a valid form of identification.<br />
             Your {{ order.ticket_quantity }} tickets will be scanned at the gate.<br />
 
             Last-minute door sales will be subject to an additional $10 fee per ticket.<br /><br />
-            <strong>Additional Information:</strong>
+            <strong style="text-decoration: underline">Additional Information:</strong>
             <br />
             The Front Gate will close at 2:00 AM each night.<br />
             Please try to arrive before then.<br />
@@ -201,11 +202,11 @@
             Please keep all adult materials out of sight and reach of minors.<br /><br />
           </h3>
           <h3 v-else>
-            <strong> Check-Out Instructions:</strong>
+            <strong style="text-decoration: underline"> Check-Out Instructions:</strong>
             <br />
             Please present your QR code at the Front Gate on your way out.<br />
             This will help us keep track of how many people are still on the grounds.<br /><br />
-            <strong>Additional Information:</strong>
+            <strong style="text-decoration: underline">Additional Information:</strong>
             <br />
             The Front Gate will close at 2 AM on each night.<br />
             Please try to check out before then.<br />
@@ -218,7 +219,7 @@
           <h3
             v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
           >
-            <strong> Artists and Workshops:</strong><br />
+            <strong style="text-decoration: underline"> Artists and Workshops:</strong><br />
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
             Once you're oriented, please take your vehicle to your campsite allowing others to load
@@ -244,15 +245,18 @@
           />
           <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
           <h2>Referral Earnings</h2>
+          <strong> #{{ order.id_code }} </strong>
           <strong>${{ referralEarnings }}</strong
           ><br />
           <h3>
-            Share your referral link with friends and family to earn more.<br />
+            <strong style="text-decoration: underline">Referral Instructions:</strong><br />
+            You can share your Festivall ID_CODE or your referral link with your friends and
+            family.<br />
             Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
-            Your referral link is:
           </h3>
 
           <h3>
+            <strong style="text-decoration: underline"> Your referral link is: </strong>
             <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }}
             </a>
@@ -629,7 +633,6 @@ a {
 .quantity {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
   width: 100%;
   border: 1px solid var(--reunion-frog-green);
