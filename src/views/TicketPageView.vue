@@ -1,6 +1,6 @@
 <template>
   <div class="ticket-page" v-if="order">
-    <img :src="festivall_emblem" style="height: 50px; width: 75px" alt="Festivall Emblem" />
+    <img :src="festivall_emblem_black" style="height: 50px; width: 75px" alt="Festivall Emblem" />
 
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
@@ -66,13 +66,14 @@
       </div>
       <div class="status-bar">
         <p
-          v-if="order && typeof order === 'object'"
+          @click="showPaymentModal = true"
           style="
             justify-content: center;
             background-color: black;
             color: white;
             padding: 0.5rem;
             border-radius: 5px;
+            cursor: pointer;
           "
         >
           <img
@@ -86,12 +87,14 @@
           </span>
         </p>
         <p
+          @click="showCheckInModal = true"
           style="
             justify-content: center;
             background-color: black;
             color: white;
             padding: 0.5rem;
             border-radius: 5px;
+            cursor: pointer;
           "
         >
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
@@ -117,14 +120,135 @@
         </p>
       </div>
 
+      <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="payment_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="Payment Icon"
+          />
+          <h2>Payment Status</h2>
+          <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
+            {{ order.paid ? 'Paid' : 'Not Paid' }} </span
+          ><br />
+
+          <h3 v-if="order.paid === false">
+            <strong>Payment Instructions:</strong>
+            <br />
+            To complete your payment, please send <strong>${{ order.total_price }}</strong> to the
+            following email address:
+            <br />
+            <strong>humanoidtwo@gmail.com</strong>
+            <br />
+            Make sure to include the following code in the message section:
+            <br />
+            <strong>{{ order.id_code }}</strong>
+            <br /><br />
+            <strong>Additional Information:</strong>
+            <br />
+            We only accept cash and bitcoin at the Front Gate
+            <br />
+            If you are paying with cash, please bring the exact amount.
+            <br />
+            If you are paying with bitcoin, please send the payment to the address provided in the
+            <strong>Payment Instructions</strong> section above.
+          </h3>
+          <h3 v-else>Thank you so much for supporting Reunion Festival.<br /></h3>
+          <h3>
+            If you have any issues with your payment, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline">
+              reunion@festivall.ca</a
+            >
+          </h3>
+
+          <button @click="showPaymentModal = false">Close</button>
+        </div>
+      </div>
+
+      <div v-if="showCheckInModal" class="modal" @click.self="showCheckInModal = false">
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="status_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="Check-In Icon"
+          />
+          <h2>Check-In Status:</h2>
+          <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
+            {{ order.checked_in ? 'Checked In' : 'Not Checked In' }} </span
+          ><br />
+          <h3 v-if="order.checked_in === false">
+            <strong>Check-In Instructions:</strong>
+            <br />
+            Present your QR code at the Front Gate along with a valid form of identification.<br />
+            Your {{ order.ticket_quantity }} tickets will be scanned at the gate.<br />
+
+            Last-minute door sales will be subject to an additional $10 fee per ticket.<br /><br />
+            <strong>Additional Information:</strong>
+            <br />
+            The Front Gate will close at 2:00 AM each night.<br />
+            Please try to arrive before then.<br />
+            With respected to substances, we have a No Open Use Policy.<br />
+            Please keep all adult materials out of sight and reach of minors.<br /><br />
+          </h3>
+          <h3 v-else>
+            <strong> Check-Out Instructions:</strong>
+            <br />
+            Please present your QR code at the Front Gate on your way out.<br />
+            This will help us keep track of how many people are still on the grounds.<br /><br />
+            <strong>Additional Information:</strong>
+            <br />
+            The Front Gate will close at 2 AM on each night.<br />
+            Please try to check out before then.<br />
+            If you are leaving the grounds, please make sure to take all of your belongings with
+            you.<br />
+            We are not responsible for any lost or stolen items.<br />
+            <br />
+          </h3>
+
+          <h3
+            v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
+          >
+            <strong> Artists and Workshops:</strong><br />
+            After checking in, please proceed to the Artist Loading Zone to drop off your gear and
+            introduce yourself to the Stage Crew.<br />
+            Once you're oriented, please take your vehicle to your campsite allowing others to load
+            in.<br />
+          </h3>
+
+          <h3>
+            If you have any questions or concerns, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline">
+              reunion@festivall.ca
+            </a>
+          </h3>
+          <button @click="showCheckInModal = false">Close</button>
+        </div>
+      </div>
+
       <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
         <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
           <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
           <h2>Referral Earnings</h2>
+          <strong>${{ referralEarnings }}</strong
+          ><br />
           <h3>
-            You have earned ${{ referralEarnings }} so far from your referrals.<br />
             Share your referral link with friends and family to earn more.<br />
-            Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br />
+            Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
             Your referral link is:
           </h3>
 
@@ -242,7 +366,8 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import QRCode from 'qrcode'
 import frog_image from '@/assets/images/frog.png'
-import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
+import festivall_emblem_black from '@/assets/images/festivall_emblem_black.png'
+import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
@@ -271,6 +396,9 @@ export default {
     const order = ref(null)
     const qrCanvas = ref(null)
     const referralEarnings = ref(0)
+
+    const showPaymentModal = ref(false)
+    const showCheckInModal = ref(false)
     const showReferralModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
@@ -396,12 +524,15 @@ export default {
 
     return {
       frog_image,
-      festivall_emblem,
+      festivall_emblem_white,
+      festivall_emblem_black,
       poster_footer,
       order,
       qrCanvas,
       referralEarnings,
       calculateReferralEarnings,
+      showPaymentModal,
+      showCheckInModal,
       showReferralModal,
       downloadSettime,
       ticket_icon,
@@ -580,20 +711,22 @@ a:hover {
   display: flex;
   flex-direction: column;
   justify-content: baseline;
-  align-items: center;
+  /* align-items: center; */
   z-index: 10;
 }
 .modal-content {
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  place-content: center;
+  place-content: start;
   text-align: center;
   color: white;
+  border: 1pc solid var(--reunion-frog-green);
+  border-radius: 0px;
 }
 
 .modal-content button {
@@ -606,5 +739,9 @@ a:hover {
   background-color: var(--q-color-primary);
   color: white;
   margin-top: 1rem;
+}
+
+.modal-content img {
+  margin: 0 0 0.5rem 0;
 }
 </style>
