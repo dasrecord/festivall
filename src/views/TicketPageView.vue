@@ -33,6 +33,7 @@
         <strong>Valid: </strong> 12:00 PM {{ order.selected_day }}
         for 24H
       </p>
+
       <div class="quantities">
         <div class="quantity">
           <p><strong>Admit:</strong>{{ order.ticket_quantity }}</p>
@@ -102,22 +103,25 @@
             color: white;
             padding: 0.5rem;
             border-radius: 5px;
+            cursor: pointer;
           "
         >
-          <strong>Referral Earnings:</strong>
-          <span>${{ referralEarnings }}</span>
+          <img :src="bonus_icon" style="height: 32px; width: auto; margin: 0" alt="Bonus Icon" />
+          <strong>Referral Earnings: ${{ referralEarnings }}</strong>
         </p>
       </div>
 
       <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
         <div class="modal-content">
+          <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
           <h2>Referral Earnings</h2>
-          <p>
-            You have earned ${{ referralEarnings }} so far from your referrals!<br />
-            Share your referral link with friends and family to earn more!
-          </p>
+          <h3>
+            You have earned ${{ referralEarnings }} so far from your referrals.<br />
+            Share your referral link with friends and family to earn more.<br />
+            Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br />
+            Your referral link is:
+          </h3>
 
-          <p>Your referral link is:</p>
           <h3>
             <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }}
@@ -236,6 +240,7 @@ import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
+import bonus_icon from '@/assets/images/icons/bonus.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import dj_icon from '@/assets/images/icons/dj.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
@@ -392,6 +397,7 @@ export default {
       downloadSettime,
       ticket_icon,
       meals_icon,
+      bonus_icon,
       volunteer_icon,
       workshop_icon,
       dj_icon,
@@ -579,7 +585,8 @@ a:hover {
   color: white;
 }
 
-button {
+.modal-content button {
+  width: 50%;
   border: 1px solid rgba(121, 188, 255, 0.25);
   border-radius: 25px;
   padding: 1rem;
@@ -587,5 +594,6 @@ button {
   position: relative;
   background-color: var(--q-color-primary);
   color: white;
+  margin-top: 1rem;
 }
 </style>
