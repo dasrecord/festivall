@@ -75,6 +75,11 @@
             border-radius: 5px;
           "
         >
+          <img
+            :src="payment_icon"
+            style="height: auto; width: 32px; margin: 0"
+            alt="Payment Icon"
+          />
           <strong>Payment Status:</strong>
           <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
             {{ order.paid ? 'Paid' : 'Not Paid' }}
@@ -89,6 +94,7 @@
             border-radius: 5px;
           "
         >
+          <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
           <strong>Status:</strong>
           <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
             {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
@@ -240,6 +246,9 @@ import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
+import payment_icon from '@/assets/images/icons/compensation.png'
+import status_icon from '@/assets/images/icons/front_gate.png'
+
 import bonus_icon from '@/assets/images/icons/bonus.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import dj_icon from '@/assets/images/icons/dj.png'
@@ -397,6 +406,8 @@ export default {
       downloadSettime,
       ticket_icon,
       meals_icon,
+      payment_icon,
+      status_icon,
       bonus_icon,
       volunteer_icon,
       workshop_icon,
