@@ -313,7 +313,9 @@ onMounted(() => {
         <div>
           <h1>Compensation Schedule:</h1>
         </div>
-        *Please note that submitting this form does not guarantee a performance slot.<br /><br />
+        Please note that submitting this form does not guarantee a performance slot.<br />
+        Be sure to read the corresponding duties* for your category before applying.<br />
+        <br />
         <div class="applicant-type">
           <div>
             <img :src="artist_icon" alt="artist" class="icon" />
