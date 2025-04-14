@@ -256,7 +256,7 @@
           </h3>
 
           <h3>
-            <strong style="text-decoration: underline"> Your referral link is: </strong>
+            <strong style="text-decoration: underline"> Your referral link is: </strong><br />
             <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }}
             </a>
