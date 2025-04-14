@@ -553,7 +553,7 @@ onMounted(() => {
 
         <!-- Conditional Form Sections -->
         <!-- ARTIST -->
-        <div v-show="form.applicant_types.includes('Artist')">
+        <div v-if="form.applicant_types.includes('Artist')">
           ARTIST SECTION
           <div class="form-section">
             <label for="act_type">Act Type:</label>
@@ -659,7 +659,7 @@ onMounted(() => {
         </div>
 
         <!-- VOLUNTEER -->
-        <div v-show="form.applicant_types.includes('Volunteer')">
+        <div v-if="form.applicant_types.includes('Volunteer')">
           VOLUNTEER SECTION
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
@@ -719,7 +719,7 @@ onMounted(() => {
         </div>
 
         <!-- WORKSHOP -->
-        <div v-show="form.applicant_types.includes('Workshop')">
+        <div v-if="form.applicant_types.includes('Workshop')">
           WORKSHOP SECTION
           <div class="form-section">
             <label for="workshop_title">Title:</label>
@@ -753,7 +753,7 @@ onMounted(() => {
         </div>
 
         <!-- ART INSTALLATION -->
-        <div v-show="form.applicant_types.includes('Art Installation')">
+        <div v-if="form.applicant_types.includes('Art Installation')">
           ART INSTALLATION SECTION
           <div class="form-section">
             <label for="installation_title">Title:</label>
@@ -814,7 +814,7 @@ onMounted(() => {
         </div>
 
         <!-- VENDOR -->
-        <div v-show="form.applicant_types.includes('Vendor')">
+        <div v-if="form.applicant_types.includes('Vendor')">
           VENDOR SECTION
           <div class="form-section">
             <label for="vendor_type">Vendor Type:</label>
