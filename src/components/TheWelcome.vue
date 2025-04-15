@@ -98,7 +98,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
         We have one rule... keep it danceable.
       </template>
       <template #logo>
-        <img :src="starcrossed_emblem" alt="starcrossed" class="star-crossed-emblem" />
+        <img :src="starcrossed_emblem" alt="starcrossed" class="starcrossed-emblem" />
       </template>
     </WelcomeItem>
 
@@ -219,5 +219,9 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 }
 .placeholder-logo {
   width: 85%;
+}
+
+.starcrossed-emblem {
+  width: 100%;
 }
 </style>
