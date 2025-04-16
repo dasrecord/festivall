@@ -43,16 +43,13 @@ export default {
     ></iframe>
     <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
   </div>
-  <CalltoAction />
 </template>
 
 <style scoped>
-basic {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  justify-items: flex-start;
+.basic {
+  padding: 1rem;
   align-items: center;
+  text-align: center;
 }
 
 a {
@@ -68,6 +65,8 @@ a:hover {
 }
 .fuse {
   width: 50%;
+}
+img {
 }
 
 @media (min-width: 1024px) {

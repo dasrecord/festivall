@@ -8,29 +8,28 @@
       the Canadian electronic music circuit. <br /><br />
       <div class="label">Current Activities<br /></div>
       <ul class="current-activities">
-        <!-- <li>clinical teacher at the University of Saskatchewan College of Medicine</li> -->
         <li>
-          <img :src="devops_icon" alt="devops icon" style="width: 24px" />
-          sotware developer for small businesses and entrepreneurs
+          <img :src="devops_icon" alt="devops icon" class="icon" />
+          software developer for small businesses and entrepreneurs
         </li>
         <li>
-          <img :src="headphones_icon" alt="headphones icon" style="width: 24px" />
+          <img :src="headphones_icon" alt="headphones icon" class="icon" />
           resident DJ at Finn's @ The Parktown Hotel
         </li>
         <li>
-          <img :src="headphones_icon" alt="headphones icon" style="width: 24px" />
+          <img :src="headphones_icon" alt="headphones icon" class="icon" />
           rotation DJ @ Bokeh on the Plaza
         </li>
         <li>
-          <img :src="music_icon" alt="music icon" style="width: 24px" />
+          <img :src="music_icon" alt="music icon" class="icon" />
           composer and producer for the internationally acclaimed Mike Saint-Jules
         </li>
         <li>
-          <img :src="devops_icon" alt="devops icon" style="width: 24px" />
+          <img :src="devops_icon" alt="devops icon" class="icon" />
           devops engineer for independent electronic music festivals
         </li>
         <li>
-          <img :src="vector_icon" alt="vector icon" style="width: 24px" />
+          <img :src="vector_icon" alt="vector icon" class="icon" />
           freelance graphic designer for brands and startups
           <br />
         </li>
@@ -59,7 +58,13 @@
       loading="lazy"
     ></iframe>
     <div class="playbills">
-      <img v-for="(image, index) in imageList" :key="index" :src="image" alt="playbill" />
+      <img
+        v-for="(image, index) in imageList"
+        :key="index"
+        :src="image"
+        alt="playbill"
+        class="playbill-img"
+      />
     </div>
   </div>
 </template>
@@ -92,11 +97,14 @@ onMounted(async () => {
   align-items: center;
   text-align: center;
 }
+
 .headshot {
   width: 300px;
   max-width: 50vw;
   border-radius: 50%;
+  object-fit: cover; /* Ensure the image scales properly */
 }
+
 ul {
   padding: 0;
   margin: 0;
@@ -110,14 +118,18 @@ li {
   padding: 10px;
 }
 
-li img {
+li img.icon {
   margin-right: 10px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain; /* Ensure icons are not distorted */
 }
 
 h1,
 .label {
   color: var(--festivall-baby-blue);
 }
+
 .current-activities {
   font-size: smaller;
 }
@@ -128,6 +140,7 @@ h1,
   flex-direction: row;
   justify-content: space-around;
 }
+
 .link {
   width: 40%;
   display: flex;
@@ -138,17 +151,22 @@ h1,
   border: 1px solid #ccc;
   border-radius: 15px;
 }
+
 .spotify {
   margin-bottom: 0.5rem;
 }
+
 .playbills {
   display: grid;
-  grid-template-columns: repeat(2, 2fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
 }
 
-.playbills img {
+.playbills img.playbill-img {
   border-radius: 15px;
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Ensure playbill images scale properly */
 }
 
 @media (min-width: 1024px) {
@@ -157,7 +175,6 @@ h1,
     flex-direction: column;
   }
   .playbills {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
   }
 }
