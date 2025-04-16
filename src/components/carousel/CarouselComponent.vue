@@ -100,15 +100,86 @@ export default {
 
 <style scoped>
 .carousel {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-.carousel-inner {
   position: relative;
-  width: 900px;
-  height: 400px;
   overflow: hidden;
-  border-radius: 35px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 10px; /* Optional: Add rounded corners */
+}
+
+.carousel-inner {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 400px; /* Default height for desktop */
+}
+
+.carousel-inner img {
+  width: 100%;
+  object-fit: cover; /* Ensures images are properly scaled */
+  border-radius: 10px; /* Optional: Add rounded corners */
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  z-index: 10; /* Ensure controls are above other elements */
+}
+
+.carousel-controls button {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.carousel-controls button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10; /* Ensure indicators are above other elements */
+}
+
+.carousel-indicators button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-indicators button.active {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Mobile View Adjustments */
+@media (max-width: 600px) {
+  .carousel-inner {
+    height: 250px; /* Reduce height for smaller screens */
+  }
+
+  .carousel-indicators button {
+    width: 8px;
+    height: 8px;
+  }
+
+  .carousel-controls {
+    top: 45%; /* Adjust control position for smaller screens */
+  }
 }
 </style>
