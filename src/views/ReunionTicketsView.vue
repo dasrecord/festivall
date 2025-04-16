@@ -262,15 +262,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <a href="/">
-    <img
-      src="@/assets/images/festivall_emblem_white.png"
-      alt="Festivall Logo"
-      class="logo"
-      style="display: flex; align-items: center; height: auto; width: 100px; margin: auto"
-    />
-  </a>
   <div class="basic">
+    <a href="/">
+      <img
+        src="@/assets/images/festivall_emblem_white.png"
+        alt="Festivall Logo"
+        class="logo"
+        style="display: flex; align-items: center; height: auto; width: 100px; margin: auto"
+      />
+    </a>
     <h3 class="application-form">
       <div class="splash">
         <img
@@ -472,13 +472,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-* {
-  /* border: 1px solid lime; */
-}
-#app {
-  padding: 0;
-}
-
 .reunion-emblem {
   border-radius: 0%;
   width: 75%;
@@ -489,6 +482,8 @@ onMounted(() => {
   justify-content: flex-start;
   justify-items: flex-start;
   align-items: center;
+  text-align: center;
+  padding: 1rem;
 }
 .splash {
   display: flex;
@@ -628,5 +623,9 @@ button:hover {
   padding: 1rem;
   border-radius: 15px;
   margin-top: 1rem;
+}
+.footer img {
+  width: 100%;
+  max-width: 700px;
 }
 </style>
