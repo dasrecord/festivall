@@ -887,9 +887,11 @@ onMounted(() => {
 .basic {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  justify-items: flex-start;
+  justify-content: center;
   align-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 1rem;
 }
 
 .splash {
@@ -1089,5 +1091,9 @@ table {
   padding: 1rem;
   border-radius: 15px;
   margin-top: 1rem;
+}
+.footer img {
+  width: 100%;
+  max-width: 600px;
 }
 </style>
