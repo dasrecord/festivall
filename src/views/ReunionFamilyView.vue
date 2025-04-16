@@ -69,10 +69,39 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .basic,
 h2 {
   padding: 1rem;
   text-align: center;
+}
+
+.carousel-wrapper {
+  margin: 2rem auto;
+  max-width: 800px;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.reunion-emblem {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .basic {
+    padding: 0.5rem;
+  }
+
+  .carousel-wrapper {
+    max-width: 100%; /* Allow the carousel to take full width on smaller screens */
+  }
+
+  h2 {
+    font-size: 1.2rem; /* Adjust font size for smaller screens */
+  }
 }
 </style>

@@ -31,6 +31,12 @@ export default {
   right: 0;
   bottom: 0;
 }
+.carousel-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
 .slide-in-enter-active,
 .slide-in-leave-active,
 .slide-out-enter-active,
