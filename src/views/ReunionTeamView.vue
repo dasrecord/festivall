@@ -449,7 +449,9 @@ export default {
 }
 img {
   display: inline;
+
   max-height: 300px;
+  width: 100%;
   height: auto;
   border-radius: 15px;
 }
