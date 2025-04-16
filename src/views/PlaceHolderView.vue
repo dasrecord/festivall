@@ -311,8 +311,26 @@ button:hover {
 
 .playbills {
   display: grid;
-  grid-template-columns: repeat(3, 2fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(3, 1fr); /* Default to 3 columns */
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem 0;
+}
+
+.playbills img {
+  width: 100%;
+  border-radius: 10px;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for images */
+}
+
+.playbills img:hover {
+  transform: scale(1.1); /* Slight zoom effect on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
 img {

@@ -157,6 +157,11 @@ export default {
   text-align: center;
   padding: 1rem;
 }
+.reunion-emblem {
+  width: 90%;
+  max-width: 600px;
+  cursor: pointer;
+}
 
 .frog-image {
   width: 300px;
