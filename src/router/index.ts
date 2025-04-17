@@ -43,6 +43,7 @@ import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstal
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
+import NectarView from '@/views/NectarView.vue'
 
 const routes = [
   {
@@ -169,6 +170,11 @@ const routes = [
     name : 'dasbuttons',
     component: DasButtonsView,
     meta: { requiresAuth: true, showHeader: false }
+  },
+  {
+    path: '/nectar',
+    name: 'nectar',
+    component: NectarView
   },
   {
     path: '/nye',
