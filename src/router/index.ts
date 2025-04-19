@@ -43,7 +43,7 @@ import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstal
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
-import NectarView from '@/views/NectarView.vue'
+import HavenView from '@/views/HavenView.vue'
 
 const routes = [
   {
@@ -172,9 +172,9 @@ const routes = [
     meta: { requiresAuth: true, showHeader: false }
   },
   {
-    path: '/nectar',
-    name: 'nectar',
-    component: NectarView
+    path: '/haven',
+    name: 'haven',
+    component: HavenView
   },
   {
     path: '/nye',
