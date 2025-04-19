@@ -86,26 +86,67 @@
               </h2>
               <!-- ID CODE -->
               <p v-if="applicant.id_code" class="id_code">#{{ applicant.id_code }}</p>
-              <!-- ACT TYPE -->
+              <!-- APPLICANT TYPE -->
               <p v-if="applicant.applicant_types && applicant.applicant_types.length">
                 {{ applicant.applicant_types.join(', ') }}
               </p>
             </div>
+
             <!-- GENRE -->
+            <img
+              v-if="applicant.applicant_types && applicant.applicant_types.includes('Artist')"
+              :src="artist_icon"
+              alt="Artist Icon"
+              class="action-icon"
+            />
+            <p v-if="applicant.act_name">{{ applicant.act_name }}</p>
+            <p v-if="applicant.act_type">{{ applicant.act_type }}</p>
+            <p v-if="applicant.act_description">{{ applicant.act_description }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
             <!-- VOLUNTEER TYPE -->
             <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
-            <!-- WORKSHOP TITLE -->
-            <p v-if="applicant.workshop_title" style="text-decoration: underline">
-              {{ applicant.workshop_title }}
-            </p>
-            <!-- WORKSHOP DESCRIPTION -->
+
+            <!-- WORKSHOP SECTION -->
+            <img
+              v-if="applicant.applicant_types && applicant.applicant_types.includes('Workshop')"
+              :src="workshop_icon"
+              alt="Workshop Icon"
+              class="action-icon"
+            />
+            <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
             <p v-if="applicant.workshop_description">{{ applicant.workshop_description }}</p>
 
+            <!-- VENDOR SECITON -->
+            <img
+              v-if="applicant.applicant_types && applicant.applicant_types.includes('Vendor')"
+              :src="vendor_icon"
+              alt="Vendor Icon"
+              class="action-icon"
+            />
+            <p v-if="applicant.vendor_type">{{ applicant.vendor_type }}</p>
+            <p v-if="applicant.vendor_description">
+              {{ applicant.vendor_description }}
+            </p>
+            <a
+              v-if="applicant.vendor_url"
+              :href="applicant.vendor_url"
+              target="_blank"
+              style="text-decoration: underline"
+            >
+              {{ applicant.vendor_url }}
+            </a>
+
             <!-- BIO -->
+
             <p>{{ applicant.bio }}</p>
             <!-- STATEMENT -->
-            <p>{{ applicant.statement }}</p>
+            <p
+              v-if="applicant.statement"
+              style="border: 1px dotted var(--festivall-baby-blue); border-radius: 5px"
+            >
+              <strong>Statement:</strong>
+              {{ applicant.statement }}
+            </p>
             <!-- COMMENTS -->
             <span v-if="applicant.comments">{{ applicant.comments }} </span>
           </div>
@@ -328,6 +369,7 @@ import artist_icon from '@/assets/images/icons/artist.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import reminder_icon from '@/assets/images/icons/reminder.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
+import vendor_icon from '@/assets/images/icons/vendor.png'
 
 export default {
   name: 'DashboardPanel',
@@ -741,6 +783,7 @@ export default {
       meal_icon,
       artist_icon,
       workshop_icon,
+      vendor_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
@@ -774,6 +817,7 @@ img {
   padding: 0.5rem;
   background-color: #1f1e22;
   color: #f0f4f8;
+  text-align: center;
 }
 
 .banner {

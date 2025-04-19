@@ -5,12 +5,11 @@
         <source src="/src/assets/videos/nectar/luxe.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div class="logo">
-        <!-- <img src="/src/assets/images/nectar_emblem_white.png" alt="Nectar Logo" /> -->
-      </div>
+      <div class="logo"></div>
     </div>
 
     <div class="form-section">
+      <img src="/src/assets/images/nectar_emblem_white.png" alt="Nectar Logo" class="emblem" />
       <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
@@ -24,8 +23,8 @@
           <label for="enquiry">Enquiry:</label>
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Please select one</option>
-            <option>Event Production</option>
-            <option>Consultation</option>
+            <option>Events</option>
+            <option>Bookings</option>
             <option>Partnerships</option>
           </select>
         </div>
@@ -90,7 +89,7 @@ export default {
 
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/blessed_coast_slack',
+          'https://relayproxy.vercel.app/festivall_nectar',
           slackPayload,
           {
             headers: {
@@ -139,6 +138,10 @@ export default {
   background-color: rgba(0, 0, 0, 0.888);
   z-index: 1;
   padding: 2rem;
+}
+.emblem {
+  width: 100%;
+  margin-bottom: 2rem;
 }
 
 input,
