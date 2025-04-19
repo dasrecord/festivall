@@ -2,14 +2,16 @@
   <div class="container">
     <div class="video-section">
       <video autoplay muted loop>
-        <source src="/src/assets/videos/nectar/luxe.mp4" type="video/mp4" />
+        <source :src="haven_video" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div class="logo"></div>
+
+      <div class="logo">
+        <img :src="haven_emblem" alt="haven emblem" class="emblem" />
+      </div>
     </div>
 
     <div class="form-section">
-      <img src="/src/assets/images/nectar_emblem_white.png" alt="Nectar Logo" class="emblem" />
       <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
@@ -40,10 +42,14 @@
 
 <script>
 import axios from 'axios'
+import haven_emblem from '../assets/images/haven_emblem_white.png'
+import haven_video from '../assets/videos/haven/luxe.mp4'
 
 export default {
   data() {
     return {
+      haven_emblem,
+      haven_video,
       form: {
         name: '',
         email: '',
@@ -141,7 +147,7 @@ export default {
 }
 .emblem {
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 input,
@@ -177,7 +183,7 @@ video {
 .logo {
   position: absolute;
   width: 66vw;
-  top: 50%;
+  top: 25%;
 }
 button {
   width: 100%;
