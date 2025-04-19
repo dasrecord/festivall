@@ -73,7 +73,7 @@
                 <!-- ACT NAME OR FULLNAME -->
                 <a
                   v-if="applicant.url || applicant.act_website"
-                  :href="applicant.url"
+                  :href="applicant.url || applicant.act_website"
                   target="_blank"
                   style="text-decoration: underline"
                 >
@@ -97,13 +97,19 @@
               v-if="applicant.applicant_types && applicant.applicant_types.includes('Artist')"
               :src="artist_icon"
               alt="Artist Icon"
-              class="action-icon"
+              class="section-icon"
             />
             <p v-if="applicant.act_name">{{ applicant.act_name }}</p>
             <p v-if="applicant.act_type">{{ applicant.act_type }}</p>
             <p v-if="applicant.act_description">{{ applicant.act_description }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
-            <!-- VOLUNTEER TYPE -->
+            <!-- VOLUNTEER SECTION -->
+            <img
+              v-if="applicant.applicant_types && applicant.applicant_types.includes('Volunteer')"
+              :src="volunteer_icon"
+              alt="Volunteer Icon"
+              class="section-icon"
+            />
             <p v-if="applicant.volunteer_type">{{ applicant.volunteer_type }}</p>
 
             <!-- WORKSHOP SECTION -->
@@ -111,18 +117,41 @@
               v-if="applicant.applicant_types && applicant.applicant_types.includes('Workshop')"
               :src="workshop_icon"
               alt="Workshop Icon"
-              class="action-icon"
+              class="section-icon"
             />
             <p v-if="applicant.workshop_title">{{ applicant.workshop_title }}</p>
             <p v-if="applicant.workshop_description">{{ applicant.workshop_description }}</p>
 
-            <!-- VENDOR SECITON -->
+            <!-- ART INSTALLATION SECTION -->
+            <img
+              v-if="
+                applicant.applicant_types && applicant.applicant_types.includes('Art Installation')
+              "
+              :src="art_installation_icon"
+              alt="Art Installation Icon"
+              class="section-icon"
+            />
+            <p v-if="applicant.installation_title">
+              {{ applicant.installation_title }}
+            </p>
+            <p v-if="applicant.installation_description">
+              {{ applicant.installation_description }}
+            </p>
+            <p v-if="applicant.space_requirements">
+              {{ applicant.space_requirements }}
+            </p>
+            <p v-if="applicant.other_requirements">
+              {{ applicant.other_requirements }}
+            </p>
+
+            <!-- VENDOR SECTION -->
             <img
               v-if="applicant.applicant_types && applicant.applicant_types.includes('Vendor')"
               :src="vendor_icon"
               alt="Vendor Icon"
-              class="action-icon"
+              class="section-icon"
             />
+
             <p v-if="applicant.vendor_type">{{ applicant.vendor_type }}</p>
             <p v-if="applicant.vendor_description">
               {{ applicant.vendor_description }}
@@ -137,7 +166,6 @@
             </a>
 
             <!-- BIO -->
-
             <p>{{ applicant.bio }}</p>
             <!-- STATEMENT -->
             <p
@@ -370,6 +398,8 @@ import lineup_icon from '@/assets/images/icons/lineup.png'
 import reminder_icon from '@/assets/images/icons/reminder.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
 import vendor_icon from '@/assets/images/icons/vendor.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import art_installation_icon from '@/assets/images/icons/art_installation.png'
 
 export default {
   name: 'DashboardPanel',
@@ -782,8 +812,10 @@ export default {
       ticket_icon,
       meal_icon,
       artist_icon,
+      volunteer_icon,
       workshop_icon,
       vendor_icon,
+      art_installation_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
@@ -1042,6 +1074,11 @@ a {
   cursor: pointer;
   margin: 3px;
 }
+.section-icon {
+  width: 36px;
+  margin: auto;
+}
+
 .scanner-links {
   display: flex;
 
