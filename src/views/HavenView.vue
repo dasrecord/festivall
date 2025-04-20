@@ -26,12 +26,48 @@
         <div>
           <label for="enquiry">Enquiry:</label>
           <select id="enquiry" v-model="form.enquiry" required>
-            <option disabled value="">Please select one</option>
-            <option>Events</option>
-            <option>Bookings</option>
-            <option>Partnerships</option>
+            <option disabled value="">Select an option</option>
+            <option value="Customer">Experience Haven</option>
+            <option value="Artist">Perform at Haven</option>
+            <option value="Partner">Partner with Haven</option>
           </select>
         </div>
+        <div v-if="form.enquiry === 'Artist'">
+          <label for="act_type">Act Type:</label>
+          <select id="act_type" v-model="form.act_type" required>
+            <option disabled value="">Select an option</option>
+            <option value="DJ">DJ</option>
+            <option value="Live Performance">Live Performance</option>
+            <option value="Other">Other</option>
+          </select>
+          <div>
+            <label for="mix_url">Mix/Track URL:</label>
+            <input type="url" id="mix_url" v-model="form.mix_url" required />
+          </div>
+        </div>
+        <div v-if="form.enquiry === 'Partner'">
+          <label for="partnership_type">Partnership Type:</label>
+          <select id="partnership_type" v-model="form.partnership_type" required>
+            <option disabled value="">Select an option</option>
+            <option value="Sponsorship">Sponsorship</option>
+            <option value="Collaboration">Collaboration</option>
+            <option value="Other">Other</option>
+          </select>
+          <div>
+            <label for="website">Website/URL:</label>
+            <input type="url" id="website" v-model="form.website" required />
+          </div>
+        </div>
+        <div v-if="form.enquiry === 'Customer'">
+          <label for="experience_type">Experience Type:</label>
+          <select id="experience_type" v-model="form.experience_type" required>
+            <option disabled value="">Select an option</option>
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Feedback">Feedback</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
         <div>
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
@@ -57,8 +93,13 @@ export default {
       form: {
         name: '',
         email: '',
-        message: '',
-        enquiry: ''
+        enquiry: '',
+        act_type: '',
+        mix_url: '',
+        partnership_type: '',
+        website: '',
+        experience_type: '',
+        message: ''
       }
     }
   },
@@ -66,40 +107,81 @@ export default {
     async sendtorelay() {
       const slackPayload = {
         blocks: [
-          {
+            {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Name:* ${this.form.name}`
             }
-          },
-          {
+            },
+            {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Email:* ${this.form.email}`
             }
-          },
-          {
+            },
+            {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Enquiry:* ${this.form.enquiry}`
             }
-          },
-          {
+            },
+            ...(this.form.enquiry === 'Artist' ? [
+            {
+              type: 'section',
+              text: {
+              type: 'mrkdwn',
+              text: `*Act Type:* ${this.form.act_type}`
+              }
+            },
+            {
+              type: 'section',
+              text: {
+              type: 'mrkdwn',
+              text: `*Mix/Track URL:* ${this.form.mix_url}`
+              }
+            }
+            ] : []),
+            ...(this.form.enquiry === 'Partner' ? [
+            {
+              type: 'section',
+              text: {
+              type: 'mrkdwn',
+              text: `*Partnership Type:* ${this.form.partnership_type}`
+              }
+            },
+            {
+              type: 'section',
+              text: {
+              type: 'mrkdwn',
+              text: `*Website/URL:* ${this.form.website}`
+              }
+            }
+            ] : []),
+            ...(this.form.enquiry === 'Customer' ? [
+            {
+              type: 'section',
+              text: {
+              type: 'mrkdwn',
+              text: `*Experience Type:* ${this.form.experience_type}`
+              }
+            }
+            ] : []),
+            {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Message:* ${this.form.message}`
             }
-          }
+            }
         ]
       }
 
       try {
         const response = await axios.post(
-          'https://relayproxy.vercel.app/festivall_nectar',
+          'https://relayproxy.vercel.app/festivall_haven',
           slackPayload,
           {
             headers: {
@@ -108,10 +190,17 @@ export default {
           }
         )
         alert('Your message was received successfully!')
-        this.form.name = ''
-        this.form.email = ''
-        this.form.message = ''
-        this.form.enquiry = ''
+        this.form = {
+          name: '',
+          email: '',
+          enquiry: '',
+          act_type: '',
+          mix_url: '',
+          partnership_type: '',
+          website: '',
+          experience_type: '',
+          message: ''
+        }
         console.log('Form submitted successfully:', response.data)
       } catch (error) {
         console.error('Error submitting form:', error)
@@ -133,7 +222,7 @@ export default {
 }
 
 .discoball {
-  width: 50%;
+  width: 100px;
   height: auto;
   margin: 0 auto;
   margin-bottom: 3rem;
@@ -154,7 +243,8 @@ export default {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.888);
   z-index: 1;
-  padding: 2rem;
+  padding: 1rem;
+  text-align: center;
 }
 .emblem {
   width: 100%;
@@ -220,7 +310,7 @@ img {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.888);
     z-index: 1;
-    padding: rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
