@@ -12,6 +12,8 @@
     </div>
 
     <div class="form-section">
+      <img :src="haven_logo" alt="haven logo" class="discoball" />
+
       <form @submit.prevent="sendtorelay">
         <div>
           <label for="name">Name:</label>
@@ -43,12 +45,14 @@
 <script>
 import axios from 'axios'
 import haven_emblem from '../assets/images/haven_emblem_white.png'
+import haven_logo from '../assets/images/haven_logo_white.png'
 import haven_video from '../assets/videos/haven/luxe.mp4'
 
 export default {
   data() {
     return {
       haven_emblem,
+      haven_logo,
       haven_video,
       form: {
         name: '',
@@ -128,6 +132,13 @@ export default {
   height: 96vh;
 }
 
+.discoball {
+  width: 50%;
+  height: auto;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+}
+
 .video-section {
   display: flex;
   align-items: center;
@@ -148,6 +159,13 @@ export default {
 .emblem {
   width: 100%;
   margin-bottom: 3rem;
+}
+
+.information {
+  color: white;
+
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 input,
@@ -202,7 +220,7 @@ img {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.888);
     z-index: 1;
-    padding: 2rem;
+    padding: rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
