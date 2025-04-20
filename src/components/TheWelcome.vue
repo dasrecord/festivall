@@ -232,7 +232,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
   width: 50%;
 }
 .haven_emblem {
-  width: 100%;
+  width: 80%;
 }
 .placeholder-logo {
   width: 85%;
