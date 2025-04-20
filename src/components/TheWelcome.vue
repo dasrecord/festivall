@@ -4,6 +4,7 @@ import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import fuse_logo from '../assets/images/fuse_logo_white.png'
+import haven_emblem from '../assets/images/haven_emblem_white.png'
 import placeholder_logo from '../assets/images/placeholder_logo_white.png'
 import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
@@ -41,6 +42,19 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </template>
       <template #logo>
         <img :src="das_record_logo" alt="das_record_logo" class="das-record-logo" />
+      </template>
+    </WelcomeItem>
+
+    <WelcomeItem class="welcome-item">
+      <template #icon>
+        <IconFestivall />
+      </template>
+      <template #heading><RouterLink to="/haven">Haven</RouterLink></template>
+      <template #description>
+        Electronic music has a new home in the heart of the Canadian Prairies.
+      </template>
+      <template #logo>
+        <img :src="haven_emblem" alt="haven_emblem" class="haven_emblem" />
       </template>
     </WelcomeItem>
 
@@ -217,10 +231,12 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
 .festivall-emblem {
   width: 50%;
 }
+.haven_emblem {
+  width: 100%;
+}
 .placeholder-logo {
   width: 85%;
 }
-
 .starcrossed-emblem {
   width: 100%;
 }
