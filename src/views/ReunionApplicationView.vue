@@ -158,13 +158,16 @@ const submitForm = async () => {
 
       // Send SMS and email notifications if applicable
       if (form.value.phone) {
-        await sendSMS(form.value.phone, `Thank you for applying to Reunion 2025!`)
+        await sendSMS(
+          form.value.phone,
+          `Thank you, ${form.value.fullname}, for applying to Reunion ${new Date().getFullYear()}`
+        )
       }
       if (form.value.email) {
         await sendEmail(
           form.value.email,
           `Reunion 2025`,
-          `Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.`
+          `Thank you, ${form.value.fullname}.\nYour application has been submitted successfully!\nSelected applicants will be contacted by our team directly.`
         )
       }
 
