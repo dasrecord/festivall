@@ -4,7 +4,7 @@
       :src="reunion_emblem"
       alt="Reunion Emblem"
       class="reunion-emblem"
-      style="cursor: pointer; max-width: 600px"
+      style="cursor: pointer; width: 100%; max-width: 600px"
       @click="$router.push('/reunion')"
     />
 
@@ -129,6 +129,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 .days {
   display: flex;
@@ -161,6 +162,8 @@ p {
 }
 
 .toggle-buttons {
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
@@ -183,5 +186,11 @@ p {
   margin-top: 1rem;
 
   width: 100%;
+}
+
+.reunion-emblem {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
 }
 </style>
