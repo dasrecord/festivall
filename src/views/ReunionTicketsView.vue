@@ -45,7 +45,9 @@ const validateReferralID = async (referral_id_code) => {
     const docRef = doc(reunion_db, 'applications_2025', referral_id_code)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      alert('Referral ID_CODE is valid!')
+      alert(
+        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap.data().fullname} at Reunion ${new Date().getFullYear()}.`
+      )
       return
     }
 
@@ -53,9 +55,11 @@ const validateReferralID = async (referral_id_code) => {
     const docRef2025 = doc(reunion_db, 'orders_2025', referral_id_code)
     const docSnap2025 = await getDoc(docRef2025)
     if (docSnap2025.exists()) {
-      alert('Referral ID_CODE is valid!')
+      alert(
+        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap.data().fullname} at Reunion ${new Date().getFullYear()}.`
+      )
     } else {
-      alert('Referral ID_CODE is not valid.')
+      alert('Hmm, we could not find a matching Festivall ID_CODE. Please check your spelling.')
     }
   } catch (error) {
     console.error('Error validating referral ID_CODE:', error)
