@@ -106,7 +106,7 @@
         </p>
         <p
           @click="showReferralModal = true"
-          v-if="referralEarnings > 0"
+          v-if="referralEarnings >= 0"
           style="
             justify-content: center;
             background-color: black;
@@ -256,11 +256,19 @@
           </h3>
 
           <h3>
-            <strong style="text-decoration: underline"> Your referral link is: </strong><br />
+            <strong style="text-decoration: underline"> This is your referral link: </strong><br />
             <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
-              >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }}
-            </a>
+              >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
+            ><br /><br />
           </h3>
+          <h3>
+            <strong style="text-decoration: underline"> This is your referral QR code: </strong>
+          </h3>
+
+          <div class="qr-code">
+            <canvas ref="referralQrCanvas"></canvas>
+          </div>
+
           <button @click="showReferralModal = false">Close</button>
         </div>
       </div>
@@ -364,7 +372,7 @@
 </template>
 
 <script>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
@@ -400,6 +408,7 @@ export default {
     const order = ref(null)
     const qrCanvas = ref(null)
     const referralEarnings = ref(0)
+    const referralQrCanvas = ref(null)
 
     const showPaymentModal = ref(false)
     const showCheckInModal = ref(false)
@@ -441,7 +450,7 @@ export default {
           await nextTick()
 
           // Generate QR code
-          generateQRCode(order.value.id_code_long)
+          generateQRCode(order.value.id_code_long, qrCanvas.value)
 
           // Calculate referral earnings
           await calculateReferralEarnings(order.value.id_code)
@@ -456,9 +465,9 @@ export default {
       }
     }
 
-    const generateQRCode = (text) => {
-      if (qrCanvas.value) {
-        QRCode.toCanvas(qrCanvas.value, text, { width: 200, height: 200 }, (error) => {
+    const generateQRCode = (text, targetCanvas) => {
+      if (targetCanvas) {
+        QRCode.toCanvas(targetCanvas, text, { width: 200, height: 200 }, (error) => {
           if (error) {
             console.error('Error generating QR code:', error)
           }
@@ -516,6 +525,16 @@ export default {
       URL.revokeObjectURL(url)
     }
 
+    watch(showReferralModal, async (isVisible) => {
+      if (isVisible && order.value) {
+        await nextTick() // Wait for the DOM to update
+        generateQRCode(
+          `https://festivall.ca/reuniontickets/${order.value.id_code}`,
+          referralQrCanvas.value
+        )
+      }
+    })
+
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 20
@@ -533,6 +552,8 @@ export default {
       poster_footer,
       order,
       qrCanvas,
+      referralQrCanvas,
+      generateQRCode,
       referralEarnings,
       calculateReferralEarnings,
       showPaymentModal,
@@ -746,5 +767,10 @@ a:hover {
 
 .modal-content img {
   margin: 0 0 0.5rem 0;
+}
+
+.modal-content .qr-code {
+  margin-top: 1rem;
+  padding: 0;
 }
 </style>
