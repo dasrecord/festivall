@@ -101,8 +101,38 @@
             />
             <p v-if="applicant.act_name">{{ applicant.act_name }}</p>
             <p v-if="applicant.act_type">{{ applicant.act_type }}</p>
-            <p v-if="applicant.act_description">{{ applicant.act_description }}</p>
             <p v-if="applicant.genre">{{ applicant.genre }}</p>
+            <p v-if="applicant.act_description">{{ applicant.act_description }}</p>
+            <!-- ACT WEBSITE -->
+            <a
+              v-if="applicant.act_website"
+              :href="applicant.act_website"
+              target="_blank"
+              style="text-decoration: underline"
+            >
+              Website
+            </a>
+
+            <!-- SOCIAL URL -->
+            <a
+              v-if="applicant.social_url"
+              :href="applicant.social_url"
+              target="_blank"
+              style="text-decoration: underline"
+            >
+              Socials
+            </a>
+
+            <!-- PRESS KIT URL -->
+            <a
+              v-if="applicant.press_kit_url"
+              :href="applicant.press_kit_url"
+              target="_blank"
+              style="text-decoration: underline"
+            >
+              Press Kit
+            </a>
+
             <!-- VOLUNTEER SECTION -->
             <img
               v-if="applicant.applicant_types && applicant.applicant_types.includes('Volunteer')"
