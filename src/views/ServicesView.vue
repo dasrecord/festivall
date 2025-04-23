@@ -83,7 +83,7 @@
     </div>
   </div>
   <div id="emblem">
-    <img :src="festivall_emblem" alt="Festivall Emblem" />
+    <img :src="festivall_emblem" alt="Festivall Emblem" class="festivall-emblem" />
   </div>
 </template>
 
@@ -133,10 +133,18 @@ export default {
 #bitcoin {
   color: #ff9900;
 }
+
 #emblem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.festivall-emblem {
+  width: 100px;
   height: auto;
-  width: 64px;
-  margin: 0 auto;
+  margin-bottom: 1rem;
 }
 
 h1 {
