@@ -195,6 +195,7 @@ export default {
             agree_communication: this.form.agree_communication,
             participate_risk: this.form.participate_risk,
             message: this.form.message,
+            records: [],
             timestamp: new Date()
           })
           console.log('Document successfully written to haven list!')
