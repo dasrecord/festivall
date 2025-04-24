@@ -16,8 +16,8 @@
 
       <form @submit.prevent="sendtorelay">
         <div>
-          <label for="name">Name:</label>
-          <input type="text" id="name" v-model="form.name" required autocomplete="off" />
+          <label for="fullname">Legal Name:</label>
+          <input type="text" id="fullname" v-model="form.fullname" required autocomplete="off" />
         </div>
         <div>
           <label for="email">Email:</label>
@@ -146,7 +146,7 @@ export default {
       haven_logo,
       haven_video,
       form: {
-        name: '',
+        fullname: '',
         email: '',
         phone: '',
         act_name: '',
@@ -181,7 +181,7 @@ export default {
           alert('You are on the mailing list!')
         } else {
           await setDoc(docRef, {
-            name: this.form.name,
+            fullname: this.form.fullname,
             email: this.form.email,
             phone: this.form.phone,
             enquiry: this.form.enquiry,
@@ -212,7 +212,7 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Name:* ${this.form.name}`
+              text: `*Name:* ${this.form.fullname}`
             }
           },
           {
@@ -276,7 +276,7 @@ export default {
 
         // Reset the form AFTER Firestore operations
         this.form = {
-          name: '',
+          fullname: '',
           email: '',
           phone: '',
           act_name: '',
@@ -302,7 +302,7 @@ export default {
     console.log('HavenView mounted')
     if (import.meta.env.MODE === 'development') {
       this.form = {
-        name: 'alice',
+        fullname: 'alice',
         email: 'alice@example.com',
         phone: '1234567890',
         act_name: `Act`,
