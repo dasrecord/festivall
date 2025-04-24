@@ -114,6 +114,9 @@ import haven_emblem from '../assets/images/haven_emblem_white.png'
 import haven_logo from '../assets/images/haven_logo_white.png'
 import haven_video from '../assets/videos/haven/luxe.mp4'
 
+import { festivall_db } from '@/firebase'
+import { getDoc, doc, setDoc } from 'firebase/firestore'
+
 export default {
   data() {
     return {
@@ -139,7 +142,48 @@ export default {
     }
   },
   methods: {
+    async addToHavenList() {
+      console.log('addToHavenList called with form data:', this.form)
+      if (!this.form.email) {
+        console.error('Email is required to create a document reference.')
+        alert('Please provide a valid email address.')
+        return
+      }
+
+      try {
+        const docRef = doc(festivall_db, 'haven', this.form.email)
+        const docSnap = await getDoc(docRef)
+
+        if (docSnap.exists()) {
+          console.log('Document already exists in haven list:', docSnap.data())
+          alert('You are on the mailing list!')
+        } else {
+          await setDoc(docRef, {
+            name: this.form.name,
+            email: this.form.email,
+            phone: this.form.phone,
+            enquiry: this.form.enquiry,
+            act_type: this.form.act_type,
+            mix_url: this.form.mix_url,
+            partnership_type: this.form.partnership_type,
+            website: this.form.website,
+            experience_type: this.form.experience_type,
+            act_name: this.form.act_name,
+            video_url: this.form.video_url,
+            agree_communication: this.form.agree_communication,
+            participate_risk: this.form.participate_risk,
+            message: this.form.message,
+            timestamp: new Date()
+          })
+          console.log('Document successfully written to haven list!')
+          alert('You have been added to the mailing list!')
+        }
+      } catch (error) {
+        console.error('Error in addToHavenList:', error)
+      }
+    },
     async sendtorelay() {
+      console.log('sendtorelay called with form data:', this.form)
       const slackPayload = {
         blocks: [
           {
@@ -163,53 +207,6 @@ export default {
               text: `*Enquiry:* ${this.form.enquiry}`
             }
           },
-          ...(this.form.enquiry === 'Artist'
-            ? [
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `*Act Type:* ${this.form.act_type}`
-                  }
-                },
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `*Mix/Track URL:* ${this.form.mix_url}`
-                  }
-                }
-              ]
-            : []),
-          ...(this.form.enquiry === 'Partner'
-            ? [
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `*Partnership Type:* ${this.form.partnership_type}`
-                  }
-                },
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `*Website/URL:* ${this.form.website}`
-                  }
-                }
-              ]
-            : []),
-          ...(this.form.enquiry === 'Customer'
-            ? [
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `*Experience Type:* ${this.form.experience_type}`
-                  }
-                }
-              ]
-            : []),
           ...(this.form.enquiry === 'Battle'
             ? [
                 {
@@ -248,7 +245,14 @@ export default {
             }
           }
         )
+        console.log('Slack notification sent successfully:', response.data)
         alert('Your message was received successfully!')
+
+        // Call Firestore methods
+
+        await this.addToHavenList()
+
+        // Reset the form AFTER Firestore operations
         this.form = {
           name: '',
           email: '',
@@ -265,11 +269,33 @@ export default {
           experience_type: '',
           message: ''
         }
-        console.log('Form submitted successfully:', response.data)
+        this.$router.push({ name: 'havenbattle' })
       } catch (error) {
-        console.error('Error submitting form:', error)
+        console.error('Error in sendtorelay:', error)
         alert('Error submitting form. Please try again.')
       }
+    }
+  },
+  mounted() {
+    console.log('HavenView mounted')
+    if (import.meta.env.MODE === 'development') {
+      this.form = {
+        name: 'alice',
+        email: 'alice@example.com',
+        phone: '1234567890',
+        act_name: `Act`,
+        video_url: 'http://twitch.tv/dasrecord',
+        agree_communication: true,
+        participate_risk: true,
+        enquiry: 'Battle',
+        act_type: '',
+        mix_url: '',
+        partnership_type: '',
+        website: '',
+        experience_type: '',
+        message: 'This is a sample message.'
+      }
+      console.log('Development mode: pre-filled form data:', this.form)
     }
   }
 }
