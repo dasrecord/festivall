@@ -80,6 +80,28 @@
             <input type="text" id="act_name" v-model="form.act_name" required />
           </div>
           <div>
+            <label for="dance_style">Dance Style:</label>
+            <select id="dance_style" v-model="form.dance_style" required>
+              <option disabled value="">Select an option</option>
+              <option value="Hip Hop">Hip Hop</option>
+              <option value="Breaking">Breaking</option>
+              <option value="Popping">Popping</option>
+              <option value="Locking">Locking</option>
+              <option value="House">House</option>
+              <option value="Krump">Krump</option>
+              <option value="Waacking">Waacking</option>
+              <option value="Voguing">Voguing</option>
+              <option value="Tutting">Tutting</option>
+              <option value="Animation">Animation</option>
+              <option value="Contemporary">Contemporary</option>
+              <option value="Dancehall">Dancehall</option>
+              <option value="Ballet">Ballet</option>
+              <option value="Tap">Tap</option>
+              <option value="Jazz">Jazz</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
             <label for="act_url">Video URL:</label>
             <input type="url" id="video_url" v-model="form.video_url" required />
           </div>
