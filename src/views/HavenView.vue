@@ -80,8 +80,8 @@
             <input type="text" id="act_name" v-model="form.act_name" required />
           </div>
           <div>
-            <label for="act_url">Act URL:</label>
-            <input type="url" id="act_url" v-model="form.act_url" required />
+            <label for="act_url">Video URL:</label>
+            <input type="url" id="video_url" v-model="form.video_url" required />
           </div>
 
           <div>
@@ -125,7 +125,7 @@ export default {
         email: '',
         phone: '',
         act_name: '',
-        act_url: '',
+        video_url: '',
         agree_communication: false,
         participate_risk: false,
         enquiry: '',
@@ -223,7 +223,7 @@ export default {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `*Act URL:* ${this.form.act_url}`
+                    text: `*Video URL:* ${this.form.video_url}`
                   }
                 }
               ]
@@ -254,7 +254,7 @@ export default {
           email: '',
           phone: '',
           act_name: '',
-          act_url: '',
+          video_url: '',
           agree_communication: false,
           participate_risk: false,
           enquiry: '',
