@@ -1,6 +1,10 @@
 <template>
   <div class="container">
-    <h1 class="title">Haven Dance Battle Tournament</h1>
+    <img class="haven-emblem" :src="haven_emblem" alt="Haven Emblem" />
+    <h1 class="title">Dance Battle</h1>
+    <p v-if="isUserLoggedIn" class="admin-notice">
+      You are logged in as an admin and can select winners
+    </p>
     <div class="tree">
       <!-- Dynamically render all rounds -->
       <div
@@ -17,20 +21,41 @@
             gridRow: `${(matchIndex - 1) * Math.pow(2, roundIndex) + 1} / span ${Math.pow(2, roundIndex)}`
           }"
         >
-          <div class="participant">
+          <div
+            class="participant"
+            :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant1') }"
+          >
             {{
               rounds[roundIndex][matchIndex - 1]?.participant1
                 ? rounds[roundIndex][matchIndex - 1].participant1.name
                 : 'TBD'
             }}
+            <button
+              v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
+              @click="selectWinner(roundIndex, matchIndex - 1, 'participant1')"
+              class="select-winner-btn"
+            >
+              Select Winner
+            </button>
           </div>
           <div class="vs" v-if="rounds[roundIndex][matchIndex - 1]?.participant2">vs</div>
-          <div class="participant" v-if="rounds[roundIndex][matchIndex - 1]?.participant2">
+          <div
+            class="participant"
+            v-if="rounds[roundIndex][matchIndex - 1]?.participant2"
+            :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant2') }"
+          >
             {{
               rounds[roundIndex][matchIndex - 1]?.participant2
                 ? rounds[roundIndex][matchIndex - 1].participant2.name
                 : 'TBD'
             }}
+            <button
+              v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
+              @click="selectWinner(roundIndex, matchIndex - 1, 'participant2')"
+              class="select-winner-btn"
+            >
+              Select Winner
+            </button>
           </div>
         </div>
       </div>
@@ -39,34 +64,101 @@
 </template>
 
 <script>
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, updateDoc, doc, arrayUnion } from 'firebase/firestore'
 import { festivall_db } from '@/firebase'
+import haven_emblem from '@/assets/images/haven_emblem_white.png'
 
 export default {
   data() {
     return {
+      haven_emblem,
       participants: [], // Holds fetched participants
-      rounds: [] // Holds the tournament structure
+      rounds: [], // Holds the tournament structure
+      isUserLoggedIn: false, // Tracks if the user is logged in
+      currentUser: null
     }
   },
   methods: {
+    // Check if user is logged in
+    checkLoginStatus() {
+      try {
+        const userStr = localStorage.getItem('user')
+        if (userStr) {
+          this.currentUser = JSON.parse(userStr)
+          this.isUserLoggedIn = true
+          console.log('User is logged in:', this.currentUser.email)
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error)
+        this.isUserLoggedIn = false
+      }
+    },
+
     // Fetch participants from Firestore
     async fetchParticipants() {
+      // Always use test data in development mode
+      if (import.meta.env.MODE === 'development') {
+        console.log('Development mode detected - using test data instead of Firestore')
+        this.useTestData()
+        return
+      }
+
       try {
         const q = query(collection(festivall_db, 'haven'), where('enquiry', '==', 'Battle'))
         const querySnapshot = await getDocs(q)
+
+        // Log the actual data coming from Firestore
+        console.log(
+          'Raw data from Firestore:',
+          querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        )
+
         this.participants = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          name: doc.data().name || 'Unnamed Dancer', // Ensure we have a name
+          ...doc.data(),
+          records: doc.data().records || []
         }))
-        this.organizeTournament()
+
+        if (this.participants.length < 4) {
+          console.warn('Not enough participants found in Firestore, using test data')
+          this.useTestData()
+        } else {
+          console.log('Found participants:', this.participants)
+          this.organizeTournament()
+        }
       } catch (error) {
         console.error('Error fetching participants:', error)
+        this.useTestData()
       }
     },
+
+    // Use test data if no participants found
+    useTestData() {
+      this.participants = [
+        { id: 'test1', name: 'Alice', records: [] },
+        { id: 'test2', name: 'Bob', records: [] },
+        { id: 'test3', name: 'Charlie', records: [] },
+        { id: 'test4', name: 'Diana', records: [] },
+        { id: 'test5', name: 'Eve', records: [] },
+        { id: 'test6', name: 'Frank', records: [] },
+        { id: 'test7', name: 'Grace', records: [] },
+        { id: 'test8', name: 'Heidi', records: [] }
+      ]
+      console.log('Using test data with', this.participants.length, 'participants')
+      this.organizeTournament()
+    },
+
     // Organize participants into a tournament structure
     organizeTournament() {
       console.log('Participants before organizing tournament:', this.participants)
+
+      // Ensure we have participants to work with
+      if (!this.participants || this.participants.length === 0) {
+        console.error('No participants to organize')
+        return
+      }
+
       const shuffled = [...this.participants].sort(() => Math.random() - 0.5)
       console.log('Shuffled participants:', shuffled)
       const rounds = []
@@ -76,7 +168,8 @@ export default {
       for (let i = 0; i < shuffled.length; i += 2) {
         firstRound.push({
           participant1: shuffled[i],
-          participant2: shuffled[i + 1] || null
+          participant2: i + 1 < shuffled.length ? shuffled[i + 1] : null,
+          winner: null
         })
       }
       rounds.push(firstRound)
@@ -89,47 +182,139 @@ export default {
 
       this.rounds = rounds
       console.log('Rounds array:', this.rounds)
+    },
+
+    // Check if a participant is a winner
+    isWinner(roundIndex, matchIndex, participantKey) {
+      if (!this.rounds[roundIndex] || !this.rounds[roundIndex][matchIndex]) return false
+      const match = this.rounds[roundIndex][matchIndex]
+      return match.winner === participantKey
+    },
+
+    // Check if a winner can be selected (both participants exist)
+    canSelectWinner(roundIndex, matchIndex) {
+      if (!this.rounds[roundIndex] || !this.rounds[roundIndex][matchIndex]) return false
+      const match = this.rounds[roundIndex][matchIndex]
+      return match.participant1 && match.participant2 && !match.winner
+    },
+
+    // Select a winner for a match
+    async selectWinner(roundIndex, matchIndex, participantKey) {
+      console.log(
+        `Selecting winner: round ${roundIndex}, match ${matchIndex}, participant ${participantKey}`
+      )
+
+      if (!this.isUserLoggedIn) {
+        alert('You must be logged in to select a winner.')
+        return
+      }
+
+      if (!this.rounds[roundIndex] || !this.rounds[roundIndex][matchIndex]) {
+        console.error('Match does not exist:', roundIndex, matchIndex)
+        return
+      }
+
+      const match = this.rounds[roundIndex][matchIndex]
+      if (!match[participantKey]) {
+        alert('Invalid selection: Participant does not exist.')
+        return
+      }
+
+      try {
+        // Mark the winner in the current match
+        match.winner = participantKey
+        const winner = match[participantKey]
+        const loser = participantKey === 'participant1' ? match.participant2 : match.participant1
+
+        console.log('Winner selected:', winner.name)
+
+        // Try to update Firestore, but don't fail if it errors
+        try {
+          if (winner.id && !winner.id.startsWith('test')) {
+            console.log(`Updating winner record in Firestore for ID: ${winner.id}`)
+            const winnerDocRef = doc(festivall_db, 'haven', winner.id)
+            await updateDoc(winnerDocRef, {
+              records: arrayUnion('w')
+            })
+            console.log('Winner record updated successfully')
+          } else {
+            console.log('Using test data - skipping Firestore update for winner')
+            // Just update local data
+            if (!winner.records) winner.records = []
+            winner.records.push('w')
+          }
+
+          if (loser && loser.id && !loser.id.startsWith('test')) {
+            console.log(`Updating loser record in Firestore for ID: ${loser.id}`)
+            const loserDocRef = doc(festivall_db, 'haven', loser.id)
+            await updateDoc(loserDocRef, {
+              records: arrayUnion('l')
+            })
+            console.log('Loser record updated successfully')
+          } else if (loser) {
+            console.log('Using test data - skipping Firestore update for loser')
+            // Just update local data
+            if (!loser.records) loser.records = []
+            loser.records.push('l')
+          }
+        } catch (firestoreError) {
+          console.error('Error updating Firestore (continuing anyway):', firestoreError)
+        }
+
+        // Advance the winner to the next round
+        if (roundIndex + 1 < this.rounds.length) {
+          const nextRound = this.rounds[roundIndex + 1]
+          const nextMatchIndex = Math.floor(matchIndex / 2)
+
+          // Create the next match if it doesn't exist
+          if (!nextRound[nextMatchIndex]) {
+            nextRound[nextMatchIndex] = {
+              participant1: null,
+              participant2: null,
+              winner: null
+            }
+          }
+
+          // Add the winner to the appropriate position in the next match
+          if (matchIndex % 2 === 0) {
+            nextRound[nextMatchIndex].participant1 = winner
+          } else {
+            nextRound[nextMatchIndex].participant2 = winner
+          }
+
+          console.log(`Advanced ${winner.name} to round ${roundIndex + 1}, match ${nextMatchIndex}`)
+        } else {
+          console.log(`${winner.name} is the tournament champion!`)
+        }
+      } catch (error) {
+        console.error('Error selecting winner:', error)
+        alert('Failed to update the winner. Please try again.')
+      }
     }
   },
   mounted() {
-    // For testing, use a static array of participants
-    this.participants = [
-      { name: 'Alice' },
-      { name: 'Bob' },
-      { name: 'Charlie' },
-      { name: 'Diana' },
-      { name: 'Eve' },
-      { name: 'Frank' },
-      { name: 'Grace' },
-      { name: 'Heidi' },
-      { name: 'Ivan' },
-      { name: 'Judy' },
-      { name: 'Karl' },
-      { name: 'Leo' },
-      { name: 'Mallory' },
-      { name: 'Nina' },
-      { name: 'Oscar' },
-      { name: 'Peggy' },
-      { name: 'Quentin' },
-      { name: 'Rupert' },
-      { name: 'Sybil' },
-      { name: 'Trent' },
-      { name: 'Uma' },
-      { name: 'Victor' },
-      { name: 'Walter' },
-      { name: 'Xena' },
-      { name: 'Yara' },
-      { name: 'Zane' }
-    ]
-    this.organizeTournament()
+    console.log('HavenBattleView mounted')
+    this.checkLoginStatus()
+    this.fetchParticipants()
+
+    // For debugging - log the rounds structure periodically
+    setTimeout(() => {
+      console.log('Current tournament state:', this.rounds)
+    }, 2000)
   }
 }
 </script>
 
 <style scoped>
 .container {
+  width: 100vw;
   padding: 20px;
   text-align: center;
+}
+.haven-emblem {
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 20px;
 }
 .title {
   font-size: 2rem;
@@ -160,8 +345,29 @@ export default {
 .participant {
   font-size: 14px;
   margin: 5px 0;
+  width: 100%;
+  padding: 5px;
 }
 .vs {
   font-weight: bold;
+}
+.winner {
+  background-color: rgba(var(--festivall-baby-blue-rgb), 0.2);
+  font-weight: bold;
+}
+.select-winner-btn {
+  margin-top: 5px;
+  padding: 2px 6px;
+  font-size: 12px;
+  background-color: var(--festivall-baby-blue);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.admin-notice {
+  margin-bottom: 10px;
+  font-style: italic;
+  color: var(--festivall-baby-blue);
 }
 </style>
