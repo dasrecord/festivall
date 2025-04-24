@@ -24,12 +24,17 @@
           <input type="email" id="email" v-model="form.email" required autocomplete="off" />
         </div>
         <div>
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" v-model="form.phone" required autocomplete="off" />
+        </div>
+        <div>
           <label for="enquiry">Enquiry:</label>
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Select an option</option>
             <option value="Customer">Experience Haven</option>
             <option value="Artist">Perform at Haven</option>
             <option value="Partner">Partner with Haven</option>
+            <option value="Battle">Dance Battle at Haven</option>
           </select>
         </div>
         <div v-if="form.enquiry === 'Artist'">
@@ -68,6 +73,30 @@
           </select>
         </div>
 
+        <div v-if="form.enquiry === 'Battle'">
+          <div>
+            <label for="act_name">Act Name:</label>
+            <input type="text" id="act_name" v-model="form.act_name" required />
+          </div>
+          <div>
+            <label for="act_url">Act URL:</label>
+            <input type="url" id="act_url" v-model="form.act_url" required />
+          </div>
+
+          <div>
+            <label>
+              <input type="checkbox" v-model="form.agree_communication" required />
+              I agree to receive communication from Haven.
+            </label>
+          </div>
+          <div>
+            <label>
+              <input type="checkbox" v-model="form.participate_risk" required />
+              I agree to participate at my own risk.
+            </label>
+          </div>
+        </div>
+
         <div>
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required></textarea>
@@ -93,6 +122,11 @@ export default {
       form: {
         name: '',
         email: '',
+        phone: '',
+        act_name: '',
+        act_url: '',
+        agree_communication: false,
+        participate_risk: false,
         enquiry: '',
         act_type: '',
         mix_url: '',
@@ -107,75 +141,99 @@ export default {
     async sendtorelay() {
       const slackPayload = {
         blocks: [
-            {
+          {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Name:* ${this.form.name}`
             }
-            },
-            {
+          },
+          {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Email:* ${this.form.email}`
             }
-            },
-            {
+          },
+          {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Enquiry:* ${this.form.enquiry}`
             }
-            },
-            ...(this.form.enquiry === 'Artist' ? [
-            {
-              type: 'section',
-              text: {
-              type: 'mrkdwn',
-              text: `*Act Type:* ${this.form.act_type}`
-              }
-            },
-            {
-              type: 'section',
-              text: {
-              type: 'mrkdwn',
-              text: `*Mix/Track URL:* ${this.form.mix_url}`
-              }
-            }
-            ] : []),
-            ...(this.form.enquiry === 'Partner' ? [
-            {
-              type: 'section',
-              text: {
-              type: 'mrkdwn',
-              text: `*Partnership Type:* ${this.form.partnership_type}`
-              }
-            },
-            {
-              type: 'section',
-              text: {
-              type: 'mrkdwn',
-              text: `*Website/URL:* ${this.form.website}`
-              }
-            }
-            ] : []),
-            ...(this.form.enquiry === 'Customer' ? [
-            {
-              type: 'section',
-              text: {
-              type: 'mrkdwn',
-              text: `*Experience Type:* ${this.form.experience_type}`
-              }
-            }
-            ] : []),
-            {
+          },
+          ...(this.form.enquiry === 'Artist'
+            ? [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Act Type:* ${this.form.act_type}`
+                  }
+                },
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Mix/Track URL:* ${this.form.mix_url}`
+                  }
+                }
+              ]
+            : []),
+          ...(this.form.enquiry === 'Partner'
+            ? [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Partnership Type:* ${this.form.partnership_type}`
+                  }
+                },
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Website/URL:* ${this.form.website}`
+                  }
+                }
+              ]
+            : []),
+          ...(this.form.enquiry === 'Customer'
+            ? [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Experience Type:* ${this.form.experience_type}`
+                  }
+                }
+              ]
+            : []),
+          ...(this.form.enquiry === 'Battle'
+            ? [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Act Name:* ${this.form.act_name}`
+                  }
+                },
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Act URL:* ${this.form.act_url}`
+                  }
+                }
+              ]
+            : []),
+          {
             type: 'section',
             text: {
               type: 'mrkdwn',
               text: `*Message:* ${this.form.message}`
             }
-            }
+          }
         ]
       }
 
@@ -193,6 +251,11 @@ export default {
         this.form = {
           name: '',
           email: '',
+          phone: '',
+          act_name: '',
+          act_url: '',
+          agree_communication: false,
+          participate_risk: false,
           enquiry: '',
           act_type: '',
           mix_url: '',
