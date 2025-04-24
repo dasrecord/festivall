@@ -44,6 +44,7 @@ import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
 import HavenView from '@/views/HavenView.vue'
+import HavenBattleView from '@/views/HavenBattleView.vue'
 
 const routes = [
   {
@@ -175,6 +176,11 @@ const routes = [
     path: '/haven',
     name: 'haven',
     component: HavenView
+  },
+  {
+    path: '/havenbattle',
+    name: 'havenbattle',
+    component: HavenBattleView
   },
   {
     path: '/nye',
