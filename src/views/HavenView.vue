@@ -32,7 +32,7 @@
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Select an option</option>
             <option value="Customer">Experience Haven</option>
-            <option value="Artist">Perform at Haven</option>
+            <!-- <option value="Artist">Perform at Haven</option> -->
             <option value="Partner">Partner with Haven</option>
             <option value="Battle">Dance Battle at Haven</option>
           </select>
@@ -68,6 +68,7 @@
           <select id="experience_type" v-model="form.experience_type" required>
             <option disabled value="">Select an option</option>
             <option value="General Inquiry">General Inquiry</option>
+            <option value="Bookings">Booking the Space</option>
             <option value="Feedback">Feedback</option>
             <option value="Other">Other</option>
           </select>
