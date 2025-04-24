@@ -27,7 +27,7 @@
           >
             {{
               rounds[roundIndex][matchIndex - 1]?.participant1
-                ? rounds[roundIndex][matchIndex - 1].participant1.name
+                ? rounds[roundIndex][matchIndex - 1].participant1.fullname
                 : 'TBD'
             }}
             <button
@@ -46,7 +46,7 @@
           >
             {{
               rounds[roundIndex][matchIndex - 1]?.participant2
-                ? rounds[roundIndex][matchIndex - 1].participant2.name
+                ? rounds[roundIndex][matchIndex - 1].participant2.fullname
                 : 'TBD'
             }}
             <button
@@ -115,7 +115,7 @@ export default {
 
         this.participants = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          name: doc.data().name || 'Unnamed Dancer', // Ensure we have a name
+          name: doc.data().fullname || 'Unnamed Dancer', // Ensure we have a name
           ...doc.data(),
           records: doc.data().records || []
         }))
@@ -136,14 +136,14 @@ export default {
     // Use test data if no participants found
     useTestData() {
       this.participants = [
-        { id: 'test1', name: 'Alice', records: [] },
-        { id: 'test2', name: 'Bob', records: [] },
-        { id: 'test3', name: 'Charlie', records: [] },
-        { id: 'test4', name: 'Diana', records: [] },
-        { id: 'test5', name: 'Eve', records: [] },
-        { id: 'test6', name: 'Frank', records: [] },
-        { id: 'test7', name: 'Grace', records: [] },
-        { id: 'test8', name: 'Heidi', records: [] }
+        { id: 'test1', fullname: 'Alice', records: [] },
+        { id: 'test2', fullname: 'Bob', records: [] },
+        { id: 'test3', fullname: 'Charlie', records: [] },
+        { id: 'test4', fullname: 'Diana', records: [] },
+        { id: 'test5', fullname: 'Eve', records: [] },
+        { id: 'test6', fullname: 'Frank', records: [] },
+        { id: 'test7', fullname: 'Grace', records: [] },
+        { id: 'test8', fullname: 'Heidi', records: [] }
       ]
       console.log('Using test data with', this.participants.length, 'participants')
       this.organizeTournament()
