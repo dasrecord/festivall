@@ -56,7 +56,7 @@ const validateReferralID = async (referral_id_code) => {
     const docSnap2025 = await getDoc(docRef2025)
     if (docSnap2025.exists()) {
       alert(
-        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap.data().fullname} at Reunion ${new Date().getFullYear()}.`
+        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap2025.data().fullname} at Reunion ${new Date().getFullYear()}.`
       )
     } else {
       alert('Hmm, we could not find a matching Festivall ID_CODE. Please check your spelling.')
