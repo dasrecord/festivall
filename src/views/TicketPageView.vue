@@ -257,6 +257,7 @@
 
           <h3>
             <strong style="text-decoration: underline"> This is your referral link: </strong><br />
+            Copy and paste this link anywhere!
             <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
             ><br /><br />
@@ -268,6 +269,16 @@
           <div class="qr-code">
             <canvas ref="referralQrCanvas"></canvas>
           </div>
+          <h3>
+            Have your friends scan this QR code to get their tickets.<br />
+            Your ID_CODE will be automatically added to their order.<br />
+          </h3>
+          <h3>
+            If you have any questions or concerns, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline"
+              >reunion@festivall.ca</a
+            >
+          </h3>
 
           <button @click="showReferralModal = false">Close</button>
         </div>
@@ -700,6 +711,7 @@ a:hover {
   display: flex;
   justify-content: center;
   margin-top: -10px;
+  margin-bottom: 10px;
   z-index: 1;
 }
 .footer {
