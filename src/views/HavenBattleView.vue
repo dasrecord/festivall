@@ -21,7 +21,24 @@
             gridRow: `${(matchIndex - 1) * Math.pow(2, roundIndex) + 1} / span ${Math.pow(2, roundIndex)}`
           }"
         >
+          <button
+            v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
+            @click="selectWinner(roundIndex, matchIndex - 1, 'participant1')"
+            class="select-winner-btn"
+          >
+            <div
+              class="participant"
+              :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant1') }"
+            >
+              {{
+                rounds[roundIndex][matchIndex - 1]?.participant1
+                  ? rounds[roundIndex][matchIndex - 1].participant1.fullname
+                  : 'TBD'
+              }}
+            </div>
+          </button>
           <div
+            v-else
             class="participant"
             :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant1') }"
           >
@@ -30,18 +47,28 @@
                 ? rounds[roundIndex][matchIndex - 1].participant1.fullname
                 : 'TBD'
             }}
-            <button
-              v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
-              @click="selectWinner(roundIndex, matchIndex - 1, 'participant1')"
-              class="select-winner-btn"
-            >
-              Select Winner
-            </button>
           </div>
           <div class="vs" v-if="rounds[roundIndex][matchIndex - 1]?.participant2">vs</div>
+          <button
+            v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
+            @click="selectWinner(roundIndex, matchIndex - 1, 'participant2')"
+            class="select-winner-btn"
+          >
+            <div
+              class="participant"
+              v-if="rounds[roundIndex][matchIndex - 1]?.participant2"
+              :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant2') }"
+            >
+              {{
+                rounds[roundIndex][matchIndex - 1]?.participant2
+                  ? rounds[roundIndex][matchIndex - 1].participant2.fullname
+                  : 'TBD'
+              }}
+            </div>
+          </button>
           <div
+            v-else-if="rounds[roundIndex][matchIndex - 1]?.participant2"
             class="participant"
-            v-if="rounds[roundIndex][matchIndex - 1]?.participant2"
             :class="{ winner: isWinner(roundIndex, matchIndex - 1, 'participant2') }"
           >
             {{
@@ -49,13 +76,6 @@
                 ? rounds[roundIndex][matchIndex - 1].participant2.fullname
                 : 'TBD'
             }}
-            <button
-              v-if="isUserLoggedIn && canSelectWinner(roundIndex, matchIndex - 1)"
-              @click="selectWinner(roundIndex, matchIndex - 1, 'participant2')"
-              class="select-winner-btn"
-            >
-              Select Winner
-            </button>
           </div>
         </div>
       </div>
@@ -113,12 +133,16 @@ export default {
           querySnapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
         )
 
-        this.participants = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().fullname || 'Unnamed Dancer', // Ensure we have a name
-          ...doc.data(),
-          records: doc.data().records || []
-        }))
+        this.participants = querySnapshot.docs.map((doc) => {
+          // Ensure we have consistent naming
+          const data = doc.data()
+          return {
+            id: doc.id,
+            fullname: data.fullname || data.name || doc.id.split('@')[0] || 'Unnamed Dancer',
+            ...data,
+            records: data.records || []
+          }
+        })
 
         if (this.participants.length < 4) {
           console.warn('Not enough participants found in Firestore, using test data')
@@ -221,12 +245,15 @@ export default {
       }
 
       try {
+        // Make a deep copy of the rounds array to ensure reactivity
+        const updatedRounds = JSON.parse(JSON.stringify(this.rounds))
+
         // Mark the winner in the current match
-        match.winner = participantKey
+        updatedRounds[roundIndex][matchIndex].winner = participantKey
         const winner = match[participantKey]
         const loser = participantKey === 'participant1' ? match.participant2 : match.participant1
 
-        console.log('Winner selected:', winner.name)
+        console.log('Winner selected:', winner.fullname || winner.name)
 
         // Try to update Firestore, but don't fail if it errors
         try {
@@ -262,8 +289,8 @@ export default {
         }
 
         // Advance the winner to the next round
-        if (roundIndex + 1 < this.rounds.length) {
-          const nextRound = this.rounds[roundIndex + 1]
+        if (roundIndex + 1 < updatedRounds.length) {
+          const nextRound = updatedRounds[roundIndex + 1]
           const nextMatchIndex = Math.floor(matchIndex / 2)
 
           // Create the next match if it doesn't exist
@@ -277,15 +304,21 @@ export default {
 
           // Add the winner to the appropriate position in the next match
           if (matchIndex % 2 === 0) {
-            nextRound[nextMatchIndex].participant1 = winner
+            nextRound[nextMatchIndex].participant1 = JSON.parse(JSON.stringify(winner))
           } else {
-            nextRound[nextMatchIndex].participant2 = winner
+            nextRound[nextMatchIndex].participant2 = JSON.parse(JSON.stringify(winner))
           }
 
-          console.log(`Advanced ${winner.name} to round ${roundIndex + 1}, match ${nextMatchIndex}`)
+          console.log(
+            `Advanced ${winner.fullname || winner.name} to round ${roundIndex + 1}, match ${nextMatchIndex}`
+          )
         } else {
-          console.log(`${winner.name} is the tournament champion!`)
+          console.log(`${winner.fullname || winner.name} is the tournament champion!`)
         }
+
+        // Update the rounds array with our modified copy to ensure reactivity
+        this.rounds = updatedRounds
+        console.log('Updated tournament state:', JSON.stringify(this.rounds))
       } catch (error) {
         console.error('Error selecting winner:', error)
         alert('Failed to update the winner. Please try again.')
