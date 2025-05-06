@@ -154,8 +154,11 @@ export default {
 
 <style scoped>
 .basic {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 1rem;
+  text-align: center;
 }
 .reunion-emblem {
   width: 90%;

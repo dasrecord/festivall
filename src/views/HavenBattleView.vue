@@ -385,8 +385,10 @@ export default {
   font-weight: bold;
 }
 .winner {
-  background-color: rgba(var(--festivall-baby-blue-rgb), 0.2);
+  background-color: var(--festivall-baby-blue-rgb);
   font-weight: bold;
+  font-size: 1rem;
+  border: 1px solid var(--festivall-baby-blue);
 }
 .select-winner-btn {
   margin-top: 5px;
@@ -397,6 +399,7 @@ export default {
   border: none;
   border-radius: 3px;
   cursor: pointer;
+  width: 100%;
 }
 .admin-notice {
   margin-bottom: 10px;
