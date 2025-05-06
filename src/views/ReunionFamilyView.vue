@@ -72,6 +72,9 @@ export default {
 <style scoped>
 .basic,
 h2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 1rem;
   text-align: center;
 }

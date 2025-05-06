@@ -112,13 +112,13 @@ export default {
   display: flex;
   position: relative;
   width: 100%;
-  height: 400px; /* Default height for desktop */
+  height: 400px;
 }
 
 .carousel-inner img {
   width: 100%;
-  object-fit: cover; /* Ensures images are properly scaled */
-  border-radius: 10px; /* Optional: Add rounded corners */
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .carousel-controls {
