@@ -68,27 +68,29 @@
     <h3>2. PAYMENT</h3>
     <p>The Parties agree to the following Payment and Payment Terms:</p>
     <p><strong>Compensation for Services:</strong></p>
+
     <ul>
       <li v-if="applicant.applicant_types.includes('Artist')">
-        One complementary weekend pass for ARTIST
+        One complementary weekend pass for ARTIST*
       </li>
       <li v-if="applicant.applicant_types.includes('Artist')">
         One complementary weekend pass for GUEST
       </li>
       <li v-if="applicant.applicant_types.includes('Volunteer')">
-        One complementary weekend pass for VOLUNTEER
+        One complementary weekend pass for VOLUNTEER*
       </li>
       <li v-if="applicant.applicant_types.includes('Volunteer')">
         One complementary meal package for each festival day worked
       </li>
       <li v-if="applicant.applicant_types.includes('Workshop')">
-        One complementary weekend pass for WORKSHOP
+        One complementary weekend pass for WORKSHOP*
       </li>
       <li>
         $20 Referral bonus for every weekend pass sold using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
+    * Applicants with multiple roles will only receive one complementary weekend pass.
     <p v-if="applicant.rates">
       <strong>Additional Compensation:</strong> {{ applicant.rates
       }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date
