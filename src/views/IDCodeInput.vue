@@ -7,7 +7,7 @@
     <h3>Enter Your ID Code</h3>
 
     <form @submit.prevent="checkIdCode">
-      <input type="text" v-model="idCode" placeholder="a2c4e" required />
+      <input type="text" v-model="idCode" placeholder="Enter Your ID CODE" required />
       <button type="submit">ENTER</button>
     </form>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
