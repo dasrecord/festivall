@@ -164,6 +164,7 @@ const router = useRouter()
 }
 
 .reunion-emblem {
+  width: 100%;
   max-width: 600px;
   margin-bottom: 1rem;
 }
