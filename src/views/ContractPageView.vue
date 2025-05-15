@@ -333,7 +333,7 @@ export default {
       await updateApplication()
       await saveContract()
       await addOrder()
-      router.push('reunionticket')
+      router.push({ name: 'reunionticket' })
     }
 
     onMounted(() => {
