@@ -238,7 +238,7 @@ onMounted(() => {
       province: 'Saskatchewan',
       country: 'Canada',
       postal_code: 'S7W1E2',
-      formatted_phone: '(123)456-7890',
+      formatted_phone: '(306)491-6040',
       payment_type: 'inkind',
       applicant_types: ['Artist', 'Volunteer', 'Workshop', 'Art Installation', 'Vendor'],
       act_type: 'DJ',
