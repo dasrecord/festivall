@@ -29,8 +29,8 @@
             </button>
             <p>
               By selecting this option, you will be able to sign up for multiple teams and shifts
-              during the event. This option is ideal for volunteers who are flexible and willing to
-              help out in various capacities.
+              during the event. This option is ideal for volunteers who are willing to take on more
+              than the minimum shift requirements and help out in various areas.
             </p>
           </div>
         </div>
