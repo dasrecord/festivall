@@ -319,8 +319,8 @@ export default {
       }
     },
     paidStatus(order) {
-      if (order.paid) {
-        return order.paid === 'true' ? 'Paid' : 'Not Paid'
+      if (order.paid === true || order.paid === 'true') {
+        return 'Paid'
       } else {
         return 'Not Paid'
       }
