@@ -20,22 +20,22 @@
         <!-- Day sections with filtered events -->
         <div v-if="showDays.friday" class="day">
           <h2>FRIDAY</h2>
-          <lineup-day :events="getFridayEvents" :loading="loading" />
+          <lineup-day :events="getFridayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.saturday" class="day">
           <h2>SATURDAY</h2>
-          <lineup-day :events="getSaturdayEvents" :loading="loading" />
+          <lineup-day :events="getSaturdayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.sunday" class="day">
           <h2>SUNDAY</h2>
-          <lineup-day :events="getSundayEvents" :loading="loading" />
+          <lineup-day :events="getSundayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.monday" class="day">
           <h2>MONDAY</h2>
-          <lineup-day :events="getMondayEvents" :loading="loading" />
+          <lineup-day :events="getMondayEvents" :loading="loading" class="setinfo" />
         </div>
       </div>
     </div>
@@ -64,10 +64,7 @@ const showDays = reactive({
 const fetchEvents = async () => {
   loading.value = true
   try {
-    const q = query(
-      collection(reunion_db, 'applications_2025'),
-      where('contract_signed', '==', true)
-    )
+    const q = query(collection(reunion_db, 'orders_2025'), where('contract_signed', '==', true))
     const snapshot = await getDocs(q)
     events.value = snapshot.docs.map((doc) => ({
       id: doc.id,
