@@ -88,18 +88,6 @@ export default {
           category: 'Sequence Challenge'
         },
         {
-          text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of 1010?',
-          answer: '10',
-          type: 'text',
-          category: 'Math Question'
-        },
-        {
-          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
-          answer: '21',
-          type: 'text',
-          category: 'Sequence Challenge'
-        },
-        {
           text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'Nothing',
           type: 'text',
@@ -107,10 +95,16 @@ export default {
         },
         {
           text: 'What is "Reunion" in Morse code?',
-          subtext: 'Hint: Use periods . dashes - and spaces to separate letters.',
+          subtext: 'Hint: Use periods . dashes - for the letters. Use spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
           category: 'Decoding'
+        },
+        {
+          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
+          answer: '21',
+          type: 'text',
+          category: 'Sequence Challenge'
         },
         {
           text: 'What is the largest planet in our solar system?',
@@ -137,8 +131,15 @@ export default {
           category: 'Quest'
         },
         {
+          text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of 1010?',
+          answer: '10',
+          type: 'text',
+          category: 'Math Question'
+        },
+        {
           text: 'White to move and checkmate in two moves.',
-          subtext: 'Hint: Only the frist move is required using chess notation.',
+          subtext:
+            'Hint: Only the first move is required for the answer. Use standard chess notation.',
           answer: 'Ra6',
           type: 'text',
           image: chess_1,
@@ -157,13 +158,13 @@ export default {
           category: 'Quest'
         },
         {
-          text: 'Locate our Food Coordinator for your final question. ',
+          text: 'Locate our Food Coordinator for your final question.',
           answer: 'garlic',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'You have completed the scavenger hunt',
+          text: 'You have completed the scavenger hunt.',
           type: 'information',
           category: 'Congratulations!'
         }
@@ -290,16 +291,17 @@ export default {
 
 .question {
   background-color: rgba(0, 0, 0, 0.8);
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 10px;
   text-align: center;
-  width: 80%;
+  width: 90%;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 img {
-  max-width: 350px;
+  width: 100%;
+  max-width: 300px;
   height: auto;
   margin: 1rem 0;
 }
