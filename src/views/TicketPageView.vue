@@ -99,7 +99,7 @@
           "
         >
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
-          <strong>Status:</strong>
+          <strong>Check-In Status:</strong>
           <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
             {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
           </span>

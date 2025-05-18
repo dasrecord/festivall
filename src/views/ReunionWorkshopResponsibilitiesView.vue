@@ -77,6 +77,9 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
   border: 1px solid #444;
   border-radius: 15px;
   background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .responsibilities {
