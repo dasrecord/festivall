@@ -635,7 +635,7 @@ export default {
 
     const updateSettime = async (id_code, settime) => {
       try {
-        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        const docRef = doc(reunion_db, 'orders_2025', id_code)
         await updateDoc(docRef, {
           settime: settime
         })
@@ -652,7 +652,7 @@ export default {
 
     const clearSettime = async (id_code) => {
       try {
-        const docRef = doc(reunion_db, 'applications_2025', id_code)
+        const docRef = doc(reunion_db, 'orders_2025', id_code)
         await updateDoc(docRef, {
           settime: ''
         })
