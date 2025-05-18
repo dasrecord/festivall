@@ -138,6 +138,7 @@ const formatTime = (timestamp) => {
   text-decoration: none;
   color: inherit;
   border: 1px solid rgba(0, 255, 0);
+  cursor: pointer;
 }
 
 .icon {
