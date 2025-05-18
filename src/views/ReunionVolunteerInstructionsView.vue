@@ -172,7 +172,6 @@ const router = useRouter()
   width: 80vw;
   display: flex;
   flex-direction: column;
-
   align-items: center;
   padding: 1rem;
   border: 1px solid #444;

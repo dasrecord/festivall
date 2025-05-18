@@ -156,6 +156,9 @@ import front_gate_icon from '../assets/images/icons/front_gate.png'
   border: 1px solid #444;
   border-radius: 15px;
   background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .responsibilities {
