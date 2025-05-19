@@ -159,7 +159,8 @@ export default {
         partnership_type: '',
         website: '',
         experience_type: '',
-        message: ''
+        message: '',
+        battles: ['2025-06-14T20:00']
       }
     }
   },

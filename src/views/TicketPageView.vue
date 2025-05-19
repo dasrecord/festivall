@@ -5,13 +5,13 @@
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
       :targetYear="2025"
-      :targetMonth="7"
+      :targetMonth="8"
       :targetDay="29"
     />
     <CountdownTimer
       v-if="order.ticket_type === 'Day Pass'"
       :targetYear="2025"
-      :targetMonth="7"
+      :targetMonth="8"
       :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>

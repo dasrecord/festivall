@@ -14,7 +14,9 @@
         <li v-for="event in events" :key="event.id" class="event-item">
           <!-- Iterate over all set times -->
           <div v-for="(settime, index) in event.settimes" :key="index" class="event-time">
-            {{ formatTime(settime) }}
+            <h3>
+              {{ formatTime(settime) }}
+            </h3>
             <a
               v-if="event.mix_track_url"
               :href="event.mix_track_url"
@@ -22,7 +24,7 @@
               rel="noopener noreferrer"
               class="mix-track-link"
             >
-              <img :src="music_icon" alt="Music" class="icon" />
+              <!-- <img :src="music_icon" alt="Music" class="icon" /> -->
               LISTEN
               <img :src="listen_icon" alt="Listen" class="icon" />
             </a>
@@ -107,8 +109,8 @@ const formatTime = (timestamp) => {
 }
 
 .event-item {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
   gap: 0.3rem;
   padding: 1rem;
   border-top: 1px solid #fff;
@@ -119,9 +121,10 @@ const formatTime = (timestamp) => {
 .event-time {
   display: flex;
   flex-direction: column;
-  font-size: larger;
+  justify-content: center;
+  align-items: center;
+
   min-width: 100px;
-  
 }
 
 .event-details {
@@ -133,13 +136,14 @@ const formatTime = (timestamp) => {
 }
 
 .mix-track-link {
+  width: 80px;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
   border-radius: 4px;
   text-decoration: none;
-  color: inherit;
+  color: white;
   border: 1px solid rgba(0, 255, 0);
   cursor: pointer;
 }
