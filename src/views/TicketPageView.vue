@@ -5,13 +5,13 @@
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
       :targetYear="2025"
-      :targetMonth="8"
+      :targetMonth="7"
       :targetDay="29"
     />
     <CountdownTimer
       v-if="order.ticket_type === 'Day Pass'"
       :targetYear="2025"
-      :targetMonth="8"
+      :targetMonth="7"
       :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
@@ -300,28 +300,31 @@
           v-if="
             (order.applicant_types?.includes('Artist') ||
               order.applicant_types?.includes('Workshop')) &&
-            order.settime
+            order.settimes?.length > 0
           "
           style="grid-column: span 2; cursor: pointer"
-          @click.prevent="downloadSettime"
-        >
-          <p style="text-align: center; text-decoration: underline">
+          @click.prevent="downloadSettimes"
+          >
+          <p style="text-align: center">
             <img
               :src="order.applicant_types?.includes('Artist') ? dj_icon : workshop_icon"
               style="height: auto; width: 36px"
               :alt="order.applicant_types?.includes('Artist') ? 'Artist Icon' : 'Workshop Icon'"
             />
-            Your Set Time:
-            {{
-              new Date(order.settime).toLocaleString([], {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              })
-            }}
+            Download Your Set Times:
+            <p v-for="(settime, index) in order.settimes" :key="index"
+            >
+                {{
+                  new Date(settime).toLocaleString([], {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  })
+                }}
+              </p>
           </p>
         </div>
         <RouterLink to="/reunionlocation">
@@ -486,55 +489,64 @@ export default {
       }
     }
 
-    const downloadSettime = () => {
-      if (!order.value || !order.value.settime) {
-        alert('Set time information not available')
-        return
+    const downloadSettimes = () => {
+      if (!order.value || !order.value.settimes || order.value.settimes.length === 0) {
+        alert('Set time information not available');
+        return;
       }
-
-      // Get the set time start date
-      const startDate = new Date(order.value.settime)
-      // Set end time 1 hour after start
-      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000)
-
-      // Format dates for iCalendar (YYYYMMDDTHHmmssZ)
+    
+      // Helper function to format dates for iCalendar (YYYYMMDDTHHmmssZ)
       const formatDate = (date) => {
-        return date.toISOString().replace(/-|:|\.\d+/g, '')
-      }
-
-      const startFormatted = formatDate(startDate)
-      const endFormatted = formatDate(endDate)
-
-      // Create the iCalendar content
+        return date.toISOString().replace(/-|:|\.\d+/g, '');
+      };
+    
+      // Start building the iCalendar content
       const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Festivall//Reunion Festival//EN',
-        'BEGIN:VEVENT',
-        `DTSTART:${startFormatted}`,
-        `DTEND:${endFormatted}`,
-        `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
-        'LOCATION:Reunion Festival',
-        `DESCRIPTION:Your set time at Reunion Festival ${new Date().getFullYear()}`,
-        `UID:${order.value.id_code_long}`,
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n')
-
+        'PRODID:-//Festivall//Reunion Festival//EN'
+      ];
+    
+      // Iterate over all settimes and create a VEVENT for each
+      order.value.settimes.forEach((settime, index) => {
+        const startDate = new Date(settime);
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Add 1 hour to start time
+    
+        const startFormatted = formatDate(startDate);
+        const endFormatted = formatDate(endDate);
+    
+        icsContent.push(
+          'BEGIN:VEVENT',
+          `UID:${order.value.id_code_long}-${index}`, // Unique ID for each event
+          `DTSTART:${startFormatted}`,
+          `DTEND:${endFormatted}`,
+          `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
+          'LOCATION:Reunion Festival',
+          `DESCRIPTION:Your set time at Reunion Festival ${new Date().getFullYear()}`,
+          'STATUS:CONFIRMED',
+          'SEQUENCE:0',
+          'TRANSP:OPAQUE',
+          'END:VEVENT'
+        );
+      });
+    
+      // End the iCalendar content
+      icsContent.push('END:VCALENDAR');
+    
       // Create blob and trigger download
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', `reunion_festival_set_time.ics`)
-      document.body.appendChild(link)
-      link.click()
-
+      const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+    
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reunion_festival_set_times.ics`);
+      document.body.appendChild(link);
+      link.click();
+    
       // Clean up
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-    }
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
 
     watch(showReferralModal, async (isVisible) => {
       if (isVisible && order.value) {
@@ -554,6 +566,7 @@ export default {
       } else {
         router.push({ name: 'EnterIDCode' })
       }
+      console.log('Settimes:', order.settimes)
     })
 
     return {
@@ -570,7 +583,7 @@ export default {
       showPaymentModal,
       showCheckInModal,
       showReferralModal,
-      downloadSettime,
+      downloadSettimes,
       ticket_icon,
       meals_icon,
       payment_icon,
