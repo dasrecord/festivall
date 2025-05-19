@@ -376,8 +376,8 @@
                       day: 'numeric'
                     })
                   }}
+                  <button @click="removeSettime(applicant.id_code, index)">Remove</button>
                 </p>
-                <button @click="removeSettime(applicant.id_code, index)">Remove</button>
               </div>
 
               <input type="datetime-local" v-model="applicant.newSettime" />
@@ -666,27 +666,6 @@ export default {
       }
     }
 
-    const clearSettime = async (id_code) => {
-      try {
-        const docRef = doc(reunion_db, 'orders_2025', id_code)
-
-        // Update the document to clear the array of set times
-        await updateDoc(docRef, {
-          settimes: []
-        })
-
-        // Update the local state
-        applicants.value = applicants.value.map((applicant) => {
-          if (applicant.id_code === id_code) {
-            applicant.settimes = []
-          }
-          return applicant
-        })
-      } catch (error) {
-        console.error('Error clearing settime:', error)
-      }
-    }
-
     const removeSettime = async (id_code, index) => {
       try {
         const docRef = doc(reunion_db, 'orders_2025', id_code)
@@ -901,7 +880,7 @@ export default {
       lineup_icon,
       updateSettime,
       removeSettime,
-      clearSettime,
+
       generateLineup,
       generateContract,
       remindContract,
