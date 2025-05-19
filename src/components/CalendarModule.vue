@@ -12,8 +12,9 @@
     <div v-else class="events-list">
       <ul v-if="events.length">
         <li v-for="event in events" :key="event.id" class="event-item">
-          <div class="event-time">
-            {{ formatTime(event.settime) }}
+          <!-- Iterate over all set times -->
+          <div v-for="(settime, index) in event.settimes" :key="index" class="event-time">
+            {{ formatTime(settime) }}
             <a
               v-if="event.mix_track_url"
               :href="event.mix_track_url"
@@ -27,8 +28,8 @@
             </a>
           </div>
 
+          <!-- Event Details -->
           <div class="event-details">
-            <!-- Mix Track URL -->
             <h3>
               {{ event.act_name || event.workshop_title || 'Untitled Event' }}
             </h3>
@@ -107,6 +108,7 @@ const formatTime = (timestamp) => {
 
 .event-item {
   display: flex;
+  flex-direction: column;
   gap: 0.3rem;
   padding: 1rem;
   border-top: 1px solid #fff;
@@ -119,6 +121,7 @@ const formatTime = (timestamp) => {
   flex-direction: column;
   font-size: larger;
   min-width: 100px;
+  
 }
 
 .event-details {

@@ -364,30 +364,35 @@
               "
               class="settime-section"
             >
-              <input type="datetime-local" v-model="applicant.settime" />
+              <div v-for="(settime, index) in applicant.settimes || []" :key="index">
+                <p>
+                  Settime {{ index + 1 }}:
+                  {{
+                    new Date(settime).toLocaleString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric'
+                    })
+                  }}
+                </p>
+                <button @click="removeSettime(applicant.id_code, index)">Remove</button>
+              </div>
+
+              <input type="datetime-local" v-model="applicant.newSettime" />
               <img
                 @click="
-                  updateSettime(applicant.id_code, applicant.settime), (applicant.settime = '')
+                  updateSettime(applicant.id_code, applicant.newSettime),
+                    (applicant.newSettime = '')
                 "
                 :src="lineup_icon"
-                alt="Update Settime"
+                alt="Add Settime"
                 class="action-icon"
                 style="width: auto; height: 32px"
               />
-              <p v-if="applicant.settime">
-                Settime:
-                {{
-                  new Date(applicant.settime).toLocaleString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric'
-                  })
-                }}
-                <button @click="clearSettime(applicant.id_code, '')">Clear Settime</button>
-              </p>
             </div>
+
             <div class="contract-section">
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
               <a
@@ -413,7 +418,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
 import contract_icon from '@/assets/images/icons/contract.png'
@@ -633,15 +638,26 @@ export default {
       }
     }
 
-    const updateSettime = async (id_code, settime) => {
+    const updateSettime = async (id_code, newSettime) => {
       try {
         const docRef = doc(reunion_db, 'orders_2025', id_code)
+
+        // Fetch the current document to get the existing set times
+        const docSnap = await getDoc(docRef)
+        const existingSettimes = docSnap.exists() ? docSnap.data().settimes || [] : []
+
+        // Add the new set time to the array
+        const updatedSettimes = [...existingSettimes, newSettime]
+
+        // Update the document with the new array of set times
         await updateDoc(docRef, {
-          settime: settime
+          settimes: updatedSettimes
         })
+
+        // Update the local state
         applicants.value = applicants.value.map((applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.settime = settime
+            applicant.settimes = updatedSettimes
           }
           return applicant
         })
@@ -653,17 +669,49 @@ export default {
     const clearSettime = async (id_code) => {
       try {
         const docRef = doc(reunion_db, 'orders_2025', id_code)
+
+        // Update the document to clear the array of set times
         await updateDoc(docRef, {
-          settime: ''
+          settimes: []
         })
+
+        // Update the local state
         applicants.value = applicants.value.map((applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.settime = ''
+            applicant.settimes = []
           }
           return applicant
         })
       } catch (error) {
         console.error('Error clearing settime:', error)
+      }
+    }
+
+    const removeSettime = async (id_code, index) => {
+      try {
+        const docRef = doc(reunion_db, 'orders_2025', id_code)
+
+        // Fetch the current document to get the existing set times
+        const docSnap = await getDoc(docRef)
+        const existingSettimes = docSnap.exists() ? docSnap.data().settimes || [] : []
+
+        // Remove the set time at the specified index
+        const updatedSettimes = existingSettimes.filter((_, i) => i !== index)
+
+        // Update the document with the new array of set times
+        await updateDoc(docRef, {
+          settimes: updatedSettimes
+        })
+
+        // Update the local state
+        applicants.value = applicants.value.map((applicant) => {
+          if (applicant.id_code === id_code) {
+            applicant.settimes = updatedSettimes
+          }
+          return applicant
+        })
+      } catch (error) {
+        console.error('Error removing settime:', error)
       }
     }
 
@@ -852,6 +900,7 @@ export default {
       clearCompensation,
       lineup_icon,
       updateSettime,
+      removeSettime,
       clearSettime,
       generateLineup,
       generateContract,

@@ -69,11 +69,18 @@ const fetchEvents = async () => {
     events.value = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-      mix_track_url: doc.data().mix_track_url || null // Ensure mix_track_url is mapped
+      settimes: Array.isArray(doc.data().settimes) ? doc.data().settimes : [] // Ensure settimes is an array
     }))
 
-    // Sort events by settime after fetching
-    events.value.sort((a, b) => new Date(a.settime) - new Date(b.settime))
+    // Log the fetched events to verify the data
+    console.log('Fetched Events:', events.value)
+
+    // Sort events by the earliest settime
+    events.value.sort((a, b) => {
+      const earliestA = a.settimes.length > 0 ? new Date(a.settimes[0]) : new Date(0)
+      const earliestB = b.settimes.length > 0 ? new Date(b.settimes[0]) : new Date(0)
+      return earliestA - earliestB
+    })
   } catch (error) {
     console.error('Error fetching events:', error)
   } finally {
@@ -82,32 +89,34 @@ const fetchEvents = async () => {
 }
 
 // Filter events by day
-const getFridayEvents = computed(() =>
-  events.value.filter((event) => {
-    const date = new Date(event.settime)
-    return date.getMonth() === 7 && date.getDate() === 29 // August 29
-  })
-)
+const getEventsByDay = (targetDate) =>
+  events.value
+    .map((event) => {
+      // Filter the settimes to include only those matching the target day
+      const filteredSettimes = event.settimes.filter((settime) => {
+        const date = new Date(settime)
+        return (
+          date.getFullYear() === targetDate.getFullYear() &&
+          date.getMonth() === targetDate.getMonth() &&
+          date.getDate() === targetDate.getDate()
+        )
+      })
 
-const getSaturdayEvents = computed(() =>
-  events.value.filter((event) => {
-    const date = new Date(event.settime)
-    return date.getMonth() === 7 && date.getDate() === 30 // August 30
-  })
-)
+      // If no settimes match the target day, exclude the event
+      if (filteredSettimes.length === 0) return null
 
-const getSundayEvents = computed(() =>
-  events.value.filter((event) => {
-    const date = new Date(event.settime)
-    return date.getMonth() === 7 && date.getDate() === 31 // August 31
-  })
-)
-const getMondayEvents = computed(() =>
-  events.value.filter((event) => {
-    const date = new Date(event.settime)
-    return date.getMonth() === 8 && date.getDate() === 1 // September 1
-  })
-)
+      // Return a new event object with only the matching settimes
+      return {
+        ...event,
+        settimes: filteredSettimes
+      }
+    })
+    .filter(Boolean) // Remove null values
+
+const getFridayEvents = computed(() => getEventsByDay(new Date('2025-08-29T00:00:00-06:00'))) // CST offset
+const getSaturdayEvents = computed(() => getEventsByDay(new Date('2025-08-30T00:00:00-06:00')))
+const getSundayEvents = computed(() => getEventsByDay(new Date('2025-08-31T00:00:00-06:00')))
+const getMondayEvents = computed(() => getEventsByDay(new Date('2025-09-01T00:00:00-06:00')))
 
 // Toggle day visibility
 const toggleDay = (day) => {
@@ -181,7 +190,6 @@ p {
 
 .main-stage {
   margin-top: 1rem;
-
   width: 100%;
 }
 
