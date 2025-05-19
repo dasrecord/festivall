@@ -818,7 +818,7 @@ export default {
         .replace('{name}', fullname || '')
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}`
+      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
     }
 
     onMounted(() => {
