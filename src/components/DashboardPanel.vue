@@ -760,10 +760,10 @@ export default {
       const subject = encodeURIComponent('Reunion 2025')
       const personalizedBody = contractEmailBody.value
         .replace('{name}', fullname || '')
-        .replace('{roles}', roles || '') // Roles already joined as a string
+        .replace('{roles}', roles || '')
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}`
+      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
     }
 
     const confirmPaymentReceived = async (id_code) => {
