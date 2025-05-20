@@ -296,18 +296,27 @@ export default {
 
       try {
         const contractDoc = doc(collection(reunion_db, 'contracts_2025'), applicant.value.id_code)
+        console.log('Saving contract with data:', {
+          ...applicant.value,
+          signature: signature.value,
+          signedAt: new Date().toISOString(),
+          contract_signed: true
+        })
+
         await setDoc(contractDoc, {
           ...applicant.value,
           signature: signature.value,
           signedAt: new Date().toISOString(),
           contract_signed: true
         })
+
         alert('Contract saved successfully!')
       } catch (error) {
         console.error('Error saving contract:', error)
         alert('Failed to save the contract.')
       }
     }
+
     const addOrder = async () => {
       try {
         const orderDoc = doc(collection(reunion_db, 'orders_2025'), applicant.value.id_code)
