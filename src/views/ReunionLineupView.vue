@@ -7,6 +7,7 @@
       style="cursor: pointer; width: 100%; max-width: 600px"
       @click="$router.push('/reunion')"
     />
+    <p>{{ new Date().getFullYear() }} LINEUP</p>
 
     <div class="main-stage">
       <!-- Toggle Buttons -->

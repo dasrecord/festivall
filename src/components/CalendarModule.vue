@@ -14,7 +14,7 @@
         <li v-for="event in events" :key="event.id" class="event-item">
           <!-- Iterate over all set times -->
           <div v-for="(settime, index) in event.settimes" :key="index" class="event-time">
-            <h3>
+            <h3 class="set-time">
               {{ formatTime(settime) }}
             </h3>
             <a
@@ -28,11 +28,22 @@
               LISTEN
               <img :src="listen_icon" alt="Listen" class="icon" />
             </a>
+            <p v-if="event.social_url">
+              <a
+                :href="event.social_url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mix-track-link"
+              >
+                SOCIALS
+                <img :src="link_icon" alt="Link" class="icon" />
+              </a>
+            </p>
           </div>
 
           <!-- Event Details -->
           <div class="event-details">
-            <h3>
+            <h3 class="artist-name">
               {{ event.act_name || event.workshop_title || 'Untitled Event' }}
             </h3>
             <p v-if="event.genre">Genre: {{ event.genre }}</p>
@@ -52,6 +63,7 @@
 <script setup>
 import { defineProps } from 'vue'
 import music_icon from '@/assets/images/icons/artist.png'
+import link_icon from '@/assets/images/icons/link.png'
 import listen_icon from '@/assets/images/icons/mix_track.png'
 
 // Props
@@ -123,7 +135,6 @@ const formatTime = (timestamp) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   min-width: 100px;
 }
 
@@ -135,8 +146,17 @@ const formatTime = (timestamp) => {
   margin: 0 0 0.5rem 0;
 }
 
+.set-time {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.artist-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
 .mix-track-link {
-  width: 80px;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -146,6 +166,7 @@ const formatTime = (timestamp) => {
   color: white;
   border: 1px solid rgba(0, 255, 0);
   cursor: pointer;
+  margin-top: 0.5rem;
 }
 
 .icon {
