@@ -278,15 +278,17 @@ export default {
       }
     },
     currentStatus(order) {
-      if (order.checked_in) {
-        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
+      if (order.checked_in !== undefined && order.checked_in !== null) {
+        return order.checked_in === true || order.checked_in === 'true'
+          ? 'Checked In'
+          : 'Not Checked In'
       } else {
         return 'Not Checked In'
       }
     },
     paidStatus(order) {
-      if (order.paid) {
-        return order.paid === 'true' ? 'Paid' : 'Not Paid'
+      if (order.paid !== undefined && order.paid !== null) {
+        return order.paid === true || order.paid === 'true' ? 'Paid' : 'Not Paid'
       } else {
         return 'Not Paid'
       }
