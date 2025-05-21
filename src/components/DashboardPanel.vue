@@ -20,6 +20,21 @@
           <img :src="meal_icon" alt="Meal Scanner" class="action-icon" style="width: 32px" />
           Meal Scanner
         </RouterLink>
+
+        <RouterLink to="/reunionlineup" class="scanner-link">
+          <img :src="lineup_icon" alt="Lineup Scanner" class="action-icon" style="width: 32px" />
+          Reunion Lineup
+        </RouterLink>
+
+        <RouterLink to="/scavengerhunt/a2c4e?fullName=Admin" class="scanner-link">
+          <img
+            :src="scavenger_hunt_icon"
+            alt="Scavenger Hunt Scanner"
+            class="action-icon"
+            style="width: 32px"
+          />
+          Scavenger Hunt
+        </RouterLink>
       </div>
     </div>
 
@@ -435,6 +450,7 @@ import workshop_icon from '@/assets/images/icons/workshop.png'
 import vendor_icon from '@/assets/images/icons/vendor.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import art_installation_icon from '@/assets/images/icons/art_installation.png'
+import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 
 export default {
   name: 'DashboardPanel',
@@ -873,6 +889,7 @@ export default {
       workshop_icon,
       vendor_icon,
       art_installation_icon,
+      scavenger_hunt_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
@@ -880,7 +897,6 @@ export default {
       lineup_icon,
       updateSettime,
       removeSettime,
-
       generateLineup,
       generateContract,
       remindContract,

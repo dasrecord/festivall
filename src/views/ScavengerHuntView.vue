@@ -40,7 +40,7 @@
         <!-- Navigation buttons -->
         <div class="controls">
           <button v-if="index > 0" @click="prevQuestion">Previous</button>
-          {{ index + 1 }}/{{ questions.length }}
+          <p v-if="index > 0">{{ index }}/{{ questions.length }}</p>
           <button v-if="index < questions.length - 1" @click="nextQuestion">Next</button>
           <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
         </div>
@@ -77,7 +77,7 @@ export default {
 
       questions: [
         {
-          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests. The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
+          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
@@ -88,14 +88,15 @@ export default {
           category: 'Sequence Challenge'
         },
         {
-          text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
-          answer: 'Nothing',
+          text: 'Visit the main stage and look for the secret symbol.',
+          answer: 'star',
           type: 'text',
-          category: 'Riddle'
+          category: 'Quest'
         },
         {
           text: 'What is "Reunion" in Morse code?',
-          subtext: 'Hint: Use periods . dashes - for the letters. Use spaces to separate letters.',
+          subtext:
+            'Hint: Use periods . and dashes - for the letters. Use spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
           category: 'Decoding'
@@ -113,28 +114,40 @@ export default {
           category: 'Trivia'
         },
         {
-          text: 'What is the chemical symbol for gold?',
-          answer: 'Au',
-          type: 'text',
-          category: 'Trivia'
-        },
-        {
           text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
           answer: '64,128,256,512,1024',
           type: 'text',
           category: 'Sequence Challenge'
         },
         {
-          text: "Find our children's coordinator and ask him for the magic word.",
+          text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
+          answer: 'Nothing',
+          type: 'text',
+          category: 'Riddle'
+        },
+        {
+          text: 'What is the chemical symbol for gold?',
+          answer: 'Au',
+          type: 'text',
+          category: 'Trivia'
+        },
+        {
+          text: "Find our Children's Coordinator and ask him for the magic word.",
           answer: 'friendship',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of 1010?',
-          answer: '10',
+          text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of the the binary number 101010?',
+          answer: '42',
           type: 'text',
           category: 'Math Question'
+        },
+        {
+          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
+          answer: 'brain',
+          type: 'text',
+          category: 'Quest'
         },
         {
           text: 'White to move and checkmate in two moves.',
@@ -146,25 +159,13 @@ export default {
           category: 'Chess Puzzle'
         },
         {
-          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
-          answer: 'brain',
-          type: 'text',
-          category: 'Quest'
-        },
-        {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
-          type: 'text',
-          category: 'Quest'
-        },
-        {
           text: 'Locate our Food Coordinator for your final question.',
           answer: 'garlic',
           type: 'text',
           category: 'Quest'
         },
         {
-          text: 'You have completed the scavenger hunt.',
+          text: `Well done, ${this.fullName}! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`,
           type: 'information',
           category: 'Congratulations!'
         }
@@ -290,11 +291,15 @@ export default {
 }
 
 .question {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem;
   border-radius: 10px;
   text-align: center;
   width: 90%;
+  height: 90%;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
@@ -332,7 +337,7 @@ input:focus {
 button {
   padding: 0.75rem 1rem;
   /* margin: 1rem; */
-  border: none;
+  border: 1px solid white;
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
