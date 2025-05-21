@@ -304,7 +304,7 @@
           "
           style="grid-column: span 2; cursor: pointer"
           @click.prevent="downloadSettimes"
-          >
+        >
           <p style="text-align: center">
             <img
               :src="order.applicant_types?.includes('Artist') ? dj_icon : workshop_icon"
@@ -312,19 +312,18 @@
               :alt="order.applicant_types?.includes('Artist') ? 'Artist Icon' : 'Workshop Icon'"
             />
             Download Your Set Times:
-            <p v-for="(settime, index) in order.settimes" :key="index"
-            >
-                {{
-                  new Date(settime).toLocaleString([], {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                  })
-                }}
-              </p>
+            <span v-for="(settime, index) in order.settimes" :key="index">
+              {{
+                new Date(settime).toLocaleString([], {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+                })
+              }}
+            </span>
           </p>
         </div>
         <RouterLink to="/reunionlocation">
@@ -491,30 +490,30 @@ export default {
 
     const downloadSettimes = () => {
       if (!order.value || !order.value.settimes || order.value.settimes.length === 0) {
-        alert('Set time information not available');
-        return;
+        alert('Set time information not available')
+        return
       }
-    
+
       // Helper function to format dates for iCalendar (YYYYMMDDTHHmmssZ)
       const formatDate = (date) => {
-        return date.toISOString().replace(/-|:|\.\d+/g, '');
-      };
-    
+        return date.toISOString().replace(/-|:|\.\d+/g, '')
+      }
+
       // Start building the iCalendar content
       const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
         'PRODID:-//Festivall//Reunion Festival//EN'
-      ];
-    
+      ]
+
       // Iterate over all settimes and create a VEVENT for each
       order.value.settimes.forEach((settime, index) => {
-        const startDate = new Date(settime);
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // Add 1 hour to start time
-    
-        const startFormatted = formatDate(startDate);
-        const endFormatted = formatDate(endDate);
-    
+        const startDate = new Date(settime)
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000) // Add 1 hour to start time
+
+        const startFormatted = formatDate(startDate)
+        const endFormatted = formatDate(endDate)
+
         icsContent.push(
           'BEGIN:VEVENT',
           `UID:${order.value.id_code_long}-${index}`, // Unique ID for each event
@@ -527,26 +526,26 @@ export default {
           'SEQUENCE:0',
           'TRANSP:OPAQUE',
           'END:VEVENT'
-        );
-      });
-    
+        )
+      })
+
       // End the iCalendar content
-      icsContent.push('END:VCALENDAR');
-    
+      icsContent.push('END:VCALENDAR')
+
       // Create blob and trigger download
-      const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-    
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `reunion_festival_set_times.ics`);
-      document.body.appendChild(link);
-      link.click();
-    
+      const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `reunion_festival_set_times.ics`)
+      document.body.appendChild(link)
+      link.click()
+
       // Clean up
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    };
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    }
 
     watch(showReferralModal, async (isVisible) => {
       if (isVisible && order.value) {
