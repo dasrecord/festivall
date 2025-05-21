@@ -28,7 +28,8 @@ const form = ref({
   payment_type: '',
   total_price: 0,
   paid: false,
-  checked_in: false
+  checked_in: false,
+  timestamp: new Date().toISOString()
 })
 
 const ticket_image = ref(ticket)
