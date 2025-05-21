@@ -1170,4 +1170,24 @@ a {
   padding: 0.5rem;
   border-radius: 10px;
 }
+@media (max-width: 768px) {
+  .banner {
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center align the content */
+    text-align: center;
+  }
+
+  .scanner-link {
+    width: 100%; /* Make buttons full width */
+    max-width: 200px; /* Optional: Limit the button width */
+  }
+
+  .logo {
+    width: 80px; /* Reduce logo size for mobile */
+  }
+
+  h1 {
+    font-size: 1.5rem; /* Adjust font size for the title */
+  }
+}
 </style>
