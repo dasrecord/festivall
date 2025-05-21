@@ -322,6 +322,8 @@ export default {
         const orderDoc = doc(collection(reunion_db, 'orders_2025'), applicant.value.id_code)
         await setDoc(orderDoc, {
           ...applicant.value,
+          signature: signature.value,
+          signedAt: new Date().toISOString(),
           contract_signed: true,
           checked_in: false,
           paid: true,
