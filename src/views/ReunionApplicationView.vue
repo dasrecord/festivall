@@ -58,7 +58,8 @@ const form = ref({
   other_requirements: '',
   portfolio_url: '',
   fixture_type: '',
-  contract_signed: false
+  contract_signed: false,
+  timestamp: new Date().toISOString()
 })
 
 const submitting = ref(false)
