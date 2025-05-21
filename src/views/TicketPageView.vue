@@ -339,7 +339,7 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2025, 3, 4)" to="/reunionlineup">
+        <RouterLink v-if="new Date() >= new Date(2025, 7, 26)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
             2025 Lineup
