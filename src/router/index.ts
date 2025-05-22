@@ -45,7 +45,6 @@ import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
 import HavenView from '@/views/HavenView.vue'
 import HavenBattleView from '@/views/HavenBattleView.vue'
-import Component from 'node_modules/ical.js/dist/types/component'
 
 const routes = [
   {
@@ -184,10 +183,10 @@ const routes = [
     component: HavenBattleView
   },
   {
-  path: '/haveninstagram',
-  name: 'haveninstagram',
-  component: ExternalRedirect,
-  props: {url: "http://instagram.com/havenyxe"}
+    path: '/haveninstagram',
+    name: 'haveninstagram',
+    component: ExternalRedirect,
+    props: { url: "http://instagram.com/havenyxe"}
   },
   {
     path: '/nye',
