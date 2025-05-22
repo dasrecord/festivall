@@ -138,7 +138,7 @@ import axios from 'axios'
 import haven_emblem from '../assets/images/haven_emblem_white.png'
 import haven_logo from '../assets/images/haven_logo_white.png'
 import haven_video from '../assets/videos/haven/luxe.mp4'
-
+import { v4 as uuidv4 } from 'uuid'
 import { festivall_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
 
@@ -149,6 +149,8 @@ export default {
       haven_logo,
       haven_video,
       form: {
+        id_code_long: '',
+        id_code: '',
         fullname: '',
         email: '',
         phone: '',
@@ -163,7 +165,9 @@ export default {
         website: '',
         event_date: '',
         message: '',
-        battles: ['2025-06-14T20:00']
+        battles: [],
+        paid: false,
+        checked_in: false
       }
     }
   },
@@ -185,6 +189,8 @@ export default {
           alert('You are on the mailing list!')
         } else {
           await setDoc(docRef, {
+            id_code_long: uuidv4(),
+            id_code: this.form.value.id_code_long.slice(0, 5),
             fullname: this.form.fullname,
             email: this.form.email,
             phone: this.form.phone,
@@ -217,21 +223,28 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Name:* ${this.form.fullname}`
+              text: `:id: ${this.form.id_code}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Email:* ${this.form.email}`
+              text: `:bust_in_silhouette:  ${this.form.fullname}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Enquiry:* ${this.form.enquiry}`
+              text: `:Email: ${this.form.email}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `:pen: ${this.form.enquiry}`
             }
           },
           ...(this.form.enquiry === 'Battle'
@@ -240,14 +253,14 @@ export default {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `*Act Name:* ${this.form.act_name}`
+                    text: `:trident: ${this.form.act_name}`
                   }
                 },
                 {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `*Video URL:* ${this.form.video_url}`
+                    text: `:vhs: ${this.form.video_url}`
                   }
                 }
               ]
@@ -258,7 +271,7 @@ export default {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `*Event Date:* ${this.form.event_date}`
+                    text: `:calendar: ${this.form.event_date}`
                   }
                 }
               ]
@@ -267,7 +280,7 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*Message:* ${this.form.message}`
+              text: `:pencil: ${this.form.message}`
             }
           }
         ]
@@ -289,10 +302,22 @@ export default {
         await this.addToHavenList()
 
         if (this.form.enquiry === 'Customer') {
-          // Redirect to Stripe checkout for ticket purchase
-          const stripeUrl = 'https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800'
+          const idCode = this.form.id_code
+          navigator.clipboard
+            .writeText(idCode)
+            .then(() => {
+              alert(
+                `Your ID CODE has been copied to clipboard: ${idCode}\n\nAfter your payment is completed, enter this code on the login page.`
+              )
+            })
+            .catch(() => {
+              alert(
+                `Please copy this ID CODE: ${idCode}\n\nAfter your payment is completed, enter this code on the login page.`
+              )
+            })
+          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=https://festivall.ca/havenlogin/${this.form.id_code}`
           window.location.href = stripeUrl
-        } else
+        } else {
           this.form = {
             fullname: '',
             email: '',
@@ -309,8 +334,8 @@ export default {
             event_date: '',
             message: ''
           }
-
-        this.$router.push({ name: 'haveninstagram' })
+          this.$router.push({ name: 'haveninstagram' })
+        }
       } catch (error) {
         console.error('Error in sendtorelay:', error)
         alert('Error submitting form. Please try again.')
