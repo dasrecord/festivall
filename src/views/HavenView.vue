@@ -28,10 +28,10 @@
           <input type="tel" id="phone" v-model="form.phone" required autocomplete="off" />
         </div>
         <div>
-          <label for="enquiry">Enquiry:</label>
+          <label for="enquiry">I Want To:</label>
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Select an option</option>
-            <option value="Customer">Experience Haven</option>
+            <option value="Customer">Buy Haven Residency Tickets</option>
             <!-- <option value="Artist">Perform at Haven</option> -->
             <option value="Partner">Partner with Haven</option>
             <option value="Battle">Dance Battle at Haven</option>
@@ -64,13 +64,16 @@
           </div>
         </div>
         <div v-if="form.enquiry === 'Customer'">
-          <label for="experience_type">Experience Type:</label>
-          <select id="experience_type" v-model="form.experience_type" required>
-            <option disabled value="">Select an option</option>
-            <option value="General Inquiry">General Inquiry</option>
-            <option value="Bookings">Booking the Space</option>
-            <option value="Feedback">Feedback</option>
-            <option value="Other">Other</option>
+          <label for="event_date">Event Date:</label>
+          <select id="event_date" v-model="form.event_date" required>
+            <option disabled value="">Select a night</option>
+            <option value="2025-05-24">May 24th, 2025</option>
+            <option value="2025-06-07">June 7th, 2025</option>
+            <option value="2025-06-20">June 20th, 2025</option>
+            <option value="2025-07-05">July 5th, 2025</option>
+            <option value="2025-07-19">July 19th, 2025</option>
+            <option value="2025-08-02">August 2nd, 2025</option>
+            <option value="2025-08-16">August 16th, 2025</option>
           </select>
         </div>
 
@@ -158,7 +161,7 @@ export default {
         mix_url: '',
         partnership_type: '',
         website: '',
-        experience_type: '',
+        event_date: '',
         message: '',
         battles: ['2025-06-14T20:00']
       }
@@ -249,6 +252,17 @@ export default {
                 }
               ]
             : []),
+          ...(this.form.enquiry === 'Customer'
+            ? [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Event Date:* ${this.form.event_date}`
+                  }
+                }
+              ]
+            : []),
           {
             type: 'section',
             text: {
@@ -272,28 +286,31 @@ export default {
         console.log('Slack notification sent successfully:', response.data)
         alert('Your message was received successfully!')
 
-        // Call Firestore methods
-
         await this.addToHavenList()
 
-        // Reset the form AFTER Firestore operations
-        this.form = {
-          fullname: '',
-          email: '',
-          phone: '',
-          act_name: '',
-          video_url: '',
-          agree_communication: false,
-          participate_risk: false,
-          enquiry: '',
-          act_type: '',
-          mix_url: '',
-          partnership_type: '',
-          website: '',
-          experience_type: '',
-          message: ''
-        }
-        this.$router.push({ name: 'havenbattle' })
+        if (this.form.enquiry === 'Customer') {
+          // Redirect to Stripe checkout for ticket purchase
+          const stripeUrl = 'https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800'
+          window.location.href = stripeUrl
+        } else
+          this.form = {
+            fullname: '',
+            email: '',
+            phone: '',
+            act_name: '',
+            video_url: '',
+            agree_communication: false,
+            participate_risk: false,
+            enquiry: '',
+            act_type: '',
+            mix_url: '',
+            partnership_type: '',
+            website: '',
+            event_date: '',
+            message: ''
+          }
+
+        this.$router.push({ name: 'haveninstagram' })
       } catch (error) {
         console.error('Error in sendtorelay:', error)
         alert('Error submitting form. Please try again.')
@@ -304,19 +321,19 @@ export default {
     console.log('HavenView mounted')
     if (import.meta.env.MODE === 'development') {
       this.form = {
-        fullname: 'alice',
-        email: 'alice@example.com',
-        phone: '1234567890',
-        act_name: `Act`,
-        video_url: 'http://twitch.tv/dasrecord',
+        fullname: 'Prasenjit',
+        email: 'dasrecord@protonmail.com',
+        phone: '13064916040',
+        act_name: '',
+        video_url: '',
         agree_communication: true,
         participate_risk: true,
-        enquiry: 'Battle',
+        enquiry: 'Customer',
         act_type: '',
         mix_url: '',
         partnership_type: '',
         website: '',
-        experience_type: '',
+        event_date: '',
         message: 'This is a sample message.'
       }
       console.log('Development mode: pre-filled form data:', this.form)
