@@ -534,8 +534,8 @@ export default {
           if (Array.isArray(prop)) {
             return prop.includes(filter.value) // Check if the array includes the value
           }
-          if (typeof prop === 'string') {
-            return prop === filter.value // Check if the string matches the value
+          if (typeof prop === 'string' || typeof prop === 'boolean') {
+            return prop === filter.value // Check if the value matches (string or boolean)
           }
           return false
         })
@@ -573,22 +573,20 @@ export default {
 
     const applyFilter = (property, value) => {
       filteredApplicants.value = applicants.value.filter((applicant) => {
-        const prop = applicant[property]
+        const prop = applicant[property];
         if (Array.isArray(prop)) {
-          return prop.includes(value) // Check if the array includes the value
+          return prop.includes(value); // Check if the array includes the value
         }
-        if (typeof prop === 'string') {
-          if (value === '') {
-            return prop.trim() !== '' // Match non-empty strings
-          }
-          return prop === value // Check if the string matches the value
+        if (typeof prop === 'string' || typeof prop === 'boolean') {
+          return prop === value; // Match string or boolean values
         }
         if (value === '') {
-          return prop !== undefined && prop !== '' // Handle empty filter values for non-strings
+          return prop !== undefined && prop !== ''; // Handle empty filter values
         }
-        return false
-      })
-    }
+        return false;
+      });
+    };
+
     const clearFilters = () => {
       filteredApplicants.value = applicants.value
     }
