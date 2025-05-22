@@ -45,6 +45,9 @@ import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
 import HavenView from '@/views/HavenView.vue'
 import HavenBattleView from '@/views/HavenBattleView.vue'
+import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
+import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
+
 
 const routes = [
   {
@@ -176,6 +179,16 @@ const routes = [
     path: '/haven',
     name: 'haven',
     component: HavenView
+  },
+  {
+    path: '/havenlogin',
+    name: 'havenlogin',
+    component: HavenIDCodeInput
+  },
+  {
+    path: '/haventicket/:id_code',
+    name: 'HavenTicketPage',
+    component: HavenTicketPageView
   },
   {
     path: '/havenbattle',

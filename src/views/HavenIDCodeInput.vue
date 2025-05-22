@@ -1,8 +1,8 @@
 <template>
   <div class="id-code-input">
     <img :src="festivall_emblem" style="width: 100px" alt="Festivall Emblem" class="emblem" />
-    <h1>Reunion Festival</h1>
-    <img :src="frog_image" style="width: 200px" alt="Frog" class="frog" />
+
+    <img :src="haven_emblem" alt="Haven Emblem" class="haven-emblem" />
 
     <h3>Enter Your ID Code</h3>
 
@@ -18,12 +18,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
+import { festivall_db } from '@/firebase'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
-import frog_image from '@/assets/images/frog.png'
+import haven_emblem from '@/assets/images/haven_emblem_black.png'
 
 export default {
-  name: 'EnterIDCode',
+  name: 'HavenIDCodeInput',
   setup() {
     const idCode = ref('')
     const errorMessage = ref('')
@@ -31,35 +31,29 @@ export default {
 
     const checkIdCode = async () => {
       try {
-        // Check if the ID code exists in 'orders_2025'
-        let q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', idCode.value))
-        let querySnapshot = await getDocs(q)
+        const havenRef = collection(festivall_db, 'haven')
+        console.log(havenRef)
+        const q = query(havenRef, where('id_code', '==', idCode.value))
+        const querySnapshot = await getDocs(q)
 
-        if (!querySnapshot.empty) {
-          // Redirect to the ticket page if the ID code is valid
-          router.push({ name: 'TicketPage', params: { id_code: idCode.value } })
+        if (querySnapshot.empty) {
+          errorMessage.value = 'Invalid ID code. Please try again.'
           return
         }
 
-        // Check if the ID code exists in 'applications_2025'
-        q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', idCode.value))
-        querySnapshot = await getDocs(q)
-
-        if (!querySnapshot.empty) {
-          // Redirect to the contract page if the ID code is valid
-          router.push({ name: 'ContractPage', params: { id_code: idCode.value } })
-        } else {
-          errorMessage.value = 'Invalid ID code. Please try again.'
-        }
+        router.push({
+          name: 'HavenTicketPage',
+          params: { id_code: querySnapshot.docs[0].id }
+        })
       } catch (error) {
-        console.error('Error checking ID code:', error)
-        errorMessage.value = 'An error occurred. Please contact webmaster.'
+        errorMessage.value = 'Error checking ID code. Please try again.'
+        console.error('Error:', error)
       }
     }
 
     return {
       festivall_emblem,
-      frog_image,
+      haven_emblem,
       idCode,
       errorMessage,
       checkIdCode
@@ -69,6 +63,10 @@ export default {
 </script>
 
 <style scoped>
+.haven-emblem {
+  width: 300px;
+  margin: 1rem;
+}
 .id-code-input {
   padding: 2rem;
   background-color: #f9f9f9;
@@ -101,7 +99,7 @@ input {
 
 button {
   padding: 0.75rem 1.5rem;
-  background-color: var(--reunion-frog-green);
+  background-color: var(--festivall-baby-blue);
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -110,7 +108,8 @@ button {
 }
 
 button:hover {
-  background-color: #404224;
+  background-color: black;
+  color: white;
 }
 
 .error {
