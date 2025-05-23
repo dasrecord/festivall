@@ -204,7 +204,6 @@ export default {
             mix_url: this.form.mix_url,
             partnership_type: this.form.partnership_type,
             website: this.form.website,
-            experience_type: this.form.experience_type,
             act_name: this.form.act_name,
             video_url: this.form.video_url,
             agree_communication: this.form.agree_communication,
@@ -221,29 +220,28 @@ export default {
       }
     },
     async sendtorelay() {
-      this.form.id_code_long = uuidv4()
-      this.form.id_code = this.form.id_code_long.slice(0, 5)
+      // Only generate a new id_code if it doesn't already exist
+      if (!this.form.id_code_long || !this.form.id_code) {
+        this.form.id_code_long = uuidv4()
+        this.form.id_code = this.form.id_code_long.slice(0, 5)
+      }
+
       console.log('sendtorelay called with form data:', this.form)
+
       const slackPayload = {
         blocks: [
           {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `:id: ${this.form.id_code}\n:bust_in_silhouette: ${this.form.fullname}\n:Email: ${this.form.email}\n:pen: ${this.form.enquiry}${
-            this.form.enquiry === 'Battle' 
-          ? `\n:trident: ${this.form.act_name}\n:vhs: ${this.form.video_url}` 
-          : ''
-          }${
-            this.form.enquiry === 'Customer'
-          ? `\n:calendar: ${this.form.event_date}`
-          : ''
-          }${
-            this.form.message
-          ? `\n:pencil: ${this.form.message}`
-          : ''
-          }`
-        }
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `:id: ${this.form.id_code}\n:bust_in_silhouette: ${this.form.fullname}\n:Email: ${this.form.email}\n:haven_logo_white: ${this.form.enquiry}${
+                this.form.enquiry === 'Battle'
+                  ? `\n:trident: ${this.form.act_name}\n:vhs: ${this.form.video_url}`
+                  : ''
+              }${this.form.enquiry === 'Customer' ? `\n:calendar: ${this.form.event_date}` : ''}${
+                this.form.message ? `\n:pencil: ${this.form.message}` : ''
+              }`
+            }
           }
         ]
       }
@@ -259,7 +257,6 @@ export default {
           }
         )
         console.log('Slack notification sent successfully:', response.data)
-        alert('Your message was received successfully!')
 
         await this.addToHavenList()
 
@@ -269,7 +266,7 @@ export default {
             .writeText(idCode)
             .then(() => {
               alert(
-                `Your ID CODE has been copied to clipboard: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
+                `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
               )
               setTimeout(() => {
                 const baseUrl = 'https://festivall.ca'
@@ -278,11 +275,11 @@ export default {
                   successUrl
                 )}`
                 window.location.href = stripeUrl
-              }, 5000) // 5-second delay
+              }, 1000)
             })
             .catch(() => {
               alert(
-                `Please copy this ID CODE: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
+                `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
               )
               setTimeout(() => {
                 const baseUrl = 'https://festivall.ca'
@@ -291,7 +288,7 @@ export default {
                   successUrl
                 )}`
                 window.location.href = stripeUrl
-              }, 5000) // 5-second delay
+              }, 1000)
             })
         } else {
           this.form = {
@@ -322,21 +319,23 @@ export default {
     console.log('HavenView mounted')
     if (import.meta.env.MODE === 'development') {
       this.form = {
-        id_code: 'a2c4e',
+        id_code: '1b3d5',
         fullname: 'Prasenjit',
         email: 'dasrecord@protonmail.com',
         phone: '13064916040',
         act_name: '',
         video_url: '',
-        agree_communication: true,
-        participate_risk: true,
+        agree_communication: '',
+        participate_risk: '',
         enquiry: 'Customer',
         act_type: '',
         mix_url: '',
         partnership_type: '',
         website: '',
         event_date: '',
-        message: ''
+        message: '',
+        paid: false,
+        checked_in: false
       }
       console.log('Development mode: pre-filled form data:', this.form)
     }
