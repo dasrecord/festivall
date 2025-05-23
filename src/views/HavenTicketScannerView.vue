@@ -4,6 +4,11 @@
     style="height: 50px; width: 75px; margin: auto; display: block"
     alt="Festivall Emblem"
   />
+  <img
+    :src="haven_emblem"
+    style="max-width: 600px; width: 100%; margin: auto; padding: 1rem; display: block"
+    alt="Haven Emblem"
+  />
 
   <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
   <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
@@ -176,6 +181,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { festivall_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
+import haven_emblem from '@/assets/images/haven_emblem_white.png'
 
 export default {
   components: {
@@ -185,6 +191,7 @@ export default {
   data() {
     return {
       festivall_emblem,
+      haven_emblem,
       db: festivall_db,
       fullResult: null,
       scanResult: null,
