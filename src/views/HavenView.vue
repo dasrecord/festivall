@@ -320,7 +320,8 @@ export default {
           const baseUrl = 'https://festivall.ca'
           const successUrl = `${baseUrl}/haventicket/${idCode}`
           // Encode it, then append to the Stripe link
-          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ?success_url=${encodeURIComponent(successUrl)}`
+
+          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(successUrl)}`
 
           window.location.href = stripeUrl
         } else {

@@ -47,6 +47,7 @@ import HavenView from '@/views/HavenView.vue'
 import HavenBattleView from '@/views/HavenBattleView.vue'
 import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
 import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
+import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
 
 
 const routes = [
@@ -189,6 +190,12 @@ const routes = [
     path: '/haventicket/:id_code',
     name: 'HavenTicketPage',
     component: HavenTicketPageView
+  },
+  {
+    path: '/haventicketscanner',
+    name: 'haventicketscanner',
+    component: HavenTicketScannerView,
+    meta: { requiresAuth: true, showHeader: false }
   },
   {
     path: '/havenbattle',
