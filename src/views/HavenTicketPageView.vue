@@ -1,19 +1,40 @@
 <template>
   <div class="ticket-page" v-if="order">
     <img :src="festivall_emblem" alt="Festivall Emblem" class="festivall-emblem" />
-    <img :src="haven_emblem" alt="Haven Emblem" class="haven-emblem" />
+    <img :src="haven_emblem" alt="Haven Emblem" class="haven-emblem" /><br />
+
+    Your Digitial Ticket
 
     <div class="order-info">
-      <p><strong>Name:</strong> {{ order.fullname }}</p>
-      <p><strong>Event Date:</strong>{{ order.event_date }}</p>
+      <p><strong>Name:</strong></p>
+      <p>
+        {{ order.fullname }}
+      </p>
+      <p><strong>Date:</strong></p>
+      <p>
+        {{ order.event_date }}
+      </p>
+
+      <p><strong>Location:</strong></p>
+      <p>
+        <a
+          href="https://maps.app.goo.gl/gsydSXgD2Z3hTH3q8"
+          target="_blank"
+          style="color: white; text-decoration: underline"
+        >
+          105 21st St E
+        </a>
+      </p>
     </div>
 
     <div class="qr-code">
       <canvas ref="qrCanvas" />
     </div>
 
-    <button @click="showPaymentModal = true" class="haven-button">Payment Status</button>
-    <button @click="showCheckInModal = true" class="haven-button">Check-In Status</button>
+    <div class="buttons">
+      <button @click="showPaymentModal = true" class="haven-button">Payment Status</button>
+      <button @click="showCheckInModal = true" class="haven-button">Check-In Status</button>
+    </div>
 
     <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
       <div class="modal-content">
@@ -122,6 +143,7 @@ export default {
   background-color: #1b1b1b; /* charcoal */
   color: #ffffff; /* white */
   padding: 1rem;
+  border: 1px solid white;
   border-radius: 10px;
 }
 
@@ -137,10 +159,13 @@ export default {
 }
 
 .order-info {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  padding: 0.5rem;
+  margin: 1rem;
   border: 1px solid #444;
   border-radius: 8px;
-  padding: 1rem;
-  margin: 0.5rem 0;
 }
 
 .qr-code {
@@ -151,7 +176,8 @@ export default {
   border-radius: 5px;
   background-color: #1b1b1b;
   color: white;
-  padding: 0.5rem;:display: ;
+  padding: 0.5rem;
+  :display:;
 }
 
 .modal {
