@@ -25,6 +25,8 @@
           105 21st St E
         </a>
       </p>
+      <p><strong>ID Code:</strong></p>
+      <p>{{ order.id_code }}</p>
     </div>
 
     <div class="qr-code">

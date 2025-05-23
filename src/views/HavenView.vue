@@ -35,6 +35,7 @@
             <!-- <option value="Artist">Perform at Haven</option> -->
             <option value="Partner">Partner with Haven</option>
             <option value="Battle">Dance Battle at Haven</option>
+            <option value="Contact">Contact Haven</option>
           </select>
         </div>
         <div v-if="form.enquiry === 'Artist'">
@@ -67,13 +68,15 @@
           <label for="event_date">Event Date:</label>
           <select id="event_date" v-model="form.event_date" required>
             <option disabled value="">Select a night</option>
-            <option value="2025-05-24">May 24th, 2025</option>
-            <option value="2025-06-07">June 7th, 2025</option>
-            <option value="2025-06-20">June 20th, 2025</option>
-            <option value="2025-07-05">July 5th, 2025</option>
-            <option value="2025-07-19">July 19th, 2025</option>
-            <option value="2025-08-02">August 2nd, 2025</option>
-            <option value="2025-08-16">August 16th, 2025</option>
+            <option value="May 24th, 2025 ft. Joiboi">May 24th, 2025 ft. Joiboi</option>
+            <option value="June 7th, 2025 ft. T.B.A">June 7th, 2025 ft. T.B.A</option>
+            <option value="June 20th, 2025 ft. Doctor Yvo">June 20th, 2025 ft. Doctor Yvo</option>
+            <option value="July 5th, 2025 ft. Mr. Fudge">July 5th, 2025 ft. Mr. Fudge</option>
+            <option value="July 19th, 2025 ft. Snakeman">July 19th, 2025 ft. Snakeman</option>
+            <option value="August 2nd, 2025 ft. Das Record">August 2nd, 2025 ft. Das Record</option>
+            <option value="August 16th, 2025 ft. Will Wallace">
+              August 16th, 2025 ft. Will Wallace
+            </option>
           </select>
         </div>
 
@@ -123,10 +126,11 @@
           </div>
         </div>
 
-        <div>
+        <div v-if="form.enquiry === 'Contact'">
           <label for="message">Message:</label>
-          <textarea id="message" v-model="form.message" required></textarea>
+          <textarea id="message" v-model="form.message" required rows="3"></textarea>
         </div>
+
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -156,6 +160,7 @@ export default {
         phone: '',
         act_name: '',
         video_url: '',
+        dance_style: '',
         agree_communication: false,
         participate_risk: false,
         enquiry: '',
@@ -181,7 +186,7 @@ export default {
       }
 
       try {
-        const docRef = doc(festivall_db, 'haven', this.form.email)
+        const docRef = doc(festivall_db, 'haven', this.form.id_code)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
@@ -189,8 +194,8 @@ export default {
           alert('You are on the mailing list!')
         } else {
           await setDoc(docRef, {
-            id_code_long: uuidv4(),
-            id_code: this.form.value.id_code_long.slice(0, 5),
+            id_code_long: this.form.id_code_long,
+            id_code: this.form.id_code,
             fullname: this.form.fullname,
             email: this.form.email,
             phone: this.form.phone,
@@ -216,6 +221,8 @@ export default {
       }
     },
     async sendtorelay() {
+      this.form.id_code_long = uuidv4()
+      this.form.id_code = this.form.id_code_long.slice(0, 5)
       console.log('sendtorelay called with form data:', this.form)
       const slackPayload = {
         blocks: [
@@ -309,21 +316,28 @@ export default {
               alert(
                 `Your ID CODE has been copied to clipboard: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
               )
+              setTimeout(() => {
+                const baseUrl = 'https://festivall.ca'
+                const successUrl = `${baseUrl}/haventicket/${idCode}`
+                const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(
+                  successUrl
+                )}`
+                window.location.href = stripeUrl
+              }, 5000) // 5-second delay
             })
             .catch(() => {
               alert(
                 `Please copy this ID CODE: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
               )
+              setTimeout(() => {
+                const baseUrl = 'https://festivall.ca'
+                const successUrl = `${baseUrl}/haventicket/${idCode}`
+                const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(
+                  successUrl
+                )}`
+                window.location.href = stripeUrl
+              }, 5000) // 5-second delay
             })
-
-          // Construct successUrl with the user’s id_code
-          const baseUrl = 'https://festivall.ca'
-          const successUrl = `${baseUrl}/haventicket/${idCode}`
-          // Encode it, then append to the Stripe link
-
-          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(successUrl)}`
-
-          window.location.href = stripeUrl
         } else {
           this.form = {
             fullname: '',
@@ -353,6 +367,7 @@ export default {
     console.log('HavenView mounted')
     if (import.meta.env.MODE === 'development') {
       this.form = {
+        id_code: 'a2c4e',
         fullname: 'Prasenjit',
         email: 'dasrecord@protonmail.com',
         phone: '13064916040',
@@ -366,7 +381,7 @@ export default {
         partnership_type: '',
         website: '',
         event_date: '',
-        message: 'This is a sample message.'
+        message: ''
       }
       console.log('Development mode: pre-filled form data:', this.form)
     }
