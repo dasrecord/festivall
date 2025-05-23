@@ -307,15 +307,21 @@ export default {
             .writeText(idCode)
             .then(() => {
               alert(
-                `Your ID CODE has been copied to clipboard: ${idCode}\n\nAfter your payment is completed, enter this code on the login page.`
+                `Your ID CODE has been copied to clipboard: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
               )
             })
             .catch(() => {
               alert(
-                `Please copy this ID CODE: ${idCode}\n\nAfter your payment is completed, enter this code on the login page.`
+                `Please copy this ID CODE: ${idCode}\n\nAfter payment, paste it on the login page if needed.`
               )
             })
-          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=https://festivall.ca/havenlogin/${this.form.id_code}`
+
+          // Construct successUrl with the user’s id_code
+          const baseUrl = 'https://festivall.ca'
+          const successUrl = `${baseUrl}/haventicket/${idCode}`
+          // Encode it, then append to the Stripe link
+          const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ?success_url=${encodeURIComponent(successUrl)}`
+
           window.location.href = stripeUrl
         } else {
           this.form = {
