@@ -71,7 +71,7 @@
           Phone: {{ matchingOrder.phone }} <br />
           Event Date: {{ matchingOrder.event_date }}<br />
           Total Price:
-          <span v-if="matchingOrder.paid"> ${{ matchingOrder.total_price }} CAD </span>
+          <span v-if="matchingOrder.paid"> ${{ matchingOrder.amount }} CAD </span>
           <span v-else style="color: red">
             ${{ (parseFloat(matchingOrder.total_price) + 10).toFixed(2) }} CAD<br />
             $10 fee added for unpaid orders
