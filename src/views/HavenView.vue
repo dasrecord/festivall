@@ -227,68 +227,23 @@ export default {
       const slackPayload = {
         blocks: [
           {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:id: ${this.form.id_code}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:bust_in_silhouette:  ${this.form.fullname}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:Email: ${this.form.email}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:pen: ${this.form.enquiry}`
-            }
-          },
-          ...(this.form.enquiry === 'Battle'
-            ? [
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `:trident: ${this.form.act_name}`
-                  }
-                },
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `:vhs: ${this.form.video_url}`
-                  }
-                }
-              ]
-            : []),
-          ...(this.form.enquiry === 'Customer'
-            ? [
-                {
-                  type: 'section',
-                  text: {
-                    type: 'mrkdwn',
-                    text: `:calendar: ${this.form.event_date}`
-                  }
-                }
-              ]
-            : []),
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `:pencil: ${this.form.message}`
-            }
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `:id: ${this.form.id_code}\n:bust_in_silhouette: ${this.form.fullname}\n:Email: ${this.form.email}\n:pen: ${this.form.enquiry}${
+            this.form.enquiry === 'Battle' 
+          ? `\n:trident: ${this.form.act_name}\n:vhs: ${this.form.video_url}` 
+          : ''
+          }${
+            this.form.enquiry === 'Customer'
+          ? `\n:calendar: ${this.form.event_date}`
+          : ''
+          }${
+            this.form.message
+          ? `\n:pencil: ${this.form.message}`
+          : ''
+          }`
+        }
           }
         ]
       }
