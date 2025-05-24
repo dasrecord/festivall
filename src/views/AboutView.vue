@@ -12,6 +12,11 @@
           <img :src="devops_icon" alt="devops icon" class="icon" />
           software developer for small businesses and entrepreneurs
         </li>
+
+        <li>
+          <img :src="headphones_icon" alt="headphones icon" class="icon" />
+          resident DJ at Haven @ Midtown Events
+        </li>
         <li>
           <img :src="headphones_icon" alt="headphones icon" class="icon" />
           resident DJ at Finn's @ The Parktown Hotel
