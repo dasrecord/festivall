@@ -48,6 +48,7 @@ import HavenBattleView from '@/views/HavenBattleView.vue'
 import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
 import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
 import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
+import { mergeProps } from 'vue'
 
 
 const routes = [
@@ -185,6 +186,12 @@ const routes = [
     path: '/havenlogin',
     name: 'havenlogin',
     component: HavenIDCodeInput
+  },
+  {
+    path: '/havenresidencytickets',
+    name: 'havenresidencytickets',
+    component: ExternalRedirect,
+    props: { url:'https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800'}
   },
   {
     path: '/haventicket/:id_code',
