@@ -44,6 +44,13 @@
         <div class="link">
           <RouterLink to="testimonials">READ WHAT OTHERS HAVE TO SAY</RouterLink>
         </div>
+        <div class="link">
+          <a
+            :href="`mailto:dasrecord@festivall.ca?subject=${encodeURIComponent('Booking Request')}&body=${encodeURIComponent('Hi Prasenjit,\n\nI would like to book you for an event. Here are the details:\n\nEvent Name:\nEvent Date:\nEvent Location:\nBudget:\n\nThank you,\n[Your Name]')}`"
+          >
+            BOOK ME NOW
+          </a>
+        </div>
       </div>
     </h2>
     <iframe
