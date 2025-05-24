@@ -69,7 +69,7 @@
           <select id="event_date" v-model="form.event_date" required>
             <option disabled value="">Select a night</option>
             <option value="May 24th, 2025 ft. Joiboi">May 24th, 2025 ft. Joiboi</option>
-            <option value="June 7th, 2025 ft. T.B.A">June 7th, 2025 ft. T.B.A</option>
+            <option value="June 7th, 2025 ft. T.B.A">June 7th, 2025 ft. Das Record</option>
             <option value="June 20th, 2025 ft. Doctor Yvo">June 20th, 2025 ft. Doctor Yvo</option>
             <option value="July 5th, 2025 ft. Mr. Fudge">July 5th, 2025 ft. Mr. Fudge</option>
             <option value="July 19th, 2025 ft. Snakeman">July 19th, 2025 ft. Snakeman</option>
@@ -131,7 +131,7 @@
           <textarea id="message" v-model="form.message" required rows="3"></textarea>
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">SUBMIT</button>
       </form>
     </div>
   </div>
@@ -371,7 +371,7 @@ export default {
 .form-section {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: -0.5rem;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.888);
   z-index: 1;
@@ -382,8 +382,7 @@ export default {
   width: 100%;
   margin-bottom: 3rem;
 }
-
-.information {
+Submit .information {
   color: white;
 
   text-align: center;
@@ -398,7 +397,7 @@ textarea {
   padding: 10px;
   margin: 5px 0;
   background-color: rgb(0, 0, 0);
-  border-radius: 10px 0px 10px 0px;
+  border-radius: 10px 10px 10px 10px;
   color: white;
 }
 input:focus,
@@ -413,8 +412,8 @@ select:focus {
 input:hover,
 textarea:hover,
 select:hover {
-  background-color: rgba(255, 255, 255, 0.242);
-  color: rgb(0, 0, 0);
+  background-color: white;
+  color: black;
 }
 
 video {
@@ -427,6 +426,8 @@ video {
 }
 button {
   width: 100%;
+  border-radius: 10px 10px 10px 10px;
+  padding: 0.5rem;
 }
 
 img {
