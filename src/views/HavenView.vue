@@ -32,7 +32,7 @@
           <select id="enquiry" v-model="form.enquiry" required>
             <option disabled value="">Select an option</option>
             <option value="Customer">Buy Haven Residency Tickets</option>
-            <!-- <option value="Artist">Perform at Haven</option> -->
+            <option value="Artist">Perform at Haven</option>
             <option value="Partner">Partner with Haven</option>
             <option value="Battle">Dance Battle at Haven</option>
             <option value="Contact">Contact Haven</option>
@@ -79,7 +79,6 @@
             </option>
           </select>
         </div>
-
         <div v-if="form.enquiry === 'Battle'">
           <div>
             <label for="act_name">Act Name:</label>
@@ -125,12 +124,10 @@
             </label>
           </div>
         </div>
-
         <div v-if="form.enquiry === 'Contact'">
           <label for="message">Message:</label>
           <textarea id="message" v-model="form.message" required rows="3"></textarea>
         </div>
-
         <button type="submit">SUBMIT</button>
       </form>
     </div>
