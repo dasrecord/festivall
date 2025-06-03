@@ -290,7 +290,7 @@ export default {
           try {
             await sendSMS(
               this.form.phone,
-              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nFestivall ID CODE: ${this.form.id_code}\nLogin Link: https://festivall.ca/havenlogin\nPayment Link: https://festivall.ca/havenresidencytickets\n\nAfter your payment is completed, navigate to:\nhttps://festivall.ca/havenlogin and enter your ID Code to access your ticket.`
+              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nID CODE: ${this.form.id_code}\n\nAfter your payment is completed, navigate to: https://festivall.ca/havenlogin and enter your ID Code to access your ticket.\nIf you still need to complete your payment, this is the payment link: https://festivall.ca/havenresidencytickets\n\nThank you for your support!`
             )
             console.log('SMS sent successfully')
           } catch (error) {
@@ -299,7 +299,7 @@ export default {
           try {
             await sendEmail(
               this.form.email,
-              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nFestivall ID CODE: ${this.form.id_code}\nLogin Link: https://festivall.ca/havenlogin\nPayment Link: https://festivall.ca/havenresidencytickets\n\nAfter your payment is completed, navigate to:\nhttps://festivall.ca/havenlogin and enter your ID Code to access your ticket.`
+              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nID CODE: ${this.form.id_code}\n\nAfter your payment is completed, navigate to: https://festivall.ca/havenlogin and enter your ID Code to access your ticket.\nIf you still need to complete your payment, this is the payment link: https://festivall.ca/havenresidencytickets\n\nThank you for your support!`
             )
             console.log('Email sent successfully')
           } catch (error) {
