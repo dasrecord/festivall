@@ -69,7 +69,7 @@
           <select id="event_date" v-model="form.event_date" required>
             <option disabled value="">Select a night</option>
             <option value="May 24th, 2025 ft. Joiboi">May 24th, 2025 ft. Joiboi</option>
-            <option value="June 7th, 2025 ft. T.B.A">June 7th, 2025 ft. Das Record</option>
+            <option value="June 7th, 2025 ft. T.B.A">June 7th, 2025 ft. Kris Jones</option>
             <option value="June 20th, 2025 ft. Doctor Yvo">June 20th, 2025 ft. Doctor Yvo</option>
             <option value="July 5th, 2025 ft. Mr. Fudge">July 5th, 2025 ft. Mr. Fudge</option>
             <option value="July 19th, 2025 ft. Snakeman">July 19th, 2025 ft. Snakeman</option>
@@ -142,6 +142,8 @@ import haven_video from '../assets/videos/haven/luxe.mp4'
 import { v4 as uuidv4 } from 'uuid'
 import { festivall_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
+
+import { sendSMS, sendEmail } from '/scripts/notifications.js'
 
 export default {
   data() {
@@ -216,6 +218,32 @@ export default {
         console.error('Error in addToHavenList:', error)
       }
     },
+    async handleClipboardAndRedirect(idCode) {
+      navigator.clipboard
+        .writeText(idCode)
+        .then(() => {
+          alert(
+            `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
+          )
+          setTimeout(() => {
+            const baseUrl = import.meta.env.VITE_BASE_URL || 'https://festivall.ca'
+            const successUrl = `${baseUrl}/haventicket/${idCode}`
+            const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(successUrl)}`
+            window.location.href = stripeUrl
+          }, 1000)
+        })
+        .catch(() => {
+          alert(
+            `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
+          )
+          setTimeout(() => {
+            const baseUrl = import.meta.env.VITE_BASE_URL || 'https://festivall.ca'
+            const successUrl = `${baseUrl}/haventicket/${idCode}`
+            const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(successUrl)}`
+            window.location.href = stripeUrl
+          }, 1000)
+        })
+    },
     async sendtorelay() {
       // Only generate a new id_code if it doesn't already exist
       if (!this.form.id_code_long || !this.form.id_code) {
@@ -259,34 +287,25 @@ export default {
 
         if (this.form.enquiry === 'Customer') {
           const idCode = this.form.id_code
-          navigator.clipboard
-            .writeText(idCode)
-            .then(() => {
-              alert(
-                `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
-              )
-              setTimeout(() => {
-                const baseUrl = 'https://festivall.ca'
-                const successUrl = `${baseUrl}/haventicket/${idCode}`
-                const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(
-                  successUrl
-                )}`
-                window.location.href = stripeUrl
-              }, 1000)
-            })
-            .catch(() => {
-              alert(
-                `Write down your Festivall ID CODE: ${idCode}\n\nAfter payment, you can use it login and access your ticket.`
-              )
-              setTimeout(() => {
-                const baseUrl = 'https://festivall.ca'
-                const successUrl = `${baseUrl}/haventicket/${idCode}`
-                const stripeUrl = `https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800?success_url=${encodeURIComponent(
-                  successUrl
-                )}`
-                window.location.href = stripeUrl
-              }, 1000)
-            })
+          try {
+            await sendSMS(
+              this.form.phone,
+              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nFestivall ID CODE: ${this.form.id_code}\nLogin Link: https://festivall.ca/havenlogin\nPayment Link: https://festivall.ca/havenresidencytickets\n\nAfter your payment is completed, navigate to:\nhttps://festivall.ca/havenlogin and enter your ID Code to access your ticket.`
+            )
+            console.log('SMS sent successfully')
+          } catch (error) {
+            console.error('Error sending SMS:', error)
+          }
+          try {
+            await sendEmail(
+              this.form.email,
+              `Thank you for your interest in Haven!\n\nOrder Details:\nFull Name: ${this.form.fullname}\nEvent Date: ${this.form.event_date}\nFestivall ID CODE: ${this.form.id_code}\nLogin Link: https://festivall.ca/havenlogin\nPayment Link: https://festivall.ca/havenresidencytickets\n\nAfter your payment is completed, navigate to:\nhttps://festivall.ca/havenlogin and enter your ID Code to access your ticket.`
+            )
+            console.log('Email sent successfully')
+          } catch (error) {
+            console.error('Error sending email:', error)
+          }
+          this.handleClipboardAndRedirect(idCode)
         } else {
           this.form = {
             fullname: '',
