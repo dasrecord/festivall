@@ -149,7 +149,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/evolvedmusicgroup">
+      <a href="https://evolvedmusicgroup.com">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -169,7 +169,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
             />
           </template>
         </WelcomeItem>
-      </RouterLink>
+      </a>
     </div>
 
     <div class="wrapper">
