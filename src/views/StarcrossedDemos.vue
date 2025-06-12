@@ -15,7 +15,7 @@
           v-if="index === 0"
           :src="starcrossed_emblem"
           alt="Starcrossed Emblem"
-          style="height: auto"
+          style="max-width: 600px; width: 100%; height: auto"
           id="starcrossed_emblem"
         />
         <h2 v-html="formatText(question.text)"></h2>
