@@ -23,7 +23,7 @@ import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
-import BboySignupView from '@/views/BboySignupView.vue'
+import WorkshopSignupView from '@/views/WorkshopSignupView.vue'
 import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
 import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
 import ReunionContactView from '@/views/ReunionContactView.vue'
@@ -48,7 +48,6 @@ import HavenBattleView from '@/views/HavenBattleView.vue'
 import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
 import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
 import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
-import { mergeProps } from 'vue'
 
 
 const routes = [
@@ -71,9 +70,9 @@ const routes = [
     meta: { showHeader: true }
   },
   {
-    path: '/bboysignup',
-    name: 'bboysignup',
-    component: BboySignupView
+    path: '/workshopsignup',
+    name: 'workshopsignup',
+    component: WorkshopSignupView
   },
   {
     path: '/bitcoinmeetup',
