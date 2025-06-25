@@ -6,8 +6,24 @@
         A two-day workshop series featuring hands-on learning as well as the theoretical constructs
         which support the aforementioned hand-actions. $50 for the two days, includes all
         workshops/discussions and cover to the party after. Here's the schedule (subject to
-        change)<br /><br />
-        📍 DAY 1: SATURDAY - HANDS ON<br />
+        change)<br />
+      </p>
+
+      <p>
+        FACEBOOK EVENT LINK:
+        <a href="https://www.facebook.com/share/12MGQnYh1jQ/" target="_blank"
+          >Workshop Series Event</a
+        >
+      </p>
+      <p>
+        LOCATION:
+        <a href="https://maps.app.goo.gl/LsWD3dYCE8XniEB1A" target="_blank"
+          >Saskatoon Academy of Music</a
+        >
+      </p>
+      <div class="day">
+        <span style="text-decoration: underline">📍 DAY 1: SATURDAY - HANDS ON</span><br /><br />
+
         <strong>9:00 AM - 12:00 PM:</strong> Foundations<br />
         Basic Sound Tech<br />
         System setup, room tuning, filters, signal flow<br />
@@ -30,7 +46,11 @@
         Community celebration of the day's learnings<br />
         Sign-up sets for attendees<br />
         Sound system by the crew.<br /><br />
-        📍 DAY 2: SUNDAY - CONVERSATIONS & CONSCIOUSNESS<br />
+      </div>
+      <div class="day">
+        <span style="text-decoration: underline">
+          📍 DAY 2: SUNDAY - CONVERSATIONS & CONSCIOUSNESS </span
+        ><br /><br />
         <strong>9:00 - 10:00 AM:</strong> Arrival<br /><br />
         <strong>10:00 - 11:00 AM:</strong> Party as Art and a Medium of Cultural Transmission -
         Brandon Brown<br /><br />
@@ -42,13 +62,7 @@
         Audience Q&A<br />
         Topics: artistic legacy, cultural stewardship, technological soul<br /><br />
         <strong>4:15 - 5:00 PM:</strong> Closing Octagon<br />
-      </p>
-      <p>
-        Here is the facebook event link:
-        <a href="https://www.facebook.com/share/12MGQnYh1jQ/" target="_blank"
-          >Workshop Series Event</a
-        >
-      </p>
+      </div>
 
       <div>
         <label for="name">Full Name:</label>
@@ -57,6 +71,12 @@
       <div>
         <label for="email">Email:</label>
         <input type="email" id="email" v-model="form.email" required />
+      </div>
+      <div>
+        <div>
+          <label for="phone">Phone Number:</label>
+          <input type="tel" id="phone" v-model="form.phone" required />
+        </div>
       </div>
       <div>
         <label for="newsletter">
@@ -78,10 +98,12 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { sendEmail, sendSMS } from '/scripts/notifications.js'
 
 const form = ref({
   name: '',
   email: '',
+  phone: '',
   newsletter: false,
   liability: false
 })
@@ -91,7 +113,7 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_registration',
       {
-        text: `Full Name: ${form.value.name}\nEmail: ${form.value.email}\nNewsletter Consent: ${form.value.newsletter}\nLiability Agreement: ${form.value.liability}`
+        text: `Full Name: ${form.value.name}\nPhone: ${form.value.phone}\nEmail: ${form.value.email}\nNewsletter Consent: ${form.value.newsletter}\nLiability Agreement: ${form.value.liability}`
       },
       {
         headers: {
@@ -101,9 +123,20 @@ const submitForm = async () => {
     )
     if (response.status === 200) {
       alert('Registration Received! Please etransfer $50 to humanoidtwo@gmail.com')
+      await sendEmail(
+        form.value.email,
+        'Workshop Registration Confirmation',
+        `Thank you for registering for the workshop! Please etransfer $50 to humanoidtwo@gmail.com`
+      )
+      await sendSMS(
+        form.value.phone,
+        `Thank you for registering for the workshop! Please etransfer $50 to humanoidtwo@gmail.com`
+      )
+
       form.value = {
         name: '',
         email: '',
+        phone: '',
         newsletter: false,
         liability: false
       }
@@ -126,13 +159,25 @@ const submitForm = async () => {
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 15px;
-  max-width: 1200px; /* Increase max-width for desktop */
+  max-width: 1200px;
   margin: auto;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.day {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
 }
 
 .signup-image {
   width: 100%;
-  max-width: 400px; /* Increase max-width for desktop */
+  max-width: 400px;
   margin-bottom: 20px;
 }
 
@@ -148,6 +193,7 @@ label {
 
 input[type='text'],
 input[type='email'],
+input[type='tel'],
 input[type='checkbox'] {
   width: 100%;
   padding: 10px;
