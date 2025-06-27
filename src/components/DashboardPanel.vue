@@ -320,7 +320,10 @@
             </div>
           </div>
           <!-- DASHBOARD ACTIONS-->
-          <div v-if="applicant.payment_type === 'inkind'" class="actions">
+          <div
+            v-if="applicant.payment_type === 'inkind' || applicant.payment_type === 'In Kind'"
+            class="actions"
+          >
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
             </a>
@@ -835,7 +838,7 @@ export default {
         .replace('{roles}', roles || '')
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
+      return `mailto:${email}?subject=${subject}&body=${body}&cc=humanoidtwo@gmail.com`
     }
 
     const confirmPaymentReceived = async (id_code) => {
