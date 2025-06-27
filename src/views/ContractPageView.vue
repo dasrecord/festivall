@@ -236,7 +236,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where, setDoc, doc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import { sendReunionApplications } from '/scripts/notifications.js'
+import { sendSMS, sendReunionApplications } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
@@ -350,6 +350,10 @@ export default {
       await updateApplication()
       await saveContract()
       await addOrder()
+      await sendSMS(
+        applicant.value.phone_number,
+        `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
+      )
       router.push({ name: 'reunionticket' })
     }
 
