@@ -372,7 +372,8 @@ export default {
       saveContract,
       addOrder,
       handleSubmit,
-      currentDate
+      currentDate,
+      sendSMS
     }
   }
 }
