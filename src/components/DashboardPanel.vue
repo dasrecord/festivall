@@ -573,19 +573,19 @@ export default {
 
     const applyFilter = (property, value) => {
       filteredApplicants.value = applicants.value.filter((applicant) => {
-        const prop = applicant[property];
+        const prop = applicant[property]
         if (Array.isArray(prop)) {
-          return prop.includes(value); // Check if the array includes the value
+          return prop.includes(value) // Check if the array includes the value
         }
         if (typeof prop === 'string' || typeof prop === 'boolean') {
-          return prop === value; // Match string or boolean values
+          return prop === value // Match string or boolean values
         }
         if (value === '') {
-          return prop !== undefined && prop !== ''; // Handle empty filter values
+          return prop !== undefined && prop !== '' // Handle empty filter values
         }
-        return false;
-      });
-    };
+        return false
+      })
+    }
 
     const clearFilters = () => {
       filteredApplicants.value = applicants.value
@@ -624,12 +624,21 @@ export default {
         await updateDoc(docRef, {
           rates: additional_compensation
         })
-        applicants.value = applicants.value.map((applicant) => {
+
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.additional_compensation = ''
+            return {
+              ...applicant,
+              rates: additional_compensation, // Update the rates field that's displayed
+              additional_compensation: '' // Clear the input field
+            }
           }
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
       } catch (error) {
         console.error('Error updating compensation:', error)
       }
@@ -641,12 +650,21 @@ export default {
         await updateDoc(docRef, {
           rates: ''
         })
-        applicants.value = applicants.value.map((applicant) => {
+
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.additional_compensation = ''
+            return {
+              ...applicant,
+              rates: '', // Clear the rates field
+              additional_compensation: '' // Clear the input field
+            }
           }
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
       } catch (error) {
         console.error('Error clearing compensation:', error)
       }
@@ -668,13 +686,20 @@ export default {
           settimes: updatedSettimes
         })
 
-        // Update the local state
-        applicants.value = applicants.value.map((applicant) => {
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.settimes = updatedSettimes
+            return {
+              ...applicant,
+              settimes: updatedSettimes,
+              newSettime: '' // Clear the input field
+            }
           }
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
       } catch (error) {
         console.error('Error updating settime:', error)
       }
@@ -696,13 +721,19 @@ export default {
           settimes: updatedSettimes
         })
 
-        // Update the local state
-        applicants.value = applicants.value.map((applicant) => {
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.settimes = updatedSettimes
+            return {
+              ...applicant,
+              settimes: updatedSettimes
+            }
           }
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
       } catch (error) {
         console.error('Error removing settime:', error)
       }
@@ -813,15 +844,24 @@ export default {
         await updateDoc(docRef, {
           paid: true
         })
-        applicants.value = applicants.value.map((applicant) => {
+
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.paid = true
+            sendReunionApplications(
+              `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+            )
+            return {
+              ...applicant,
+              paid: true
+            }
           }
-          sendReunionApplications(
-            `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
-          )
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+
         alert('Payment status updated successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
@@ -834,15 +874,24 @@ export default {
         await updateDoc(docRef, {
           paid: false
         })
-        applicants.value = applicants.value.map((applicant) => {
+
+        // Update both applicants and filteredApplicants arrays
+        const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            applicant.paid = false
+            sendReunionApplications(
+              `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+            )
+            return {
+              ...applicant,
+              paid: false
+            }
           }
-          sendReunionApplications(
-            `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
-          )
           return applicant
-        })
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+
         alert('Ticket revoked successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
