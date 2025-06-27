@@ -93,7 +93,8 @@
     * Applicants with multiple roles will only receive one complementary weekend pass.
     <p v-if="applicant.rates">
       <strong>Additional Compensation:</strong> {{ applicant.rates
-      }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date
+      }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date unless otherwise
+      specified in Additional Compensation.
     </p>
 
     <h3>3. {{ applicant.applicant_types.join(' and ').toUpperCase() }} REQUIREMENTS</h3>
