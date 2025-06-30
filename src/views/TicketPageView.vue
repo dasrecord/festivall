@@ -453,19 +453,42 @@ export default {
         if (!id_code) {
           throw new Error('ID code is undefined')
         }
-
-        // Query the orders collection
+    
+        // Security check: require email verification
+        const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
+        if (!storedAuth) {
+          const email = prompt('For security, please enter the email address associated with this ticket:')
+          if (!email) {
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+          
+          // Verify email matches ticket
+          const verificationQuery = query(
+            collection(reunion_db, 'orders_2025'),
+            where('id_code', '==', id_code),
+            where('email', '==', email.toLowerCase().trim())
+          )
+          const verificationSnapshot = await getDocs(verificationQuery)
+          
+          if (verificationSnapshot.empty) {
+            alert('Email does not match this ticket. Access denied.')
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+          
+          // Store verification for this session
+          sessionStorage.setItem(`verified_${id_code}`, 'true')
+        }
+    
+        // Rest of your existing loadOrder code...
         const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         const querySnapshot = await getDocs(q)
-
+    
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
           await nextTick()
-
-          // Generate QR code
           generateQRCode(order.value.id_code_long, qrCanvas.value)
-
-          // Calculate referral earnings
           await calculateReferralEarnings(order.value.id_code)
         } else {
           console.error('No such document!')
