@@ -2,7 +2,7 @@ Congratulations {name}!
 
 Your ticket(s) for the upcoming Reunion Festival have been successfully processed.
 
-To access your digital ticket, please navigate to:
+To access your digital interactive ticket, please navigate to:
 https://festivall.ca/reunionticket/
 
 and enter your ID_CODE: {id_code}
