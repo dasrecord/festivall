@@ -347,14 +347,42 @@ export default {
     }
 
     const handleSubmit = async () => {
-      await updateApplication()
-      await saveContract()
-      await addOrder()
-      await sendSMS(
-        applicant.value.phone_number,
-        `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
-      )
-      router.push({ name: 'reunionticket' })
+      try {
+        // Complete all critical database operations first
+        await updateApplication()
+        await saveContract()
+        await addOrder()
+        
+        // Send notifications after all critical operations are complete
+        // Use Promise.allSettled to handle both notifications independently
+        const notificationResults = await Promise.allSettled([
+          sendSMS(
+            applicant.value.phone_number,
+            `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
+          ),
+          sendEmail(
+            applicant.value.email,
+            'Contract Signed - Reunion 2025',
+            `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2025!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
+          )
+        ])
+    
+        // Log results for debugging
+        notificationResults.forEach((result, index) => {
+          const type = index === 0 ? 'SMS' : 'Email'
+          if (result.status === 'fulfilled') {
+            console.log(`${type} sent successfully`)
+          } else {
+            console.error(`${type} failed:`, result.reason)
+          }
+        })
+    
+        // Redirect regardless of notification success/failure
+        router.push({ name: 'reunionticket' })
+      } catch (error) {
+        console.error('Error in handleSubmit:', error)
+        alert('An error occurred while processing your contract. Please try again.')
+      }
     }
 
     onMounted(() => {
