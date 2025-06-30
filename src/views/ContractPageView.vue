@@ -358,12 +358,12 @@ export default {
         const notificationResults = await Promise.allSettled([
           sendSMS(
             applicant.value.phone_number,
-            `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
+            `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your interactive ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
           ),
           sendEmail(
             applicant.value.email,
             'Contract Signed - Reunion 2025',
-            `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2025!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
+            `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2025!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
           )
         ])
     
