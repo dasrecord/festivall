@@ -236,7 +236,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where, setDoc, doc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import { sendSMS, sendReunionApplications } from '/scripts/notifications.js'
+import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
@@ -401,7 +401,8 @@ export default {
       addOrder,
       handleSubmit,
       currentDate,
-      sendSMS
+      sendSMS,
+      sendEmail
     }
   }
 }
