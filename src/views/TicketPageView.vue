@@ -286,7 +286,10 @@
 
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
+          v-if="
+            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
+            order.applicant_types.includes('Volunteer')
+          "
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"
@@ -453,16 +456,18 @@ export default {
         if (!id_code) {
           throw new Error('ID code is undefined')
         }
-    
+
         // Security check: require email verification
         const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
         if (!storedAuth) {
-          const email = prompt('For security, please enter the email address associated with this ticket:')
+          const email = prompt(
+            'For security, please enter the email address associated with this ticket:'
+          )
           if (!email) {
             router.push({ name: 'EnterIDCode' })
             return
           }
-          
+
           // Verify email matches ticket
           const verificationQuery = query(
             collection(reunion_db, 'orders_2025'),
@@ -470,21 +475,21 @@ export default {
             where('email', '==', email.toLowerCase().trim())
           )
           const verificationSnapshot = await getDocs(verificationQuery)
-          
+
           if (verificationSnapshot.empty) {
             alert('Email does not match this ticket. Access denied.')
             router.push({ name: 'EnterIDCode' })
             return
           }
-          
+
           // Store verification for this session
           sessionStorage.setItem(`verified_${id_code}`, 'true')
         }
-    
+
         // Rest of your existing loadOrder code...
         const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         const querySnapshot = await getDocs(q)
-    
+
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
           await nextTick()
