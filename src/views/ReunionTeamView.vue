@@ -406,7 +406,7 @@ export default {
         <template v-slot:role>
           <h3>Children's Coordinators</h3>
           <p>
-            Andy and Alexis are our children's coordinators, ensuring a safe and fun filled weekend for our youngest festival-goers.
+            Andy and Alexis are our children's coordinators, ensuring a safe and fun-filled weekend for our youngest festival-goers.
           </p>
         </template>
         <template v-slot:icon>
