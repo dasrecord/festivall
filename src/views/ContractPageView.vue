@@ -212,11 +212,13 @@
       <button @click="handleSubmit" style="width: 100%; max-width: 400px">SIGN & SUBMIT</button>
     </div>
     <div v-else>
-      <p>Thank you, {{ applicant.fullname }}.</p>
-      <span v-if="applicant.signedAt"
-        >Your contract has been signed on
-        {{ applicant.signedAt }}
-      </span>
+      <div class="signed-contract">
+        <p>Thank you, {{ applicant.fullname }}.</p>
+        <p v-if="applicant.signedAt">
+          Your contract has been signed on {{ formatDate(applicant.signedAt) }}
+        </p>
+        <p v-if="applicant.signature"><strong>Signature:</strong> {{ applicant.signature }}</p>
+      </div>
     </div>
 
     <img
@@ -249,28 +251,59 @@ export default {
     const applicant = ref(null)
     const signature = ref('')
     const currentDate = new Date().toLocaleDateString()
+    const formatDate = (dateString) => {
+      if (!dateString) return ''
+
+      const date = new Date(dateString)
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
 
     const loadApplicant = async (id_code) => {
       try {
-        // Check if the applicant is found in the applications_2025 collection
-        let q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', id_code))
+        let applicantData = null
+
+        // First, try to get from orders_2025 (most complete data)
+        let q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         let querySnapshot = await getDocs(q)
 
-        // Check if the applicant is found in the applications_2024 collection
-        if (querySnapshot.empty) {
-          q = query(collection(reunion_db, 'applications'), where('id_code', '==', id_code))
+        if (!querySnapshot.empty) {
+          applicantData = querySnapshot.docs[0].data()
+          console.log('Loaded from orders_2025:', applicantData)
+        } else {
+          // Second, try contracts_2025 (has signature data)
+          q = query(collection(reunion_db, 'contracts_2025'), where('id_code', '==', id_code))
           querySnapshot = await getDocs(q)
+
+          if (!querySnapshot.empty) {
+            applicantData = querySnapshot.docs[0].data()
+            console.log('Loaded from contracts_2025:', applicantData)
+          } else {
+            // Last, try applications_2025 (original application)
+            q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', id_code))
+            querySnapshot = await getDocs(q)
+
+            if (!querySnapshot.empty) {
+              applicantData = querySnapshot.docs[0].data()
+              console.log('Loaded from applications_2025:', applicantData)
+            } else {
+              console.error('No document found in any collection!')
+              router.push({ name: 'EnterIDCode' })
+              return
+            }
+          }
         }
 
-        if (!querySnapshot.empty) {
-          applicant.value = querySnapshot.docs[0].data()
-        } else {
-          console.error('No such document!')
-          router.push({ name: 'EnterIdCode' })
-        }
+        applicant.value = applicantData
       } catch (error) {
         console.error('Error getting document:', error)
-        router.push({ name: 'EnterIdCode' })
+        router.push({ name: 'EnterIDCode' })
       }
     }
 
@@ -352,7 +385,7 @@ export default {
         await updateApplication()
         await saveContract()
         await addOrder()
-        
+
         // Send notifications after all critical operations are complete
         // Use Promise.allSettled to handle both notifications independently
         const notificationResults = await Promise.allSettled([
@@ -366,7 +399,7 @@ export default {
             `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2025!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
           )
         ])
-    
+
         // Log results for debugging
         notificationResults.forEach((result, index) => {
           const type = index === 0 ? 'SMS' : 'Email'
@@ -376,7 +409,7 @@ export default {
             console.error(`${type} failed:`, result.reason)
           }
         })
-    
+
         // Redirect regardless of notification success/failure
         router.push({ name: 'reunionticket' })
       } catch (error) {
@@ -402,7 +435,8 @@ export default {
       handleSubmit,
       currentDate,
       sendSMS,
-      sendEmail
+      sendEmail,
+      formatDate
     }
   }
 }
