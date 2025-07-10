@@ -847,13 +847,13 @@ export default {
         await updateDoc(docRef, {
           paid: true
         })
-
+    
+        // Find the applicant for the notification
+        const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
+    
         // Update both applicants and filteredApplicants arrays
         const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            sendReunionApplications(
-              `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
-            )
             return {
               ...applicant,
               paid: true
@@ -861,10 +861,17 @@ export default {
           }
           return applicant
         }
-
+    
         applicants.value = applicants.value.map(updateApplicant)
         filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
-
+    
+        // Send notification only once, after both arrays are updated
+        if (applicant) {
+          sendReunionApplications(
+            `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+          )
+        }
+    
         alert('Payment status updated successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
@@ -877,13 +884,13 @@ export default {
         await updateDoc(docRef, {
           paid: false
         })
-
+    
+        // Find the applicant for the notification
+        const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
+    
         // Update both applicants and filteredApplicants arrays
         const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
-            sendReunionApplications(
-              `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
-            )
             return {
               ...applicant,
               paid: false
@@ -891,10 +898,17 @@ export default {
           }
           return applicant
         }
-
+    
         applicants.value = applicants.value.map(updateApplicant)
         filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
-
+    
+        // Send notification only once, after both arrays are updated
+        if (applicant) {
+          sendReunionApplications(
+            `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
+          )
+        }
+    
         alert('Ticket revoked successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
