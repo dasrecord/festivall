@@ -346,10 +346,6 @@ export default {
         })
 
         alert('Contract saved successfully!')
-
-        sendReunionApplications(
-          `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
-        )
       } catch (error) {
         console.error('Error saving contract:', error)
         alert('Failed to save the contract.')
@@ -397,6 +393,9 @@ export default {
             applicant.value.email,
             'Contract Signed - Reunion 2025',
             `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2025!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
+          ),
+          sendReunionApplications(
+            `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
           )
         ])
 
