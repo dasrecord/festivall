@@ -377,13 +377,21 @@ export default {
 
     const handleSubmit = async () => {
       try {
+        console.log('Starting contract submission process...')
+        
         // Complete all critical database operations first
         await updateApplication()
+        console.log('✅ Application updated')
+        
         await saveContract()
+        console.log('✅ Contract saved')
+        
         await addOrder()
-
+        console.log('✅ Order added')
+    
+        console.log('Starting notifications...')
+        
         // Send notifications after all critical operations are complete
-        // Use Promise.allSettled to handle both notifications independently
         const notificationResults = await Promise.allSettled([
           sendSMS(
             applicant.value.phone_number,
@@ -398,17 +406,20 @@ export default {
             `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
           )
         ])
-
+    
+        console.log('Notification results:', notificationResults)
+    
         // Log results for debugging
         notificationResults.forEach((result, index) => {
-          const type = index === 0 ? 'SMS' : 'Email'
+          const types = ['SMS', 'Email', 'Slack']
+          const type = types[index]
           if (result.status === 'fulfilled') {
-            console.log(`${type} sent successfully`)
+            console.log(`✅ ${type} sent successfully`)
           } else {
-            console.error(`${type} failed:`, result.reason)
+            console.error(`❌ ${type} failed:`, result.reason)
           }
         })
-
+    
         // Redirect regardless of notification success/failure
         router.push({ name: 'reunionticket' })
       } catch (error) {
