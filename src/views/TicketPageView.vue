@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="status-bar">
-        <p
+        <!-- <p
           @click="showPaymentModal = true"
           style="
             justify-content: center;
@@ -86,7 +86,7 @@
           <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
             {{ order.paid ? 'Paid' : 'Not Paid' }}
           </span>
-        </p>
+        </p> -->
         <p
           @click="showCheckInModal = true"
           style="

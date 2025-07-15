@@ -124,6 +124,7 @@ const formatTime = (timestamp) => {
   display: grid;
   grid-template-columns: 2fr 3fr;
   gap: 0.3rem;
+  margin-top: 0.5rem;
   padding: 1rem;
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;

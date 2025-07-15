@@ -146,6 +146,8 @@ onMounted(() => {
   width: 100%;
 }
 
+
+
 .day {
   width: 100%;
   padding: 0.5rem;
