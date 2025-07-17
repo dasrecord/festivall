@@ -838,7 +838,7 @@ export default {
         .replace('{roles}', roles || '')
         .replace('{id_code}', id_code || '')
       const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=humanoidtwo@gmail.com`
+      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
     }
 
     const confirmPaymentReceived = async (id_code) => {
