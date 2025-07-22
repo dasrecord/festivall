@@ -318,7 +318,7 @@ onMounted(() => {
           <h1>Compensation Schedule:</h1>
         </div>
         Please note that submitting this form does not guarantee a performance slot.<br />
-        Be sure to read the corresponding duties* for your category before applying.<br />
+        Be sure to read the corresponding Duties* and F.A.Q.* for your category before applying.<br />
         <br />
         <div class="applicant-type">
           <div>
@@ -367,7 +367,8 @@ onMounted(() => {
               </h4>
               <RouterLink to="/reunion-volunteer-responsibilities" class="info"
                 >*Volunteer Duties*</RouterLink
-              >
+              ><br />
+              <RouterLink to="/reunionfaq" class="info">*Volunteer F.A.Q.*</RouterLink>
             </h2>
           </div>
         </div>

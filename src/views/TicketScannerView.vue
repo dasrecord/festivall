@@ -211,8 +211,8 @@
 
         <div>
           <h2>{{ order.fullname }}</h2>
-          <p>{{ order.email }}</p>
-          <p>{{ order.phone }}</p>
+          <!-- <p>{{ order.email }}</p> -->
+          <!-- <p>{{ order.phone }}</p> -->
         </div>
 
         <div class="order-status">
