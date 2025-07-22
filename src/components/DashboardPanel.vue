@@ -100,7 +100,17 @@
                 </span>
               </h2>
               <!-- ID CODE -->
-              <p v-if="applicant.id_code" class="id_code">#{{ applicant.id_code }}</p>
+              <p v-if="applicant.id_code" class="id_code">
+                <a
+                  :href="
+                    'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
+                    applicant.id_code
+                  "
+                  target="_blank"
+                >
+                  #{{ applicant.id_code }}
+                </a>
+              </p>
               <!-- APPLICANT TYPE -->
               <p v-if="applicant.applicant_types && applicant.applicant_types.length">
                 {{ applicant.applicant_types.join(', ') }}
@@ -847,10 +857,10 @@ export default {
         await updateDoc(docRef, {
           paid: true
         })
-    
+
         // Find the applicant for the notification
         const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
-    
+
         // Update both applicants and filteredApplicants arrays
         const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
@@ -861,17 +871,17 @@ export default {
           }
           return applicant
         }
-    
+
         applicants.value = applicants.value.map(updateApplicant)
         filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
-    
+
         // Send notification only once, after both arrays are updated
         if (applicant) {
           sendReunionApplications(
             `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
           )
         }
-    
+
         alert('Payment status updated successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
@@ -884,10 +894,10 @@ export default {
         await updateDoc(docRef, {
           paid: false
         })
-    
+
         // Find the applicant for the notification
         const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
-    
+
         // Update both applicants and filteredApplicants arrays
         const updateApplicant = (applicant) => {
           if (applicant.id_code === id_code) {
@@ -898,17 +908,17 @@ export default {
           }
           return applicant
         }
-    
+
         applicants.value = applicants.value.map(updateApplicant)
         filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
-    
+
         // Send notification only once, after both arrays are updated
         if (applicant) {
           sendReunionApplications(
             `:warning: Ticket revoked for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
           )
         }
-    
+
         alert('Ticket revoked successfully.')
       } catch (error) {
         console.error('Error updating paid status:', error)
