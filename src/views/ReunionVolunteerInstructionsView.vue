@@ -83,8 +83,11 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-setupcrew-signup')" class="volunteer-button">
-              SETUP CREW SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
+            <button @click="router.push('/reunion-setupcrew-a-signup')" class="volunteer-button">
+              SETUP CREW A SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
+            </button>
+            <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
+              SETUP CREW B SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
             </button>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
@@ -137,7 +140,8 @@
         </div>
       </div>
       <h3 style="margin-top: 1rem">
-        If you have any questions or require further assistance, please contact us at
+        If you have any questions or require further assistance,<br />
+        please contact our Volunteer Coordinator - Caitlin, at:<br />
         <a href="mailto:reunionvolunteercoordinator@festivall.ca"
           >reunionvolunteercoordinator@festivall.ca</a
         >
