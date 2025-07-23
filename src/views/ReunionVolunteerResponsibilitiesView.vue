@@ -142,7 +142,8 @@
       </ul>
 
       <h3 style="margin-top: 1rem">
-        If you have any questions or require further assistance, please contact us at
+        If you have any questions or require further assistance,<br />
+        please contact our Volunteer Coordinator - Caitlin, at:<br />
         <a href="mailto:reunionvolunteercoordinator@festivall.ca"
           >reunionvolunteercoordinator@festivall.ca</a
         >

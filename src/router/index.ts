@@ -367,10 +367,16 @@ const routes = [
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0G8ipWXeewiySQ1CFfoA7s0ReBQzvMnMSs2Bdyi-jar9AXO8WDzulHzrIIP2UVVL3iNzVOKg9S' }
   },
   {
-    path: '/reunion-setupcrew-signup',
-    name: 'reunion-setupcrew-signup',
+    path: '/reunion-setupcrew-a-signup',
+    name: 'reunion-setupcrew-a-signup',
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ160c_KP34OQwFWlr0pMQY8EgMzLZ1kFE_QqsH0LNsPd63eA2cBjQLuFPu7EgjzglFn9CWIU-e5' }
+  },
+    {
+    path: '/reunion-setupcrew-b-signup',
+    name: 'reunion-setupcrew-b-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0kXHYQnvWUCAD60AY0QMBBmVBNOd_PI1bVgDBWlTO0VGE9ZEqmOX3285NArq6DuZ8jkcT6V7GW' }
   },
   {
     path: '/reunion-cleanupcrew-signup',
