@@ -26,6 +26,16 @@
           Reunion Lineup
         </RouterLink>
 
+        <RouterLink to="/reunionvolunteercalendar" class="scanner-link" target="_blank">
+          <img
+            :src="volunteer_icon"
+            alt="Volunteer Calendar"
+            class="action-icon"
+            style="width: 32px"
+          />
+          Volunteer Calendar
+        </RouterLink>
+
         <RouterLink to="/scavengerhunt/a2c4e?fullName=Admin" class="scanner-link">
           <img
             :src="scavenger_hunt_icon"

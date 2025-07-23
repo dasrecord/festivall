@@ -198,7 +198,8 @@
             <br />
             The Front Gate will close at 2:00 AM each night.<br />
             Please try to arrive before then.<br />
-            With respected to substances, we have a No Open Use Policy.<br />
+            With respected to substances, we have a<br />
+            <strong> No Open Use Policy.<br /> </strong>
             Please keep all adult materials out of sight and reach of minors.<br /><br />
           </h3>
           <h3 v-else>
@@ -215,6 +216,13 @@
             We are not responsible for any lost or stolen items.<br />
             <br />
           </h3>
+          <h3>
+            <strong style="text-decoration: underline">Meals:</strong><br />
+            [FRI, SAT, SUN]<br />
+            [Lunch 12:00pm - 2:00pm]<br />
+            [Supper 6:00pm - 8:00pm]<br />
+            <br />
+          </h3>
 
           <h3
             v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
@@ -223,7 +231,7 @@
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
             Once you're oriented, please take your vehicle to your campsite allowing others to load
-            in.<br />
+            in.<br /><br />
           </h3>
 
           <h3>
@@ -296,7 +304,7 @@
         >
           <p>
             <img :src="volunteer_icon" style="height: auto; width: 36px" alt="Volunteer Icon" />
-            Volunteer Instructions
+            Signup for your Volunteer Shifts
           </p>
         </RouterLink>
         <div
@@ -350,7 +358,7 @@
         <RouterLink v-else to="#">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Lineup TBA
+            Final Lineup coming soon!
           </p>
         </RouterLink>
 
@@ -370,7 +378,7 @@
         <RouterLink v-else to="#">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            More coming soon!
+            Scavenger Hunt coming soon!
           </p>
         </RouterLink>
       </div>
@@ -804,6 +812,7 @@ a:hover {
   color: white;
   border: 1pc solid var(--reunion-frog-green);
   border-radius: 0px;
+  font-size: 12px;
 }
 
 .modal-content button {
