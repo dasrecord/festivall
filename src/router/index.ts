@@ -402,6 +402,12 @@ const routes = [
     component: ReunionMapView
   },
   {
+    path: '/reunionvolunteercalendar',
+    name: 'reunionvolunteercalendar',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/3/r/custom/7/d/2025/8/25' }
+  },
+  {
     path: '/reunionfaq',
     name: 'reunionfaq',
     component: ReunionFAQView
