@@ -97,7 +97,9 @@
               attendees and ensure that the event space is ready for the activities and programs
               planned.
             </p>
-            <p>Team Lead: Brandon</p>
+            <p>General Team Lead: Brandon</p>
+            <p>Decorations Team Lead: Christina</p>
+            <p>Sound Tech Team Lead: Arthur</p>
           </div>
         </div>
         <div class="crew">
