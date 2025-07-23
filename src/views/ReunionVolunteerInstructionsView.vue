@@ -84,11 +84,11 @@
           />
           <div>
             <button @click="router.push('/reunion-setupcrew-a-signup')" class="volunteer-button">
-              SETUP CREW A SIGNUP<br />Early Team [Aug 18 - 29]<br />[Minimum One 8-Hour Shift
+              SETUP CREW A SIGNUP<br />Early Team [Aug 18 - Aug 26]<br />[Minimum One 8-Hour Shift
               PreShow]
             </button>
             <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
-              SETUP CREW B SIGNUP<br />Late Team [Aug 27 - 29]<br />[Minimum One 8-Hour Shift
+              SETUP CREW B SIGNUP<br />Late Team [Aug 27 - Aug 29]<br />[Minimum One 8-Hour Shift
               PreShow]
             </button>
             <p>
