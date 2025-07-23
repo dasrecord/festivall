@@ -84,10 +84,12 @@
           />
           <div>
             <button @click="router.push('/reunion-setupcrew-a-signup')" class="volunteer-button">
-              SETUP CREW A SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
+              SETUP CREW A SIGNUP<br />Early Team [Aug 18 - 29]<br />[Minimum One 8-Hour Shift
+              PreShow]
             </button>
             <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
-              SETUP CREW B SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
+              SETUP CREW B SIGNUP<br />Late Team [Aug 27 - 29]<br />[Minimum One 8-Hour Shift
+              PreShow]
             </button>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
