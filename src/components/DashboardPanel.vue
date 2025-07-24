@@ -285,17 +285,22 @@
               <p v-if="applicant.paid" style="color: green; font-size: large">
                 Paid<br />
 
-                <button @click="revokeTicket(applicant.id_code)">Revoke Ticket</button><br />
+                <button @click="revokeTicket(applicant.id_code)" style="background-color: red">
+                  Revoke Ticket</button
+                ><br />
               </p>
               <p v-else style="color: red; font-size: large">
                 Unpaid<br />
                 <a @click="remindPayment(applicant.id_code)">
                   <img :src="reminder_icon" alt="Remind Payment" class="action-icon" />
                 </a>
+                <button
+                  @click="confirmPaymentReceived(applicant.id_code)"
+                  style="background-color: green"
+                >
+                  Confirm Payment Received
+                </button>
               </p>
-              <button @click="confirmPaymentReceived(applicant.id_code)">
-                Confirm Payment Received
-              </button>
               <br />
             </div>
             <div class="checkedin-section">
@@ -1215,7 +1220,7 @@ button:hover {
 
 .applicants.cards .applicant {
   width: 100%;
-  max-width: 300px;
+  max-width: 350px;
   height: 350px;
   align-items: center;
   text-align: center;
@@ -1242,7 +1247,7 @@ button:hover {
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
   align-items: center;
-  max-width: 300px;
+  max-width: 350px;
   height: 100%;
   overflow: hidden;
 }
@@ -1293,7 +1298,7 @@ button:hover {
 }
 
 .applicant:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
 }
 
 .applicant-content {
@@ -1311,6 +1316,7 @@ button:hover {
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .actions img {
   margin: auto;
 }
@@ -1346,6 +1352,7 @@ a {
   cursor: pointer;
   margin: 3px;
 }
+
 .section-icon {
   width: 36px;
   margin: auto;
