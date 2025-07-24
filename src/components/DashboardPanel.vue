@@ -1,5 +1,17 @@
 <template>
   <div class="dashboard">
+    <!-- Add loading overlay -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="spinner"></div>
+      Loading applicants...
+    </div>
+
+    <!-- Add error display -->
+    <div v-if="error" class="error-banner">
+      {{ error }}
+      <button @click="error = null">×</button>
+    </div>
+
     <div class="banner">
       <a href="/">
         <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
@@ -70,6 +82,14 @@
 
     <div class="filters">
       <h2>Filter By</h2>
+      <!-- Add search bar -->
+      <div class="search-section">
+        <input
+          v-model="searchQuery"
+          placeholder="Search by name, email, or ID..."
+          class="search-input"
+        />
+      </div>
       <div class="buttons">
         <button
           v-for="filter in relevantFilters"
@@ -89,9 +109,17 @@
       <div>
         <!-- <button @click="generateLineup">Download .ics</button> -->
       </div>
-      <h2>Current View <br />{{ filteredApplicants.length }}</h2>
+      <h2>Current View <br />{{ searchedApplicants?.length || 0 }}</h2>
+
+      <!-- Add pagination -->
+      <div class="pagination" v-if="totalPages > 1">
+        <button @click="currentPage--" :disabled="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
+      </div>
+
       <div class="applicants" :class="viewStyle">
-        <div v-for="applicant in filteredApplicants" :key="applicant.id" class="applicant">
+        <div v-for="applicant in paginatedApplicants" :key="applicant.id" class="applicant">
           <div class="applicant-content" :class="viewStyle">
             <div class="name-section">
               <h2>
@@ -460,7 +488,7 @@ import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
 import contract_icon from '@/assets/images/icons/contract.png'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
@@ -481,14 +509,26 @@ export default {
     const applicants = ref([])
     const filteredApplicants = ref([])
     const viewStyle = ref('cards') // Default view style
+
+    // Add loading and error states
+    const loading = ref(false)
+    const error = ref(null)
+
+    // Add search functionality
+    const searchQuery = ref('')
+
+    // Add pagination
+    const pageSize = ref(20)
+    const currentPage = ref(1)
+
     const filters = ref([
-      { property: 'applicant_type', value: 'Artist', label: 'Artists' },
+      // { property: 'applicant_type', value: 'Artist', label: 'Artists' },
       { property: 'applicant_types', value: 'Artist', label: 'Artists' },
 
-      { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
+      // { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
       { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers' },
 
-      { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
+      // { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
       { property: 'applicant_types', value: 'Workshop', label: 'Workshops' },
 
       { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations' },
@@ -520,9 +560,10 @@ export default {
       { property: 'applicant_type', value: 'UX', label: 'UX' },
       { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
       { property: 'applicant_type', value: 'Customer', label: 'Customer' },
-      { property: 'mix_track_url', value: '', label: 'Mix/Track' },
-      { property: 'willing', value: '', label: 'Willing' },
-      { property: 'url', value: '', label: 'URL' },
+      { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track' },
+      { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track' },
+      { property: 'willing', value: 'has_value', label: 'Willing' },
+      { property: 'url', value: 'has_value', label: 'Has URL' },
       { property: 'build_crew', value: '', label: 'Build Crew' },
       { property: 'kitchen_crew', value: '', label: 'Kitchen Crew' },
       { property: 'security', value: '', label: 'Security' },
@@ -548,9 +589,17 @@ export default {
     ])
 
     const relevantFilters = computed(() => {
+      if (!applicants.value.length) return []
+
       return filters.value.filter((filter) => {
         return applicants.value.some((applicant) => {
           const prop = applicant[filter.property]
+          if (filter.value === 'has_value') {
+            return prop !== undefined && prop !== '' && prop !== null
+          }
+          if (filter.value === 'no_value') {
+            return prop === undefined || prop === '' || prop === null
+          }
           if (filter.value === '') {
             return prop !== undefined && prop !== ''
           }
@@ -566,52 +615,81 @@ export default {
     })
 
     const loadApplicants = async (type, isFirestore = false) => {
+      loading.value = true
+      error.value = null
+
       try {
         let data = []
         if (isFirestore) {
           // Fetch data from Firestore
           const applicantsCollection = collection(reunion_db, type)
           const applicantsSnapshot = await getDocs(applicantsCollection)
-          data = applicantsSnapshot.docs.map((doc) => doc.data())
+          data = applicantsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
         } else {
           // Fetch static data from public folder
           const response = await fetch(`/data/applicants/${type}.json`)
           if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText)
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
           data = await response.json()
         }
+
         applicants.value = data
-          .map((applicant) => ({ ...applicant, message: '' }))
+          .map((applicant) => ({
+            ...applicant,
+            message: '',
+            isUpdating: false // Track individual loading states
+          }))
           .sort((a, b) => {
             if (a.url && !b.url) return -1
             if (!a.url && b.url) return 1
             return 0
           })
         filteredApplicants.value = applicants.value
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error)
+      } catch (err) {
+        error.value = `Failed to load ${type}: ${err.message}`
+        console.error('Load error:', err)
+      } finally {
+        loading.value = false
       }
     }
 
     const applyFilter = (property, value) => {
       filteredApplicants.value = applicants.value.filter((applicant) => {
         const prop = applicant[property]
+
+        // Handle special cases first
+        if (value === 'has_value') {
+          return prop !== undefined && prop !== '' && prop !== null
+        }
+        if (value === 'no_value') {
+          return prop === undefined || prop === '' || prop === null
+        }
+
+        // Handle arrays
         if (Array.isArray(prop)) {
           return prop.includes(value) // Check if the array includes the value
         }
+
+        // Handle exact matches
         if (typeof prop === 'string' || typeof prop === 'boolean') {
           return prop === value // Match string or boolean values
         }
+
         if (value === '') {
           return prop !== undefined && prop !== '' // Handle empty filter values
         }
+
         return false
       })
+
+      // Reset pagination when filter changes
+      currentPage.value = 1
     }
 
     const clearFilters = () => {
       filteredApplicants.value = applicants.value
+      currentPage.value = 1
     }
 
     const contractEmailBody = ref('')
@@ -948,6 +1026,34 @@ export default {
       return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
     }
 
+    // Add search functionality
+    const searchedApplicants = computed(() => {
+      if (!filteredApplicants.value || !Array.isArray(filteredApplicants.value)) return []
+      if (!searchQuery.value) return filteredApplicants.value
+
+      const query = searchQuery.value.toLowerCase()
+      return filteredApplicants.value.filter(
+        (applicant) =>
+          applicant.fullname?.toLowerCase().includes(query) ||
+          applicant.act_name?.toLowerCase().includes(query) ||
+          applicant.email?.toLowerCase().includes(query) ||
+          applicant.id_code?.toLowerCase().includes(query)
+      )
+    })
+
+    // Add pagination
+    const paginatedApplicants = computed(() => {
+      if (!searchedApplicants.value || !Array.isArray(searchedApplicants.value)) return []
+      const start = (currentPage.value - 1) * pageSize.value
+      const end = start + pageSize.value
+      return searchedApplicants.value.slice(start, end)
+    })
+
+    const totalPages = computed(() => {
+      if (!searchedApplicants.value || !Array.isArray(searchedApplicants.value)) return 1
+      return Math.ceil(searchedApplicants.value.length / pageSize.value)
+    })
+
     onMounted(() => {
       loadApplicants('orders_2025', true)
       loadContractDeliveryTemplate()
@@ -992,7 +1098,15 @@ export default {
       contract_icon,
       reminder_icon,
       contractEmailBody,
-      ticketEmailBody
+      ticketEmailBody,
+      loading,
+      error,
+      searchQuery,
+      searchedApplicants,
+      pageSize,
+      currentPage,
+      totalPages,
+      paginatedApplicants
     }
   }
 }
@@ -1254,24 +1368,189 @@ a {
   padding: 0.5rem;
   border-radius: 10px;
 }
+
+/* Add loading and error states */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #333;
+  border-top: 4px solid var(--festivall-baby-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-banner {
+  background: #ff4444;
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-banner button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+}
+
+/* Search functionality */
+.search-section {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: white;
+  color: black;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--festivall-baby-blue);
+  box-shadow: 0 0 5px rgba(5, 155, 250, 0.3);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--festivall-baby-blue);
+  background: transparent;
+  color: var(--festivall-baby-blue);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--festivall-baby-blue);
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  color: white;
+  font-weight: bold;
+}
+
+/* Optimize grid layout for cards */
+.applicants.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
   .banner {
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center align the content */
-    text-align: center;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .scanner-link {
-    width: 100%; /* Make buttons full width */
-    max-width: 200px; /* Optional: Limit the button width */
+  .scanner-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
   }
 
-  .logo {
-    width: 80px; /* Reduce logo size for mobile */
+  .applicants.cards {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
   }
 
-  h1 {
-    font-size: 1.5rem; /* Adjust font size for the title */
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .search-input {
+    max-width: 100%;
+  }
+}
+
+/* Loading state for individual items */
+.applicant.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.applicant.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 </style>
