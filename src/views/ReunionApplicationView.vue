@@ -518,8 +518,14 @@ onMounted(() => {
           <label for="applicant_type">Categories:</label>
           <div class="checkboxes">
             <span class="checkbox-label">
-              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
-              Artist
+              <input
+                type="checkbox"
+                id="artist"
+                value="Artist"
+                v-model="form.applicant_types"
+                disabled
+              />
+              Artist (Closed)
             </span>
 
             <span class="checkbox-label">
@@ -538,8 +544,9 @@ onMounted(() => {
                 id="workshop"
                 value="Workshop"
                 v-model="form.applicant_types"
+                disabled
               />
-              Workshop
+              Workshop Closed
             </span>
             <span class="checkbox-label">
               <input
