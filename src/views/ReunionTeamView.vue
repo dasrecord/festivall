@@ -43,8 +43,11 @@ import guitartech_icon from '@/assets/images/icons/guitartech.png'
 import Angela from '@/assets/images/reunion_team/Angela.jpg'
 import food_icon from '@/assets/images/icons/food.png'
 
-import Andy from '@/assets/images/reunion_team/Andy.jpg'
+import Andy_and_Alexis from '@/assets/images/reunion_team/Andy_and_Alexis.jpg'
 import playground_icon from '@/assets/images/icons/playground.png'
+
+import Caitlin from '@/assets/images/reunion_team/Caitlin.jpg'
+import volunteer_icon from '@/assets/images/icons/volunteer.png'
 
 import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
 import construction_icon from '@/assets/images/icons/construction.png'
@@ -88,10 +91,12 @@ export default {
       guitartech_icon,
       Angela,
       food_icon,
-      Andy,
+      Andy_and_Alexis,
       playground_icon,
       Brandon_and_Liam,
-      construction_icon
+      construction_icon,
+      Caitlin,
+      volunteer_icon
     }
   }
 }
@@ -256,6 +261,26 @@ export default {
           />
         </template>
       </TeamCard>
+
+      <TeamCard>
+        <template v-slot:headshot>
+          <img :src="Caitlin" alt="Caitlin" />
+        </template>
+        <template v-slot:name>
+          <h2>Caitlin</h2>
+        </template>
+        <template v-slot:role>
+          <h3>Volunteer Coordinator</h3>
+          <p>Caitlin plays a vital role organizing and empowering our incredible volunteers.</p>
+        </template>
+        <template v-slot:icon>
+          <img
+            :src="volunteer_icon"
+            alt="Volunteer Icon"
+            style="width: 75px; border-radius: 0; border-radius: 0"
+          />
+        </template>
+      </TeamCard>
       <TeamCard>
         <template v-slot:headshot>
           <img :src="Brandon_and_Liam" alt="Brandon_and_Liam" />
@@ -278,7 +303,7 @@ export default {
           />
         </template>
       </TeamCard>
-      <TeamCard>
+      <!-- <TeamCard>
         <template v-slot:headshot>
           <img :src="Janicka" alt="Janicka" />
         </template>
@@ -295,7 +320,7 @@ export default {
         <template v-slot:icon>
           <img :src="community_icon" alt="Community Icon" style="width: 75px; border-radius: 0" />
         </template>
-      </TeamCard>
+      </TeamCard> -->
       <TeamCard>
         <template v-slot:headshot>
           <img :src="Cory" alt="Cory" />
@@ -397,16 +422,16 @@ export default {
 
       <TeamCard>
         <template v-slot:headshot>
-          <img :src="Andy" alt="Andy" />
+          <img :src="Andy_and_Alexis" alt="Andy_and_Alexis" />
         </template>
         <template v-slot:name>
-          <h2>Andy</h2>
+          <h2>Andy & Alexis</h2>
         </template>
         <template v-slot:role>
-          <h3>Children's Coordinator</h3>
+          <h3>Children's Coordinators</h3>
           <p>
-            Andy is our children's coordinator, ensuring that our youngest festival-goers have a
-            safe and fun experience.
+            Andy and Alexis are our children's coordinators, ensuring a safe and fun-filled weekend
+            for our youngest festival-goers.
           </p>
         </template>
         <template v-slot:icon>

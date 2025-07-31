@@ -66,8 +66,13 @@
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
-              the event and maintain cleanliness and hygiene in the food service area.
+              the event and maintain cleanliness and hygiene in the food service area. Shifts are
+              structured as 1 hour of preparation, 2 hours of service, and 1 hour of cleanup.
             </p>
+            DAYS: FRI,SAT,SUN<br />
+            LUNCH: 11am-3pm<br />
+            SUPPER: 5pm-9pm<br />
+            <p>Team Lead: Angela</p>
           </div>
         </div>
         <div class="crew">
@@ -78,8 +83,13 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-setupcrew-signup')" class="volunteer-button">
-              SETUP CREW SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
+            <button @click="router.push('/reunion-setupcrew-a-signup')" class="volunteer-button">
+              SETUP CREW A SIGNUP<br />Early Team [Aug 18 - Aug 26]<br />[Minimum One 8-Hour Shift
+              PreShow]
+            </button>
+            <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
+              SETUP CREW B SIGNUP<br />Late Team [Aug 27 - Aug 29]<br />[Minimum One 8-Hour Shift
+              PreShow]
             </button>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
@@ -87,6 +97,9 @@
               attendees and ensure that the event space is ready for the activities and programs
               planned.
             </p>
+            <p>General Team Lead: Brandon</p>
+            <p>Decorations Team Lead: Christina</p>
+            <p>Sound Tech Team Lead: Arthur</p>
           </div>
         </div>
         <div class="crew">
@@ -106,6 +119,7 @@
               that the venue is left in good condition. Cleanup Crew Volunteers play a vital role in
               wrapping up the event smoothly and efficiently.
             </p>
+            <p>Team Lead: Chris</p>
           </div>
         </div>
         <div class="crew">
@@ -125,12 +139,16 @@
               and presenters have the necessary support and equipment for their performances and
               presentations.
             </p>
+            <p>Team Lead: Arthur</p>
           </div>
         </div>
       </div>
       <h3 style="margin-top: 1rem">
-        If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
+        If you have any questions or require further assistance,<br />
+        please contact our Volunteer Coordinator - Caitlin, at:<br />
+        <a href="mailto:reunionvolunteercoordinator@festivall.ca"
+          >reunionvolunteercoordinator@festivall.ca</a
+        >
       </h3>
     </div>
   </div>

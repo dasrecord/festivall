@@ -54,6 +54,19 @@
             concerns to ensure a positive experience for all participants.
           </p>
         </li>
+        <li>
+          <strong>Arrival:</strong>
+          <p>
+            Please arrive 10 minutes before your scheduled shift. You should have all the tools or
+            supplies you'll need for your shift. Check in at the front gate upon arrival. They'll
+            radio the volunteer coordinator or your crew coordinator to connect.
+          </p>
+        </li>
+        <li>
+          <strong>Perks of Volunteering:</strong>
+          <p>Free admission, meal tickets, and being part of the Reunion family.</p>
+        </li>
+
         <ul class="crew">
           <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
@@ -64,6 +77,7 @@
               using our in-house ticketing system. They are the first point of contact for attendees
               and play a crucial role in ensuring a positive experience for everyone.
             </p>
+            <p>Team Lead: Prasenjit</p>
           </li>
         </ul>
         <ul class="crew">
@@ -77,6 +91,10 @@
               the event and maintain cleanliness and hygiene in the food service area. Shifts are
               structured as 1 hour of preparation, 2 hours of service, and 1 hour of cleanup.
             </p>
+            DAYS: FRI,SAT,SUN<br />
+            LUNCH: 11am-3pm<br />
+            SUPPER: 5pm-9pm<br />
+            <p>Team Lead: Angela</p>
           </li>
         </ul>
         <ul class="crew">
@@ -90,6 +108,7 @@
               attendees and ensure that the event space is ready for the activities and programs
               planned.
             </p>
+            <p>Team Lead: Brandon</p>
           </li>
         </ul>
         <ul class="crew">
@@ -103,6 +122,7 @@
               that the venue is left in good condition. Cleanup Crew Volunteers play a vital role in
               wrapping up the event smoothly and efficiently.
             </p>
+            <p>Team Lead: Chris</p>
           </li>
         </ul>
         <ul class="crew">
@@ -116,13 +136,17 @@
               and presenters have the necessary support and equipment for their performances and
               presentations.
             </p>
+            <p>Team Lead: Arthur</p>
           </li>
         </ul>
       </ul>
 
       <h3 style="margin-top: 1rem">
-        If you have any questions or require further assistance, please contact us at
-        <a href="mailto:reunion@festivall.ca">reunion@festivall.ca</a>
+        If you have any questions or require further assistance,<br />
+        please contact our Volunteer Coordinator - Caitlin, at:<br />
+        <a href="mailto:reunionvolunteercoordinator@festivall.ca"
+          >reunionvolunteercoordinator@festivall.ca</a
+        >
       </h3>
     </div>
   </div>

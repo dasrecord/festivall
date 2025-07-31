@@ -294,6 +294,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 1rem;
   border-radius: 10px;
@@ -336,7 +337,6 @@ input:focus {
 
 button {
   padding: 0.75rem 1rem;
-  /* margin: 1rem; */
   border: 1px solid white;
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.6);

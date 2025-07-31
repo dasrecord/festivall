@@ -160,16 +160,26 @@
       <li v-for="order in filteredOrders" :key="order.id_code" class="order">
         <div>
           <IconFestivall height="24px" />
-          <h2>{{ order.id_code }}</h2>
+          <h2>
+            <a
+              :href="
+                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
+                order.id_code
+              "
+              target="_blank"
+            >
+              #{{ order.id_code }}
+            </a>
+          </h2>
         </div>
 
         <div>
           <h2>{{ order.fullname }}</h2>
-          <p>{{ order.email }}</p>
-          <p>{{ order.phone }}</p>
+          <!-- <p>{{ order.email }}</p>
+          <p>{{ order.phone }}</p> -->
         </div>
         <div class="order-status">
-          <h4>Admit {{ order.ticket_quantity }}</h4>
+          <!-- <h4>Admit {{ order.ticket_quantity }}</h4>
           <div class="tickets">
             <img
               v-for="n in parseInt(order.ticket_quantity) || 0"
@@ -184,16 +194,19 @@
           </h4>
           <h4 :style="{ color: currentStatus(order) === 'Checked In' ? 'orange' : 'yellow' }">
             {{ currentStatus(order) }}
-          </h4>
+          </h4> -->
           <h4 v-if="order.meal_tickets_remaining > 0">Meal Tickets Remaining</h4>
           <div class="meals">
-            <img
-              v-for="n in parseInt(order.meal_tickets_remaining) || 0"
-              :key="n"
-              src="@/assets/images/icons/meals.png"
-              alt="Meal Ticket"
-              style="width: 24px"
-            />
+            <template v-if="parseInt(order.meal_tickets_remaining) || 0">
+              <img
+                v-for="n in parseInt(order.meal_tickets_remaining)"
+                :key="n"
+                src="@/assets/images/icons/meals.png"
+                alt="Meal Ticket"
+                style="width: 24px"
+              />
+            </template>
+            <h4 v-else>No Meal Tickets Remaining</h4>
           </div>
         </div>
       </li>
@@ -443,6 +456,11 @@ li {
 .tickets img {
   margin: 3px;
   transform: rotate(-45deg);
+}
+.meals {
+  display: flex;
+  flex-wrap: wrap;
+  width: 125px;
 }
 .meals img {
   margin: 3px;
