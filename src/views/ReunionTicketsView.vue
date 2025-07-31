@@ -334,6 +334,11 @@ onMounted(() => {
               (Includes 1 lunch and 1 supper<br />
               during scheduled service hours)
             </h3>
+            <br />
+            <h4>
+              Our food is obtained from local Saskatchewan farmers via the Wandering Market.<br />
+              We will be providing whole foods prepared by a Red Seal chef and her team.
+            </h4>
           </div>
 
           <div class="bitcoin">
