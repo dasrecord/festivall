@@ -2,8 +2,8 @@ import axios from 'axios';
 
 export const sendSMS = async (phone, message) => {
   if (!phone || !message) {
-    alert('Phone number and message are required.');
-    return;
+    console.error('Phone number and message are required.');
+    throw new Error('Phone number and message are required.');
   }
 
   const payload = {
@@ -12,7 +12,7 @@ export const sendSMS = async (phone, message) => {
     value3: '********************\nPowered by Festivall\n********************'
   };
 
-  console.log('Sending payload:', JSON.stringify(payload)); // Add logging for debugging
+  console.log('Sending SMS payload:', JSON.stringify(payload));
 
   try {
     const response = await fetch('https://relayproxy.vercel.app/sms', {
@@ -23,23 +23,23 @@ export const sendSMS = async (phone, message) => {
       body: JSON.stringify(payload)
     });
 
-    alert(`SMS sent  to ${phone} successfully!`);
-
     if (!response.ok) {
-      throw new Error('Network response was not ok ' + response.statusText);
+      throw new Error(`SMS API responded with status: ${response.status} ${response.statusText}`);
     }
 
     const responseData = await response.json();
-    console.log('Response data:', responseData); // Log the response data for debugging
+    console.log('SMS sent successfully:', responseData);
+    return responseData;
   } catch (error) {
-    console.error('There was a problem with the fetch operation:', error);
+    console.error('SMS sending failed:', error);
+    throw error; // Re-throw to let caller handle it
   }
 };
 
 export const sendEmail = async (email, subject, message) => {
   if (!email || !subject || !message) {
-    alert('Email, subject, and message are required.');
-    return;
+    console.error('Email, subject, and message are required.');
+    throw new Error('Email, subject, and message are required.');
   }
 
   const payload = {
@@ -48,7 +48,7 @@ export const sendEmail = async (email, subject, message) => {
     value3: message
   };
 
-  console.log('Sending payload:', JSON.stringify(payload)); // Add logging for debugging
+  console.log('Sending Email payload:', JSON.stringify(payload));
 
   try {
     const response = await fetch('https://relayproxy.vercel.app/email', {
@@ -59,16 +59,16 @@ export const sendEmail = async (email, subject, message) => {
       body: JSON.stringify(payload)
     });
 
-    alert(`Email sent to ${email} successfully!`);
-
     if (!response.ok) {
-      throw new Error('Network response was not ok ' + response.statusText);
+      throw new Error(`Email API responded with status: ${response.status} ${response.statusText}`);
     }
 
     const responseData = await response.json();
-    console.log('Response data:', responseData); // Log the response data for debugging
+    console.log('Email sent successfully:', responseData);
+    return responseData;
   } catch (error) {
-    console.error('There was a problem with the fetch operation:', error);
+    console.error('Email sending failed:', error);
+    throw error; // Re-throw to let caller handle it
   }
 };
 

@@ -5,13 +5,13 @@
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
       :targetYear="2025"
-      :targetMonth="7"
+      :targetMonth="8"
       :targetDay="29"
     />
     <CountdownTimer
       v-if="order.ticket_type === 'Day Pass'"
       :targetYear="2025"
-      :targetMonth="7"
+      :targetMonth="8"
       :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="status-bar">
-        <p
+        <!-- <p
           @click="showPaymentModal = true"
           style="
             justify-content: center;
@@ -86,7 +86,7 @@
           <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
             {{ order.paid ? 'Paid' : 'Not Paid' }}
           </span>
-        </p>
+        </p> -->
         <p
           @click="showCheckInModal = true"
           style="
@@ -198,7 +198,8 @@
             <br />
             The Front Gate will close at 2:00 AM each night.<br />
             Please try to arrive before then.<br />
-            With respected to substances, we have a No Open Use Policy.<br />
+            With respected to substances, we have a<br />
+            <strong> No Open Use Policy.<br /> </strong>
             Please keep all adult materials out of sight and reach of minors.<br /><br />
           </h3>
           <h3 v-else>
@@ -215,6 +216,13 @@
             We are not responsible for any lost or stolen items.<br />
             <br />
           </h3>
+          <h3>
+            <strong style="text-decoration: underline">Meals:</strong><br />
+            [FRI, SAT, SUN]<br />
+            [Lunch 12:00pm - 2:00pm]<br />
+            [Supper 6:00pm - 8:00pm]<br />
+            <br />
+          </h3>
 
           <h3
             v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
@@ -223,7 +231,7 @@
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
             Once you're oriented, please take your vehicle to your campsite allowing others to load
-            in.<br />
+            in.<br /><br />
           </h3>
 
           <h3>
@@ -286,14 +294,17 @@
 
       <div class="links">
         <RouterLink
-          v-if="order.payment_type === 'inkind' && order.applicant_types.includes('Volunteer')"
+          v-if="
+            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
+            order.applicant_types.includes('Volunteer')
+          "
           style="grid-column: span 2"
           to="/reunion-volunteer-instructions"
           id="volunteer-instructions"
         >
           <p>
             <img :src="volunteer_icon" style="height: auto; width: 36px" alt="Volunteer Icon" />
-            Volunteer Instructions
+            Signup for your Volunteer Shifts
           </p>
         </RouterLink>
         <div
@@ -338,7 +349,7 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2025, 7, 26)" to="/reunionlineup">
+        <RouterLink v-if="new Date() >= new Date(2025, 8, 1)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
             2025 Lineup
@@ -347,12 +358,12 @@
         <RouterLink v-else to="#">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Lineup TBA
+            Final Lineup<br />coming soon!
           </p>
         </RouterLink>
 
         <RouterLink
-          v-if="new Date() >= new Date(2025, 7, 26)"
+          v-if="new Date() >= new Date(2025, 8, 26)"
           :to="{
             name: 'ScavengerHunt',
             params: { id_code: order.id_code },
@@ -367,7 +378,7 @@
         <RouterLink v-else to="#">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            More coming soon!
+            Scavenger Hunt<br />coming soon!
           </p>
         </RouterLink>
       </div>
@@ -454,18 +465,43 @@ export default {
           throw new Error('ID code is undefined')
         }
 
-        // Query the orders collection
+        // Security check: require email verification
+        const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
+        if (!storedAuth) {
+          const email = prompt(
+            'For security, please enter the email address associated with this ticket:'
+          )
+          if (!email) {
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+
+          // Verify email matches ticket
+          const verificationQuery = query(
+            collection(reunion_db, 'orders_2025'),
+            where('id_code', '==', id_code),
+            where('email', '==', email.toLowerCase().trim())
+          )
+          const verificationSnapshot = await getDocs(verificationQuery)
+
+          if (verificationSnapshot.empty) {
+            alert('Email does not match this ticket. Access denied.')
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+
+          // Store verification for this session
+          sessionStorage.setItem(`verified_${id_code}`, 'true')
+        }
+
+        // Rest of your existing loadOrder code...
         const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
           await nextTick()
-
-          // Generate QR code
           generateQRCode(order.value.id_code_long, qrCanvas.value)
-
-          // Calculate referral earnings
           await calculateReferralEarnings(order.value.id_code)
         } else {
           console.error('No such document!')
@@ -776,6 +812,7 @@ a:hover {
   color: white;
   border: 1pc solid var(--reunion-frog-green);
   border-radius: 0px;
+  font-size: 12px;
 }
 
 .modal-content button {
