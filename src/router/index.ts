@@ -92,6 +92,12 @@ const routes = [
     component: BlessedCoastLineupView
   },
   {
+    path: '/boilerroom',
+    name: 'boilerroom',
+    component: ExternalRedirect,
+    props: { url: 'https://www.eventbrite.ca/e/nightmarket-yxe-presents-boiler-room-tickets-1549944940039' }
+  },
+  {
     path: '/cakeaway',
     name: 'cakeaway',
     component: ExternalRedirect,    
