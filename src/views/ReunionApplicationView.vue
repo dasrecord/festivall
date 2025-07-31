@@ -547,7 +547,7 @@ onMounted(() => {
                 v-model="form.applicant_types"
                 disabled
               />
-              Workshop Closed
+              Workshop (Closed)
             </span>
             <span class="checkbox-label">
               <input
