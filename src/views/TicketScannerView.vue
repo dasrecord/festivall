@@ -58,6 +58,39 @@
           {{ matchingOrder }}
         </p>
         <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+          <span
+            v-if="matchingOrder.applicant_types && matchingOrder.applicant_types.includes('Artist')"
+          >
+            <img
+              :src="artist_icon"
+              alt="Artist Icon"
+              style="width: 24px; height: auto; margin: 5px"
+            />
+          </span>
+          <span
+            v-if="
+              matchingOrder.applicant_types && matchingOrder.applicant_types.includes('Volunteer')
+            "
+          >
+            <img
+              :src="volunteer_icon"
+              alt="Volunteer Icon"
+              style="width: 24px; height: auto; margin: 5px"
+            />
+          </span>
+          <span
+            v-if="
+              matchingOrder.applicant_types && matchingOrder.applicant_types.includes('Workshop')
+            "
+          >
+            <img
+              :src="workshop_icon"
+              alt="Workshop Icon"
+              style="width: 24px; height: auto; margin: 5px"
+            />
+          </span>
+        </p>
+        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Matching Order: {{ matchingOrder.id_code }}
           <br />
           Name: {{ matchingOrder.fullname }} <br />
@@ -255,6 +288,9 @@ import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFrontGate } from '/scripts/notifications.js'
+import artist_icon from '@/assets/images/icons/artist.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 
 export default {
   components: {
@@ -264,6 +300,9 @@ export default {
   data() {
     return {
       festivall_emblem,
+      artist_icon,
+      volunteer_icon,
+      workshop_icon,
       db: reunion_db,
       fullResult: null,
       scanResult: null,
