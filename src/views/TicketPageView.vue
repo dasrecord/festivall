@@ -574,7 +574,7 @@ export default {
           `DTEND:${endFormatted}`,
           `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
           'LOCATION:Reunion Festival',
-          `DESCRIPTION:Your performance slot at Reunion Festival ${new Date().getFullYear()}. Please arrive 15 minutes early for sound check.`,
+            `DESCRIPTION:Your performance slot at Reunion Festival ${new Date().getFullYear()}. Please arrive at the stage a few minutes early to ensure smooth changeovers. Your main point of contact is Arthur, the Lead Sound Tech. If Arthur is unavailable, other stage crew members include Brandon, Cory, and Prasenjit.`,
           'STATUS:CONFIRMED',
           'SEQUENCE:0',
           'TRANSP:OPAQUE',
