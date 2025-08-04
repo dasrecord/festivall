@@ -530,16 +530,28 @@ export default {
         return
       }
 
-      // Helper function to format dates for iCalendar (YYYYMMDDTHHmmssZ)
+      // Helper function to format dates for iCalendar (YYYYMMDDTHHMMSS)
       const formatDate = (date) => {
-        return date.toISOString().replace(/-|:|\.\d+/g, '')
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0')
+        const seconds = String(date.getSeconds()).padStart(2, '0')
+        return `${year}${month}${day}T${hours}${minutes}${seconds}`
       }
+
+      // Get current timestamp for DTSTAMP
+      const now = new Date()
+      const timestamp = formatDate(now)
 
       // Start building the iCalendar content
       const icsContent = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Festivall//Reunion Festival//EN'
+        'PRODID:-//Festivall//Reunion Festival//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH'
       ]
 
       // Iterate over all settimes and create a VEVENT for each
@@ -550,17 +562,23 @@ export default {
         const startFormatted = formatDate(startDate)
         const endFormatted = formatDate(endDate)
 
+        // Create a unique UID
+        const uid = `${order.value.id_code_long}-${index}-${timestamp}@festivall.ca`
+
         icsContent.push(
           'BEGIN:VEVENT',
-          `UID:${order.value.id_code_long}-${index}`, // Unique ID for each event
+          `UID:${uid}`,
+          `DTSTAMP:${timestamp}`,
+          `CREATED:${timestamp}`,
           `DTSTART:${startFormatted}`,
           `DTEND:${endFormatted}`,
           `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
           'LOCATION:Reunion Festival',
-          `DESCRIPTION:Your set time at Reunion Festival ${new Date().getFullYear()}`,
+          `DESCRIPTION:Your performance slot at Reunion Festival ${new Date().getFullYear()}. Please arrive 15 minutes early for sound check.`,
           'STATUS:CONFIRMED',
           'SEQUENCE:0',
           'TRANSP:OPAQUE',
+          'CLASS:PUBLIC',
           'END:VEVENT'
         )
       })
