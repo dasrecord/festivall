@@ -349,7 +349,7 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2025, 8, 1)" to="/reunionlineup">
+        <RouterLink v-if="new Date() >= new Date(2025, 7, 1)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
             2025 Lineup
@@ -363,7 +363,7 @@
         </RouterLink>
 
         <RouterLink
-          v-if="new Date() >= new Date(2025, 8, 26)"
+          v-if="new Date() >= new Date(2025, 7, 26)"
           :to="{
             name: 'ScavengerHunt',
             params: { id_code: order.id_code },
