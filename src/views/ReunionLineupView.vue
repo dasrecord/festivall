@@ -49,6 +49,8 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import LineupDay from '@/components/CalendarModule.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase'
 
 // Reactive state
 const loading = ref(false)
@@ -132,10 +134,22 @@ const getMondayEvents = computed(() => getEventsByDay(new Date('2025-09-01T00:00
 // Toggle day visibility
 const toggleDay = (day) => {
   showDays[day] = !showDays[day]
+  // Track day toggle interaction
+  logEvent(reunion_analytics, 'select_content', {
+    content_type: 'lineup_day',
+    item_id: day,
+    content_name: `${day} lineup`
+  })
 }
 
 // Fetch events on component mount
 onMounted(() => {
+  // Track page view
+  logEvent(reunion_analytics, 'page_view', {
+    page_title: 'Reunion Lineup',
+    page_location: window.location.href
+  })
+
   fetchEvents()
 })
 </script>

@@ -52,13 +52,19 @@
 <script>
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import reunion_frog from '@/assets/images/frog.png'
+import { analyticsMixin } from '@/mixins/analytics.js'
 export default {
+  mixins: [analyticsMixin],
   name: 'ReunionSlack',
   data() {
     return {
       festivall_emblem,
       reunion_frog
     }
+  },
+  mounted() {
+    // Track page view
+    this.trackPageView('Reunion Slack.vue', 'reunion')
   }
 }
 </script>

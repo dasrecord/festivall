@@ -21,8 +21,10 @@ import target from '@/assets/images/icons/target.png'
 import ticket_scanner from '@/assets/images/icons/ticket_scanner.png'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import arcade from '@/assets/images/icons/arcade.png'
+import { analyticsMixin } from '@/mixins/analytics.js'
 
 export default {
+  mixins: [analyticsMixin],
   components: {
     CountdownTimer,
     CalltoAction,
@@ -49,6 +51,10 @@ export default {
       ticket_scanner: ticket_scanner,
       arcade: arcade
     }
+  },
+  mounted() {
+    // Track page view
+    this.trackPageView('Reunion Amenities', 'reunion')
   }
 }
 </script>

@@ -68,6 +68,8 @@ import IconInstagram from '@/components/icons/IconInstagram.vue'
 import axios from 'axios'
 import { useHead } from '@vueuse/head'
 import { ref, onMounted } from 'vue'
+import { logEvent } from 'firebase/analytics'
+import { festivall_analytics } from '@/firebase'
 
 const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
 const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
@@ -107,6 +109,12 @@ export default {
 
     onMounted(async () => {
       try {
+        // Track page view
+        logEvent(festivall_analytics, 'page_view', {
+          page_title: 'Blessed Coast Festival',
+          page_location: window.location.href
+        })
+
         const imagePaths = Object.keys(images)
         imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
 

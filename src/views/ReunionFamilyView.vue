@@ -42,11 +42,13 @@ import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import { analyticsMixin } from '@/mixins/analytics.js'
 
 // Dynamically import all images from the @/assets/images directory
 const images = import.meta.glob('@/assets/images/reunion_about/*.jpg')
 
 export default {
+  mixins: [analyticsMixin],
   components: {
     CountdownTimer,
     CarouselComponent,
@@ -60,6 +62,9 @@ export default {
     }
   },
   async created() {
+    // Track page view
+    this.trackPageView('Reunion Family', 'reunion')
+
     // Load all images
     for (const path in images) {
       const image = await images[path]()

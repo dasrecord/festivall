@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-08-05T16:44:01.353Z",
+  "coverage": {
+    "total_files": 50,
+    "with_analytics": 12,
+    "without_analytics": 24,
+    "needs_manual_update": 14
+  },
+  "events": {
+    "page_view": [
+      "BlessedCoastView.vue",
+      "HomeView.vue",
+      "ReunionContactView.vue",
+      "ReunionFAQView.vue",
+      "ReunionLineupView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionView.vue"
+    ],
+    "purchase": [
+      "ReunionTicketsView.vue"
+    ],
+    "add_to_cart": [
+      "ReunionTicketsView.vue",
+      "ReunionTicketsView.vue"
+    ],
+    "select_content": [
+      "ReunionLineupView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionTicketsView.vue",
+      "ReunionView.vue"
+    ],
+    "form_submit": [
+      "ReunionContactView.vue"
+    ],
+    "video_start": [
+      "ReunionView.vue"
+    ],
+    "begin_checkout": [
+      "ReunionTicketsView.vue"
+    ]
+  },
+  "recommendations": {
+    "high_priority": [],
+    "missing_events": []
+  }
+}
