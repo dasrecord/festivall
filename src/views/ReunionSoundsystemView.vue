@@ -15,8 +15,10 @@ import {
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import { analyticsMixin } from '@/mixins/analytics.js'
 
 export default {
+  mixins: [analyticsMixin],
   components: {
     CountdownTimer,
     CarouselComponent,
@@ -26,9 +28,12 @@ export default {
   data: () => ({
     reunion_emblem,
     slides: [image1, image2, image3, image4, image5, image6, image7, image8, image9]
-  })
-}
-</script>
+  }),
+  mounted() {
+    // Track page view
+    this.trackPageView('Reunion Soundsystem', 'reunion')
+  }
+}</script>
 <template>
   <div class="basic">
     <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />

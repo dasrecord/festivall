@@ -10,8 +10,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
-import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
+import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase'
 
 const form = ref({
   id_code_long: '',
@@ -42,10 +44,23 @@ const route = useRoute()
 
 const validateReferralID = async (referral_id_code) => {
   try {
+    // Track referral code usage attempt
+    logEvent(reunion_analytics, 'select_content', {
+      content_type: 'referral_code',
+      item_id: 'referral_validation_attempt'
+    })
+
     // Check 2025 Applications
     const docRef = doc(reunion_db, 'applications_2025', referral_id_code)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
+      // Track successful referral validation
+      logEvent(reunion_analytics, 'select_content', {
+        content_type: 'referral_code',
+        item_id: 'valid_referral_artist',
+        content_name: 'Artist referral validated'
+      })
+
       alert(
         `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap.data().fullname} at Reunion ${new Date().getFullYear()}.`
       )
@@ -56,10 +71,24 @@ const validateReferralID = async (referral_id_code) => {
     const docRef2025 = doc(reunion_db, 'orders_2025', referral_id_code)
     const docSnap2025 = await getDoc(docRef2025)
     if (docSnap2025.exists()) {
+      // Track successful referral validation
+      logEvent(reunion_analytics, 'select_content', {
+        content_type: 'referral_code',
+        item_id: 'valid_referral_customer',
+        content_name: 'Customer referral validated'
+      })
+
       alert(
         `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap2025.data().fullname} at Reunion ${new Date().getFullYear()}.`
       )
     } else {
+      // Track invalid referral attempt
+      logEvent(reunion_analytics, 'select_content', {
+        content_type: 'referral_code',
+        item_id: 'invalid_referral',
+        content_name: 'Invalid referral code entered'
+      })
+
       alert('Hmm, we could not find a matching Festivall ID_CODE. Please check your spelling.')
     }
   } catch (error) {
@@ -209,6 +238,23 @@ const submitForm = async () => {
       }
     )
     if (response.status === 200) {
+      // Track successful ticket purchase
+      logEvent(reunion_analytics, 'purchase', {
+        transaction_id: form.value.id_code,
+        value: form.value.total_price,
+        currency: 'CAD',
+        items: [
+          {
+            item_id: form.value.ticket_type.toLowerCase().replace(' ', '_'),
+            item_name: form.value.ticket_type,
+            item_category: 'ticket',
+            quantity: form.value.ticket_quantity,
+            price: form.value.total_price
+          }
+        ],
+        payment_type: form.value.payment_type
+      })
+
       alert(
         'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'
       )
@@ -235,7 +281,80 @@ const submitForm = async () => {
   }
 }
 
+// Analytics tracking functions
+const trackTicketSelection = (ticketType) => {
+  logEvent(reunion_analytics, 'add_to_cart', {
+    currency: 'CAD',
+    value: ticketType === 'Weekend Pass' ? 140 : 80,
+    items: [
+      {
+        item_id: ticketType.toLowerCase().replace(' ', '_'),
+        item_name: ticketType,
+        item_category: 'ticket',
+        quantity: 1
+      }
+    ]
+  })
+}
+
+const trackPaymentMethodSelection = (paymentType) => {
+  logEvent(reunion_analytics, 'select_content', {
+    content_type: 'payment_method',
+    item_id: paymentType,
+    content_name: paymentType === 'etransfer' ? 'E-Transfer' : 'Bitcoin'
+  })
+}
+
+// Track when someone starts filling out the form
+const trackFormStart = () => {
+  logEvent(reunion_analytics, 'begin_checkout', {
+    currency: 'CAD'
+  })
+}
+
+// Track when someone adds meal packages
+const trackMealSelection = (mealPackages) => {
+  if (mealPackages > 0) {
+    logEvent(reunion_analytics, 'add_to_cart', {
+      currency: 'CAD',
+      value: mealPackages * 20,
+      items: [
+        {
+          item_id: 'meal_package',
+          item_name: 'Meal Package',
+          item_category: 'food',
+          quantity: mealPackages,
+          price: 20
+        }
+      ]
+    })
+  }
+}
+
+// Combined handlers to avoid template formatting issues
+const handleTicketTypeChange = () => {
+  calculateTotalPrice()
+  trackTicketSelection(form.value.ticket_type)
+}
+
+const handlePaymentTypeChange = () => {
+  calculateTotalPrice()
+  trackPaymentMethodSelection(form.value.payment_type)
+}
+
+const handleMealPackagesInput = () => {
+  calculateMealTickets()
+  calculateTotalPrice()
+  trackMealSelection(form.value.meal_packages)
+}
+
 onMounted(() => {
+  // Track page view for ticket page
+  logEvent(reunion_analytics, 'page_view', {
+    page_title: 'Reunion Tickets',
+    page_location: window.location.href
+  })
+
   fetchBtcRate()
   // if (import.meta.env.MODE === 'development') {
   //   form.value = {
@@ -372,6 +491,7 @@ onMounted(() => {
             id="name"
             v-model="form.fullname"
             placeholder="Please use your legal name."
+            @focus="trackFormStart()"
             required
           />
         </div>
@@ -401,7 +521,7 @@ onMounted(() => {
           <select
             id="ticket_type"
             v-model="form.ticket_type"
-            @change="calculateTotalPrice"
+            @change="handleTicketTypeChange"
             required
           >
             <option value="" disabled>What kind of tickets would you like?</option>
@@ -436,12 +556,7 @@ onMounted(() => {
             id="meal_packages"
             v-model="form.meal_packages"
             min="0"
-            @input="
-              () => {
-                calculateMealTickets()
-                calculateTotalPrice()
-              }
-            "
+            @input="handleMealPackagesInput"
           />
         </div>
         <div class="form-section">
@@ -449,7 +564,7 @@ onMounted(() => {
           <select
             id="payment_type"
             v-model="form.payment_type"
-            @change="calculateTotalPrice"
+            @change="handlePaymentTypeChange"
             required
           >
             <option value="" disabled>Choose a payment method.</option>

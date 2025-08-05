@@ -53,9 +53,11 @@ import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
 import construction_icon from '@/assets/images/icons/construction.png'
 
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import { analyticsMixin } from '@/mixins/analytics.js'
 
 export default {
   name: 'ReunionTeamView',
+  mixins: [analyticsMixin],
   components: {
     CountdownTimer,
     TeamCard,
@@ -98,6 +100,10 @@ export default {
       Caitlin,
       volunteer_icon
     }
+  },
+  mounted() {
+    // Track page view for Reunion Team page
+    this.trackPageView('Reunion Team', 'reunion')
   }
 }
 </script>

@@ -1,10 +1,12 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
 import { setDoc, doc } from 'firebase/firestore'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase'
 
 const form = ref({
   fullname: '',
@@ -65,6 +67,12 @@ const submitForm = async () => {
     console.log('Response data:', response.data)
 
     if (response.status >= 200 && response.status < 300) {
+      // Track successful contact form submission
+      logEvent(reunion_analytics, 'form_submit', {
+        form_name: 'contact_form',
+        contact_method: 'slack_webhook'
+      })
+
       alert('Your message has been sent successfully!')
       addtoMailingList()
       form.value = {
@@ -84,6 +92,14 @@ const submitForm = async () => {
     alert('Failed to send the message.')
   }
 }
+
+// Track page view on mount
+onMounted(() => {
+  logEvent(reunion_analytics, 'page_view', {
+    page_title: 'Reunion Contact',
+    page_location: window.location.href
+  })
+})
 </script>
 
 <template>

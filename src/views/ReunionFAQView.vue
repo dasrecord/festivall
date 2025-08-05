@@ -166,6 +166,7 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import setup_crew_icon from '../assets/images/icons/setup_crew.png'
@@ -173,6 +174,16 @@ import stage_crew_icon from '../assets/images/icons/stage_crew.png'
 import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.png'
 import food_team_icon from '../assets/images/icons/meals.png'
 import front_gate_icon from '../assets/images/icons/front_gate.png'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase'
+
+// Track page view on mount
+onMounted(() => {
+  logEvent(reunion_analytics, 'page_view', {
+    page_title: 'Reunion FAQ',
+    page_location: window.location.href
+  })
+})
 </script>
 
 <style scoped>

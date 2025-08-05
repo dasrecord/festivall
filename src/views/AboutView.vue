@@ -91,11 +91,19 @@ import music_icon from '@/assets/images/icons/artist.png'
 import devops_icon from '@/assets/images/icons/devops.png'
 import headphones_icon from '@/assets/images/icons/headphones.png'
 import vector_icon from '@/assets/images/icons/vectors.png'
+import { logEvent } from 'firebase/analytics'
+import { festivall_analytics } from '@/firebase'
 
 const images = import.meta.glob('../assets/images/das_record/playbills/*.*')
 const imageList = ref([])
 
 onMounted(async () => {
+  // Track page view
+  logEvent(festivall_analytics, 'page_view', {
+    page_title: 'About Prasenjit Das',
+    page_location: window.location.href
+  })
+
   const imagePaths = Object.keys(images)
   imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
 

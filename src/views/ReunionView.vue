@@ -11,13 +11,7 @@
         @click="$router.push('/reunion')"
       />
 
-      <img
-        class="frog"
-        :src="frogImage"
-        alt="frog"
-        :style="{ height: '250px', width: '250px' }"
-        @click="handleClick"
-      />
+      <img class="frog" :src="frogImage" alt="frog" :style="{ height: '250px', width: '250px' }" />
     </div>
 
     <h2>
@@ -49,21 +43,30 @@
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerpolicy="strict-origin-when-cross-origin"
         allowfullscreen
+        @load="trackVideoLoad"
       ></iframe>
     </div>
 
     <DetailsPanel>
       <template #link1>
-        <RouterLink to="/reunionfamily">Learn more</RouterLink>
+        <RouterLink to="/reunionfamily" @click="trackLinkClick('learn_more')"
+          >Learn more</RouterLink
+        >
       </template>
       <template #link2>
-        <RouterLink to="/reunionteam">Meet the team</RouterLink>
+        <RouterLink to="/reunionteam" @click="trackLinkClick('meet_team')"
+          >Meet the team</RouterLink
+        >
       </template>
       <template #link3>
-        <RouterLink to="/reunionsoundsystem">our custom soundsystem.</RouterLink>
+        <RouterLink to="/reunionsoundsystem" @click="trackLinkClick('sound_system')"
+          >our custom soundsystem.</RouterLink
+        >
       </template>
       <template #link4>
-        <RouterLink to="/reunionamenities">amenities.</RouterLink>
+        <RouterLink to="/reunionamenities" @click="trackLinkClick('amenities')"
+          >amenities.</RouterLink
+        >
       </template>
     </DetailsPanel>
     <CalltoAction />
@@ -78,6 +81,8 @@ import bitcoin_icon from '../assets/images/bitcoin.svg'
 import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase.js'
 
 export default {
   components: {
@@ -90,16 +95,29 @@ export default {
     return {
       frogImage: frog_image,
       reunion_emblem: reunion_emblem,
-      bitcoin_icon: bitcoin_icon,
-      clickCount: 0
+      bitcoin_icon: bitcoin_icon
     }
   },
+  mounted() {
+    // Track page view
+    logEvent(reunion_analytics, 'page_view', {
+      page_title: 'Reunion Festival 2025',
+      page_location: window.location.href
+    })
+  },
   methods: {
-    handleClick() {
-      this.clickCount++
-      if (this.clickCount === 21) {
-        this.$router.push('/reunionticketscanner')
-      }
+    trackVideoLoad() {
+      logEvent(reunion_analytics, 'video_start', {
+        video_title: 'Reunion Festival 2025 Promo',
+        video_url: 'https://www.youtube.com/embed/xibNU7F_RKQ'
+      })
+    },
+    trackLinkClick(linkName) {
+      logEvent(reunion_analytics, 'select_content', {
+        content_type: 'navigation_link',
+        item_id: linkName,
+        content_name: linkName.replace('_', ' ')
+      })
     }
   }
 }
