@@ -7,10 +7,20 @@
   <h1>REUNION 2025 MEAL SCANNER</h1>
   <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
   <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
+
+  <!-- Processing Overlay -->
+  <div v-if="isProcessing" class="processing-overlay">
+    <div class="processing-content">
+      <h3>Processing...</h3>
+      <p>Please wait while we redeem the meal ticket.</p>
+    </div>
+  </div>
+
   <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
     <div class="utilities">
       <button @click="showInstructions = true">Meal Team Instructions</button>
+      <button @click="refreshOrders">Refresh Orders</button>
       <button class="refresh-button" @click="refreshPage">Refresh Scanner</button>
     </div>
 
@@ -102,8 +112,9 @@
         matchingOrder.meal_tickets_remaining > 0
       "
       @click="decrementMealTickets(matchingOrder, 1)"
+      :disabled="isProcessing"
     >
-      Redeem 1 Meal Ticket
+      {{ isProcessing ? 'Processing...' : 'Redeem 1 Meal Ticket' }}
     </button>
   </div>
   <div class="at-a-glance">
@@ -153,7 +164,7 @@
     <h2>Order Database</h2>
     <button @click="toggleView">
       Show Me
-      {{ filter === 'all' ? 'Meal Ticket' : filter === 'mealTickets' ? 'All' : 'All' }}
+      {{ filter === 'all' ? 'Meal Ticket Only' : 'All' }}
       Orders
     </button>
     <ul>
@@ -235,16 +246,20 @@ export default {
       orders: [],
       matchingOrder: null,
       filter: 'all',
-      showInstructions: false
+      showInstructions: false,
+      isProcessing: false,
+      qrScanner: null,
+      scanCooldown: false
     }
   },
   computed: {
     filteredOrders() {
       if (this.filter === 'all') {
         return this.orders
-      } else this.filter === 'mealTickets'
-      {
+      } else if (this.filter === 'mealTickets') {
         return this.orders.filter((order) => order.meal_tickets_remaining > 0)
+      } else {
+        return this.orders
       }
     }
   },
@@ -258,24 +273,33 @@ export default {
         data.ticket_quantity = parseInt(data.ticket_quantity, 10) || 0
         return data
       })
-      console.log('Orders fetched:', this.orders)
+      console.log(`Loaded ${this.orders.length} orders successfully`)
     } catch (error) {
-      console.error('An error occurred in the created hook:', error)
+      console.error('Error loading orders:', error)
+      alert('Failed to load orders. Please refresh the page.')
     }
   },
   methods: {
-    onInit(error) {
-      if (error) {
-        console.error('QR Code Reader initialization failed:', error)
-      } else {
-        console.log('QR Code Reader initialized.')
-      }
+    onInit(promise) {
+      promise
+        .then((scanner) => {
+          this.qrScanner = scanner
+          console.log('QR Code Reader initialized.')
+        })
+        .catch((error) => {
+          console.error('QR Code Reader initialization failed:', error)
+        })
     },
     onDetect(result) {
+      // Prevent rapid scanning
+      if (this.scanCooldown) return
+      this.scanCooldown = true
+      setTimeout(() => {
+        this.scanCooldown = false
+      }, 2000) // 2 second cooldown
+
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
-      // Use short id_code for matching
-      // const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
 
       // Use long id_code for matching
       const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
@@ -283,11 +307,11 @@ export default {
       if (matchingOrder) {
         this.matchingOrder = matchingOrder
         console.log('Order found:', this.matchingOrder)
-        document.getElementById('success-sound').play()
+        this.playSuccessSound()
       } else {
         this.matchingOrder = 'No Matching Order Found'
         console.log('Order not found:', this.matchingOrder)
-        document.getElementById('failure-sound').play()
+        this.playFailureSound()
       }
     },
     currentStatus(order) {
@@ -306,19 +330,74 @@ export default {
         return 'Not Paid'
       }
     },
+    playSuccessSound() {
+      try {
+        const audio = document.getElementById('success-sound')
+        if (audio) {
+          audio.currentTime = 0
+          audio.play().catch((e) => console.warn('Could not play success sound:', e))
+        }
+      } catch (error) {
+        console.warn('Audio playback failed:', error)
+      }
+    },
+    playFailureSound() {
+      try {
+        const audio = document.getElementById('failure-sound')
+        if (audio) {
+          audio.currentTime = 0
+          audio.play().catch((e) => console.warn('Could not play failure sound:', e))
+        }
+      } catch (error) {
+        console.warn('Audio playback failed:', error)
+      }
+    },
     async decrementMealTickets(order, amount) {
-      if ((parseInt(order.meal_tickets_remaining, 10) || 0) >= amount) {
-        const orderRef = doc(this.db, 'orders_2025', order.id_code)
-        await updateDoc(orderRef, {
-          meal_tickets_remaining: (parseInt(order.meal_tickets_remaining, 10) || 0) - amount
-        })
-        order.meal_tickets_remaining -= amount
-      } else {
-        console.log('Not enough meal tickets remaining.')
+      if (this.isProcessing) return
+      this.isProcessing = true
+
+      try {
+        const currentMealTickets = parseInt(order.meal_tickets_remaining, 10) || 0
+
+        if (currentMealTickets >= amount) {
+          const newMealTickets = currentMealTickets - amount
+          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+
+          await updateDoc(orderRef, {
+            meal_tickets_remaining: newMealTickets
+          })
+
+          // Update local state after successful database update
+          order.meal_tickets_remaining = newMealTickets
+
+          console.log(`Meal ticket redeemed for ${order.fullname}. Remaining: ${newMealTickets}`)
+        } else {
+          alert('Not enough meal tickets remaining.')
+        }
+      } catch (error) {
+        console.error('Error redeeming meal ticket:', error)
+        alert('Failed to redeem meal ticket. Please try again.')
+      } finally {
+        this.isProcessing = false
       }
     },
     refreshPage() {
       window.location.reload()
+    },
+    async refreshOrders() {
+      try {
+        const ordersCollection = collection(this.db, 'orders_2025')
+        const orderSnapshot = await getDocs(ordersCollection)
+        this.orders = orderSnapshot.docs.map((doc) => {
+          const data = doc.data()
+          data.meal_tickets_remaining = parseInt(data.meal_tickets_remaining, 10) || 0
+          data.ticket_quantity = parseInt(data.ticket_quantity, 10) || 0
+          return data
+        })
+        console.log('Orders refreshed successfully')
+      } catch (error) {
+        console.error('Error refreshing orders:', error)
+      }
     },
     toggleView() {
       if (this.filter === 'all') {
@@ -328,6 +407,12 @@ export default {
       } else {
         this.filter = 'mealTickets'
       }
+    }
+  },
+  beforeUnmount() {
+    // Clean up QR scanner
+    if (this.qrScanner) {
+      this.qrScanner.stop()
     }
   }
 }
@@ -379,6 +464,35 @@ button {
   background-color: var(--q-color-primary);
   color: var(--q-color-white);
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(121, 188, 255, 0.1);
+}
+
+.processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.processing-content {
+  background-color: var(--q-color-primary);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(121, 188, 255, 0.5);
+  box-shadow: 0 0 20px rgba(121, 188, 255, 0.3);
+}
+
 .qr {
   display: flex;
   width: 100%;

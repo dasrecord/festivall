@@ -49,7 +49,7 @@
             @click="nextQuestion"
             :disabled="question.type === 'text' && !answers[index]?.trim()"
           >
-            {{ question.type === 'information' ? 'Start Hunt' : 'Next' }}
+            {{ question.type === 'information' ? 'Begin' : 'Next' }}
           </button>
           <button
             v-if="index === questions.length - 1"
@@ -360,6 +360,7 @@ img {
 }
 
 .controls {
+  margin-top: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-around;

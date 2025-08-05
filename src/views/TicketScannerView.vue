@@ -7,10 +7,20 @@
   <h1>REUNION 2025 TICKET SCANNER</h1>
   <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
   <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
+
+  <!-- Processing Overlay -->
+  <div v-if="isProcessing" class="processing-overlay">
+    <div class="processing-content">
+      <h3>Processing...</h3>
+      <p>Please wait while we update the ticket information.</p>
+    </div>
+  </div>
+
   <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
   <div class="panel">
     <div class="utilities">
       <button @click="showInstructions = true">Front Gate Instructions</button>
+      <button @click="refreshOrders">Refresh Orders</button>
       <button @click="refreshPage">Refresh Scanner</button>
     </div>
 
@@ -176,8 +186,9 @@
       class="panel-button"
       v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.ticket_quantity > 0"
       @click="checkIn(matchingOrder)"
+      :disabled="isProcessing"
     >
-      Check In 1 Ticket
+      {{ isProcessing ? 'Processing...' : 'Check In 1 Ticket' }}
     </button>
     <button
       class="panel-button"
@@ -187,8 +198,9 @@
         matchingOrder.ticket_quantity < matchingOrder.original_ticket_quantity
       "
       @click="checkOut(matchingOrder)"
+      :disabled="isProcessing"
     >
-      Check Out 1
+      {{ isProcessing ? 'Processing...' : 'Check Out 1' }}
     </button>
   </div>
   <div class="at-a-glance">
@@ -309,7 +321,10 @@ export default {
       orders: [],
       matchingOrder: null,
       filter: 'all',
-      showInstructions: false
+      showInstructions: false,
+      isProcessing: false,
+      qrScanner: null,
+      scanCooldown: false
     }
   },
 
@@ -326,98 +341,159 @@ export default {
   },
   async created() {
     try {
-      // const ordersCollection = collection(this.db, 'orders') // fetch 2024 orders
       const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
       const orderSnapshot = await getDocs(ordersCollection)
       this.orders = orderSnapshot.docs.map((doc) => doc.data())
+      console.log(`Loaded ${this.orders.length} orders successfully`)
     } catch (error) {
-      console.error('An error occurred in the created hook:', error)
+      console.error('Error loading orders:', error)
+      alert('Failed to load orders. Please refresh the page.')
     }
   },
   methods: {
-    onInit(error) {
-      if (error) {
-        console.error('QR Code Reader initialization failed:', error)
-      } else {
-        console.log('QR Code Reader initialized.')
-      }
+    onInit(promise) {
+      promise
+        .then((scanner) => {
+          this.qrScanner = scanner
+          console.log('QR Code Reader initialized.')
+        })
+        .catch((error) => {
+          console.error('QR Code Reader initialization failed:', error)
+        })
     },
     onDetect(result) {
+      // Prevent rapid scanning
+      if (this.scanCooldown) return
+      this.scanCooldown = true
+      setTimeout(() => {
+        this.scanCooldown = false
+      }, 2000) // 2 second cooldown
+
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
-      // Use short id_code for matching
-      // const matchingOrder = this.orders.find((order) => order.id_code === this.scanResult)
 
       // Use long id_code for matching
       const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
       if (matchingOrder) {
         this.matchingOrder = matchingOrder
         console.log('Order found:', this.matchingOrder)
-        document.getElementById('success-sound').play()
+        this.playSuccessSound()
       } else {
         this.matchingOrder = 'No Matching Order Found'
         console.log('Order not found:', this.matchingOrder)
-        document.getElementById('failure-sound').play()
+        this.playFailureSound()
       }
     },
     currentStatus(order) {
-      if (order.checked_in) {
-        return order.checked_in === 'true' ? 'Checked In' : 'Not Checked In'
-      } else {
-        return 'Not Checked In'
-      }
+      return order.checked_in === true || order.checked_in === 'true'
+        ? 'Checked In'
+        : 'Not Checked In'
     },
     paidStatus(order) {
-      if (order.paid === true || order.paid === 'true') {
-        return 'Paid'
-      } else {
-        return 'Not Paid'
+      return order.paid === true || order.paid === 'true' ? 'Paid' : 'Not Paid'
+    },
+    playSuccessSound() {
+      try {
+        const audio = document.getElementById('success-sound')
+        if (audio) {
+          audio.currentTime = 0
+          audio.play().catch((e) => console.warn('Could not play success sound:', e))
+        }
+      } catch (error) {
+        console.warn('Audio playback failed:', error)
+      }
+    },
+    playFailureSound() {
+      try {
+        const audio = document.getElementById('failure-sound')
+        if (audio) {
+          audio.currentTime = 0
+          audio.play().catch((e) => console.warn('Could not play failure sound:', e))
+        }
+      } catch (error) {
+        console.warn('Audio playback failed:', error)
       }
     },
 
     async checkIn(order) {
-      if (!order.original_ticket_quantity) {
-        order.original_ticket_quantity = order.ticket_quantity
-      }
+      if (this.isProcessing) return
+      this.isProcessing = true
 
-      if (order.ticket_quantity > 0) {
-        const orderRef = doc(this.db, 'orders_2025', order.id_code)
-        await updateDoc(orderRef, {
-          checked_in: true,
-          original_ticket_quantity: order.original_ticket_quantity
-        })
-        sendReunionFrontGate(`:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}`)
-        order.checked_in = true
-        order.ticket_quantity -= 1
-      } else {
-        console.error('No tickets left to check in.')
+      try {
+        if (!order.original_ticket_quantity) {
+          order.original_ticket_quantity = order.ticket_quantity
+        }
+
+        if (order.ticket_quantity > 0) {
+          const newTicketQuantity = order.ticket_quantity - 1
+          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          await updateDoc(orderRef, {
+            checked_in: true,
+            ticket_quantity: newTicketQuantity,
+            original_ticket_quantity: order.original_ticket_quantity
+          })
+          sendReunionFrontGate(`:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}`)
+
+          // Update local state after successful database update
+          order.checked_in = true
+          order.ticket_quantity = newTicketQuantity
+        } else {
+          alert('No tickets left to check in.')
+        }
+      } catch (error) {
+        console.error('Error checking in:', error)
+        alert('Failed to check in. Please try again.')
+      } finally {
+        this.isProcessing = false
       }
     },
 
     async checkOut(order) {
-      if (!order.original_ticket_quantity) {
-        order.original_ticket_quantity = order.ticket_quantity
-      }
+      if (this.isProcessing) return
+      this.isProcessing = true
 
-      if (order.ticket_quantity < order.original_ticket_quantity) {
-        const orderRef = doc(this.db, 'orders_2025', order.id_code)
-        await updateDoc(orderRef, {
-          checked_in: order.ticket_quantity + 1 > 0,
-          ticket_quantity: order.ticket_quantity + 1,
-          original_ticket_quantity: order.original_ticket_quantity
-        })
-        sendReunionFrontGate(`:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}`)
-        order.checked_in = order.ticket_quantity + 1 > 0
-        order.ticket_quantity += 1
-      } else {
-        console.error('Cannot check out more tickets than the original quantity.')
+      try {
+        if (!order.original_ticket_quantity) {
+          order.original_ticket_quantity = order.ticket_quantity
+        }
+
+        if (order.ticket_quantity < order.original_ticket_quantity) {
+          const newTicketQuantity = order.ticket_quantity + 1
+          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          await updateDoc(orderRef, {
+            checked_in: newTicketQuantity > 0,
+            ticket_quantity: newTicketQuantity,
+            original_ticket_quantity: order.original_ticket_quantity
+          })
+          sendReunionFrontGate(`:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}`)
+
+          // Update local state after successful database update
+          order.checked_in = newTicketQuantity > 0
+          order.ticket_quantity = newTicketQuantity
+        } else {
+          alert('Cannot check out more tickets than the original quantity.')
+        }
+      } catch (error) {
+        console.error('Error checking out:', error)
+        alert('Failed to check out. Please try again.')
+      } finally {
+        this.isProcessing = false
       }
     },
 
     refreshPage() {
       window.location.reload()
     },
-
+    async refreshOrders() {
+      try {
+        const ordersCollection = collection(this.db, 'orders_2025')
+        const orderSnapshot = await getDocs(ordersCollection)
+        this.orders = orderSnapshot.docs.map((doc) => doc.data())
+        console.log('Orders refreshed successfully')
+      } catch (error) {
+        console.error('Error refreshing orders:', error)
+      }
+    },
     toggleView() {
       if (this.filter === 'all') {
         this.filter = 'checkedIn'
@@ -426,6 +502,12 @@ export default {
       } else {
         this.filter = 'all'
       }
+    }
+  },
+  beforeUnmount() {
+    // Clean up QR scanner
+    if (this.qrScanner) {
+      this.qrScanner.stop()
     }
   }
 }
@@ -477,6 +559,34 @@ button {
   background-color: var(--q-color-primary);
   color: var(--q-color-white);
 }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(121, 188, 255, 0.1);
+}
+
+.processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.processing-content {
+  background-color: var(--q-color-primary);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(121, 188, 255, 0.5);
+  box-shadow: 0 0 20px rgba(121, 188, 255, 0.3);
+}
+
 .qr {
   display: flex;
   width: 100%;
