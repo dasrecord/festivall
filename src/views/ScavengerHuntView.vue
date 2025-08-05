@@ -23,6 +23,7 @@
           type="text"
           v-model="answers[index]"
           @blur="checkAnswer(index)"
+          @keyup.enter="checkAnswer(index)"
           placeholder="Type your answer here..."
         />
 
@@ -40,9 +41,23 @@
         <!-- Navigation buttons -->
         <div class="controls">
           <button v-if="index > 0" @click="prevQuestion">Previous</button>
-          <p v-if="index > 0">{{ index }}/{{ questions.length }}</p>
-          <button v-if="index < questions.length - 1" @click="nextQuestion">Next</button>
-          <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
+          <p v-if="index > 0 && question.type === 'text'">
+            {{ getQuestionNumber(index) }}/{{ countScoredQuestions() }}
+          </p>
+          <button
+            v-if="index < questions.length - 1"
+            @click="nextQuestion"
+            :disabled="question.type === 'text' && !answers[index]?.trim()"
+          >
+            {{ question.type === 'information' ? 'Start Hunt' : 'Next' }}
+          </button>
+          <button
+            v-if="index === questions.length - 1"
+            @click="showScoreSlide"
+            :disabled="question.type === 'text' && !answers[index]?.trim()"
+          >
+            Finish
+          </button>
         </div>
       </div>
     </div>
@@ -51,11 +66,11 @@
     <div
       class="form-slide"
       :class="{ active: currentQuestion === 'score', previous: currentQuestion !== 'score' }"
-      v-if="currentQuestion === 'score' || currentQuestion === questions.length"
+      v-if="currentQuestion === 'score'"
     >
       <div class="score">
         <h2>Great job, {{ fullName }}!</h2>
-        <h3>Your Score: {{ calculateScore() }}/{{ questions.length }}</h3>
+        <h3>Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
         <button @click="restartHunt">Go Back</button>
         <button @click="sendScore">Submit Score</button>
       </div>
@@ -77,7 +92,7 @@ export default {
 
       questions: [
         {
-          text: `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
+          text: `Welcome!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
           type: 'information',
           category: 'Reunion\nScavenger Hunt'
         },
@@ -132,7 +147,7 @@ export default {
           category: 'Trivia'
         },
         {
-          text: "Find our Children's Coordinator and ask him for the magic word.",
+          text: "Find one of our Children's Coordinators and ask for the magic word.",
           answer: 'friendship',
           type: 'text',
           category: 'Quest'
@@ -165,7 +180,7 @@ export default {
           category: 'Quest'
         },
         {
-          text: `Well done, ${this.fullName}! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`,
+          text: `Well done! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`,
           type: 'information',
           category: 'Congratulations!'
         }
@@ -173,6 +188,18 @@ export default {
       answers: [], // Tracks user answers
       feedback: [] // Tracks feedback for each question (correct/incorrect)
     }
+  },
+  mounted() {
+    // Initialize arrays with proper length
+    this.answers = new Array(this.questions.length).fill('')
+    this.feedback = new Array(this.questions.length).fill(null)
+
+    // Update welcome message with fullName
+    this.questions[0].text = `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`
+
+    // Update congratulations message with fullName
+    this.questions[this.questions.length - 1].text =
+      `Well done, ${this.fullName}! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`
   },
   methods: {
     nextQuestion() {
@@ -186,14 +213,19 @@ export default {
       }
     },
     restartHunt() {
-      this.currentQuestion = 1
+      this.currentQuestion = 0
     },
     showScoreSlide() {
       this.currentQuestion = 'score' // Switch to the score slide
     },
     checkAnswer(index) {
+      if (!this.questions[index].answer) {
+        // Skip checking for information type questions
+        return
+      }
+
       const userAnswer = this.answers[index]?.trim().toLowerCase()
-      const correctAnswer = this.questions[index].answer.toLowerCase()
+      const correctAnswer = this.questions[index].answer?.toLowerCase()
 
       if (userAnswer === correctAnswer) {
         this.feedback[index] = 'correct'
@@ -202,7 +234,22 @@ export default {
       }
     },
     calculateScore() {
-      return this.feedback.filter((status) => status === 'correct').length
+      return this.feedback.filter(
+        (status, index) => status === 'correct' && this.questions[index].type === 'text'
+      ).length
+    },
+    countScoredQuestions() {
+      return this.questions.filter((question) => question.type === 'text').length
+    },
+    getQuestionNumber(currentIndex) {
+      // Count how many text-type questions come before the current index
+      let count = 0
+      for (let i = 0; i <= currentIndex; i++) {
+        if (this.questions[i].type === 'text') {
+          count++
+        }
+      }
+      return count
     },
     async sendScore() {
       const score = this.calculateScore()
@@ -212,7 +259,7 @@ export default {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:id: ${this.id_code}\n:ballot_box_with_check: ${score}/${this.questions.length}`
+              text: `:id: ${this.id_code}\n:ballot_box_with_check: ${score}/${this.countScoredQuestions()}`
             }
           }
         ]
@@ -349,10 +396,16 @@ button {
     transform 0.3s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: black;
   color: white;
   transform: scale(1.05);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .correct {
