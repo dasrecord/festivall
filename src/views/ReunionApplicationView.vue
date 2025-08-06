@@ -11,12 +11,14 @@ import vendor_icon from '../assets/images/icons/vendor.png'
 import profit_icon from '../assets/images/icons/profit.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
-import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
+import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
 import { sendSMS, sendEmail } from '/scripts/notifications.js'
+import { logEvent } from 'firebase/analytics'
+import { reunion_analytics } from '@/firebase'
 
 const form = ref({
   id_code_long: '',
@@ -63,6 +65,22 @@ const form = ref({
 })
 
 const submitting = ref(false)
+const trackedSections = ref(new Set())
+
+// Watch for section visibility changes and track engagement
+watch(
+  () => form.value.applicant_types,
+  (newTypes) => {
+    if (newTypes && newTypes.length > 0) {
+      newTypes.forEach((type) => {
+        if (!trackedSections.value.has(type)) {
+          trackSectionEngagement(type)
+          trackedSections.value.add(type)
+        }
+      })
+    }
+  }
+)
 
 const fetchApplicantData = async (id_code) => {
   try {
@@ -110,6 +128,47 @@ const handlePhoneInput = (event) => {
   form.value.formatted_phone = formatPhoneNumber(event.target.value)
 }
 
+// Analytics tracking functions
+const trackFormStart = () => {
+  logEvent(reunion_analytics, 'begin_checkout', {
+    currency: 'CAD',
+    event_category: 'application_form'
+  })
+}
+
+const trackCategorySelection = (categories) => {
+  if (categories.length > 0) {
+    logEvent(reunion_analytics, 'select_content', {
+      content_type: 'application_category',
+      item_id: categories.join('_').toLowerCase(),
+      content_name: categories.join(', ')
+    })
+  }
+}
+
+const trackApplicationSubmit = (applicantTypes) => {
+  logEvent(reunion_analytics, 'sign_up', {
+    method: 'application_form',
+    event_category: 'reunion_application',
+    application_types: applicantTypes.join(', ')
+  })
+}
+
+const trackSectionEngagement = (sectionType) => {
+  logEvent(reunion_analytics, 'select_content', {
+    content_type: 'application_section',
+    item_id: sectionType.toLowerCase().replace(' ', '_'),
+    content_name: `${sectionType} application section`
+  })
+}
+
+const trackIDCodeUsage = () => {
+  logEvent(reunion_analytics, 'search', {
+    search_term: 'existing_id_code',
+    event_category: 'application_form'
+  })
+}
+
 const submitForm = async () => {
   if (submitting.value) return
   submitting.value = true
@@ -153,6 +212,9 @@ const submitForm = async () => {
     )
 
     if (response.status === 200) {
+      // Track successful application submission
+      trackApplicationSubmit(form.value.applicant_types)
+
       alert(
         'Your application has been submitted successfully!\nSelected applicants will be contacted by our team directly.'
       )
@@ -226,6 +288,12 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
+  // Track page view for application page
+  logEvent(reunion_analytics, 'page_view', {
+    page_title: 'Reunion Application',
+    page_location: window.location.href
+  })
+
   if (import.meta.env.MODE === 'development') {
     // Mock data for testing in development mode
     form.value = {
@@ -444,6 +512,7 @@ onMounted(() => {
             v-model="form.id_code"
             placeholder="Enter your ID_CODE if you have one!"
             @blur="fetchApplicantData(form.id_code)"
+            @focus="trackIDCodeUsage()"
           />
         </div>
         <div class="form-section">
@@ -453,6 +522,7 @@ onMounted(() => {
             id="name"
             v-model="form.fullname"
             placeholder="Please use your legal name."
+            @focus="trackFormStart()"
             required
           />
         </div>
@@ -535,6 +605,7 @@ onMounted(() => {
                 id="volunteer"
                 value="Volunteer"
                 v-model="form.applicant_types"
+                @change="trackCategorySelection(form.applicant_types)"
               />
               Volunteer
             </span>
@@ -555,11 +626,18 @@ onMounted(() => {
                 id="art_installation"
                 value="Art Installation"
                 v-model="form.applicant_types"
+                @change="trackCategorySelection(form.applicant_types)"
               />
               Art Installation
             </span>
             <span class="checkbox-label">
-              <input type="checkbox" id="vendor" value="Vendor" v-model="form.applicant_types" />
+              <input
+                type="checkbox"
+                id="vendor"
+                value="Vendor"
+                v-model="form.applicant_types"
+                @change="trackCategorySelection(form.applicant_types)"
+              />
               Vendor
             </span>
           </div>

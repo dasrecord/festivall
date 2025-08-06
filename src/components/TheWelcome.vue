@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import { onMounted } from 'vue'
 import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
@@ -13,12 +14,33 @@ import das_record_logo from '../assets/images/das_record_logo_white_edited.png'
 import evolved_classic_logo from '../assets/images/evolved_classic_logo_white.png'
 import starcrossed_emblem from '../assets/images/starcrossed/starcrossed_emblem_white.png'
 import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
+import { logEvent } from 'firebase/analytics'
+import { festivall_analytics } from '@/firebase'
+
+// Track brand/service interactions
+const trackBrandClick = (brandName: string, linkType: 'internal' | 'external' = 'internal') => {
+  logEvent(festivall_analytics, 'select_content', {
+    content_type: 'brand_navigation',
+    item_id: brandName.toLowerCase().replace(/\s+/g, '_'),
+    content_name: brandName,
+    link_type: linkType
+  })
+}
+
+onMounted(() => {
+  // Track homepage component load
+  logEvent(festivall_analytics, 'page_view', {
+    page_title: 'Festivall Homepage',
+    page_location: window.location.href,
+    content_type: 'brand_showcase'
+  })
+})
 </script>
 
 <template>
   <div class="container">
     <div class="wrapper">
-      <RouterLink to="/reunion">
+      <RouterLink to="/reunion" @click="trackBrandClick('The Reunion')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -36,7 +58,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/dasrecord">
+      <RouterLink to="/dasrecord" @click="trackBrandClick('Das Record')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -54,7 +76,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/haven">
+      <RouterLink to="/haven" @click="trackBrandClick('Haven')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -70,7 +92,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
       </RouterLink>
     </div>
     <div class="wrapper">
-      <RouterLink to="/placeholder">
+      <RouterLink to="/placeholder" @click="trackBrandClick('Placeholder')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -88,7 +110,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/blessedcoast">
+      <RouterLink to="/blessedcoast" @click="trackBrandClick('Blessed Coast')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -111,7 +133,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/synergistic">
+      <RouterLink to="/synergistic" @click="trackBrandClick('Synergistic Entertainment')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -130,7 +152,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/starcrossed">
+      <RouterLink to="/starcrossed" @click="trackBrandClick('Starcrossed')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -149,7 +171,10 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <a href="https://evolvedmusicgroup.com">
+      <a
+        href="https://evolvedmusicgroup.com"
+        @click="trackBrandClick('Evolved Music Group', 'external')"
+      >
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -173,7 +198,10 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <a href="https://www.instagram.com/impactfestival_bc/">
+      <a
+        href="https://www.instagram.com/impactfestival_bc/"
+        @click="trackBrandClick('Impact Festival', 'external')"
+      >
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -193,7 +221,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/fusecollective">
+      <RouterLink to="/fusecollective" @click="trackBrandClick('Fuse Collective')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
@@ -213,7 +241,7 @@ import festivall_emblem_white from '../assets/images/festivall_emblem_white.png'
     </div>
 
     <div class="wrapper">
-      <RouterLink to="/dashboard">
+      <RouterLink to="/dashboard" @click="trackBrandClick('Admin Dashboard')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
