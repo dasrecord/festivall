@@ -99,25 +99,53 @@ export default {
     }
   },
   mounted() {
-    // Track page view
+    // Track page view with Firebase
     logEvent(reunion_analytics, 'page_view', {
       page_title: 'Reunion Festival 2025',
       page_location: window.location.href
     })
+
+    // Track page view with Facebook Pixel
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'ViewContent', {
+        content_name: 'Reunion Festival 2025',
+        content_category: 'Festival',
+        content_ids: ['reunion2025'],
+        content_type: 'product'
+      })
+    }
   },
   methods: {
     trackVideoLoad() {
+      // Firebase tracking
       logEvent(reunion_analytics, 'video_start', {
         video_title: 'Reunion Festival 2025 Promo',
         video_url: 'https://www.youtube.com/embed/xibNU7F_RKQ'
       })
+
+      // Facebook Pixel tracking
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'ViewContent', {
+          content_name: 'Reunion Festival Video',
+          content_category: 'Video'
+        })
+      }
     },
     trackLinkClick(linkName) {
+      // Firebase tracking
       logEvent(reunion_analytics, 'select_content', {
         content_type: 'navigation_link',
         item_id: linkName,
         content_name: linkName.replace('_', ' ')
       })
+
+      // Facebook Pixel tracking
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'ViewContent', {
+          content_name: linkName.replace('_', ' '),
+          content_category: 'Navigation'
+        })
+      }
     }
   }
 }
