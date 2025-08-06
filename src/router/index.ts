@@ -496,6 +496,12 @@ const routes = [
     name: 'testimonials',
     component: TestimonialsView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/videolibrary',
+    name: 'videolibrary',
+    component: ExternalRedirect,
+    props: { url: 'https://drive.google.com/drive/folders/1l-xagltGwdnR1z7Jh5sw8PSu4h4oUjGl?usp=sharing' }
   }
 ]
 
