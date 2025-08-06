@@ -228,7 +228,7 @@ const submitForm = async () => {
         text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:id: ${form.value.id_code}\n:label: ${form.value.referral_id_code || 'None'}\n${
           form.value.payment_type === 'etransfer'
             ? ':moneybag: $' + form.value.total_price
-            : ':bitcoin: ' + (form.value.total_price / btcRate.value).toFixed(8) + ' BTC'
+            : ':bitcoin: ' + form.value.total_price + ' BTC'
         }`
       },
       {
