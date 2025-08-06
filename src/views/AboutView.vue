@@ -47,31 +47,40 @@
       Canada, the US, and Europe.<br /><br />
       <div class="links">
         <div class="link">
-          <RouterLink to="dasrecord">LEARN MORE ABOUT ME</RouterLink>
+          <RouterLink to="dasrecord" @click="trackLinkClick('artist_profile', 'Das Record Profile')"
+            >LEARN MORE ABOUT ME</RouterLink
+          >
         </div>
         <div class="link">
-          <RouterLink to="testimonials">READ WHAT OTHERS HAVE TO SAY</RouterLink>
+          <RouterLink
+            to="testimonials"
+            @click="trackLinkClick('testimonials', 'Client Testimonials')"
+            >READ WHAT OTHERS HAVE TO SAY</RouterLink
+          >
         </div>
         <div class="link">
           <a
             :href="`mailto:dasrecord@festivall.ca?subject=${encodeURIComponent('Booking Request')}&body=${encodeURIComponent('Hi Prasenjit,\n\nI would like to book you for an event. Here are the details:\n\nEvent Name:\nEvent Date:\nEvent Location:\nBudget:\n\nThank you,\n[Your Name]')}`"
+            @click="trackBookingClick()"
           >
             BOOK ME NOW
           </a>
         </div>
       </div>
     </h2>
-    <iframe
-      class="spotify"
-      style="border-radius: 12px"
-      src="https://open.spotify.com/embed/playlist/2RXN8qyLntleaVvFNxQsQs?utm_source=generator&theme=0"
-      width="100%"
-      height="352"
-      frameBorder="0"
-      allowfullscreen=""
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
+    <div @click="trackSpotifyEngagement()">
+      <iframe
+        class="spotify"
+        style="border-radius: 12px"
+        src="https://open.spotify.com/embed/playlist/2RXN8qyLntleaVvFNxQsQs?utm_source=generator&theme=0"
+        width="100%"
+        height="352"
+        frameBorder="0"
+        allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      ></iframe>
+    </div>
     <div class="playbills">
       <img
         v-for="(image, index) in imageList"
@@ -79,13 +88,14 @@
         :src="image"
         alt="playbill"
         class="playbill-img"
+        @click="trackPlaybillView(index)"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import music_icon from '@/assets/images/icons/artist.png'
 import devops_icon from '@/assets/images/icons/devops.png'
@@ -104,6 +114,9 @@ onMounted(async () => {
     page_location: window.location.href
   })
 
+  // Add scroll tracking
+  window.addEventListener('scroll', trackScrollDepth)
+
   const imagePaths = Object.keys(images)
   imagePaths.sort((a, b) => b.localeCompare(a)) // Sort filenames in descending order
 
@@ -112,6 +125,67 @@ onMounted(async () => {
     imageList.value.push(module.default)
   }
 })
+
+onUnmounted(() => {
+  // Clean up scroll listener
+  window.removeEventListener('scroll', trackScrollDepth)
+})
+
+// Analytics tracking functions
+const trackLinkClick = (linkType, destination) => {
+  logEvent(festivall_analytics, 'select_content', {
+    content_type: 'navigation_link',
+    item_id: linkType,
+    content_name: destination
+  })
+}
+
+const trackBookingClick = () => {
+  logEvent(festivall_analytics, 'generate_lead', {
+    currency: 'CAD',
+    value: 500, // Average booking value
+    event_category: 'booking_inquiry'
+  })
+}
+
+const trackSpotifyEngagement = () => {
+  logEvent(festivall_analytics, 'select_content', {
+    content_type: 'music_player',
+    item_id: 'spotify_playlist',
+    content_name: 'Das Record Spotify Playlist'
+  })
+}
+
+const trackPlaybillView = (index) => {
+  logEvent(festivall_analytics, 'view_item', {
+    event_category: 'media_engagement',
+    item_id: `playbill_${index}`,
+    content_type: 'event_poster'
+  })
+}
+
+// Track scroll depth to measure engagement
+const trackScrollDepth = () => {
+  const scrolled = window.scrollY
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+  const scrollPercent = Math.round((scrolled / maxScroll) * 100)
+
+  if (scrollPercent >= 50 && !window.scrollTracked50) {
+    logEvent(festivall_analytics, 'scroll', {
+      percent_scrolled: 50,
+      page_title: 'About Prasenjit Das'
+    })
+    window.scrollTracked50 = true
+  }
+
+  if (scrollPercent >= 75 && !window.scrollTracked75) {
+    logEvent(festivall_analytics, 'scroll', {
+      percent_scrolled: 75,
+      page_title: 'About Prasenjit Das'
+    })
+    window.scrollTracked75 = true
+  }
+}
 </script>
 
 <style scoped>
