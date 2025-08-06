@@ -106,7 +106,9 @@
       <label> <input type="radio" value="cards" v-model="viewStyle" /> Cards </label>
     </div>
     <div class="dashboard-panel">
-      <div>
+      <div class="export-buttons">
+        <button @click="exportContactsCSV">Export Contacts CSV</button>
+        <button @click="exportEmailsCSV">Export Emails CSV</button>
         <!-- <button @click="generateLineup">Download .ics</button> -->
       </div>
       <h2>Current View <br />{{ searchedApplicants?.length || 0 }}</h2>
@@ -908,6 +910,42 @@ export default {
       URL.revokeObjectURL(url)
     }
 
+    const exportContactsCSV = () => {
+      const csvContent = [
+        ...searchedApplicants.value
+          .filter((applicant) => applicant.fullname || applicant.phone)
+          .map((applicant) => {
+            const firstName = (applicant.fullname || '').split(' ')[0] || ''
+            const phone = applicant.phone || ''
+            return `"${firstName}","${phone}"`
+          })
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `contacts_${new Date().toISOString().split('T')[0]}.csv`
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
+    const exportEmailsCSV = () => {
+      const csvContent = [
+        ...searchedApplicants.value
+          .filter((applicant) => applicant.email)
+          .map((applicant) => `"${applicant.email}"`)
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `emails_${new Date().toISOString().split('T')[0]}.csv`
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
@@ -1093,6 +1131,8 @@ export default {
       updateSettime,
       removeSettime,
       generateLineup,
+      exportContactsCSV,
+      exportEmailsCSV,
       generateContract,
       remindContract,
       remindPayment,
@@ -1490,6 +1530,32 @@ a {
 .pagination span {
   color: white;
   font-weight: bold;
+}
+
+/* Export buttons */
+.export-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.export-buttons button {
+  background: var(--festivall-baby-blue);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.export-buttons button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Optimize grid layout for cards */
