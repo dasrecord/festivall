@@ -966,7 +966,7 @@ export default {
           .map((applicant) => {
             const firstName = (applicant.fullname || '').split(' ')[0] || ''
             const phone = applicant.phone || ''
-            return `"${firstName}","${phone}"`
+            return `${firstName},${phone}`
           })
       ].join('\n')
 
@@ -983,7 +983,7 @@ export default {
       const csvContent = [
         ...searchedApplicants.value
           .filter((applicant) => applicant.email)
-          .map((applicant) => `"${applicant.email}"`)
+          .map((applicant) => `${applicant.email}`)
       ].join('\n')
 
       const blob = new Blob([csvContent], { type: 'text/csv' })
