@@ -102,10 +102,6 @@
         <button @click="clearFilters">Clear Filters</button>
       </div>
     </div>
-    <div class="view-toggle">
-      <label> <input type="radio" value="rows" v-model="viewStyle" /> Rows </label>
-      <label> <input type="radio" value="cards" v-model="viewStyle" /> Cards </label>
-    </div>
     <div class="dashboard-panel">
       <div class="export-buttons">
         <button @click="exportContactsCSV">Export Contacts CSV</button>
@@ -121,9 +117,17 @@
         <button @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
       </div>
 
-      <div class="applicants" :class="viewStyle">
+      <div class="applicants">
         <div v-for="applicant in paginatedApplicants" :key="applicant.id" class="applicant">
-          <div class="applicant-content" :class="viewStyle">
+          <!-- Detail page link icon -->
+          <div
+            class="detail-link-icon"
+            @click="goToApplicantPage(applicant.id_code || applicant.id)"
+            title="View detailed information"
+          >
+            📋
+          </div>
+          <div class="applicant-content">
             <div class="name-section">
               <h2>
                 <!-- ACT NAME OR FULLNAME -->
@@ -516,7 +520,6 @@ export default {
   setup() {
     const applicants = ref([])
     const filteredApplicants = ref([])
-    const viewStyle = ref('cards') // Default view style
 
     // Add loading and error states
     const loading = ref(false)
@@ -746,6 +749,12 @@ export default {
     const isFilterActive = (property, value) => {
       const filterKey = `${property}-${value}`
       return activeFilters.value.some((f) => f.key === filterKey)
+    }
+
+    const goToApplicantPage = (applicantId) => {
+      if (applicantId) {
+        router.push({ path: `/dashboard/applicant/${applicantId}` })
+      }
     }
 
     const contractEmailBody = ref('')
@@ -1179,13 +1188,13 @@ export default {
     return {
       applicants,
       filteredApplicants,
-      viewStyle,
       relevantFilters,
       activeFilters,
       loadApplicants,
       applyFilter,
       clearFilters,
       isFilterActive,
+      goToApplicantPage,
       deliverContract,
       deliverTicket,
       sendSMS,
@@ -1299,12 +1308,6 @@ button.active-filter:hover {
   background-color: #e55a2b;
 }
 
-.view-toggle {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-}
-
 .view-toggle label {
   margin: 0 1rem;
   cursor: pointer;
@@ -1318,15 +1321,10 @@ button.active-filter:hover {
 }
 
 .applicants {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.applicants.rows {
-  flex-direction: column;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .applicant {
@@ -1335,15 +1333,6 @@ button.active-filter:hover {
   border-radius: 15px;
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.9);
   transition: transform 0.3s ease;
-  width: 100%;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  text-align: left; */
-}
-
-.applicants.cards .applicant {
   width: 100%;
   max-width: 350px;
   height: 350px;
@@ -1356,12 +1345,34 @@ button.active-filter:hover {
   border: 1px solid var(--festivall-baby-blue);
 }
 
-.applicants.cards .preview-section,
-.applicants.cards .ticket-section,
-.applicants.cards .message-section,
-.applicants.cards .compensation-section,
-.applicants.cards .settime-section,
-.applicants.cards .contract-section {
+.detail-link-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  background-color: var(--festivall-baby-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.detail-link-icon:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+.preview-section,
+.ticket-section,
+.message-section,
+.compensation-section,
+.settime-section,
+.contract-section {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 0.5rem;
@@ -1376,9 +1387,9 @@ button.active-filter:hover {
   height: 100%;
   overflow: hidden;
 }
-.applicants.cards .checkedin-section,
-.applicants.cards .revenue-section,
-.applicants.cards .quantities-section {
+.checkedin-section,
+.revenue-section,
+.quantities-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
@@ -1388,37 +1399,6 @@ button.active-filter:hover {
   /* background-color: #444; */
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
-  align-items: center;
-}
-
-.applicants.rows .applicant,
-.applicants.rows .applicant-content,
-.applicants.rows .ticket-content,
-.applicants.rows .preview-section,
-.applicants.rows .contract-section,
-.applicants.rows .quantities,
-.applicants.rows .message-section,
-.applicants.rows .compensation-section,
-.applicants.rows .revenue-section,
-.applicants.rows .settime-section,
-.applicants.rows .tickets,
-.applicants.rows .meals,
-.applicants.rows .actions,
-.applicants.rows .action-icon,
-.applicants.rows img,
-.applicants.rows p,
-.applicants.rows input {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.applicants.rows .payment-section,
-.applicants.rows .quantities-section,
-.applicants.rows .revenue-section {
-  flex-direction: column;
   align-items: center;
 }
 
@@ -1643,14 +1623,6 @@ a {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Optimize grid layout for cards */
-.applicants.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .banner {
@@ -1665,7 +1637,7 @@ a {
     width: 100%;
   }
 
-  .applicants.cards {
+  .applicants {
     grid-template-columns: 1fr;
     padding: 0.5rem;
   }

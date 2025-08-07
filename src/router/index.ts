@@ -49,6 +49,7 @@ import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
 import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
 import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
 import ReunionFAQView from '@/views/ReunionFAQView.vue'
+import ApplicantDetailView from '@/views/ApplicantDetailView.vue'
 
 
 const routes = [
@@ -157,6 +158,12 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard/applicant/:id',
+    name: 'applicant-detail',
+    component: ApplicantDetailView,
     meta: { requiresAuth: true }
   },
   {
