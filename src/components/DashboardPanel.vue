@@ -970,11 +970,23 @@ export default {
           })
       ].join('\n')
 
+      const filterNames = activeFilters.value
+        .map((filter) => {
+          const filterDef = filters.value.find(
+            (f) => f.property === filter.property && f.value === filter.value
+          )
+          return filterDef ? filterDef.label.replace(/\s+/g, '_').toLowerCase() : ''
+        })
+        .filter(Boolean)
+
+      const baseFilename = filterNames.length > 0 ? filterNames.join('_') : 'all_contacts'
+      const filename = `${baseFilename}_contacts_${new Date().toISOString().split('T')[0]}.csv`
+
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `contacts_${new Date().toISOString().split('T')[0]}.csv`
+      link.download = filename
       link.click()
       URL.revokeObjectURL(url)
     }
@@ -986,11 +998,23 @@ export default {
           .map((applicant) => `${applicant.email}`)
       ].join('\n')
 
+      const filterNames = activeFilters.value
+        .map((filter) => {
+          const filterDef = filters.value.find(
+            (f) => f.property === filter.property && f.value === filter.value
+          )
+          return filterDef ? filterDef.label.replace(/\s+/g, '_').toLowerCase() : ''
+        })
+        .filter(Boolean)
+
+      const baseFilename = filterNames.length > 0 ? filterNames.join('_') : 'all_emails'
+      const filename = `${baseFilename}_emails_${new Date().toISOString().split('T')[0]}.csv`
+
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `emails_${new Date().toISOString().split('T')[0]}.csv`
+      link.download = filename
       link.click()
       URL.revokeObjectURL(url)
     }
