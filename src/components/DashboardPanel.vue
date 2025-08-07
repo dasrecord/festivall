@@ -95,6 +95,7 @@
           v-for="filter in relevantFilters"
           :key="`${filter.property}-${filter.value}`"
           @click="applyFilter(filter.property, filter.value)"
+          :class="{ 'active-filter': isFilterActive(filter.property, filter.value) }"
         >
           {{ filter.label }}
         </button>
@@ -528,6 +529,9 @@ export default {
     const pageSize = ref(20)
     const currentPage = ref(1)
 
+    // Add active filters for cumulative filtering
+    const activeFilters = ref([])
+
     const filters = ref([
       // { property: 'applicant_type', value: 'Artist', label: 'Artists' },
       { property: 'applicant_types', value: 'Artist', label: 'Artists' },
@@ -589,6 +593,9 @@ export default {
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
       // ticket filters
+      { property: 'payment_type', value: 'customer_types', label: 'Customers' },
+      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin' },
+      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer' },
       { property: 'paid', value: true, label: 'Paid' },
       { property: 'paid', value: false, label: 'Unpaid' },
       { property: 'checked_in', value: true, label: 'Checked In' },
@@ -599,6 +606,14 @@ export default {
       if (!applicants.value.length) return []
 
       return filters.value.filter((filter) => {
+        // Handle special combined customer filter
+        if (filter.value === 'customer_types') {
+          return applicants.value.some(
+            (applicant) =>
+              applicant.payment_type === 'bitcoin' || applicant.payment_type === 'etransfer'
+          )
+        }
+
         return applicants.value.some((applicant) => {
           const prop = applicant[filter.property]
           if (filter.value === 'has_value') {
@@ -662,32 +677,59 @@ export default {
     }
 
     const applyFilter = (property, value) => {
+      // Check if this filter is already active
+      const filterKey = `${property}-${value}`
+      const existingFilterIndex = activeFilters.value.findIndex((f) => f.key === filterKey)
+
+      if (existingFilterIndex >= 0) {
+        // Remove the filter if it's already active (toggle off)
+        activeFilters.value.splice(existingFilterIndex, 1)
+      } else {
+        // Add the new filter
+        activeFilters.value.push({
+          key: filterKey,
+          property,
+          value,
+          filter: (applicant) => {
+            const prop = applicant[property]
+
+            // Handle special cases first
+            if (value === 'has_value') {
+              return prop !== undefined && prop !== '' && prop !== null
+            }
+            if (value === 'no_value') {
+              return prop === undefined || prop === '' || prop === null
+            }
+            // Handle combined customer filter
+            if (value === 'customer_types') {
+              return (
+                applicant.payment_type &&
+                (applicant.payment_type === 'bitcoin' || applicant.payment_type === 'etransfer')
+              )
+            }
+
+            // Handle arrays
+            if (Array.isArray(prop)) {
+              return prop.includes(value)
+            }
+
+            // Handle exact matches
+            if (typeof prop === 'string' || typeof prop === 'boolean') {
+              return prop === value
+            }
+
+            if (value === '') {
+              return prop !== undefined && prop !== ''
+            }
+
+            return false
+          }
+        })
+      }
+
+      // Apply all active filters cumulatively
       filteredApplicants.value = applicants.value.filter((applicant) => {
-        const prop = applicant[property]
-
-        // Handle special cases first
-        if (value === 'has_value') {
-          return prop !== undefined && prop !== '' && prop !== null
-        }
-        if (value === 'no_value') {
-          return prop === undefined || prop === '' || prop === null
-        }
-
-        // Handle arrays
-        if (Array.isArray(prop)) {
-          return prop.includes(value) // Check if the array includes the value
-        }
-
-        // Handle exact matches
-        if (typeof prop === 'string' || typeof prop === 'boolean') {
-          return prop === value // Match string or boolean values
-        }
-
-        if (value === '') {
-          return prop !== undefined && prop !== '' // Handle empty filter values
-        }
-
-        return false
+        return activeFilters.value.every((filter) => filter.filter(applicant))
       })
 
       // Reset pagination when filter changes
@@ -695,8 +737,15 @@ export default {
     }
 
     const clearFilters = () => {
+      activeFilters.value = []
       filteredApplicants.value = applicants.value
+      searchQuery.value = '' // Clear search input too
       currentPage.value = 1
+    }
+
+    const isFilterActive = (property, value) => {
+      const filterKey = `${property}-${value}`
+      return activeFilters.value.some((f) => f.key === filterKey)
     }
 
     const contractEmailBody = ref('')
@@ -1108,9 +1157,11 @@ export default {
       filteredApplicants,
       viewStyle,
       relevantFilters,
+      activeFilters,
       loadApplicants,
       applyFilter,
       clearFilters,
+      isFilterActive,
       deliverContract,
       deliverTicket,
       sendSMS,
@@ -1212,6 +1263,16 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+button.active-filter {
+  background-color: #ff6b35;
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+  border: 2px solid #ff8c5a;
+}
+
+button.active-filter:hover {
+  background-color: #e55a2b;
 }
 
 .view-toggle {
