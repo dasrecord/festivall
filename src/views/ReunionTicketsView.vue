@@ -254,6 +254,17 @@ const submitForm = async () => {
         ],
         payment_type: form.value.payment_type
       })
+      // Track successful ticket purchase with Facebook Pixel
+      if (typeof fbq !== 'undefined') {
+        fbq('track', 'Purchase', {
+          value: form.value.total_price,
+          currency: 'CAD',
+          content_name: form.value.ticket_type,
+          content_category: 'Ticket',
+          content_ids: [form.value.id_code],
+          num_items: form.value.ticket_quantity
+        })
+      }
 
       alert(
         'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'

@@ -14,7 +14,9 @@
     "convert-to-json": "node ./scripts/convert-to-json.js",
     "generate-qrs": "node ./scripts/generate-qrs.js",
     "generate-physical-ticket": "node ./scripts/generate-physical-ticket.js",
-    "generate-invoice": "node ./scripts/generate-invoice.js"
+    "generate-invoice": "node ./scripts/generate-invoice.js",
+    "clean-phones-orders-live": "node ./scripts/clean_database_phone_numbers.js orders_2025 reunion --live",
+    "clean-phones-apps-live": "node ./scripts/clean_database_phone_numbers.js applications_2025 reunion --live"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
