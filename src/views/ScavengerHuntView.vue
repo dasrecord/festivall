@@ -72,6 +72,11 @@
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
 import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
+import quest from '@/assets/images/scavenger_hunt/quest.png'
+import trivia from '@/assets/images/scavenger_hunt/trivia.png'
+import cypher from '@/assets/images/scavenger_hunt/cypher.png'
+import sequence from '@/assets/images/scavenger_hunt/sequence.png'
+import puzzle from '@/assets/images/scavenger_hunt/puzzle.png'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -81,6 +86,11 @@ export default {
       backgroundImage: faded_frog,
       chess_1: chess_1,
       binary: binary,
+      quest: quest,
+      trivia: trivia,
+      cypher: cypher,
+      sequence: sequence,
+      puzzle: puzzle,
 
       questions: [
         {
@@ -92,7 +102,7 @@ export default {
           text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
           answer: 'E',
           type: 'text',
-          category: 'Sequence Challenge'
+          category: 'Sequence'
         },
         {
           text: 'Find the guardian of the flame and ask him to declare the magic word.',
@@ -112,13 +122,13 @@ export default {
             'Hint: Use periods . and dashes - for the letters. Use spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
-          category: 'Decoding'
+          category: 'Cypher'
         },
         {
           text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
           answer: '21',
           type: 'text',
-          category: 'Sequence Challenge'
+          category: 'Sequence'
         },
         {
           text: 'For this quest go to the Cote Corral and use a Nerf Gun to knock down the target to reveal the magic word.',
@@ -136,7 +146,7 @@ export default {
           text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
           answer: '64,128,256,512,1024',
           type: 'text',
-          category: 'Sequence Challenge'
+          category: 'Sequence'
         },
         {
           text: 'I wonder where the next magic word is wading for you...',
@@ -161,7 +171,7 @@ export default {
           image: binary,
           answer: '42',
           type: 'text',
-          category: 'Math Question'
+          category: 'Cypher'
         },
         {
           text: 'What is the chemical symbol for gold?',
@@ -189,7 +199,7 @@ export default {
           answer: 'Ra6',
           type: 'text',
           image: chess_1,
-          category: 'Chess Puzzle'
+          category: 'Puzzle'
         },
         {
           text: 'Locate our Food Coordinator for your final question.',
