@@ -5,6 +5,32 @@
     alt="Festivall Emblem"
   />
   <h1>REUNION 2025 TICKET SCANNER</h1>
+
+  <!-- Scanner Operator Identification -->
+  <div class="operator-section">
+    <div class="operator-input">
+      <label for="operatorId">Scanner Operator ID:</label>
+      <input
+        id="operatorId"
+        v-model="operatorIdCode"
+        placeholder="Enter your ID code"
+        class="operator-id-input"
+        @blur="saveOperatorId"
+      />
+      <span
+        v-if="operatorIdCode"
+        class="operator-status"
+        :class="{ 'valid-operator': isValidOperator, 'invalid-operator': !isValidOperator }"
+      >
+        <span v-if="isValidOperator"
+          >✓ Logged in as: {{ operatorFullName || operatorIdCode }}
+          <span v-if="operatorFullName" class="operator-id">({{ operatorIdCode }})</span>
+        </span>
+        <span v-else>⚠️ Invalid Operator ID: {{ operatorIdCode }}</span>
+      </span>
+    </div>
+  </div>
+
   <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
   <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
 
@@ -16,7 +42,19 @@
     </div>
   </div>
 
-  <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
+  <QrcodeStream
+    v-if="isValidOperator"
+    class="qr"
+    @init="onInit"
+    @detect="onDetect"
+    camera="environment"
+  />
+  <div v-else class="scanner-disabled">
+    <div class="scanner-disabled-message">
+      <h3>🔒 Scanner Disabled</h3>
+      <p>Please enter a valid Scanner Operator ID to enable QR code scanning.</p>
+    </div>
+  </div>
   <div class="panel">
     <div class="utilities">
       <button @click="showInstructions = true">Front Gate Instructions</button>
@@ -178,6 +216,28 @@
             />
           </span>
           <br />
+
+          <!-- Entrance Activity History -->
+          <div
+            v-if="matchingOrder.entrance_activity_history && matchingOrder.entrance_activity_history.length > 0"
+            class="activity-history"
+          >
+            <h5>Recent Activity:</h5>
+            <div class="activity-list">
+              <div
+                v-for="(activity, index) in matchingOrder.entrance_activity_history.slice(-3)"
+                :key="index"
+                class="activity-item"
+              >
+                <small>
+                  {{ activity.festival_day }}
+                  {{ new Date(activity.timestamp).toLocaleTimeString() }}
+                  - {{ activity.action === 'check_in' ? 'Checked In' : 'Checked Out' }}
+                  by {{ activity.operator_name || activity.operator }}
+                </small>
+              </div>
+            </div>
+          </div>
         </p>
       </div>
     </div>
@@ -186,9 +246,15 @@
       class="panel-button"
       v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.ticket_quantity > 0"
       @click="checkIn(matchingOrder)"
-      :disabled="isProcessing"
+      :disabled="isProcessing || !isValidOperator"
     >
-      {{ isProcessing ? 'Processing...' : 'Check In 1 Ticket' }}
+      {{
+        isProcessing
+          ? 'Processing...'
+          : !isValidOperator
+            ? 'Invalid Operator - Cannot Check In'
+            : 'Check In 1 Ticket'
+      }}
     </button>
     <button
       class="panel-button"
@@ -198,10 +264,23 @@
         matchingOrder.ticket_quantity < matchingOrder.original_ticket_quantity
       "
       @click="checkOut(matchingOrder)"
-      :disabled="isProcessing"
+      :disabled="isProcessing || !isValidOperator"
     >
-      {{ isProcessing ? 'Processing...' : 'Check Out 1' }}
+      {{
+        isProcessing
+          ? 'Processing...'
+          : !isValidOperator
+            ? 'Invalid Operator - Cannot Check Out'
+            : 'Check Out 1 Ticket'
+      }}
     </button>
+
+    <div
+      v-if="matchingOrder && typeof matchingOrder === 'object' && !isValidOperator"
+      class="operator-warning"
+    >
+      ⚠️ Please enter a valid Scanner Operator ID to enable ticket check-in/check-out.
+    </div>
   </div>
   <div class="at-a-glance">
     <h2>At A Glance</h2>
@@ -320,6 +399,8 @@ export default {
       scanResult: null,
       orders: [],
       matchingOrder: null,
+      operatorIdCode: '', // Scanner operator identification
+      operatorFullName: '', // Scanner operator full name from Firebase
       filter: 'all',
       showInstructions: false,
       isProcessing: false,
@@ -337,9 +418,20 @@ export default {
       } else {
         return this.orders.filter((order) => !order.checked_in)
       }
+    },
+    isValidOperator() {
+      if (!this.operatorIdCode.trim()) return false
+      // Check if operator exists in either orders or has a full name (meaning they were found in Firebase)
+      return (
+        this.operatorFullName !== '' ||
+        this.orders.some((order) => order.id_code === this.operatorIdCode.trim())
+      )
     }
   },
   async created() {
+    // Load saved operator ID
+    this.loadOperatorId()
+
     try {
       const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
       const orderSnapshot = await getDocs(ordersCollection)
@@ -417,6 +509,20 @@ export default {
 
     async checkIn(order) {
       if (this.isProcessing) return
+
+      // Validate operator ID is entered and valid
+      if (!this.operatorIdCode.trim()) {
+        alert('Please enter your Scanner Operator ID before processing check-ins.')
+        return
+      }
+
+      if (!this.isValidOperator) {
+        alert(
+          'Invalid Scanner Operator ID. Please enter a valid ID code that exists in the system.'
+        )
+        return
+      }
+
       this.isProcessing = true
 
       try {
@@ -426,17 +532,42 @@ export default {
 
         if (order.ticket_quantity > 0) {
           const newTicketQuantity = order.ticket_quantity - 1
+          const activityTime = new Date().toISOString()
           const orderRef = doc(this.db, 'orders_2025', order.id_code)
+
+          // Get existing entrance activity history or initialize empty array
+          const existingActivity = order.entrance_activity_history || []
+
+          // Create new activity record
+          const newActivity = {
+            timestamp: activityTime,
+            action: 'check_in',
+            ticket_quantity_after: newTicketQuantity,
+            operator: this.operatorIdCode.trim(),
+            operator_name: this.operatorFullName || this.operatorIdCode.trim(),
+            festival_day: this.getFestivalDay(activityTime)
+          }
+
+          // Add to activity history
+          const updatedActivity = [...existingActivity, newActivity]
+
           await updateDoc(orderRef, {
             checked_in: true,
             ticket_quantity: newTicketQuantity,
-            original_ticket_quantity: order.original_ticket_quantity
+            original_ticket_quantity: order.original_ticket_quantity,
+            last_entrance_activity: activityTime,
+            entrance_activity_history: updatedActivity
           })
-          sendReunionFrontGate(`:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}`)
+          
+          sendReunionFrontGate(
+            `:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}\n:bust_in_silhouette: Operator: ${this.operatorFullName || this.operatorIdCode}`
+          )
 
           // Update local state after successful database update
           order.checked_in = true
           order.ticket_quantity = newTicketQuantity
+          order.last_entrance_activity = activityTime
+          order.entrance_activity_history = updatedActivity
         } else {
           alert('No tickets left to check in.')
         }
@@ -450,6 +581,20 @@ export default {
 
     async checkOut(order) {
       if (this.isProcessing) return
+
+      // Validate operator ID is entered and valid
+      if (!this.operatorIdCode.trim()) {
+        alert('Please enter your Scanner Operator ID before processing check-outs.')
+        return
+      }
+
+      if (!this.isValidOperator) {
+        alert(
+          'Invalid Scanner Operator ID. Please enter a valid ID code that exists in the system.'
+        )
+        return
+      }
+
       this.isProcessing = true
 
       try {
@@ -459,17 +604,42 @@ export default {
 
         if (order.ticket_quantity < order.original_ticket_quantity) {
           const newTicketQuantity = order.ticket_quantity + 1
+          const activityTime = new Date().toISOString()
           const orderRef = doc(this.db, 'orders_2025', order.id_code)
+
+          // Get existing entrance activity history or initialize empty array
+          const existingActivity = order.entrance_activity_history || []
+
+          // Create new activity record
+          const newActivity = {
+            timestamp: activityTime,
+            action: 'check_out',
+            ticket_quantity_after: newTicketQuantity,
+            operator: this.operatorIdCode.trim(),
+            operator_name: this.operatorFullName || this.operatorIdCode.trim(),
+            festival_day: this.getFestivalDay(activityTime)
+          }
+
+          // Add to activity history
+          const updatedActivity = [...existingActivity, newActivity]
+
           await updateDoc(orderRef, {
             checked_in: newTicketQuantity > 0,
             ticket_quantity: newTicketQuantity,
-            original_ticket_quantity: order.original_ticket_quantity
+            original_ticket_quantity: order.original_ticket_quantity,
+            last_entrance_activity: activityTime,
+            entrance_activity_history: updatedActivity
           })
-          sendReunionFrontGate(`:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}`)
+          
+          sendReunionFrontGate(
+            `:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}\n:bust_in_silhouette: Operator: ${this.operatorFullName || this.operatorIdCode}`
+          )
 
           // Update local state after successful database update
           order.checked_in = newTicketQuantity > 0
           order.ticket_quantity = newTicketQuantity
+          order.last_entrance_activity = activityTime
+          order.entrance_activity_history = updatedActivity
         } else {
           alert('Cannot check out more tickets than the original quantity.')
         }
@@ -501,6 +671,87 @@ export default {
         this.filter = 'notCheckedIn'
       } else {
         this.filter = 'all'
+      }
+    },
+    getFestivalDay(timestamp) {
+      const activityDate = new Date(timestamp)
+      const festivalStart = new Date('2025-08-29T12:00:00') // Friday Aug 29, 12:00 PM
+      const daysDiff = Math.floor((activityDate - festivalStart) / (1000 * 60 * 60 * 24))
+
+      if (daysDiff < 0) return 'Pre-Festival'
+      if (daysDiff === 0) return 'Friday'
+      if (daysDiff === 1) return 'Saturday'
+      if (daysDiff === 2) return 'Sunday'
+      if (daysDiff === 3) return 'Monday'
+      return 'Post-Festival'
+    },
+    async lookupOperatorName(idCode) {
+      if (!idCode) {
+        this.operatorFullName = ''
+        return false
+      }
+
+      try {
+        // Try to find the operator in the orders collection first
+        const operator = this.orders.find((order) => order.id_code === idCode)
+        if (operator && operator.fullname) {
+          this.operatorFullName = operator.fullname
+          return true
+        }
+
+        // If not found in loaded orders, query Firebase directly
+        const { doc, getDoc } = await import('firebase/firestore')
+
+        // Check orders_2025 collection
+        const orderRef = doc(this.db, 'orders_2025', idCode)
+        const orderSnap = await getDoc(orderRef)
+
+        if (orderSnap.exists() && orderSnap.data().fullname) {
+          this.operatorFullName = orderSnap.data().fullname
+          return true
+        }
+
+        // Check applications_2025 collection as fallback
+        const appRef = doc(this.db, 'applications_2025', idCode)
+        const appSnap = await getDoc(appRef)
+
+        if (appSnap.exists() && appSnap.data().fullname) {
+          this.operatorFullName = appSnap.data().fullname
+          return true
+        }
+
+        // If no name found, clear the full name
+        this.operatorFullName = ''
+        console.warn(`No name found for operator ID: ${idCode}`)
+        return false
+      } catch (error) {
+        console.error('Error looking up operator name:', error)
+        this.operatorFullName = ''
+        return false
+      }
+    },
+    async saveOperatorId() {
+      if (this.operatorIdCode.trim()) {
+        const trimmedId = this.operatorIdCode.trim()
+        localStorage.setItem('ticketScannerOperatorId', trimmedId)
+
+        // Look up and save the operator's full name
+        await this.lookupOperatorName(trimmedId)
+        if (this.operatorFullName) {
+          localStorage.setItem('ticketScannerOperatorName', this.operatorFullName)
+        }
+      }
+    },
+    loadOperatorId() {
+      const savedId = localStorage.getItem('ticketScannerOperatorId')
+      const savedName = localStorage.getItem('ticketScannerOperatorName')
+
+      if (savedId) {
+        this.operatorIdCode = savedId
+        this.operatorFullName = savedName || ''
+
+        // Refresh the name lookup in case data has changed
+        this.lookupOperatorName(savedId)
       }
     }
   },
@@ -665,5 +916,127 @@ li {
 .tickets img {
   margin: 3px;
   transform: rotate(-45deg);
+}
+
+.operator-section {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 2px solid var(--festivall-baby-blue);
+}
+
+.operator-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.operator-input label {
+  color: white;
+  font-weight: bold;
+}
+
+.operator-id-input {
+  padding: 0.5rem;
+  border: 2px solid var(--festivall-baby-blue);
+  border-radius: 4px;
+  background: white;
+  color: black;
+  font-size: 1rem;
+  text-align: center;
+  min-width: 200px;
+}
+
+.operator-id-input:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(5, 155, 250, 0.5);
+}
+
+.operator-status {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.operator-status.valid-operator {
+  color: #4caf50;
+}
+
+.operator-status.invalid-operator {
+  color: #ff4444;
+}
+
+.operator-warning {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 68, 68, 0.1);
+  border: 2px solid #ff4444;
+  border-radius: 5px;
+  color: #ff6666;
+  text-align: center;
+  font-weight: bold;
+}
+
+.panel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(100, 100, 100, 0.5) !important;
+}
+
+.scanner-disabled {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #ff4444;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.scanner-disabled-message {
+  text-align: center;
+  color: #ff6666;
+}
+
+.scanner-disabled-message h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.scanner-disabled-message p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.activity-history {
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.activity-history h5 {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-item {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.2;
+}
+
+.activity-item small {
+  display: block;
 }
 </style>

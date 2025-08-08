@@ -5,6 +5,32 @@
     alt="Festivall Emblem"
   />
   <h1>REUNION 2025 MEAL SCANNER</h1>
+
+  <!-- Scanner Operator Identification -->
+  <div class="operator-section">
+    <div class="operator-input">
+      <label for="operatorId">Scanner Operator ID:</label>
+      <input
+        id="operatorId"
+        v-model="operatorIdCode"
+        placeholder="Enter your ID code"
+        class="operator-id-input"
+        @blur="saveOperatorId"
+      />
+      <span
+        v-if="operatorIdCode"
+        class="operator-status"
+        :class="{ 'valid-operator': isValidOperator, 'invalid-operator': !isValidOperator }"
+      >
+        <span v-if="isValidOperator"
+          >✓ Logged in as: {{ operatorFullName || operatorIdCode }}
+          <span v-if="operatorFullName" class="operator-id">({{ operatorIdCode }})</span>
+        </span>
+        <span v-else>⚠️ Invalid Operator ID: {{ operatorIdCode }}</span>
+      </span>
+    </div>
+  </div>
+
   <audio id="success-sound" src="/sounds/access-granted.mp3" preload="auto"></audio>
   <audio id="failure-sound" src="/sounds/access-denied.mp3" preload="auto"></audio>
 
@@ -16,7 +42,19 @@
     </div>
   </div>
 
-  <QrcodeStream class="qr" @init="onInit" @detect="onDetect" camera="environment" />
+  <QrcodeStream
+    v-if="isValidOperator"
+    class="qr"
+    @init="onInit"
+    @detect="onDetect"
+    camera="environment"
+  />
+  <div v-else class="scanner-disabled">
+    <div class="scanner-disabled-message">
+      <h3>🔒 Scanner Disabled</h3>
+      <p>Please enter a valid Scanner Operator ID to enable QR code scanning.</p>
+    </div>
+  </div>
   <div class="panel">
     <div class="utilities">
       <button @click="showInstructions = true">Meal Team Instructions</button>
@@ -112,10 +150,28 @@
         matchingOrder.meal_tickets_remaining > 0
       "
       @click="decrementMealTickets(matchingOrder, 1)"
-      :disabled="isProcessing"
+      :disabled="isProcessing || !isValidOperator"
     >
-      {{ isProcessing ? 'Processing...' : 'Redeem 1 Meal Ticket' }}
+      {{
+        isProcessing
+          ? 'Processing...'
+          : !isValidOperator
+            ? 'Invalid Operator - Cannot Redeem'
+            : 'Redeem 1 Meal Ticket'
+      }}
     </button>
+
+    <div
+      v-if="
+        matchingOrder &&
+        typeof matchingOrder === 'object' &&
+        matchingOrder.meal_tickets_remaining > 0 &&
+        !isValidOperator
+      "
+      class="operator-warning"
+    >
+      ⚠️ Please enter a valid Scanner Operator ID to enable meal ticket redemption.
+    </div>
   </div>
   <div class="at-a-glance">
     <h2>At A Glance</h2>
@@ -275,6 +331,27 @@
             </template>
             <h4 v-else>No Meal Tickets Remaining</h4>
           </div>
+
+          <!-- Redemption History -->
+          <div
+            v-if="order.meal_redemption_history && order.meal_redemption_history.length > 0"
+            class="redemption-history"
+          >
+            <h5>Recent Redemptions:</h5>
+            <div class="redemption-list">
+              <div
+                v-for="(redemption, index) in order.meal_redemption_history.slice(-3)"
+                :key="index"
+                class="redemption-item"
+              >
+                <small>
+                  {{ redemption.festival_day }}
+                  {{ new Date(redemption.timestamp).toLocaleTimeString() }}
+                  <span v-if="redemption.reason"> - {{ redemption.reason }}</span>
+                </small>
+              </div>
+            </div>
+          </div>
         </div>
       </li>
     </ul>
@@ -301,6 +378,8 @@ export default {
       scanResult: null,
       orders: [],
       matchingOrder: null,
+      operatorIdCode: '', // Scanner operator identification
+      operatorFullName: '', // Scanner operator full name from Firebase
       filter: 'all',
       showInstructions: false,
       isProcessing: false,
@@ -339,10 +418,19 @@ export default {
       const lastEnd = new Date(this.lastMealServiceEnd)
       const minutesSince = (now - lastEnd) / (1000 * 60)
       return Math.ceil(30 - minutesSince)
+    },
+    isValidOperator() {
+      if (!this.operatorIdCode.trim()) return false
+      // Check if operator exists in either orders or has a full name (meaning they were found in Firebase)
+      return (
+        this.operatorFullName !== '' ||
+        this.orders.some((order) => order.id_code === this.operatorIdCode.trim())
+      )
     }
   },
   async created() {
-    // Load last meal service end time from localStorage
+    // Load saved operator ID and last meal service end time from localStorage
+    this.loadOperatorId()
     this.lastMealServiceEnd = localStorage.getItem('lastMealServiceEnd')
 
     try {
@@ -435,6 +523,20 @@ export default {
     },
     async decrementMealTickets(order, amount) {
       if (this.isProcessing) return
+
+      // Validate operator ID is entered and valid
+      if (!this.operatorIdCode.trim()) {
+        alert('Please enter your Scanner Operator ID before processing redemptions.')
+        return
+      }
+
+      if (!this.isValidOperator) {
+        alert(
+          'Invalid Scanner Operator ID. Please enter a valid ID code that exists in the system.'
+        )
+        return
+      }
+
       this.isProcessing = true
 
       try {
@@ -445,16 +547,34 @@ export default {
           const redemptionTime = new Date().toISOString()
           const orderRef = doc(this.db, 'orders_2025', order.id_code)
 
+          // Get existing redemption history or initialize empty array
+          const existingRedemptions = order.meal_redemption_history || []
+
+          // Create new redemption record
+          const newRedemption = {
+            timestamp: redemptionTime,
+            tickets_redeemed: amount,
+            remaining_after: newMealTickets,
+            redeemed_by: this.operatorIdCode.trim(),
+            festival_day: this.getFestivalDay(redemptionTime)
+          }
+
+          // Add to redemption history
+          const updatedRedemptions = [...existingRedemptions, newRedemption]
+
           await updateDoc(orderRef, {
             meal_tickets_remaining: newMealTickets,
-            last_meal_redemption: redemptionTime
+            last_meal_redemption: redemptionTime,
+            meal_redemption_history: updatedRedemptions
           })
 
           // Update local state after successful database update
           order.meal_tickets_remaining = newMealTickets
           order.last_meal_redemption = redemptionTime
+          order.meal_redemption_history = updatedRedemptions
 
           console.log(`Meal ticket redeemed for ${order.fullname}. Remaining: ${newMealTickets}`)
+          console.log('Redemption history:', updatedRedemptions)
         } else {
           alert('Not enough meal tickets remaining.')
         }
@@ -463,6 +583,87 @@ export default {
         alert('Failed to redeem meal ticket. Please try again.')
       } finally {
         this.isProcessing = false
+      }
+    },
+    getFestivalDay(timestamp) {
+      const redemptionDate = new Date(timestamp)
+      const festivalStart = new Date('2025-08-29T12:00:00') // Friday Aug 29, 12:00 PM
+      const daysDiff = Math.floor((redemptionDate - festivalStart) / (1000 * 60 * 60 * 24))
+
+      if (daysDiff < 0) return 'Pre-Festival'
+      if (daysDiff === 0) return 'Friday'
+      if (daysDiff === 1) return 'Saturday'
+      if (daysDiff === 2) return 'Sunday'
+      if (daysDiff === 3) return 'Monday'
+      return 'Post-Festival'
+    },
+    async lookupOperatorName(idCode) {
+      if (!idCode) {
+        this.operatorFullName = ''
+        return false
+      }
+
+      try {
+        // Try to find the operator in the orders collection first
+        const operator = this.orders.find((order) => order.id_code === idCode)
+        if (operator && operator.fullname) {
+          this.operatorFullName = operator.fullname
+          return true
+        }
+
+        // If not found in loaded orders, query Firebase directly
+        const { doc, getDoc } = await import('firebase/firestore')
+
+        // Check orders_2025 collection
+        const orderRef = doc(this.db, 'orders_2025', idCode)
+        const orderSnap = await getDoc(orderRef)
+
+        if (orderSnap.exists() && orderSnap.data().fullname) {
+          this.operatorFullName = orderSnap.data().fullname
+          return true
+        }
+
+        // Check applications_2025 collection as fallback
+        const appRef = doc(this.db, 'applications_2025', idCode)
+        const appSnap = await getDoc(appRef)
+
+        if (appSnap.exists() && appSnap.data().fullname) {
+          this.operatorFullName = appSnap.data().fullname
+          return true
+        }
+
+        // If no name found, clear the full name
+        this.operatorFullName = ''
+        console.warn(`No name found for operator ID: ${idCode}`)
+        return false
+      } catch (error) {
+        console.error('Error looking up operator name:', error)
+        this.operatorFullName = ''
+        return false
+      }
+    },
+    async saveOperatorId() {
+      if (this.operatorIdCode.trim()) {
+        const trimmedId = this.operatorIdCode.trim()
+        localStorage.setItem('mealScannerOperatorId', trimmedId)
+
+        // Look up and save the operator's full name
+        await this.lookupOperatorName(trimmedId)
+        if (this.operatorFullName) {
+          localStorage.setItem('mealScannerOperatorName', this.operatorFullName)
+        }
+      }
+    },
+    loadOperatorId() {
+      const savedId = localStorage.getItem('mealScannerOperatorId')
+      const savedName = localStorage.getItem('mealScannerOperatorName')
+
+      if (savedId) {
+        this.operatorIdCode = savedId
+        this.operatorFullName = savedName || ''
+
+        // Refresh the name lookup in case data has changed
+        this.lookupOperatorName(savedId)
       }
     },
     refreshPage() {
@@ -550,14 +751,33 @@ export default {
         // Update orders that didn't participate in this service
         const updatePromises = ordersToUpdate.map(async (order) => {
           const newMealTickets = Math.max(0, order.meal_tickets_remaining - 1)
+          const redemptionTime = new Date().toISOString()
           const orderRef = doc(this.db, 'orders_2025', order.id_code)
 
+          // Get existing redemption history or initialize empty array
+          const existingRedemptions = order.meal_redemption_history || []
+
+          // Create new redemption record for non-participation
+          const newRedemption = {
+            timestamp: redemptionTime,
+            tickets_redeemed: 1,
+            remaining_after: newMealTickets,
+            redeemed_by: `auto_service_end_by_${this.operatorIdCode || 'unknown'}`,
+            festival_day: this.getFestivalDay(redemptionTime),
+            reason: 'Did not participate in meal service'
+          }
+
+          // Add to redemption history
+          const updatedRedemptions = [...existingRedemptions, newRedemption]
+
           await updateDoc(orderRef, {
-            meal_tickets_remaining: newMealTickets
+            meal_tickets_remaining: newMealTickets,
+            meal_redemption_history: updatedRedemptions
           })
 
           // Update local state
           order.meal_tickets_remaining = newMealTickets
+          order.meal_redemption_history = updatedRedemptions
         })
 
         // Execute all updates
@@ -863,5 +1083,127 @@ li {
 
 .cancel-button:hover {
   background: rgba(150, 150, 150, 0.8) !important;
+}
+
+.redemption-history {
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.redemption-history h5 {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.redemption-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.redemption-item {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.2;
+}
+
+.redemption-item small {
+  display: block;
+}
+
+.operator-section {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 2px solid var(--festivall-baby-blue);
+}
+
+.operator-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.operator-input label {
+  color: white;
+  font-weight: bold;
+}
+
+.operator-id-input {
+  padding: 0.5rem;
+  border: 2px solid var(--festivall-baby-blue);
+  border-radius: 4px;
+  background: white;
+  color: black;
+  font-size: 1rem;
+  text-align: center;
+  min-width: 200px;
+}
+
+.operator-id-input:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(5, 155, 250, 0.5);
+}
+
+.operator-status {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.operator-status.valid-operator {
+  color: #4caf50;
+}
+
+.operator-status.invalid-operator {
+  color: #ff4444;
+}
+
+.operator-warning {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 68, 68, 0.1);
+  border: 2px solid #ff4444;
+  border-radius: 5px;
+  color: #ff6666;
+  text-align: center;
+  font-weight: bold;
+}
+
+.panel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(100, 100, 100, 0.5) !important;
+}
+
+.scanner-disabled {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #ff4444;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.scanner-disabled-message {
+  text-align: center;
+  color: #ff6666;
+}
+
+.scanner-disabled-message h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.scanner-disabled-message p {
+  margin: 0;
+  font-size: 1rem;
 }
 </style>
