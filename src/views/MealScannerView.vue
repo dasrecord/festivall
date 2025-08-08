@@ -160,6 +160,62 @@
       </li>
     </ul>
   </div>
+  <!-- Admin Controls Section -->
+  <div class="admin-controls">
+    <h3>🔐 Admin Controls</h3>
+    <button
+      @click="showEndServiceModal = true"
+      class="admin-button end-service"
+      :disabled="isProcessing || !canEndMealService"
+    >
+      🚨 End Current Meal Service
+    </button>
+    <p v-if="!canEndMealService" class="cooldown-message">
+      Service ended recently. Wait {{ remainingCooldownMinutes }} minutes.
+    </p>
+  </div>
+
+  <!-- End Service Modal -->
+  <div v-if="showEndServiceModal" class="modal danger-modal">
+    <div class="modal-content">
+      <h3>⚠️ END MEAL SERVICE</h3>
+      <p><strong>WARNING:</strong> This will decrement 1 meal ticket from ALL orders.</p>
+      <p>
+        Orders affected: <strong>{{ ordersWithMealTickets.length }}</strong>
+      </p>
+      <p>
+        Total tickets to be decremented: <strong>{{ ordersWithMealTickets.length }}</strong>
+      </p>
+
+      <!-- Step 1: Type confirmation -->
+      <div v-if="confirmationStep === 1">
+        <p><strong>Type "END SERVICE" to continue:</strong></p>
+        <input
+          v-model="confirmationText"
+          placeholder="Type: END SERVICE"
+          @input="confirmationText = $event.target.value.toUpperCase()"
+          class="confirmation-input"
+        />
+        <button
+          @click="confirmationStep = 2"
+          :disabled="confirmationText !== 'END SERVICE'"
+          class="warning-button"
+        >
+          Continue
+        </button>
+      </div>
+
+      <!-- Step 2: Final confirmation -->
+      <div v-else-if="confirmationStep === 2">
+        <p><strong>FINAL CONFIRMATION:</strong></p>
+        <p>Are you absolutely sure you want to end the meal service?</p>
+        <button @click="endMealService" class="danger-button">YES - End Service Now</button>
+      </div>
+
+      <button @click="cancelEndService" class="cancel-button">Cancel</button>
+    </div>
+  </div>
+
   <div class="database">
     <h2>Order Database</h2>
     <button @click="toggleView">
@@ -249,7 +305,12 @@ export default {
       showInstructions: false,
       isProcessing: false,
       qrScanner: null,
-      scanCooldown: false
+      scanCooldown: false,
+      // Admin controls
+      showEndServiceModal: false,
+      confirmationStep: 1,
+      confirmationText: '',
+      lastMealServiceEnd: null
     }
   },
   computed: {
@@ -261,9 +322,29 @@ export default {
       } else {
         return this.orders
       }
+    },
+    ordersWithMealTickets() {
+      return this.orders.filter((order) => order.meal_tickets_remaining > 0)
+    },
+    canEndMealService() {
+      if (!this.lastMealServiceEnd) return true
+      const now = new Date()
+      const lastEnd = new Date(this.lastMealServiceEnd)
+      const minutesSince = (now - lastEnd) / (1000 * 60)
+      return minutesSince >= 30 // 30 minute cooldown
+    },
+    remainingCooldownMinutes() {
+      if (!this.lastMealServiceEnd) return 0
+      const now = new Date()
+      const lastEnd = new Date(this.lastMealServiceEnd)
+      const minutesSince = (now - lastEnd) / (1000 * 60)
+      return Math.ceil(30 - minutesSince)
     }
   },
   async created() {
+    // Load last meal service end time from localStorage
+    this.lastMealServiceEnd = localStorage.getItem('lastMealServiceEnd')
+
     try {
       const ordersCollection = collection(this.db, 'orders_2025')
       const orderSnapshot = await getDocs(ordersCollection)
@@ -361,14 +442,17 @@ export default {
 
         if (currentMealTickets >= amount) {
           const newMealTickets = currentMealTickets - amount
+          const redemptionTime = new Date().toISOString()
           const orderRef = doc(this.db, 'orders_2025', order.id_code)
 
           await updateDoc(orderRef, {
-            meal_tickets_remaining: newMealTickets
+            meal_tickets_remaining: newMealTickets,
+            last_meal_redemption: redemptionTime
           })
 
           // Update local state after successful database update
           order.meal_tickets_remaining = newMealTickets
+          order.last_meal_redemption = redemptionTime
 
           console.log(`Meal ticket redeemed for ${order.fullname}. Remaining: ${newMealTickets}`)
         } else {
@@ -406,6 +490,94 @@ export default {
         this.filter = 'all'
       } else {
         this.filter = 'mealTickets'
+      }
+    },
+    // Admin Methods
+    cancelEndService() {
+      this.showEndServiceModal = false
+      this.confirmationStep = 1
+      this.confirmationText = ''
+    },
+    async endMealService() {
+      if (!this.canEndMealService) {
+        alert('Meal service was ended recently. Please wait 30 minutes.')
+        return
+      }
+
+      if (this.isProcessing) return
+      this.isProcessing = true
+
+      try {
+        const now = new Date()
+
+        // Determine current meal service window
+        const currentHour = now.getHours()
+        let serviceStartTime
+
+        if (currentHour >= 12 && currentHour < 14) {
+          // Lunch service (12:00 PM - 2:00 PM)
+          serviceStartTime = new Date(now)
+          serviceStartTime.setHours(12, 0, 0, 0)
+        } else if (currentHour >= 18 && currentHour < 20) {
+          // Supper service (6:00 PM - 8:00 PM)
+          serviceStartTime = new Date(now)
+          serviceStartTime.setHours(18, 0, 0, 0)
+        } else {
+          // Outside meal times - use 4 hour window
+          serviceStartTime = new Date(now.getTime() - 4 * 60 * 60 * 1000)
+        }
+
+        // Filter orders: only decrement those who haven't redeemed since service started
+        const ordersToUpdate = this.orders.filter((order) => {
+          if (order.meal_tickets_remaining <= 0) return false
+
+          // Skip if they redeemed since this service period started
+          if (order.last_meal_redemption) {
+            const lastRedemption = new Date(order.last_meal_redemption)
+            if (lastRedemption >= serviceStartTime) {
+              return false // Don't decrement - they participated this service
+            }
+          }
+          return true // Decrement - they didn't participate this service
+        })
+
+        console.log(`MEAL SERVICE ENDED at ${new Date().toISOString()}`)
+        console.log(`Service started at: ${serviceStartTime.toISOString()}`)
+        console.log(
+          `Orders to update: ${ordersToUpdate.length} (skipped ${this.orders.filter((o) => o.meal_tickets_remaining > 0).length - ordersToUpdate.length} who participated)`
+        )
+
+        // Update orders that didn't participate in this service
+        const updatePromises = ordersToUpdate.map(async (order) => {
+          const newMealTickets = Math.max(0, order.meal_tickets_remaining - 1)
+          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+
+          await updateDoc(orderRef, {
+            meal_tickets_remaining: newMealTickets
+          })
+
+          // Update local state
+          order.meal_tickets_remaining = newMealTickets
+        })
+
+        // Execute all updates
+        await Promise.all(updatePromises)
+
+        // Set cooldown timestamp
+        this.lastMealServiceEnd = new Date().toISOString()
+        localStorage.setItem('lastMealServiceEnd', this.lastMealServiceEnd)
+
+        const participantsProtected =
+          this.orders.filter((o) => o.meal_tickets_remaining > 0).length - ordersToUpdate.length
+        alert(
+          `Meal service ended successfully!\n${ordersToUpdate.length} meal tickets decremented.\n${participantsProtected} participants protected from double-decrement.`
+        )
+        this.cancelEndService()
+      } catch (error) {
+        console.error('Error ending meal service:', error)
+        alert('Failed to end meal service. Please try again.')
+      } finally {
+        this.isProcessing = false
       }
     }
   },
@@ -578,5 +750,118 @@ li {
 }
 .meals img {
   margin: 3px;
+}
+
+/* Admin Controls Styles */
+.admin-controls {
+  border: 2px solid #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.admin-controls h3 {
+  margin: 0 0 1rem 0;
+  color: #ff6666;
+}
+
+.admin-button {
+  background: linear-gradient(45deg, #ff4444, #cc0000) !important;
+  border: 2px solid #ff6666 !important;
+  font-weight: bold !important;
+  color: white !important;
+  width: 100%;
+  max-width: 300px;
+}
+
+.admin-button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #cc0000, #990000) !important;
+  transform: scale(1.02);
+}
+
+.admin-button:disabled {
+  background: rgba(255, 68, 68, 0.3) !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cooldown-message {
+  color: #ff6666;
+  font-size: 12px;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+/* Danger Modal Styles */
+.danger-modal {
+  background-color: rgba(0, 0, 0, 0.98);
+}
+
+.danger-modal .modal-content {
+  border: 3px solid #ff4444;
+  background: rgba(20, 20, 20, 0.98);
+  color: white;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+}
+
+.danger-modal h3 {
+  color: #ff6666;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+}
+
+.confirmation-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  border: 2px solid #ff4444;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+
+.confirmation-input:focus {
+  outline: none;
+  border-color: #ff6666;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.warning-button {
+  background: linear-gradient(45deg, #ff8800, #ff6600) !important;
+  border: 2px solid #ffaa00 !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.warning-button:disabled {
+  background: rgba(255, 136, 0, 0.3) !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.danger-button {
+  background: linear-gradient(45deg, #ff0000, #cc0000) !important;
+  border: 2px solid #ff3333 !important;
+  color: white !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.danger-button:hover {
+  background: linear-gradient(45deg, #cc0000, #990000) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+.cancel-button {
+  background: rgba(100, 100, 100, 0.8) !important;
+  border: 2px solid #666 !important;
+  color: white !important;
+}
+
+.cancel-button:hover {
+  background: rgba(150, 150, 150, 0.8) !important;
 }
 </style>
