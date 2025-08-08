@@ -19,6 +19,11 @@
 
     <h2>Your Digital Ticket<br /></h2>
 
+    <!-- Development Mode Indicator -->
+    <div v-if="isDevelopmentMode" class="dev-indicator">
+      🎭 Development Mode: Sample activity data loaded for preview
+    </div>
+
     <div class="order-info">
       <p>
         <strong>Full Name:</strong> {{ order.fullname }}
@@ -35,7 +40,11 @@
       </p>
 
       <div class="quantities">
-        <div class="quantity">
+        <div
+          class="quantity clickable-entrance-section"
+          @click="showEntranceActivityModal = true"
+          title="Click for entrance activity history"
+        >
           <p><strong>Admit:</strong>{{ order.ticket_quantity }}</p>
           <div class="icons">
             <img
@@ -54,8 +63,8 @@
 
         <div
           class="quantity clickable-meal-section"
-          @click="showMealTicketsModal = true"
-          title="Click for meal information"
+          @click="showMealRedemptionHistoryModal = true"
+          title="Click for meal redemption history"
         >
           <p><strong>Meal Tickets:</strong>{{ order.meal_tickets_remaining }}</p>
           <div class="icons">
@@ -70,29 +79,8 @@
         </div>
       </div>
       <div class="status-bar">
-        <!-- <p
-          @click="showPaymentModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
-          <img
-            :src="payment_icon"
-            style="height: auto; width: 32px; margin: 0"
-            alt="Payment Icon"
-          />
-          <strong>Payment Status:</strong>
-          <span :class="{ paid: order.paid, 'not-paid': !order.paid }">
-            {{ order.paid ? 'Paid' : 'Not Paid' }}
-          </span>
-        </p> -->
         <p
-          @click="showCheckInModal = true"
+          @click="showGateInfoModal = true"
           style="
             justify-content: center;
             background-color: black;
@@ -103,10 +91,25 @@
           "
         >
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
-          <strong>Check-In Status:</strong>
-          <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
-            {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
-          </span>
+          <strong>Gate Information</strong>
+        </p>
+        <p
+          @click="showMealServiceModal = true"
+          style="
+            justify-content: center;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+          "
+        >
+          <img
+            :src="meals_icon"
+            style="height: auto; width: 32px; margin: 0; filter: invert(1)"
+            alt="Meal Service Icon"
+          />
+          <strong>Meal Service Info</strong>
         </p>
         <p
           @click="showReferralModal = true"
@@ -178,7 +181,227 @@
         </div>
       </div>
 
-      <div v-if="showCheckInModal" class="modal" @click.self="showCheckInModal = false">
+      <!-- Meal Redemption History Modal -->
+      <div
+        v-if="showMealRedemptionHistoryModal"
+        class="modal"
+        @click.self="showMealRedemptionHistoryModal = false"
+      >
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="meals_icon"
+            style="height: 64px; width: auto; margin: 0; filter: invert(1)"
+            alt="Meal Icon"
+          />
+          <h2>Meal Redemption History</h2>
+          <h3>
+            <strong style="color: orange"
+              >Remaining Tickets: {{ order.meal_tickets_remaining }}</strong
+            >
+          </h3>
+
+          <!-- Show meal redemption history if available -->
+          <div
+            v-if="order.meal_redemption_history && order.meal_redemption_history.length > 0"
+            class="redemption-section"
+          >
+            <h3>
+              🍽️
+              <strong style="text-decoration: underline; color: orange"
+                >Your Redemption History:</strong
+              >
+            </h3>
+            <div class="history-list">
+              <div
+                v-for="(redemption, index) in order.meal_redemption_history"
+                :key="index"
+                class="history-item redemption-item"
+              >
+                <div class="redemption-time">
+                  <strong>{{ redemption.festival_day }}</strong> -
+                  {{ new Date(redemption.timestamp).toLocaleString() }}
+                </div>
+                <div class="redemption-details">
+                  <span class="meal-badge">
+                    🎫 {{ redemption.tickets_redeemed }} ticket{{
+                      redemption.tickets_redeemed > 1 ? 's' : ''
+                    }}
+                    used
+                  </span>
+                  <span class="remaining-info"
+                    >{{ redemption.remaining_after }} remaining after</span
+                  >
+                  <span class="operator-info">by {{ redemption.redeemed_by }}</span>
+                  <span
+                    v-if="redemption.reason && redemption.reason !== 'Normal redemption'"
+                    class="reason-info"
+                  >
+                    ({{ redemption.reason }})
+                  </span>
+                </div>
+              </div>
+            </div>
+            <br />
+          </div>
+
+          <h3 v-else>
+            📊 <strong style="color: orange">No redemptions yet!</strong><br />
+            Your meal tickets are ready to use during service hours.<br /><br />
+          </h3>
+
+          <h3>
+            📧
+            <strong style="color: orange">Questions about your redemption history?</strong> Contact
+            the Meal Team at the food station or
+            <strong style="color: orange">Email:</strong>
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
+              reunion@festivall.ca
+            </a>
+          </h3>
+          <button @click="showMealRedemptionHistoryModal = false">Close</button>
+        </div>
+      </div>
+
+      <!-- Entrance Activity Modal -->
+      <div
+        v-if="showEntranceActivityModal"
+        class="modal"
+        @click.self="showEntranceActivityModal = false"
+      >
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="status_icon"
+            style="height: 64px; width: auto; margin: 0; filter: invert(1)"
+            alt="Entrance Icon"
+          />
+          <h2>Entrance Activity History</h2>
+
+          <!-- Show entrance activity history if available -->
+          <div
+            v-if="order.entrance_activity_history && order.entrance_activity_history.length > 0"
+            class="activity-section"
+          >
+            <h3>
+              🎪
+              <strong style="text-decoration: underline; color: orange"
+                >Your Gate Activity Timeline:</strong
+              >
+            </h3>
+            <div class="history-list">
+              <div
+                v-for="(activity, index) in order.entrance_activity_history"
+                :key="index"
+                class="history-item"
+                :class="{
+                  'check-in-item': activity.action === 'check_in',
+                  'check-out-item': activity.action === 'check_out'
+                }"
+              >
+                <div class="activity-time">
+                  <strong>{{ activity.festival_day }}</strong> -
+                  {{ new Date(activity.timestamp).toLocaleString() }}
+                </div>
+                <div class="activity-details">
+                  <span class="action-badge" :class="activity.action">
+                    {{ activity.action === 'check_in' ? '🎪 Checked In' : '🚪 Checked Out' }}
+                  </span>
+                  <span class="operator-info"
+                    >by {{ activity.operator_name || activity.operator }}</span
+                  >
+                </div>
+              </div>
+            </div>
+            <br />
+          </div>
+
+          <h3 v-else>
+            📊 <strong style="color: orange">No gate activity yet!</strong><br />
+            Your entrance activities will appear here once you check in at the festival.<br /><br />
+          </h3>
+
+          <h3>
+            📧 <strong style="color: orange">Questions about your activity history?</strong> Contact
+            the Gate Team or
+            <strong style="color: orange">Email:</strong>
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
+              reunion@festivall.ca
+            </a>
+          </h3>
+          <button @click="showEntranceActivityModal = false">Close</button>
+        </div>
+      </div>
+
+      <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
+          <h2>Referral Earnings</h2>
+          <strong> #{{ order.id_code }} </strong>
+          <strong>${{ referralEarnings }}</strong
+          ><br />
+          <h3>
+            💰
+            <strong style="text-decoration: underline; color: orange">Referral Instructions:</strong
+            ><br />
+            You can share your Festivall ID_CODE or your referral link with your friends and
+            family.<br />
+            🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
+          </h3>
+
+          <h3>
+            🔗
+            <strong style="text-decoration: underline; color: orange">
+              This is your referral link: </strong
+            ><br />
+            Copy and paste this link anywhere!
+            <a
+              :href="`https://festivall.ca/reuniontickets/${order.id_code}`"
+              target="_blank"
+              style="color: orange"
+              >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
+            ><br /><br />
+          </h3>
+          <h3>
+            📱
+            <strong style="text-decoration: underline; color: orange">
+              This is your referral QR code:
+            </strong>
+          </h3>
+
+          <div class="qr-code">
+            <canvas ref="referralQrCanvas"></canvas>
+          </div>
+          <h3>
+            👫 Have your friends scan this QR code to get their tickets.<br />
+            🔢 Your ID_CODE will be automatically added to their order.<br />
+          </h3>
+          <h3>
+            📞 If you have any questions or concerns, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange"
+              >reunion@festivall.ca</a
+            >
+          </h3>
+
+          <button @click="showReferralModal = false">Close</button>
+        </div>
+      </div>
+
+      <!-- Gate Information Modal -->
+      <div v-if="showGateInfoModal" class="modal" @click.self="showGateInfoModal = false">
         <div class="modal-content">
           <img
             :src="festivall_emblem_white"
@@ -188,12 +411,16 @@
           <img
             :src="status_icon"
             style="height: 64px; width: auto; margin: 0"
-            alt="Check-In Icon"
+            alt="Gate Info Icon"
           />
-          <h2>Check-In Status:</h2>
-          <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
-            {{ order.checked_in ? 'Checked In' : 'Not Checked In' }} </span
-          ><br />
+          <h2>Front Gate Information</h2>
+          <h3>
+            <strong style="color: orange">Current Check-In Status:</strong>
+            <span :class="{ 'checked-in': order.checked_in, 'not-checked-in': !order.checked_in }">
+              {{ order.checked_in ? 'Checked In' : 'Not Checked In' }}
+            </span>
+          </h3>
+
           <h3 v-if="order.checked_in === false">
             📋
             <strong style="text-decoration: underline; color: orange"
@@ -255,12 +482,12 @@
               reunion@festivall.ca
             </a>
           </h3>
-          <button @click="showCheckInModal = false">Close</button>
+          <button @click="showGateInfoModal = false">Close</button>
         </div>
       </div>
 
-      <!-- Meal Tickets Modal -->
-      <div v-if="showMealTicketsModal" class="modal" @click.self="showMealTicketsModal = false">
+      <!-- Meal Service Information Modal -->
+      <div v-if="showMealServiceModal" class="modal" @click.self="showMealServiceModal = false">
         <div class="modal-content">
           <img
             :src="festivall_emblem_white"
@@ -270,15 +497,9 @@
           <img
             :src="meals_icon"
             style="height: 64px; width: auto; margin: 0; filter: invert(1)"
-            alt="Meal Icon"
+            alt="Meal Service Icon"
           />
-          <h2>Meal Information</h2>
-          <h3>
-            <strong style="color: orange"
-              >Remaining Tickets: {{ order.meal_tickets_remaining }}</strong
-            >
-          </h3>
-          <br />
+          <h2>Meal Service Information</h2>
 
           <h3>
             📅
@@ -323,66 +544,7 @@
               reunion@festivall.ca
             </a>
           </h3>
-          <button @click="showMealTicketsModal = false">Close</button>
-        </div>
-      </div>
-
-      <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
-        <div class="modal-content">
-          <img
-            :src="festivall_emblem_white"
-            style="height: 64px; width: auto"
-            alt="Festivall Emblem"
-          />
-          <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
-          <h2>Referral Earnings</h2>
-          <strong> #{{ order.id_code }} </strong>
-          <strong>${{ referralEarnings }}</strong
-          ><br />
-          <h3>
-            💰
-            <strong style="text-decoration: underline; color: orange">Referral Instructions:</strong
-            ><br />
-            You can share your Festivall ID_CODE or your referral link with your friends and
-            family.<br />
-            🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
-          </h3>
-
-          <h3>
-            🔗
-            <strong style="text-decoration: underline; color: orange">
-              This is your referral link: </strong
-            ><br />
-            Copy and paste this link anywhere!
-            <a
-              :href="`https://festivall.ca/reuniontickets/${order.id_code}`"
-              target="_blank"
-              style="color: orange"
-              >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
-            ><br /><br />
-          </h3>
-          <h3>
-            📱
-            <strong style="text-decoration: underline; color: orange">
-              This is your referral QR code:
-            </strong>
-          </h3>
-
-          <div class="qr-code">
-            <canvas ref="referralQrCanvas"></canvas>
-          </div>
-          <h3>
-            👫 Have your friends scan this QR code to get their tickets.<br />
-            🔢 Your ID_CODE will be automatically added to their order.<br />
-          </h3>
-          <h3>
-            📞 If you have any questions or concerns, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange"
-              >reunion@festivall.ca</a
-            >
-          </h3>
-
-          <button @click="showReferralModal = false">Close</button>
+          <button @click="showMealServiceModal = false">Close</button>
         </div>
       </div>
 
@@ -529,9 +691,11 @@ export default {
     const referralQrCanvas = ref(null)
 
     const showPaymentModal = ref(false)
-    const showCheckInModal = ref(false)
+    const showGateInfoModal = ref(false)
+    const showMealServiceModal = ref(false)
     const showReferralModal = ref(false)
-    const showMealTicketsModal = ref(false)
+    const showMealRedemptionHistoryModal = ref(false)
+    const showEntranceActivityModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -595,6 +759,10 @@ export default {
 
         if (!querySnapshot.empty) {
           order.value = querySnapshot.docs[0].data()
+
+          // Add sample data for development/preview (only if no real data exists)
+          addSampleDataForPreview(order.value)
+
           await nextTick()
           generateQRCode(order.value.id_code_long, qrCanvas.value)
           await calculateReferralEarnings(order.value.id_code)
@@ -616,6 +784,86 @@ export default {
             console.error('Error generating QR code:', error)
           }
         })
+      }
+    }
+
+    const addSampleDataForPreview = (orderData) => {
+      // Only add sample data if no real activity data exists and we're in development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // Add sample entrance activity if none exists
+        if (
+          !orderData.entrance_activity_history ||
+          orderData.entrance_activity_history.length === 0
+        ) {
+          orderData.entrance_activity_history = [
+            {
+              timestamp: '2025-08-29T14:30:00.000Z',
+              action: 'check_in',
+              ticket_quantity_after: 0,
+              operator: 'JS123',
+              operator_name: 'Jane Smith',
+              festival_day: 'Friday'
+            },
+            {
+              timestamp: '2025-08-30T02:15:00.000Z',
+              action: 'check_out',
+              ticket_quantity_after: 1,
+              operator: 'MB456',
+              operator_name: 'Mike Brown',
+              festival_day: 'Saturday'
+            },
+            {
+              timestamp: '2025-08-30T12:45:00.000Z',
+              action: 'check_in',
+              ticket_quantity_after: 0,
+              operator: 'SL789',
+              operator_name: 'Sarah Lee',
+              festival_day: 'Saturday'
+            }
+          ]
+          orderData.last_entrance_activity = '2025-08-30T12:45:00.000Z'
+        }
+
+        // Add sample meal redemption history if none exists
+        if (!orderData.meal_redemption_history || orderData.meal_redemption_history.length === 0) {
+          orderData.meal_redemption_history = [
+            {
+              timestamp: '2025-08-29T13:15:00.000Z',
+              tickets_redeemed: 1,
+              remaining_after: 5,
+              redeemed_by: 'KT234',
+              festival_day: 'Friday',
+              reason: 'Normal redemption'
+            },
+            {
+              timestamp: '2025-08-29T19:30:00.000Z',
+              tickets_redeemed: 1,
+              remaining_after: 4,
+              redeemed_by: 'RM567',
+              festival_day: 'Friday',
+              reason: 'Normal redemption'
+            },
+            {
+              timestamp: '2025-08-30T13:00:00.000Z',
+              tickets_redeemed: 1,
+              remaining_after: 3,
+              redeemed_by: 'DP890',
+              festival_day: 'Saturday',
+              reason: 'Normal redemption'
+            },
+            {
+              timestamp: '2025-08-30T20:00:00.000Z',
+              tickets_redeemed: 2,
+              remaining_after: 1,
+              redeemed_by: 'ADMIN',
+              festival_day: 'Saturday',
+              reason: 'End of meal service - automatic deduction'
+            }
+          ]
+          orderData.last_meal_redemption = '2025-08-30T20:00:00.000Z'
+        }
+
+        console.log('🎭 Sample activity data added for development preview!')
       }
     }
 
@@ -706,6 +954,11 @@ export default {
       }
     })
 
+    // Development mode detection
+    const isDevelopmentMode = ref(
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    )
+
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 20
@@ -729,9 +982,11 @@ export default {
       referralEarnings,
       calculateReferralEarnings,
       showPaymentModal,
-      showCheckInModal,
+      showGateInfoModal,
+      showMealServiceModal,
       showReferralModal,
-      showMealTicketsModal,
+      showMealRedemptionHistoryModal,
+      showEntranceActivityModal,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -744,7 +999,8 @@ export default {
       location_icon,
       map_icon,
       lineup_icon,
-      quiz_icon
+      quiz_icon,
+      isDevelopmentMode
     }
   }
 }
@@ -843,6 +1099,16 @@ a {
   border-width: 2px;
 }
 
+.clickable-entrance-section {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.clickable-entrance-section:hover {
+  border-color: var(--reunion-frog-green);
+  border-width: 2px;
+}
+
 .type {
   display: flex;
   flex-direction: row;
@@ -905,8 +1171,120 @@ a:hover {
   font-weight: bold;
 }
 .not-checked-in {
-  color: yellow;
+  color: orange;
   font-weight: bold;
+}
+
+/* Activity and Redemption History Styles */
+.activity-section,
+.redemption-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0.5rem 0;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left: 4px solid transparent;
+}
+
+.history-item.check-in-item {
+  border-left-color: #4caf50;
+}
+
+.history-item.check-out-item {
+  border-left-color: #ff9800;
+}
+
+.history-item.redemption-item {
+  border-left-color: var(--reunion-frog-green);
+}
+
+.activity-time,
+.redemption-time {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+
+.activity-details,
+.redemption-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.action-badge,
+.meal-badge {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.action-badge.check_in {
+  color: #4caf50;
+}
+
+.action-badge.check_out {
+  color: #ff9800;
+}
+
+.meal-badge {
+  color: var(--reunion-frog-green);
+}
+
+.operator-info {
+  font-size: 0.8rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+.remaining-info {
+  font-size: 0.8rem;
+  color: #ddd;
+}
+
+.reason-info {
+  font-size: 0.8rem;
+  color: #ffeb3b;
+  font-style: italic;
+}
+
+/* Development Mode Indicator */
+.dev-indicator {
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  color: white;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 20px rgba(247, 147, 30, 0.6);
+  }
+  100% {
+    box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
+  }
 }
 .modal {
   position: fixed;

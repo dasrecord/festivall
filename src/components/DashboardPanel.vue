@@ -104,8 +104,10 @@
     </div>
     <div class="dashboard-panel">
       <div class="export-buttons">
-        <button @click="exportContactsCSV">Export Contacts CSV</button>
-        <button @click="exportEmailsCSV">Export Emails CSV</button>
+        <button @click="exportContactsCSV">Export Phone Numbers</button>
+        <button @click="exportEmailsCSV">Export Emails</button>
+        <button @click="exportMealRedemptionData">Export Meal Service Data</button>
+        <button @click="exportEntranceActivityData">Export Entrance Activity Data</button>
         <!-- <button @click="generateLineup">Download .ics</button> -->
       </div>
       <h2>Current View <br />{{ searchedApplicants?.length || 0 }}</h2>
@@ -1185,6 +1187,276 @@ export default {
       loadTicketDeliveryTemplate()
     })
 
+    const exportMealRedemptionData = async () => {
+      try {
+        // Use all loaded data from orders_2025 collection
+        const orders = applicants.value
+
+        if (orders.length === 0) {
+          alert('No order data loaded. Please load Reunion Orders 2025 first.')
+          return
+        }
+
+        // Collect all redemption data AND current meal ticket status
+        const allRedemptions = []
+        const currentMealStatus = []
+
+        orders.forEach((order) => {
+          // Add redemption history if it exists
+          if (order.meal_redemption_history && order.meal_redemption_history.length > 0) {
+            order.meal_redemption_history.forEach((redemption) => {
+              allRedemptions.push({
+                idCode: order.id_code,
+                fullName: order.fullname,
+                ticketType: order.ticket_type || 'N/A',
+                timestamp: redemption.timestamp,
+                festival_day: redemption.festival_day,
+                tickets_redeemed: redemption.tickets_redeemed,
+                remaining_after: redemption.remaining_after,
+                redeemed_by: redemption.redeemed_by,
+                reason: redemption.reason || 'Normal redemption',
+                date: new Date(redemption.timestamp).toLocaleDateString(),
+                time: new Date(redemption.timestamp).toLocaleTimeString(),
+                recordType: 'redemption'
+              })
+            })
+          }
+
+          // Add current meal ticket status for everyone
+          if (order.meal_tickets_remaining !== undefined || order.last_meal_redemption) {
+            currentMealStatus.push({
+              idCode: order.id_code,
+              fullName: order.fullname,
+              ticketType: order.ticket_type || 'N/A',
+              currentMealTickets: order.meal_tickets_remaining || 0,
+              lastRedemption: order.last_meal_redemption || 'Never',
+              totalRedemptions: order.meal_redemption_history
+                ? order.meal_redemption_history.length
+                : 0,
+              recordType: 'current_status'
+            })
+          }
+        })
+
+        // Combine both datasets
+        const allData = [...allRedemptions, ...currentMealStatus]
+
+        // Sort by record type (current status first) then by name
+        allData.sort((a, b) => {
+          if (a.recordType !== b.recordType) {
+            return a.recordType === 'current_status' ? -1 : 1
+          }
+          return (a.fullName || '').localeCompare(b.fullName || '')
+        })
+
+        // Convert to CSV
+        if (allData.length === 0) {
+          alert('No meal ticket data found in the loaded orders.')
+          return
+        }
+
+        // Create different headers based on data type
+        const headers = [
+          'Record Type',
+          'Applicant ID',
+          'Full Name',
+          'Ticket Type',
+          'Current Meal Tickets',
+          'Total Redemptions',
+          'Last Redemption',
+          'Date',
+          'Time',
+          'Festival Day',
+          'Tickets Redeemed',
+          'Remaining After',
+          'Redeemed By',
+          'Reason'
+        ]
+
+        const csvContent = [
+          headers.join(','),
+          ...allData.map((r) =>
+            [
+              r.recordType,
+              r.idCode || '',
+              `"${r.fullName || ''}"`,
+              `"${r.ticketType || ''}"`,
+              r.currentMealTickets !== undefined ? r.currentMealTickets : r.remaining_after || '',
+              r.totalRedemptions !== undefined ? r.totalRedemptions : '',
+              r.lastRedemption !== undefined
+                ? r.lastRedemption === 'Never'
+                  ? 'Never'
+                  : new Date(r.lastRedemption).toLocaleString()
+                : '',
+              r.date || '',
+              r.time || '',
+              r.festival_day || '',
+              r.tickets_redeemed || '',
+              r.remaining_after || '',
+              r.redeemed_by || '',
+              `"${r.reason || ''}"`
+            ].join(',')
+          )
+        ].join('\n')
+
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `meal_redemption_data_${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+
+        alert(
+          `Exported ${currentMealStatus.length} current meal statuses and ${allRedemptions.length} redemption records to CSV file.`
+        )
+      } catch (error) {
+        console.error('Error exporting meal redemption data:', error)
+        alert('Failed to export data. Please try again.')
+      }
+    }
+
+    const exportEntranceActivityData = async () => {
+      try {
+        // Use all loaded data from orders_2025 collection
+        const orders = applicants.value
+
+        if (orders.length === 0) {
+          alert('No order data loaded. Please load Reunion Orders 2025 first.')
+          return
+        }
+
+        // Collect all entrance activity data AND current entrance status
+        const allActivity = []
+        const currentEntranceStatus = []
+
+        orders.forEach((order) => {
+          // Add entrance activity history if it exists
+          if (order.entrance_activity_history && order.entrance_activity_history.length > 0) {
+            order.entrance_activity_history.forEach((activity) => {
+              allActivity.push({
+                idCode: order.id_code,
+                fullName: order.fullname,
+                ticketType: order.ticket_type || 'N/A',
+                timestamp: activity.timestamp,
+                festival_day: activity.festival_day,
+                action: activity.action,
+                ticket_quantity_after: activity.ticket_quantity_after,
+                operator: activity.operator,
+                operator_name: activity.operator_name || activity.operator,
+                date: new Date(activity.timestamp).toLocaleDateString(),
+                time: new Date(activity.timestamp).toLocaleTimeString(),
+                recordType: 'activity'
+              })
+            })
+          }
+
+          // Add current entrance status for everyone
+          currentEntranceStatus.push({
+            idCode: order.id_code,
+            fullName: order.fullname,
+            ticketType: order.ticket_type || 'N/A',
+            currentTicketQuantity: order.ticket_quantity || 0,
+            originalTicketQuantity: order.original_ticket_quantity || order.ticket_quantity || 0,
+            checkedIn: order.checked_in || false,
+            lastActivity: order.last_entrance_activity || 'No activity',
+            totalActivities: order.entrance_activity_history
+              ? order.entrance_activity_history.length
+              : 0,
+            recordType: 'current_status'
+          })
+        })
+
+        // Combine both datasets
+        const allData = [...allActivity, ...currentEntranceStatus]
+
+        // Sort by record type (current status first) then by name
+        allData.sort((a, b) => {
+          if (a.recordType !== b.recordType) {
+            return a.recordType === 'current_status' ? -1 : 1
+          }
+          return (a.fullName || '').localeCompare(b.fullName || '')
+        })
+
+        // Convert to CSV
+        if (allData.length === 0) {
+          alert('No entrance activity data found in the loaded orders.')
+          return
+        }
+
+        // Create headers for entrance activity data
+        const headers = [
+          'Record Type',
+          'Applicant ID',
+          'Full Name',
+          'Ticket Type',
+          'Current Tickets',
+          'Original Tickets',
+          'Checked In',
+          'Total Activities',
+          'Last Activity',
+          'Date',
+          'Time',
+          'Festival Day',
+          'Action',
+          'Tickets After',
+          'Operator ID',
+          'Operator Name'
+        ]
+
+        const csvContent = [
+          headers.join(','),
+          ...allData.map((r) =>
+            [
+              r.recordType,
+              r.idCode || '',
+              `"${r.fullName || ''}"`,
+              `"${r.ticketType || ''}"`,
+              r.currentTicketQuantity !== undefined
+                ? r.currentTicketQuantity
+                : r.ticket_quantity_after || '',
+              r.originalTicketQuantity || '',
+              r.checkedIn !== undefined ? (r.checkedIn ? 'Yes' : 'No') : '',
+              r.totalActivities !== undefined ? r.totalActivities : '',
+              r.lastActivity !== undefined
+                ? r.lastActivity === 'No activity'
+                  ? 'No activity'
+                  : new Date(r.lastActivity).toLocaleString()
+                : '',
+              r.date || '',
+              r.time || '',
+              r.festival_day || '',
+              r.action || '',
+              r.ticket_quantity_after || '',
+              r.operator || '',
+              `"${r.operator_name || ''}"`
+            ].join(',')
+          )
+        ].join('\n')
+
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `entrance_activity_data_${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+
+        alert(
+          `Exported ${currentEntranceStatus.length} current entrance statuses and ${allActivity.length} activity records to CSV file.`
+        )
+      } catch (error) {
+        console.error('Error exporting entrance activity data:', error)
+        alert('Failed to export data. Please try again.')
+      }
+    }
+
     return {
       applicants,
       filteredApplicants,
@@ -1235,7 +1507,9 @@ export default {
       pageSize,
       currentPage,
       totalPages,
-      paginatedApplicants
+      paginatedApplicants,
+      exportMealRedemptionData,
+      exportEntranceActivityData
     }
   }
 }
