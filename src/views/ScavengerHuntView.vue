@@ -1,5 +1,27 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
+    <!-- Quick Navigation -->
+    <div class="quick-nav" v-if="currentQuestion !== 'score'">
+      <div class="nav-dots">
+        <span
+          v-for="(question, index) in questions"
+          :key="index"
+          class="nav-dot"
+          :class="{
+            current: currentQuestion === index,
+            completed: feedback[index] === 'correct',
+            attempted: answers[index] && feedback[index] !== 'correct',
+            information: question.type === 'information'
+          }"
+          @click="goToQuestion(index)"
+          :title="question.category || 'Question ' + (getQuestionNumber(index) || '')"
+        >
+          {{ question.type === 'information' ? '' : getQuestionNumber(index) || '?' }}
+        </span>
+      </div>
+      <div class="nav-score">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+    </div>
+
     <!-- Question Slides -->
     <div
       class="form-slide"
@@ -12,6 +34,8 @@
       }"
     >
       <div class="question">
+        <img v-if="question.icon" :src="question.icon" alt="Category Icon" class="category-icon" />
+
         <h1 v-html="formatText(question.category)"></h1>
         <h2 v-html="formatText(question.text)"></h2>
         <img v-if="question.image" :src="question.image" alt="Question Image" />
@@ -72,11 +96,11 @@
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
 import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
-import quest from '@/assets/images/scavenger_hunt/quest.png'
-import trivia from '@/assets/images/scavenger_hunt/trivia.png'
-import cypher from '@/assets/images/scavenger_hunt/cypher.png'
-import sequence from '@/assets/images/scavenger_hunt/sequence.png'
-import puzzle from '@/assets/images/scavenger_hunt/puzzle.png'
+import quest from '@/assets/images/icons/quest.png'
+import trivia from '@/assets/images/icons/trivia.png'
+import cypher from '@/assets/images/icons/cypher.png'
+import sequence from '@/assets/images/icons/sequence.png'
+import puzzle from '@/assets/images/icons/quiz.png'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -102,19 +126,22 @@ export default {
           text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
           answer: 'E',
           type: 'text',
-          category: 'Sequence'
+          category: 'Sequence',
+          icon: sequence
         },
         {
-          text: 'Find the guardian of the flame and ask him to declare the magic word.',
+          text: 'Find the Guardian of the Flame and ask him to declare the magic word.',
           answer: 'eternal',
           type: 'text',
-          category: 'Quest'
+          category: 'Quest',
+          icon: quest
         },
         {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
+          text: 'What is the largest planet in our solar system?',
+          answer: 'Jupiter',
           type: 'text',
-          category: 'Quest'
+          category: 'Trivia',
+          icon: trivia
         },
         {
           text: 'What is "Reunion" in Morse code?',
@@ -122,37 +149,15 @@ export default {
             'Hint: Use periods . and dashes - for the letters. Use spaces to separate letters.',
           answer: '.-. . ..- -. .. --- -.',
           type: 'text',
-          category: 'Cypher'
+          category: 'Cypher',
+          icon: cypher
         },
         {
-          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
-          answer: '21',
+          text: 'Visit the main stage and look for the secret symbol.',
+          answer: 'star',
           type: 'text',
-          category: 'Sequence'
-        },
-        {
-          text: 'For this quest go to the Cote Corral and use a Nerf Gun to knock down the target to reveal the magic word.',
-          answer: 'victory',
-          type: 'text',
-          category: 'Quest'
-        },
-        {
-          text: 'What is the largest planet in our solar system?',
-          answer: 'Jupiter',
-          type: 'text',
-          category: 'Trivia'
-        },
-        {
-          text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
-          answer: '64,128,256,512,1024',
-          type: 'text',
-          category: 'Sequence'
-        },
-        {
-          text: 'I wonder where the next magic word is wading for you...',
-          answer: 'ocean',
-          type: 'text',
-          category: 'Quest'
+          category: 'Quest',
+          icon: quest
         },
         {
           text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
@@ -161,36 +166,47 @@ export default {
           category: 'Riddle'
         },
         {
-          text: 'Go to the barn and find a book titled "TITLE" and discover the hidden word highlighted on page ##.',
-          answer: 'imagine',
+          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
+          answer: '21',
           type: 'text',
-          category: 'Quest'
+          category: 'Sequence',
+          icon: sequence
+        },
+        {
+          text: 'For this quest go to the Cote Corral and use a Nerf Gun to knock down the target to reveal the magic word.',
+          answer: 'victory',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
         },
         {
           text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here. What is the decimal equivalent of the the binary number 101010?',
           image: binary,
           answer: '42',
           type: 'text',
-          category: 'Cypher'
+          category: 'Cypher',
+          icon: cypher
+        },
+        {
+          text: 'I wonder where the next magic word is wading for you...',
+          answer: 'ocean',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
         },
         {
           text: 'What is the chemical symbol for gold?',
           answer: 'Au',
           type: 'text',
-          category: 'Trivia'
+          category: 'Trivia',
+          icon: trivia
         },
         {
-          text: "Find one of our Children's Coordinators and ask for the magic word.",
-          answer: 'friendship',
+          text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
+          answer: '64,128,256,512,1024',
           type: 'text',
-          category: 'Quest'
-        },
-
-        {
-          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
-          answer: 'brain',
-          type: 'text',
-          category: 'Quest'
+          category: 'Sequence',
+          icon: sequence
         },
         {
           text: 'White to move and checkmate in two moves.',
@@ -199,13 +215,52 @@ export default {
           answer: 'Ra6',
           type: 'text',
           image: chess_1,
-          category: 'Puzzle'
+          category: 'Puzzle',
+          icon: puzzle
+        },
+        {
+          text: 'Go to the barn and find a book titled "TITLE" and discover the hidden word highlighted on page ##.',
+          answer: 'imagine',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: "Find one of our Children's Coordinators and ask for the magic word.",
+          answer: 'friendship',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: 'Decode this message:\n13-21-19-9-3',
+          subtext: 'Hint: You will never see 27 in this type of cypher',
+          answer: 'music',
+          type: 'text',
+          category: 'Cypher',
+          icon: cypher
+        },
+        {
+          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
+          answer: 'brain',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: 'Decode this encrypted message to find the magic word:\nSRFGVINYY',
+          subtext: 'Hint: This is a Caesar cypher',
+          answer: 'festivall',
+          type: 'text',
+          category: 'Cypher',
+          icon: cypher
         },
         {
           text: 'Locate our Food Coordinator for your final question.',
           answer: 'garlic',
           type: 'text',
-          category: 'Quest'
+          category: 'Quest',
+          icon: quest
         },
         {
           text: `Well done! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`,
@@ -278,6 +333,10 @@ export default {
         }
       }
       return count
+    },
+    goToQuestion(index) {
+      // Allow navigation to any question
+      this.currentQuestion = index
     },
     async sendScore() {
       const score = this.calculateScore()
@@ -386,6 +445,11 @@ img {
   height: auto;
   margin: 1rem 0;
 }
+.category-icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1rem;
+}
 
 .controls {
   margin-top: 1rem;
@@ -455,5 +519,109 @@ button:disabled {
   width: 67%;
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Quick Navigation Styles */
+.quick-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px 20px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.nav-dot:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.nav-dot.current {
+  background-color: var(--festivall-baby-blue);
+  border-color: white;
+  box-shadow: 0 0 10px rgba(5, 155, 250, 0.5);
+}
+
+.nav-dot.completed {
+  background-color: limegreen;
+  color: white;
+}
+
+.nav-dot.attempted {
+  background-color: #ff6b35;
+  color: white;
+}
+
+.nav-dot.information {
+  background-color: #6c757d;
+  color: white;
+}
+
+.nav-score {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 15px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile responsiveness for quick nav */
+@media (max-width: 768px) {
+  .quick-nav {
+    position: relative;
+    left: auto;
+    transform: none;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-dots {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-dot {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .nav-score {
+    width: 100%;
+    text-align: center;
+    padding-left: 0;
+    padding-top: 10px;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
 }
 </style>
