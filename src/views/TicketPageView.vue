@@ -52,7 +52,11 @@
           </div>
         </div>
 
-        <div class="quantity">
+        <div 
+          class="quantity clickable-meal-section"
+          @click="showMealTicketsModal = true"
+          title="Click for meal information"
+        >
           <p><strong>Meal Tickets:</strong>{{ order.meal_tickets_remaining }}</p>
           <div class="icons">
             <img
@@ -139,30 +143,30 @@
           ><br />
 
           <h3 v-if="order.paid === false">
-            <strong style="text-decoration: underline">Payment Instructions:</strong>
+            💳 <strong style="text-decoration: underline; color: orange;">Payment Instructions:</strong>
             <br />
             To complete your payment, please send <strong>${{ order.total_price }}</strong> to the
             following email address:
             <br />
-            <strong>humanoidtwo@gmail.com</strong>
+            💰 <strong>humanoidtwo@gmail.com</strong>
             <br />
             Make sure to include the following code in the message section:
             <br />
-            <strong>{{ order.id_code }}</strong>
+            🔢 <strong>{{ order.id_code }}</strong>
             <br /><br />
-            <strong style="text-decoration: underline">Additional Information:</strong>
+            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
             <br />
             We only accept cash and bitcoin at the Front Gate
             <br />
-            If you are paying with cash, please bring the exact amount.
+            💵 If you are paying with cash, please bring the exact amount.
             <br />
-            If you are paying with bitcoin, please send the payment to the address provided in the
+            ₿ If you are paying with bitcoin, please send the payment to the address provided in the
             <strong>Payment Instructions</strong> section above.
           </h3>
           <h3 v-else>Thank you so much for supporting Reunion Festival.<br /></h3>
           <h3>
-            If you have any issues with your payment, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline">
+            📧 If you have any issues with your payment, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
               reunion@festivall.ca</a
             >
           </h3>
@@ -188,60 +192,111 @@
             {{ order.checked_in ? 'Checked In' : 'Not Checked In' }} </span
           ><br />
           <h3 v-if="order.checked_in === false">
-            <strong style="text-decoration: underline">Check-In Instructions:</strong>
+            📋 <strong style="text-decoration: underline; color: orange;">Check-In Instructions:</strong>
             <br />
             Present your QR code at the Front Gate along with a valid form of identification.<br />
-            Your {{ order.ticket_quantity }} tickets will be scanned at the gate.<br />
+            🎫 Your {{ order.ticket_quantity }} tickets will be scanned at the gate.<br />
 
-            Last-minute door sales will be subject to an additional $10 fee per ticket.<br /><br />
-            <strong style="text-decoration: underline">Additional Information:</strong>
+            💲 Last-minute door sales will be subject to an additional $10 fee per ticket.<br /><br />
+            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
             <br />
-            The Front Gate will close at 2:00 AM each night.<br />
+            🕐 The Front Gate will close at 2:00 AM each night.<br />
             Please try to arrive before then.<br />
-            With respected to substances, we have a<br />
+            🚫 With respected to substances, we have a<br />
             <strong> No Open Use Policy.<br /> </strong>
-            Please keep all adult materials out of sight and reach of minors.<br /><br />
+            👶 Please keep all adult materials out of sight and reach of minors.<br /><br />
           </h3>
           <h3 v-else>
-            <strong style="text-decoration: underline"> Check-Out Instructions:</strong>
+            🚪 <strong style="text-decoration: underline; color: orange;"> Check-Out Instructions:</strong>
             <br />
             Please present your QR code at the Front Gate on your way out.<br />
-            This will help us keep track of how many people are still on the grounds.<br /><br />
-            <strong style="text-decoration: underline">Additional Information:</strong>
+            📊 This will help us keep track of how many people are still on the grounds.<br /><br />
+            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
             <br />
-            The Front Gate will close at 2 AM on each night.<br />
+            🕐 The Front Gate will close at 2 AM on each night.<br />
             Please try to check out before then.<br />
-            If you are leaving the grounds, please make sure to take all of your belongings with
+            🎒 If you are leaving the grounds, please make sure to take all of your belongings with
             you.<br />
-            We are not responsible for any lost or stolen items.<br />
+            ⚠️ We are not responsible for any lost or stolen items.<br />
             <br />
-          </h3>
-          <h3>
-            <strong style="text-decoration: underline">Meals:</strong><br />
-            [FRI, SAT, SUN]<br />
-            [Lunch 12:00pm - 2:00pm]<br />
-            [Supper 6:00pm - 8:00pm]<br />
-            <br />
-            
           </h3>
 
           <h3
             v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
           >
-            <strong style="text-decoration: underline"> Artists and Workshops:</strong><br />
+            🎨 <strong style="text-decoration: underline; color: orange;"> Artists and Workshops:</strong><br />
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
-            Once you're oriented, please take your vehicle to your campsite allowing others to load
+            🚗 Once you're oriented, please take your vehicle to your campsite allowing others to load
             in.<br /><br />
           </h3>
 
           <h3>
-            If you have any questions or concerns, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline">
+            📧 If you have any questions or concerns, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
               reunion@festivall.ca
             </a>
           </h3>
           <button @click="showCheckInModal = false">Close</button>
+        </div>
+      </div>
+
+      <!-- Meal Tickets Modal -->
+      <div v-if="showMealTicketsModal" class="modal" @click.self="showMealTicketsModal = false">
+        <div class="modal-content">
+          <img
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="meals_icon"
+            style="height: 64px; width: auto; margin: 0; filter: invert(1);"
+            alt="Meal Icon"
+          />
+          <h2>Meal Information</h2>
+          <h3>
+            <strong style="color: orange;">Remaining Tickets: {{ order.meal_tickets_remaining }}</strong>
+          </h3>
+          <br>
+
+          <h3>
+            📅 <strong style="text-decoration: underline; color: orange;">Meal Service Schedule:</strong><br />
+            Friday, Saturday & Sunday<br />
+            Lunch: 12:00 PM - 2:00 PM<br />
+            Supper: 6:00 PM - 8:00 PM<br /><br />
+          </h3>
+
+          <h3>
+            ✅ <strong style="text-decoration: underline; color: orange;">How to Redeem:</strong><br />
+            Present your QR code at the meal station during service hours. <br></br>
+            One ticket will be automatically deducted per meal.<br /><br />
+          </h3>
+
+          <h3>
+            ⚖️ <strong style="text-decoration: underline; color: orange;">Important Policy:</strong><br />
+            Unused meal tickets are automatically decremented at the end of each meal service 
+            to ensure fairness for all attendees.<br></br> This prevents ticket hoarding and ensures 
+            equal access to meals throughout the festival.<br /><br />
+          </h3>
+
+          <h3>
+          ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong><br />
+            💰 No meal tickets remaining? Meals are $15 cash each<br />
+            🌱 We accommodate dietary restrictions when possible<br />
+            ⏰ Service may end early if food runs out<br />
+            🥤 Outside food and beverages are welcome<br /><br />
+
+          </h3>
+
+          <h3>
+            📧 <strong style="color: orange;">Questions?</strong> Contact the Meal Team at the food station or
+            <strong style="color: orange;">Email:</strong>
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
+              reunion@festivall.ca
+            </a>
+          </h3>
+          <button @click="showMealTicketsModal = false">Close</button>
         </div>
       </div>
 
@@ -258,33 +313,33 @@
           <strong>${{ referralEarnings }}</strong
           ><br />
           <h3>
-            <strong style="text-decoration: underline">Referral Instructions:</strong><br />
+            💰 <strong style="text-decoration: underline; color: orange;">Referral Instructions:</strong><br />
             You can share your Festivall ID_CODE or your referral link with your friends and
             family.<br />
-            Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
+            🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
           </h3>
 
           <h3>
-            <strong style="text-decoration: underline"> This is your referral link: </strong><br />
+            🔗 <strong style="text-decoration: underline; color: orange;"> This is your referral link: </strong><br />
             Copy and paste this link anywhere!
-            <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank"
+            <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank" style="color: orange;"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
             ><br /><br />
           </h3>
           <h3>
-            <strong style="text-decoration: underline"> This is your referral QR code: </strong>
+            📱 <strong style="text-decoration: underline; color: orange;"> This is your referral QR code: </strong>
           </h3>
 
           <div class="qr-code">
             <canvas ref="referralQrCanvas"></canvas>
           </div>
           <h3>
-            Have your friends scan this QR code to get their tickets.<br />
-            Your ID_CODE will be automatically added to their order.<br />
+            👫 Have your friends scan this QR code to get their tickets.<br />
+            🔢 Your ID_CODE will be automatically added to their order.<br />
           </h3>
           <h3>
-            If you have any questions or concerns, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline"
+            📞 If you have any questions or concerns, please contact
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;"
               >reunion@festivall.ca</a
             >
           </h3>
@@ -438,6 +493,7 @@ export default {
     const showPaymentModal = ref(false)
     const showCheckInModal = ref(false)
     const showReferralModal = ref(false)
+    const showMealTicketsModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -620,7 +676,7 @@ export default {
       } else {
         router.push({ name: 'EnterIDCode' })
       }
-      console.log('Settimes:', order.settimes)
+      console.log('Settimes:', order.value?.settimes)
     })
 
     return {
@@ -637,6 +693,7 @@ export default {
       showPaymentModal,
       showCheckInModal,
       showReferralModal,
+      showMealTicketsModal,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -736,6 +793,16 @@ a {
   width: 100%;
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
+}
+
+.clickable-meal-section {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.clickable-meal-section:hover {
+  border-color: var(--reunion-frog-green);
+  border-width: 2px;
 }
 
 .type {
