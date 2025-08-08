@@ -44,20 +44,10 @@
           <p v-if="index > 0 && question.type === 'text'">
             {{ getQuestionNumber(index) }}/{{ countScoredQuestions() }}
           </p>
-          <button
-            v-if="index < questions.length - 1"
-            @click="nextQuestion"
-            :disabled="question.type === 'text' && !answers[index]?.trim()"
-          >
+          <button v-if="index < questions.length - 1" @click="nextQuestion">
             {{ question.type === 'information' ? 'Begin' : 'Next' }}
           </button>
-          <button
-            v-if="index === questions.length - 1"
-            @click="showScoreSlide"
-            :disabled="question.type === 'text' && !answers[index]?.trim()"
-          >
-            Finish
-          </button>
+          <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
         </div>
       </div>
     </div>
@@ -81,6 +71,7 @@
 <script>
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
 import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
+import binary from '@/assets/images/scavenger_hunt/binary.png'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -89,6 +80,7 @@ export default {
       currentQuestion: 0, // Tracks the current slide (index or 'score')
       backgroundImage: faded_frog,
       chess_1: chess_1,
+      binary: binary,
 
       questions: [
         {
@@ -101,6 +93,12 @@ export default {
           answer: 'E',
           type: 'text',
           category: 'Sequence Challenge'
+        },
+        {
+          text: 'Find the guardian of the flame and ask him to declare the magic word.',
+          answer: 'eternal',
+          type: 'text',
+          category: 'Quest'
         },
         {
           text: 'Visit the main stage and look for the secret symbol.',
@@ -123,6 +121,12 @@ export default {
           category: 'Sequence Challenge'
         },
         {
+          text: 'For this quest go to the Cote Corral and use a Nerf Gun to knock down the target to reveal the magic word.',
+          answer: 'victory',
+          type: 'text',
+          category: 'Quest'
+        },
+        {
           text: 'What is the largest planet in our solar system?',
           answer: 'Jupiter',
           type: 'text',
@@ -135,10 +139,29 @@ export default {
           category: 'Sequence Challenge'
         },
         {
+          text: 'I wonder where the next magic word is wading for you...',
+          answer: 'ocean',
+          type: 'text',
+          category: 'Quest'
+        },
+        {
           text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
-          answer: 'Nothing',
+          answer: 'nothing',
           type: 'text',
           category: 'Riddle'
+        },
+        {
+          text: 'Go to the barn and find a book titled "TITLE" and discover the hidden word highlighted on page ##.',
+          answer: 'imagine',
+          type: 'text',
+          category: 'Quest'
+        },
+        {
+          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here. What is the decimal equivalent of the the binary number 101010?',
+          image: binary,
+          answer: '42',
+          type: 'text',
+          category: 'Math Question'
         },
         {
           text: 'What is the chemical symbol for gold?',
@@ -152,12 +175,7 @@ export default {
           type: 'text',
           category: 'Quest'
         },
-        {
-          text: 'Great! Now, solve this binary puzzle:\nWhat is the decimal equivalent of the the binary number 101010?',
-          answer: '42',
-          type: 'text',
-          category: 'Math Question'
-        },
+
         {
           text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
           answer: 'brain',
