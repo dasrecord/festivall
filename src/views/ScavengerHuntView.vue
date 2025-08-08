@@ -98,6 +98,7 @@ import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
 import quest from '@/assets/images/icons/quest.png'
 import trivia from '@/assets/images/icons/trivia.png'
+import riddle from '@/assets/images/icons/riddle.png'
 import cypher from '@/assets/images/icons/cypher.png'
 import sequence from '@/assets/images/icons/sequence.png'
 import puzzle from '@/assets/images/icons/quiz.png'
@@ -163,7 +164,8 @@ export default {
           text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
           answer: 'nothing',
           type: 'text',
-          category: 'Riddle'
+          category: 'Riddle',
+          icon: riddle
         },
         {
           text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
@@ -180,7 +182,7 @@ export default {
           icon: quest
         },
         {
-          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here. What is the decimal equivalent of the the binary number 101010?',
+          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the the binary number 101010?',
           image: binary,
           answer: '42',
           type: 'text',
@@ -248,12 +250,26 @@ export default {
           icon: quest
         },
         {
+          text: 'What gets wetter the more it dries?',
+          answer: 'towel',
+          type: 'text',
+          category: 'Riddle',
+          icon: riddle
+        },
+        {
           text: 'Decode this encrypted message to find the magic word:\nSRFGVINYY',
           subtext: 'Hint: This is a Caesar cypher',
           answer: 'festivall',
           type: 'text',
           category: 'Cypher',
           icon: cypher
+        },
+        {
+          text: 'What is the hardest natural substance on Earth?',
+          answer: 'diamond',
+          type: 'text',
+          category: 'Trivia',
+          icon: trivia
         },
         {
           text: 'Locate our Food Coordinator for your final question.',
