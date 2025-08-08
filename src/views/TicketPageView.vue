@@ -408,7 +408,7 @@
         <RouterLink v-if="new Date() >= new Date(2025, 7, 1)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2025 Lineup
+            2025 Lineup<br>Look & Listen!</br>
           </p>
         </RouterLink>
         <RouterLink v-else to="#">
@@ -434,7 +434,7 @@
         <RouterLink v-else to="#">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Scavenger Hunt<br />coming soon!
+            Scavenger Hunt<br />Coming Soon!
           </p>
         </RouterLink>
       </div>
