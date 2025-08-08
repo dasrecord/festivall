@@ -49,6 +49,7 @@ import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
 import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
 import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
 import ReunionFAQView from '@/views/ReunionFAQView.vue'
+import ApplicantDetailView from '@/views/ApplicantDetailView.vue'
 
 
 const routes = [
@@ -157,6 +158,12 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Dashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard/applicant/:id',
+    name: 'applicant-detail',
+    component: ApplicantDetailView,
     meta: { requiresAuth: true }
   },
   {
@@ -496,6 +503,12 @@ const routes = [
     name: 'testimonials',
     component: TestimonialsView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/videolibrary',
+    name: 'videolibrary',
+    component: ExternalRedirect,
+    props: { url: 'https://drive.google.com/drive/folders/1l-xagltGwdnR1z7Jh5sw8PSu4h4oUjGl?usp=sharing' }
   }
 ]
 

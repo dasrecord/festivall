@@ -95,18 +95,17 @@
           v-for="filter in relevantFilters"
           :key="`${filter.property}-${filter.value}`"
           @click="applyFilter(filter.property, filter.value)"
+          :class="{ 'active-filter': isFilterActive(filter.property, filter.value) }"
         >
           {{ filter.label }}
         </button>
         <button @click="clearFilters">Clear Filters</button>
       </div>
     </div>
-    <div class="view-toggle">
-      <label> <input type="radio" value="rows" v-model="viewStyle" /> Rows </label>
-      <label> <input type="radio" value="cards" v-model="viewStyle" /> Cards </label>
-    </div>
     <div class="dashboard-panel">
-      <div>
+      <div class="export-buttons">
+        <button @click="exportContactsCSV">Export Contacts CSV</button>
+        <button @click="exportEmailsCSV">Export Emails CSV</button>
         <!-- <button @click="generateLineup">Download .ics</button> -->
       </div>
       <h2>Current View <br />{{ searchedApplicants?.length || 0 }}</h2>
@@ -118,9 +117,17 @@
         <button @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
       </div>
 
-      <div class="applicants" :class="viewStyle">
+      <div class="applicants">
         <div v-for="applicant in paginatedApplicants" :key="applicant.id" class="applicant">
-          <div class="applicant-content" :class="viewStyle">
+          <!-- Detail page link icon -->
+          <div
+            class="detail-link-icon"
+            @click="goToApplicantPage(applicant.id_code || applicant.id)"
+            title="View detailed information"
+          >
+            📋
+          </div>
+          <div class="applicant-content">
             <div class="name-section">
               <h2>
                 <!-- ACT NAME OR FULLNAME -->
@@ -513,7 +520,6 @@ export default {
   setup() {
     const applicants = ref([])
     const filteredApplicants = ref([])
-    const viewStyle = ref('cards') // Default view style
 
     // Add loading and error states
     const loading = ref(false)
@@ -525,6 +531,9 @@ export default {
     // Add pagination
     const pageSize = ref(20)
     const currentPage = ref(1)
+
+    // Add active filters for cumulative filtering
+    const activeFilters = ref([])
 
     const filters = ref([
       // { property: 'applicant_type', value: 'Artist', label: 'Artists' },
@@ -587,6 +596,9 @@ export default {
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
       // ticket filters
+      { property: 'payment_type', value: 'customer_types', label: 'Customers' },
+      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin' },
+      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer' },
       { property: 'paid', value: true, label: 'Paid' },
       { property: 'paid', value: false, label: 'Unpaid' },
       { property: 'checked_in', value: true, label: 'Checked In' },
@@ -597,6 +609,14 @@ export default {
       if (!applicants.value.length) return []
 
       return filters.value.filter((filter) => {
+        // Handle special combined customer filter
+        if (filter.value === 'customer_types') {
+          return applicants.value.some(
+            (applicant) =>
+              applicant.payment_type === 'bitcoin' || applicant.payment_type === 'etransfer'
+          )
+        }
+
         return applicants.value.some((applicant) => {
           const prop = applicant[filter.property]
           if (filter.value === 'has_value') {
@@ -660,32 +680,59 @@ export default {
     }
 
     const applyFilter = (property, value) => {
+      // Check if this filter is already active
+      const filterKey = `${property}-${value}`
+      const existingFilterIndex = activeFilters.value.findIndex((f) => f.key === filterKey)
+
+      if (existingFilterIndex >= 0) {
+        // Remove the filter if it's already active (toggle off)
+        activeFilters.value.splice(existingFilterIndex, 1)
+      } else {
+        // Add the new filter
+        activeFilters.value.push({
+          key: filterKey,
+          property,
+          value,
+          filter: (applicant) => {
+            const prop = applicant[property]
+
+            // Handle special cases first
+            if (value === 'has_value') {
+              return prop !== undefined && prop !== '' && prop !== null
+            }
+            if (value === 'no_value') {
+              return prop === undefined || prop === '' || prop === null
+            }
+            // Handle combined customer filter
+            if (value === 'customer_types') {
+              return (
+                applicant.payment_type &&
+                (applicant.payment_type === 'bitcoin' || applicant.payment_type === 'etransfer')
+              )
+            }
+
+            // Handle arrays
+            if (Array.isArray(prop)) {
+              return prop.includes(value)
+            }
+
+            // Handle exact matches
+            if (typeof prop === 'string' || typeof prop === 'boolean') {
+              return prop === value
+            }
+
+            if (value === '') {
+              return prop !== undefined && prop !== ''
+            }
+
+            return false
+          }
+        })
+      }
+
+      // Apply all active filters cumulatively
       filteredApplicants.value = applicants.value.filter((applicant) => {
-        const prop = applicant[property]
-
-        // Handle special cases first
-        if (value === 'has_value') {
-          return prop !== undefined && prop !== '' && prop !== null
-        }
-        if (value === 'no_value') {
-          return prop === undefined || prop === '' || prop === null
-        }
-
-        // Handle arrays
-        if (Array.isArray(prop)) {
-          return prop.includes(value) // Check if the array includes the value
-        }
-
-        // Handle exact matches
-        if (typeof prop === 'string' || typeof prop === 'boolean') {
-          return prop === value // Match string or boolean values
-        }
-
-        if (value === '') {
-          return prop !== undefined && prop !== '' // Handle empty filter values
-        }
-
-        return false
+        return activeFilters.value.every((filter) => filter.filter(applicant))
       })
 
       // Reset pagination when filter changes
@@ -693,8 +740,21 @@ export default {
     }
 
     const clearFilters = () => {
+      activeFilters.value = []
       filteredApplicants.value = applicants.value
+      searchQuery.value = '' // Clear search input too
       currentPage.value = 1
+    }
+
+    const isFilterActive = (property, value) => {
+      const filterKey = `${property}-${value}`
+      return activeFilters.value.some((f) => f.key === filterKey)
+    }
+
+    const goToApplicantPage = (applicantId) => {
+      if (applicantId) {
+        router.push({ path: `/dashboard/applicant/${applicantId}` })
+      }
     }
 
     const contractEmailBody = ref('')
@@ -908,6 +968,66 @@ export default {
       URL.revokeObjectURL(url)
     }
 
+    const exportContactsCSV = () => {
+      const csvContent = [
+        ...searchedApplicants.value
+          .filter((applicant) => applicant.fullname || applicant.phone)
+          .map((applicant) => {
+            const firstName = (applicant.fullname || '').split(' ')[0] || ''
+            const phone = applicant.phone || ''
+            return `${firstName},${phone}`
+          })
+      ].join('\n')
+
+      const filterNames = activeFilters.value
+        .map((filter) => {
+          const filterDef = filters.value.find(
+            (f) => f.property === filter.property && f.value === filter.value
+          )
+          return filterDef ? filterDef.label.replace(/\s+/g, '_').toLowerCase() : ''
+        })
+        .filter(Boolean)
+
+      const baseFilename = filterNames.length > 0 ? filterNames.join('_') : 'all_contacts'
+      const filename = `${baseFilename}_contacts_${new Date().toISOString().split('T')[0]}.csv`
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
+    const exportEmailsCSV = () => {
+      const csvContent = [
+        ...searchedApplicants.value
+          .filter((applicant) => applicant.email)
+          .map((applicant) => `${applicant.email}`)
+      ].join('\n')
+
+      const filterNames = activeFilters.value
+        .map((filter) => {
+          const filterDef = filters.value.find(
+            (f) => f.property === filter.property && f.value === filter.value
+          )
+          return filterDef ? filterDef.label.replace(/\s+/g, '_').toLowerCase() : ''
+        })
+        .filter(Boolean)
+
+      const baseFilename = filterNames.length > 0 ? filterNames.join('_') : 'all_emails'
+      const filename = `${baseFilename}_emails_${new Date().toISOString().split('T')[0]}.csv`
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
     const generateContract = (id_code) => {
       router.push({ path: `/reunioncontract/${id_code}` })
     }
@@ -1068,11 +1188,13 @@ export default {
     return {
       applicants,
       filteredApplicants,
-      viewStyle,
       relevantFilters,
+      activeFilters,
       loadApplicants,
       applyFilter,
       clearFilters,
+      isFilterActive,
+      goToApplicantPage,
       deliverContract,
       deliverTicket,
       sendSMS,
@@ -1093,6 +1215,8 @@ export default {
       updateSettime,
       removeSettime,
       generateLineup,
+      exportContactsCSV,
+      exportEmailsCSV,
       generateContract,
       remindContract,
       remindPayment,
@@ -1174,10 +1298,14 @@ button:hover {
   background-color: #0056b3;
 }
 
-.view-toggle {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
+button.active-filter {
+  background-color: #ff6b35;
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+  border: 2px solid #ff8c5a;
+}
+
+button.active-filter:hover {
+  background-color: #e55a2b;
 }
 
 .view-toggle label {
@@ -1193,15 +1321,10 @@ button:hover {
 }
 
 .applicants {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.applicants.rows {
-  flex-direction: column;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .applicant {
@@ -1210,15 +1333,6 @@ button:hover {
   border-radius: 15px;
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.9);
   transition: transform 0.3s ease;
-  width: 100%;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  text-align: left; */
-}
-
-.applicants.cards .applicant {
   width: 100%;
   max-width: 350px;
   height: 350px;
@@ -1231,12 +1345,34 @@ button:hover {
   border: 1px solid var(--festivall-baby-blue);
 }
 
-.applicants.cards .preview-section,
-.applicants.cards .ticket-section,
-.applicants.cards .message-section,
-.applicants.cards .compensation-section,
-.applicants.cards .settime-section,
-.applicants.cards .contract-section {
+.detail-link-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  background-color: var(--festivall-baby-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.detail-link-icon:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+.preview-section,
+.ticket-section,
+.message-section,
+.compensation-section,
+.settime-section,
+.contract-section {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 0.5rem;
@@ -1251,9 +1387,9 @@ button:hover {
   height: 100%;
   overflow: hidden;
 }
-.applicants.cards .checkedin-section,
-.applicants.cards .revenue-section,
-.applicants.cards .quantities-section {
+.checkedin-section,
+.revenue-section,
+.quantities-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
@@ -1263,37 +1399,6 @@ button:hover {
   /* background-color: #444; */
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
-  align-items: center;
-}
-
-.applicants.rows .applicant,
-.applicants.rows .applicant-content,
-.applicants.rows .ticket-content,
-.applicants.rows .preview-section,
-.applicants.rows .contract-section,
-.applicants.rows .quantities,
-.applicants.rows .message-section,
-.applicants.rows .compensation-section,
-.applicants.rows .revenue-section,
-.applicants.rows .settime-section,
-.applicants.rows .tickets,
-.applicants.rows .meals,
-.applicants.rows .actions,
-.applicants.rows .action-icon,
-.applicants.rows img,
-.applicants.rows p,
-.applicants.rows input {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.applicants.rows .payment-section,
-.applicants.rows .quantities-section,
-.applicants.rows .revenue-section {
-  flex-direction: column;
   align-items: center;
 }
 
@@ -1492,12 +1597,30 @@ a {
   font-weight: bold;
 }
 
-/* Optimize grid layout for cards */
-.applicants.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+/* Export buttons */
+.export-buttons {
+  display: flex;
+  justify-content: center;
   gap: 1rem;
-  padding: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.export-buttons button {
+  background: var(--festivall-baby-blue);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.export-buttons button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Mobile optimizations */
@@ -1514,7 +1637,7 @@ a {
     width: 100%;
   }
 
-  .applicants.cards {
+  .applicants {
     grid-template-columns: 1fr;
     padding: 0.5rem;
   }
