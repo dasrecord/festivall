@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div 
+        <div
           class="quantity clickable-meal-section"
           @click="showMealTicketsModal = true"
           title="Click for meal information"
@@ -143,7 +143,8 @@
           ><br />
 
           <h3 v-if="order.paid === false">
-            💳 <strong style="text-decoration: underline; color: orange;">Payment Instructions:</strong>
+            💳
+            <strong style="text-decoration: underline; color: orange">Payment Instructions:</strong>
             <br />
             To complete your payment, please send <strong>${{ order.total_price }}</strong> to the
             following email address:
@@ -152,9 +153,11 @@
             <br />
             Make sure to include the following code in the message section:
             <br />
-            🔢 <strong>{{ order.id_code }}</strong>
-            <br /><br />
-            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
+            🔢 <strong>{{ order.id_code }}</strong> <br /><br />
+            ℹ️
+            <strong style="text-decoration: underline; color: orange"
+              >Additional Information:</strong
+            >
             <br />
             We only accept cash and bitcoin at the Front Gate
             <br />
@@ -166,7 +169,7 @@
           <h3 v-else>Thank you so much for supporting Reunion Festival.<br /></h3>
           <h3>
             📧 If you have any issues with your payment, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
               reunion@festivall.ca</a
             >
           </h3>
@@ -192,13 +195,19 @@
             {{ order.checked_in ? 'Checked In' : 'Not Checked In' }} </span
           ><br />
           <h3 v-if="order.checked_in === false">
-            📋 <strong style="text-decoration: underline; color: orange;">Check-In Instructions:</strong>
+            📋
+            <strong style="text-decoration: underline; color: orange"
+              >Check-In Instructions:</strong
+            >
             <br />
             Present your QR code at the Front Gate along with a valid form of identification.<br />
             🎫 Your {{ order.ticket_quantity }} tickets will be scanned at the gate.<br />
 
             💲 Last-minute door sales will be subject to an additional $10 fee per ticket.<br /><br />
-            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
+            ℹ️
+            <strong style="text-decoration: underline; color: orange"
+              >Additional Information:</strong
+            >
             <br />
             🕐 The Front Gate will close at 2:00 AM each night.<br />
             Please try to arrive before then.<br />
@@ -207,11 +216,17 @@
             👶 Please keep all adult materials out of sight and reach of minors.<br /><br />
           </h3>
           <h3 v-else>
-            🚪 <strong style="text-decoration: underline; color: orange;"> Check-Out Instructions:</strong>
+            🚪
+            <strong style="text-decoration: underline; color: orange">
+              Check-Out Instructions:</strong
+            >
             <br />
             Please present your QR code at the Front Gate on your way out.<br />
             📊 This will help us keep track of how many people are still on the grounds.<br /><br />
-            ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong>
+            ℹ️
+            <strong style="text-decoration: underline; color: orange"
+              >Additional Information:</strong
+            >
             <br />
             🕐 The Front Gate will close at 2 AM on each night.<br />
             Please try to check out before then.<br />
@@ -224,16 +239,19 @@
           <h3
             v-if="order.applicant_types && order.applicant_types.includes('Artist' || 'Workshop')"
           >
-            🎨 <strong style="text-decoration: underline; color: orange;"> Artists and Workshops:</strong><br />
+            🎨
+            <strong style="text-decoration: underline; color: orange">
+              Artists and Workshops:</strong
+            ><br />
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
-            🚗 Once you're oriented, please take your vehicle to your campsite allowing others to load
-            in.<br /><br />
+            🚗 Once you're oriented, please take your vehicle to your campsite allowing others to
+            load in.<br /><br />
           </h3>
 
           <h3>
             📧 If you have any questions or concerns, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
               reunion@festivall.ca
             </a>
           </h3>
@@ -251,48 +269,57 @@
           />
           <img
             :src="meals_icon"
-            style="height: 64px; width: auto; margin: 0; filter: invert(1);"
+            style="height: 64px; width: auto; margin: 0; filter: invert(1)"
             alt="Meal Icon"
           />
           <h2>Meal Information</h2>
           <h3>
-            <strong style="color: orange;">Remaining Tickets: {{ order.meal_tickets_remaining }}</strong>
+            <strong style="color: orange"
+              >Remaining Tickets: {{ order.meal_tickets_remaining }}</strong
+            >
           </h3>
-          <br>
+          <br />
 
           <h3>
-            📅 <strong style="text-decoration: underline; color: orange;">Meal Service Schedule:</strong><br />
+            📅
+            <strong style="text-decoration: underline; color: orange">Meal Service Schedule:</strong
+            ><br />
             Friday, Saturday & Sunday<br />
             Lunch: 12:00 PM - 2:00 PM<br />
             Supper: 6:00 PM - 8:00 PM<br /><br />
           </h3>
 
           <h3>
-            ✅ <strong style="text-decoration: underline; color: orange;">How to Redeem:</strong><br />
-            Present your QR code at the meal station during service hours. <br></br>
+            ✅ <strong style="text-decoration: underline; color: orange">How to Redeem:</strong
+            ><br />
+            Present your QR code at the meal station during service hours. <br /><br />
             One ticket will be automatically deducted per meal.<br /><br />
           </h3>
 
           <h3>
-            ⚖️ <strong style="text-decoration: underline; color: orange;">Important Policy:</strong><br />
-            Unused meal tickets are automatically decremented at the end of each meal service 
-            to ensure fairness for all attendees.<br></br> This prevents ticket hoarding and ensures 
-            equal access to meals throughout the festival.<br /><br />
+            ⚖️ <strong style="text-decoration: underline; color: orange">Important Policy:</strong
+            ><br />
+            Unused meal tickets are automatically decremented at the end of each meal service to
+            ensure fairness for all attendees.<br /><br />
+            This prevents ticket hoarding and ensures equal access to meals throughout the
+            festival.<br /><br />
           </h3>
 
           <h3>
-          ℹ️ <strong style="text-decoration: underline; color: orange;">Additional Information:</strong><br />
+            ℹ️
+            <strong style="text-decoration: underline; color: orange"
+              >Additional Information:</strong
+            ><br />
             💰 No meal tickets remaining? Meals are $15 cash each<br />
             🌱 We accommodate dietary restrictions when possible<br />
             ⏰ Service may end early if food runs out<br />
-            🥤 Outside food and beverages are welcome<br /><br />
-
           </h3>
 
           <h3>
-            📧 <strong style="color: orange;">Questions?</strong> Contact the Meal Team at the food station or
-            <strong style="color: orange;">Email:</strong>
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;">
+            📧 <strong style="color: orange">Questions?</strong> Contact the Meal Team at the food
+            station or
+            <strong style="color: orange">Email:</strong>
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
               reunion@festivall.ca
             </a>
           </h3>
@@ -313,21 +340,32 @@
           <strong>${{ referralEarnings }}</strong
           ><br />
           <h3>
-            💰 <strong style="text-decoration: underline; color: orange;">Referral Instructions:</strong><br />
+            💰
+            <strong style="text-decoration: underline; color: orange">Referral Instructions:</strong
+            ><br />
             You can share your Festivall ID_CODE or your referral link with your friends and
             family.<br />
             🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
           </h3>
 
           <h3>
-            🔗 <strong style="text-decoration: underline; color: orange;"> This is your referral link: </strong><br />
+            🔗
+            <strong style="text-decoration: underline; color: orange">
+              This is your referral link: </strong
+            ><br />
             Copy and paste this link anywhere!
-            <a :href="`https://festivall.ca/reuniontickets/${order.id_code}`" target="_blank" style="color: orange;"
+            <a
+              :href="`https://festivall.ca/reuniontickets/${order.id_code}`"
+              target="_blank"
+              style="color: orange"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
             ><br /><br />
           </h3>
           <h3>
-            📱 <strong style="text-decoration: underline; color: orange;"> This is your referral QR code: </strong>
+            📱
+            <strong style="text-decoration: underline; color: orange">
+              This is your referral QR code:
+            </strong>
           </h3>
 
           <div class="qr-code">
@@ -339,7 +377,7 @@
           </h3>
           <h3>
             📞 If you have any questions or concerns, please contact
-            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange;"
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange"
               >reunion@festivall.ca</a
             >
           </h3>
@@ -408,7 +446,7 @@
         <RouterLink v-if="new Date() >= new Date(2025, 7, 1)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2025 Lineup<br>Look & Listen!</br>
+            2025 Lineup<br />Look & Listen!<br />
           </p>
         </RouterLink>
         <RouterLink v-else to="#">
@@ -631,7 +669,7 @@ export default {
           `DTEND:${endFormatted}`,
           `SUMMARY:Your Set at Reunion Festival ${new Date().getFullYear()}`,
           'LOCATION:Reunion Festival',
-            `DESCRIPTION:Your performance slot at Reunion Festival ${new Date().getFullYear()}. Please arrive at the stage a few minutes early to ensure smooth changeovers. Your main point of contact is Arthur, the Lead Sound Tech. If Arthur is unavailable, other stage crew members include Brandon, Cory, and Prasenjit.`,
+          `DESCRIPTION:Your performance slot at Reunion Festival ${new Date().getFullYear()}. Please arrive at the stage a few minutes early to ensure smooth changeovers. Your main point of contact is Arthur, the Lead Sound Tech. If Arthur is unavailable, other stage crew members include Brandon, Cory, and Prasenjit.`,
           'STATUS:CONFIRMED',
           'SEQUENCE:0',
           'TRANSP:OPAQUE',
