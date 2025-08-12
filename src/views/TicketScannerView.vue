@@ -287,6 +287,22 @@
     <ul>
       <li>
         <div>
+          <h4 style="color: var(--festivall-baby-blue)">Total Expected Attendance</h4>
+          <h2>
+            {{ orders.reduce((total, order) => total + (parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0), 0) }}
+          </h2>
+        </div>
+        <div>
+          <h4 style="color: orange">Current Attendance</h4>
+          <h2>
+            {{ orders.reduce((total, order) => {
+              const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
+              const remaining = parseInt(order.ticket_quantity) || 0;
+              return total + (original - remaining);
+            }, 0) }}
+          </h2>
+        </div>
+        <div>
           <h4 style="color: var(--festivall-baby-blue)">Total Orders</h4>
           <h2>
             {{ orders.length }}
@@ -304,28 +320,39 @@
             {{ orders.filter((order) => !order.paid).length }}
           </h2>
         </div>
-        <div>
-          <h4 style="color: orange">Checked In</h4>
-          <h2>
-            {{ orders.filter((order) => order.checked_in).length }}
-          </h2>
-        </div>
-        <div>
-          <h4 style="color: yellow">Not Checked In</h4>
-          <h2>
-            {{ orders.filter((order) => !order.checked_in).length }}
-          </h2>
-        </div>
       </li>
     </ul>
   </div>
   <div class="database">
     <h2>Order Database</h2>
-    <button @click="toggleView">
-      Show Me
-      {{ filter === 'all' ? 'Checked In' : filter === 'checkedIn' ? 'Checked Out' : 'All' }}
-      Orders
-    </button>
+    <div class="filter-controls">
+      <button 
+        @click="filter = 'all'" 
+        :class="{ active: filter === 'all' }"
+      >
+        All Orders ({{ orders.length }})
+      </button>
+      <button 
+        @click="filter = 'checkedIn'" 
+        :class="{ active: filter === 'checkedIn' }"
+      >
+        People On-Site ({{ orders.filter(order => {
+          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
+          const remaining = parseInt(order.ticket_quantity) || 0;
+          return (original - remaining) > 0;
+        }).length }})
+      </button>
+      <button 
+        @click="filter = 'notCheckedIn'" 
+        :class="{ active: filter === 'notCheckedIn' }"
+      >
+        Not Yet Arrived ({{ orders.filter(order => {
+          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
+          const remaining = parseInt(order.ticket_quantity) || 0;
+          return (original - remaining) === 0;
+        }).length }})
+      </button>
+    </div>
     <ul>
       <li v-for="order in filteredOrders" :key="order.id_code" class="order">
         <div>
@@ -414,10 +441,21 @@ export default {
       if (this.filter === 'all') {
         return this.orders
       } else if (this.filter === 'checkedIn') {
-        return this.orders.filter((order) => order.checked_in)
-      } else {
-        return this.orders.filter((order) => !order.checked_in)
+        // Show orders where people have checked in (original tickets > remaining tickets)
+        return this.orders.filter((order) => {
+          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+          const remaining = parseInt(order.ticket_quantity) || 0
+          return (original - remaining) > 0
+        })
+      } else if (this.filter === 'notCheckedIn') {
+        // Show orders where no one has checked in yet (original tickets = remaining tickets)
+        return this.orders.filter((order) => {
+          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+          const remaining = parseInt(order.ticket_quantity) || 0
+          return (original - remaining) === 0
+        })
       }
+      return this.orders
     },
     isValidOperator() {
       if (!this.operatorIdCode.trim()) return false
@@ -664,15 +702,6 @@ export default {
         console.error('Error refreshing orders:', error)
       }
     },
-    toggleView() {
-      if (this.filter === 'all') {
-        this.filter = 'checkedIn'
-      } else if (this.filter === 'checkedIn') {
-        this.filter = 'notCheckedIn'
-      } else {
-        this.filter = 'all'
-      }
-    },
     getFestivalDay(timestamp) {
       const activityDate = new Date(timestamp)
       const festivalStart = new Date('2025-08-29T12:00:00') // Friday Aug 29, 12:00 PM
@@ -882,12 +911,67 @@ button:disabled {
 .at-a-glance {
   margin: 1rem;
 }
+
+.at-a-glance ul {
+  padding: 0;
+  margin: 0;
+}
+
+.at-a-glance li {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  margin: 0;
+  list-style: none;
+  border: 1px solid rgba(121, 188, 255, 0.25);
+  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
+  border-radius: 20px;
+}
+
+.at-a-glance li > div {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(121, 188, 255, 0.1);
+}
+
+.at-a-glance h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.at-a-glance h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
 .database {
   display: flex;
   flex-direction: column;
 }
-.database button {
-  margin: 0 auto;
+
+.filter-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-controls button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.filter-controls button.active {
+  background-color: var(--festivall-baby-blue);
+  border-color: var(--festivall-baby-blue);
+  box-shadow: 0 0 10px rgba(121, 188, 255, 0.5);
 }
 ul {
   padding: 0;
