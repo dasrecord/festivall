@@ -129,7 +129,8 @@
       </div>
 
       <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showPaymentModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -187,7 +188,8 @@
         class="modal"
         @click.self="showMealRedemptionHistoryModal = false"
       >
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showMealRedemptionHistoryModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -273,7 +275,8 @@
         class="modal"
         @click.self="showEntranceActivityModal = false"
       >
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showEntranceActivityModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -342,7 +345,8 @@
       </div>
 
       <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showReferralModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -390,7 +394,7 @@
             🔢 Your ID_CODE will be automatically added to their order.<br />
           </h3>
           <h3>
-            📞 If you have any questions or concerns, please contact
+            📧 If you have any questions or concerns, please contact
             <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange"
               >reunion@festivall.ca</a
             >
@@ -402,7 +406,8 @@
 
       <!-- Gate Information Modal -->
       <div v-if="showGateInfoModal" class="modal" @click.self="showGateInfoModal = false">
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showGateInfoModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -488,7 +493,8 @@
 
       <!-- Meal Service Information Modal -->
       <div v-if="showMealServiceModal" class="modal" @click.self="showMealServiceModal = false">
-        <div class="modal-content">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showMealServiceModal = false"></div>
           <img
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
@@ -539,9 +545,9 @@
           <h3>
             📧 <strong style="color: orange">Questions?</strong> Contact the Meal Team at the food
             station or
-            <strong style="color: orange">Email:</strong>
+            <strong style="color: orange">Email: </strong>
             <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
-              reunion@festivall.ca
+             reunion@festivall.ca
             </a>
           </h3>
           <button @click="showMealServiceModal = false">Close</button>
@@ -1180,23 +1186,9 @@ a:hover {
 .redemption-section {
   margin: 1rem 0;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   border: 1px solid rgba(255, 165, 0, 0.3);
-}
-
-.history-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin: 0.5rem 0;
-}
-
-.history-item {
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0.5rem 0;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border-left: 4px solid transparent;
 }
 
 .history-item.check-in-item {
@@ -1213,8 +1205,8 @@ a:hover {
 
 .activity-time,
 .redemption-time {
-  font-size: 0.9rem;
-  color: #ccc;
+  font-size: 0.85rem;
+  color: #ddd;
   margin-bottom: 0.25rem;
 }
 
@@ -1296,37 +1288,125 @@ a:hover {
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
-  justify-content: baseline;
-  /* align-items: center; */
+  justify-content: flex-start;
+  align-items: center;
   z-index: 10;
+  padding: 1rem;
 }
+
 .modal-content {
   width: 100%;
-  height: 100%;
+  max-width: 500px;
+  max-height: 90vh;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  place-content: start;
   text-align: center;
   color: white;
-  border: 1pc solid var(--reunion-frog-green);
-  border-radius: 0px;
-  font-size: 12px;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-size: 16px;
+  position: relative;
+  margin-top: 2rem;
+}
+
+/* Actual close button element */
+.modal-close {
+  position: sticky;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 12;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  align-self: flex-end;
+  margin-bottom: -30px;
+}
+
+.modal-close::before {
+  content: '✕';
+}
+
+.modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+  color: white;
+}
+
+.modal-content h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0.75rem 0;
+}
+
+/* Improved history list styling */
+.history-list {
+  max-height: 250px;
+  overflow-y: auto;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left: 4px solid transparent;
+  font-size: 0.9rem;
+}
+
+.activity-time,
+.redemption-time {
+  font-size: 0.85rem;
+  color: #ddd;
+  margin-bottom: 0.25rem;
+}
+
+.activity-details,
+.redemption-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .modal-content button {
-  width: 50%;
-  border: 1px solid rgba(121, 188, 255, 0.25);
+  width: 70%;
+  max-width: 250px;
+  min-height: 48px;
+  border: 2px solid var(--reunion-frog-green);
   border-radius: 25px;
-  padding: 1rem;
-  box-shadow: inset 0 0 20px rgba(121, 188, 255, 0.25);
-  position: relative;
-  background-color: var(--q-color-primary);
+  padding: 0.75rem 1.5rem;
+  background-color: var(--reunion-frog-green);
   color: white;
-  margin-top: 1rem;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 1.5rem 0 0.5rem 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+  background-color: transparent;
+  color: var(--reunion-frog-green);
 }
 
 .modal-content img {
