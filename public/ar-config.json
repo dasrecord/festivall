@@ -1,0 +1,336 @@
+{
+    "name": "Festival AR Experience",
+    "version": "1.0.0",
+    "description": "Location-based AR experience configuration for the festival",
+    "lastUpdated": "2025-08-11",
+    "festival": {
+        "name": "Reunion Festival",
+        "location": {
+            "center": {
+                "lat": 40.7589,
+                "lng": -111.8883,
+                "name": "Festival Center"
+            },
+            "bounds": {
+                "north": 40.7595,
+                "south": 40.7583,
+                "east": -111.8875,
+                "west": -111.8891
+            }
+        }
+    },
+    "arObjects": [
+        {
+            "id": "main-stage-info",
+            "name": "Main Stage Information",
+            "type": "info-panel",
+            "location": {
+                "lat": 40.7589,
+                "lng": -111.8883,
+                "altitude": 0,
+                "description": "Main Stage Area"
+            },
+            "visual": {
+                "geometry": "primitive: box; width: 3; height: 4; depth: 0.2",
+                "material": "color: #4CC3D9; opacity: 0.8; transparent: true",
+                "scale": "1 1 1",
+                "rotation": "0 0 0",
+                "animation": "property: rotation; to: 0 360 0; loop: true; dur: 15000"
+            },
+            "content": {
+                "title": "Main Stage",
+                "text": "Next Performance: 8:00 PM\nFeaturing: The Midnight Collective",
+                "showByDefault": true
+            },
+            "interaction": {
+                "clickable": true,
+                "sound": "stage-info-sound.mp3",
+                "vibration": true
+            },
+            "conditions": {
+                "timeRange": {
+                    "start": "08:00",
+                    "end": "23:00"
+                },
+                "maxDistance": 50
+            }
+        },
+        {
+            "id": "food-court-marker",
+            "name": "Food Court",
+            "type": "location-marker",
+            "location": {
+                "lat": 40.7590,
+                "lng": -111.8884,
+                "altitude": 0,
+                "description": "Food Court Area"
+            },
+            "visual": {
+                "geometry": "primitive: cylinder; radius: 1.5; height: 3",
+                "material": "color: #FF6B35; emissive: #FF6B35; emissiveIntensity: 0.3",
+                "scale": "1 1 1",
+                "rotation": "0 0 0",
+                "animation": "property: position; to: 0 0.5 0; dir: alternate; loop: true; dur: 2000"
+            },
+            "content": {
+                "title": "Food Court",
+                "text": "Open until 10:00 PM\nSpecialty: Festival Tacos & Cold Brew",
+                "showByDefault": true
+            },
+            "interaction": {
+                "clickable": true,
+                "action": "show-menu"
+            },
+            "conditions": {
+                "maxDistance": 75
+            }
+        },
+        {
+            "id": "art-installation-1",
+            "name": "Crystal Garden",
+            "type": "art-piece",
+            "location": {
+                "lat": 40.7587,
+                "lng": -111.8880,
+                "altitude": 0,
+                "description": "Interactive Art Installation"
+            },
+            "visual": {
+                "model": "/models/crystal-garden.glb",
+                "scale": "2 2 2",
+                "rotation": "0 45 0",
+                "animation": "property: rotation; to: 0 405 0; loop: true; dur: 30000"
+            },
+            "content": {
+                "title": "Crystal Garden",
+                "text": "Interactive light installation\nTouch to change colors!",
+                "artist": "Luna Rodriguez"
+            },
+            "interaction": {
+                "clickable": true,
+                "action": "cycle-colors",
+                "sound": "crystal-chime.mp3"
+            },
+            "conditions": {
+                "maxDistance": 30
+            }
+        },
+        {
+            "id": "restroom-sign",
+            "name": "Restrooms",
+            "type": "utility-marker",
+            "location": {
+                "lat": 40.7585,
+                "lng": -111.8885,
+                "altitude": 2,
+                "description": "Restroom Facilities"
+            },
+            "visual": {
+                "geometry": "primitive: box; width: 2; height: 2; depth: 0.1",
+                "material": "color: #2ECC71; opacity: 0.9",
+                "scale": "1 1 1",
+                "rotation": "0 0 0"
+            },
+            "content": {
+                "title": "Restrooms",
+                "text": "Clean facilities available 24/7",
+                "icon": "🚻"
+            },
+            "conditions": {
+                "maxDistance": 100,
+                "alwaysVisible": true
+            }
+        },
+        {
+            "id": "hidden-treasure",
+            "name": "Festival Treasure",
+            "type": "quest-object",
+            "location": {
+                "lat": 40.7588,
+                "lng": -111.8882,
+                "altitude": 1,
+                "description": "Hidden treasure for scavenger hunt"
+            },
+            "visual": {
+                "geometry": "primitive: sphere; radius: 0.8",
+                "material": "color: #FFD700; emissive: #FFD700; emissiveIntensity: 0.5; metalness: 0.8",
+                "scale": "1 1 1",
+                "rotation": "0 0 0",
+                "animation": "property: rotation; to: 0 360 0; loop: true; dur: 3000"
+            },
+            "content": {
+                "title": "Golden Orb",
+                "text": "You found the hidden treasure!\nClaim your reward at the info booth.",
+                "reward": "Festival Coin"
+            },
+            "interaction": {
+                "clickable": true,
+                "action": "collect-treasure",
+                "sound": "treasure-found.mp3",
+                "oneTime": true
+            },
+            "conditions": {
+                "maxDistance": 20,
+                "requiresQuest": "find-hidden-treasure"
+            }
+        }
+    ],
+    "quests": [
+        {
+            "id": "find-hidden-treasure",
+            "title": "Find the Hidden Treasure",
+            "description": "Search for the golden orb hidden somewhere near the main stage. Use your AR view to spot the glowing treasure!",
+            "type": "location-based",
+            "difficulty": "easy",
+            "estimatedTime": "5-10 minutes",
+            "rewards": [
+                {
+                    "type": "digital",
+                    "item": "Festival Coin",
+                    "quantity": 1
+                },
+                {
+                    "type": "physical",
+                    "item": "Treasure Hunter Badge",
+                    "location": "Info Booth"
+                }
+            ],
+            "startLocation": {
+                "lat": 40.7589,
+                "lng": -111.8883,
+                "radius": 100
+            },
+            "targetObjects": [
+                "hidden-treasure"
+            ],
+            "hints": [
+                "The treasure glows golden in AR view",
+                "Look around the main stage area",
+                "It's hidden at ground level"
+            ],
+            "conditions": {
+                "timeLimit": null,
+                "prerequisites": []
+            }
+        },
+        {
+            "id": "art-gallery-tour",
+            "title": "AR Art Gallery Tour",
+            "description": "Visit all interactive art installations and learn about the artists. Complete the tour to unlock exclusive content!",
+            "type": "collection",
+            "difficulty": "medium",
+            "estimatedTime": "15-20 minutes",
+            "rewards": [
+                {
+                    "type": "digital",
+                    "item": "Art Collector Badge",
+                    "quantity": 1
+                },
+                {
+                    "type": "content",
+                    "item": "Artist Interview Videos",
+                    "unlocks": "exclusive-content"
+                }
+            ],
+            "targetObjects": [
+                "art-installation-1",
+                "art-installation-2",
+                "art-installation-3"
+            ],
+            "progress": {
+                "current": 0,
+                "total": 3,
+                "completed": []
+            },
+            "hints": [
+                "Look for glowing art pieces around the festival",
+                "Each interaction reveals artist information",
+                "Some art pieces are interactive!"
+            ]
+        },
+        {
+            "id": "festival-orienteering",
+            "title": "Festival Navigator",
+            "description": "Visit all major festival areas and learn about the facilities. Perfect for first-time visitors!",
+            "type": "exploration",
+            "difficulty": "easy",
+            "estimatedTime": "10-15 minutes",
+            "rewards": [
+                {
+                    "type": "digital",
+                    "item": "Explorer Badge",
+                    "quantity": 1
+                },
+                {
+                    "type": "discount",
+                    "item": "10% off food court",
+                    "code": "EXPLORER10"
+                }
+            ],
+            "targetObjects": [
+                "main-stage-info",
+                "food-court-marker",
+                "restroom-sign",
+                "info-booth-marker"
+            ],
+            "progress": {
+                "current": 0,
+                "total": 4,
+                "completed": []
+            }
+        }
+    ],
+    "settings": {
+        "gps": {
+            "accuracy": "high",
+            "updateInterval": 1000,
+            "maxAge": 5000,
+            "timeout": 10000
+        },
+        "ar": {
+            "maxRenderDistance": 100,
+            "lodLevels": 3,
+            "framerate": 30,
+            "antialias": true
+        },
+        "ui": {
+            "showFPS": false,
+            "showGPSCoordinates": true,
+            "showObjectCount": false,
+            "compassEnabled": true
+        },
+        "audio": {
+            "enabled": true,
+            "volume": 0.7,
+            "spatialAudio": true
+        },
+        "performance": {
+            "maxActiveObjects": 10,
+            "cullingDistance": 150,
+            "automaticLOD": true
+        }
+    },
+    "assets": {
+        "models": {
+            "baseUrl": "/models/ar/",
+            "format": "glb",
+            "compression": true
+        },
+        "textures": {
+            "baseUrl": "/textures/ar/",
+            "format": "jpg",
+            "maxSize": 1024
+        },
+        "audio": {
+            "baseUrl": "/sounds/ar/",
+            "format": "mp3",
+            "compression": true
+        }
+    },
+    "debug": {
+        "enabled": false,
+        "showBounds": false,
+        "showWireframes": false,
+        "logLevel": "info"
+    }
+}
