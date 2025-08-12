@@ -191,6 +191,7 @@
         <div class="modal-content" @click.stop>
           <div class="modal-close" @click="showMealRedemptionHistoryModal = false"></div>
           <img
+            class="festivall-emblem"
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
             alt="Festivall Emblem"
@@ -259,8 +260,8 @@
           <h3>
             📧
             <strong style="color: orange">Questions about your redemption history?</strong> Contact
-            the Meal Team at the food station or
-            <strong style="color: orange">Email:</strong>
+            the Food Team or
+            <strong style="color: orange">Email: </strong>
             <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
               reunion@festivall.ca
             </a>
@@ -278,6 +279,7 @@
         <div class="modal-content" @click.stop>
           <div class="modal-close" @click="showEntranceActivityModal = false"></div>
           <img
+            class="festivall-emblem"
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
             alt="Festivall Emblem"
@@ -334,8 +336,8 @@
 
           <h3>
             📧 <strong style="color: orange">Questions about your activity history?</strong> Contact
-            the Gate Team or
-            <strong style="color: orange">Email:</strong>
+            the Front Gate team or
+            <strong style="color: orange">Email: </strong>
             <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
               reunion@festivall.ca
             </a>
@@ -344,10 +346,12 @@
         </div>
       </div>
 
+      <!-- Referral Modal -->
       <div v-if="showReferralModal" class="modal" @click.self="showReferralModal = false">
         <div class="modal-content" @click.stop>
           <div class="modal-close" @click="showReferralModal = false"></div>
           <img
+            class="festivall-emblem"
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
             alt="Festivall Emblem"
@@ -409,6 +413,7 @@
         <div class="modal-content" @click.stop>
           <div class="modal-close" @click="showGateInfoModal = false"></div>
           <img
+            class="festivall-emblem"
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
             alt="Festivall Emblem"
@@ -445,7 +450,7 @@
             Please try to arrive before then.<br />
             🚫 With respected to substances, we have a<br />
             <strong> No Open Use Policy.<br /> </strong>
-            👶 Please keep all adult materials out of sight and reach of minors.<br /><br />
+            👶 Please keep all adult materials out of sight and reach of minors.<br />
           </h3>
           <h3 v-else>
             🚪
@@ -454,7 +459,7 @@
             >
             <br />
             Please present your QR code at the Front Gate on your way out.<br />
-            📊 This will help us keep track of how many people are still on the grounds.<br /><br />
+            📊 This will help us keep track of how many people are still on the grounds.<br />
             ℹ️
             <strong style="text-decoration: underline; color: orange"
               >Additional Information:</strong
@@ -478,7 +483,7 @@
             After checking in, please proceed to the Artist Loading Zone to drop off your gear and
             introduce yourself to the Stage Crew.<br />
             🚗 Once you're oriented, please take your vehicle to your campsite allowing others to
-            load in.<br /><br />
+            load in.<br />
           </h3>
 
           <h3>
@@ -496,6 +501,7 @@
         <div class="modal-content" @click.stop>
           <div class="modal-close" @click="showMealServiceModal = false"></div>
           <img
+            class="festivall-emblem"
             :src="festivall_emblem_white"
             style="height: 64px; width: auto"
             alt="Festivall Emblem"
@@ -513,23 +519,21 @@
             ><br />
             Friday, Saturday & Sunday<br />
             Lunch: 12:00 PM - 2:00 PM<br />
-            Supper: 6:00 PM - 8:00 PM<br /><br />
+            Supper: 6:00 PM - 8:00 PM<br />
           </h3>
 
           <h3>
             ✅ <strong style="text-decoration: underline; color: orange">How to Redeem:</strong
             ><br />
-            Present your QR code at the meal station during service hours. <br /><br />
-            One ticket will be automatically deducted per meal.<br /><br />
+            Present your QR code at the meal station during service hours. <br />
+            One ticket will be automatically deducted per meal.<br />
           </h3>
 
           <h3>
             ⚖️ <strong style="text-decoration: underline; color: orange">Important Policy:</strong
             ><br />
             Unused meal tickets are automatically decremented at the end of each meal service to
-            ensure fairness for all attendees.<br /><br />
-            This prevents ticket hoarding and ensures equal access to meals throughout the
-            festival.<br /><br />
+            ensure fairness for all attendees.<br />
           </h3>
 
           <h3>
@@ -547,7 +551,7 @@
             station or
             <strong style="color: orange">Email: </strong>
             <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
-             reunion@festivall.ca
+              reunion@festivall.ca
             </a>
           </h3>
           <button @click="showMealServiceModal = false">Close</button>
@@ -1312,6 +1316,11 @@ a:hover {
   font-size: 16px;
   position: relative;
   margin-top: 2rem;
+}
+.festivall-emblem {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 /* Actual close button element */
