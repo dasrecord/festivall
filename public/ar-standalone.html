@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Festival AR Experience</title>
+
+    <!-- A-Frame and AR.js -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+    <!-- Location-based AR components -->
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #000;
+        overflow: hidden;
+      }
+
+      #loadingScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        z-index: 1000;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #arScene {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .ui-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .ui-overlay > * {
+        pointer-events: auto;
+      }
+
+      .top-bar {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 12px 20px;
+        border-radius: 25px;
+        color: white;
+        backdrop-filter: blur(10px);
+      }
+
+      .btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 20px;
+        padding: 8px 16px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+
+      .location-info {
+        font-size: 12px;
+        opacity: 0.9;
+        text-align: center;
+      }
+
+      .quest-panel {
+        position: absolute;
+        bottom: 120px;
+        left: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+
+      .quest-panel.show {
+        display: block;
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .quest-panel h3 {
+        margin-top: 0;
+        color: #ff6b35;
+        font-size: 18px;
+      }
+
+      .quest-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .btn-primary {
+        background: #4caf50;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .btn-secondary {
+        background: #666;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .progress-bar {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+      }
+
+      .progress-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+        transition: width 0.5s ease;
+        border-radius: 20px;
+      }
+
+      .progress-text {
+        position: relative;
+        color: white;
+        font-weight: bold;
+        z-index: 1;
+      }
+
+      .info-panel {
+        position: absolute;
+        top: 80px;
+        left: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.95);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      .info-panel.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .compass {
+        position: absolute;
+        top: 120px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        backdrop-filter: blur(10px);
+      }
+
+      @media (max-width: 768px) {
+        .top-bar {
+          top: 10px;
+          left: 10px;
+          right: 10px;
+          padding: 10px 15px;
+        }
+
+        .quest-panel {
+          bottom: 80px;
+          left: 10px;
+          right: 10px;
+          padding: 15px;
+        }
+
+        .progress-bar {
+          bottom: 10px;
+          left: 10px;
+          right: 10px;
+          height: 35px;
+        }
+
+        .info-panel {
+          top: 70px;
+          left: 10px;
+          right: 10px;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+      <div class="spinner"></div>
+      <h2>Loading AR Experience...</h2>
+      <p>Please allow camera and location permissions</p>
+      <p id="loadingStatus">Initializing...</p>
+    </div>
+
+    <!-- AR Scene -->
+    <a-scene
+      id="arScene"
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true"
+      arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+      embedded
+      style="display: none"
+    >
+      <!-- Assets -->
+      <a-assets>
+        <!-- Preload models (these would be your actual 3D models) -->
+        <a-box id="box-template" visible="false"></a-box>
+        <a-cylinder id="cylinder-template" visible="false"></a-cylinder>
+        <a-sphere id="sphere-template" visible="false"></a-sphere>
+      </a-assets>
+
+      <!-- Camera with GPS -->
+      <a-camera
+        id="camera"
+        gps-camera="simulateLatitude: 40.7589; simulateLongitude: -111.8883"
+        rotation-reader
+        look-controls-enabled="false"
+        arjs-look-controls="smoothingFactor: 0.1"
+        wasd-controls="enabled: false"
+      ></a-camera>
+
+      <!-- Dynamic content will be added here via JavaScript -->
+    </a-scene>
+
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <button class="btn" onclick="toggleInfo()">ℹ️ Info</button>
+        <div class="location-info">
+          <div id="coordinates">Getting location...</div>
+          <div id="objectCount">Objects: 0</div>
+        </div>
+        <button class="btn" onclick="exitAR()">❌ Exit</button>
+      </div>
+
+      <!-- Compass -->
+      <div class="compass" id="compass">🧭</div>
+
+      <!-- Info Panel -->
+      <div class="info-panel" id="infoPanel">
+        <h3>🎪 Festival AR Guide</h3>
+        <p>Welcome to the interactive AR experience!</p>
+        <ul>
+          <li><strong>Look around</strong> to discover hidden 3D objects and information</li>
+          <li><strong>Tap on glowing objects</strong> to interact with them</li>
+          <li><strong>Complete quests</strong> to earn rewards and unlock content</li>
+          <li><strong>Use the compass</strong> to orient yourself</li>
+        </ul>
+        <h4>🎯 Available Quests:</h4>
+        <div id="questList"></div>
+        <button class="btn-secondary" onclick="toggleInfo()">Close</button>
+      </div>
+
+      <!-- Quest Panel -->
+      <div class="quest-panel" id="questPanel">
+        <h3 id="questTitle">Quest Title</h3>
+        <p id="questDescription">Quest description goes here...</p>
+        <div id="questRewards"></div>
+        <div class="quest-actions">
+          <button class="btn-primary" onclick="completeCurrentQuest()">Complete Quest</button>
+          <button class="btn-secondary" onclick="closeQuest()">Close</button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        <div class="progress-text" id="progressText">0 / 0 Quests Completed</div>
+      </div>
+    </div>
+
+    <script>
+      // Global variables
+      let arConfig = null
+      let userLocation = { lat: 40.7589, lng: -111.8883 } // Default location
+      let activeQuests = []
+      let completedQuests = []
+      let currentQuest = null
+      let arObjects = []
+      let watchId = null
+      let isARReady = false
+
+      // Initialize AR experience
+      async function initAR() {
+        try {
+          updateLoadingStatus('Loading configuration...')
+          await loadARConfig()
+
+          updateLoadingStatus('Requesting camera permission...')
+          await requestCameraPermission()
+
+          updateLoadingStatus('Getting your location...')
+          await startLocationTracking()
+
+          updateLoadingStatus('Setting up AR scene...')
+          setupARScene()
+
+          updateLoadingStatus('Loading content...')
+          await loadARContent()
+
+          updateLoadingStatus('Ready!')
+          showARScene()
+        } catch (error) {
+          console.error('Failed to initialize AR:', error)
+          alert('Failed to initialize AR experience. Please check permissions and try again.')
+        }
+      }
+
+      function updateLoadingStatus(status) {
+        document.getElementById('loadingStatus').textContent = status
+      }
+
+      async function loadARConfig() {
+        try {
+          const response = await fetch('/ar-config.json')
+          arConfig = await response.json()
+          console.log('AR Config loaded:', arConfig)
+        } catch (error) {
+          console.error('Failed to load AR config:', error)
+          // Use fallback config
+          arConfig = {
+            arObjects: [],
+            quests: [],
+            settings: {
+              gps: { accuracy: 'high', updateInterval: 1000 },
+              ar: { maxRenderDistance: 100 }
+            }
+          }
+        }
+      }
+
+      async function requestCameraPermission() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }
+          })
+          // Stop the stream immediately, AR.js will handle camera
+          stream.getTracks().forEach((track) => track.stop())
+          return true
+        } catch (error) {
+          throw new Error('Camera permission denied')
+        }
+      }
+
+      function startLocationTracking() {
+        return new Promise((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation not supported'))
+            return
+          }
+
+          const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 1000
+          }
+
+          // Get initial position
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              userLocation.lat = position.coords.latitude
+              userLocation.lng = position.coords.longitude
+              updateLocationDisplay()
+
+              // Start watching position
+              watchId = navigator.geolocation.watchPosition(
+                (pos) => {
+                  userLocation.lat = pos.coords.latitude
+                  userLocation.lng = pos.coords.longitude
+                  updateLocationDisplay()
+                  updateNearbyContent()
+                },
+                (error) => console.warn('Location update error:', error),
+                options
+              )
+
+              resolve()
+            },
+            (error) => {
+              console.warn('Geolocation error, using default location:', error)
+              // Use default festival location
+              userLocation = { lat: 40.7589, lng: -111.8883 }
+              updateLocationDisplay()
+              resolve()
+            },
+            options
+          )
+        })
+      }
+
+      function setupARScene() {
+        const scene = document.querySelector('#arScene')
+
+        // Set camera GPS position
+        const camera = document.querySelector('#camera')
+        camera.setAttribute(
+          'gps-camera',
+          `simulateLatitude: ${userLocation.lat}; simulateLongitude: ${userLocation.lng}`
+        )
+
+        // Listen for AR ready event
+        scene.addEventListener('renderstart', () => {
+          if (!isARReady) {
+            isARReady = true
+            console.log('AR scene is ready')
+          }
+        })
+      }
+
+      async function loadARContent() {
+        if (!arConfig) return
+
+        // Load AR objects
+        arObjects = [...arConfig.arObjects]
+        activeQuests = [...arConfig.quests]
+
+        // Load saved progress
+        const saved = localStorage.getItem('festival-ar-progress')
+        if (saved) {
+          const progress = JSON.parse(saved)
+          completedQuests = progress.completed || []
+
+          // Remove completed quests from active list
+          activeQuests = activeQuests.filter(
+            (quest) => !completedQuests.find((completed) => completed.id === quest.id)
+          )
+        }
+
+        // Create AR objects in scene
+        createARObjects()
+        updateQuestDisplay()
+        updateProgress()
+      }
+
+      function createARObjects() {
+        const scene = document.querySelector('#arScene')
+
+        arObjects.forEach((obj) => {
+          if (!isObjectVisible(obj)) return
+
+          const entity = document.createElement('a-entity')
+          entity.setAttribute('id', `ar-object-${obj.id}`)
+          entity.setAttribute(
+            'gps-entity-place',
+            `latitude: ${obj.location.lat}; longitude: ${obj.location.lng}`
+          )
+
+          // Set visual properties
+          if (obj.visual.geometry) {
+            entity.setAttribute('geometry', obj.visual.geometry)
+          }
+          if (obj.visual.material) {
+            entity.setAttribute('material', obj.visual.material)
+          }
+          if (obj.visual.scale) {
+            entity.setAttribute('scale', obj.visual.scale)
+          }
+          if (obj.visual.rotation) {
+            entity.setAttribute('rotation', obj.visual.rotation)
+          }
+          if (obj.visual.animation) {
+            entity.setAttribute('animation', obj.visual.animation)
+          }
+
+          // Add interaction
+          if (obj.interaction && obj.interaction.clickable) {
+            entity.setAttribute('cursor', 'rayOrigin: mouse')
+            entity.addEventListener('click', () => onObjectClick(obj))
+          }
+
+          // Add text content if available
+          if (obj.content && obj.content.showByDefault) {
+            const textEntity = document.createElement('a-text')
+            textEntity.setAttribute('value', obj.content.text || obj.content.title)
+            textEntity.setAttribute('position', '0 2 0')
+            textEntity.setAttribute('align', 'center')
+            textEntity.setAttribute('color', '#ffffff')
+            textEntity.setAttribute('background-color', '#000000')
+            textEntity.setAttribute('background-opacity', '0.7')
+            textEntity.setAttribute('width', '8')
+            entity.appendChild(textEntity)
+          }
+
+          scene.appendChild(entity)
+        })
+
+        updateObjectCount()
+      }
+
+      function isObjectVisible(obj) {
+        // Check distance
+        const distance = calculateDistance(userLocation, obj.location)
+        const maxDistance =
+          obj.conditions?.maxDistance || arConfig.settings?.ar?.maxRenderDistance || 100
+
+        if (distance > maxDistance && !obj.conditions?.alwaysVisible) {
+          return false
+        }
+
+        // Check time conditions
+        if (obj.conditions?.timeRange) {
+          const now = new Date()
+          const currentTime = now.getHours() * 100 + now.getMinutes()
+          const start = parseInt(obj.conditions.timeRange.start.replace(':', ''))
+          const end = parseInt(obj.conditions.timeRange.end.replace(':', ''))
+
+          if (currentTime < start || currentTime > end) {
+            return false
+          }
+        }
+
+        // Check quest requirements
+        if (obj.conditions?.requiresQuest) {
+          const hasQuest = activeQuests.find((q) => q.id === obj.conditions.requiresQuest)
+          if (!hasQuest) return false
+        }
+
+        return true
+      }
+
+      function calculateDistance(point1, point2) {
+        const R = 6371e3 // Earth's radius in meters
+        const φ1 = (point1.lat * Math.PI) / 180
+        const φ2 = (point2.lat * Math.PI) / 180
+        const Δφ = ((point2.lat - point1.lat) * Math.PI) / 180
+        const Δλ = ((point2.lng - point1.lng) * Math.PI) / 180
+
+        const a =
+          Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+          Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+        return R * c
+      }
+
+      function onObjectClick(obj) {
+        console.log('Object clicked:', obj.name)
+
+        // Handle different object types
+        if (obj.type === 'quest-object') {
+          // Handle quest object interaction
+          const quest = activeQuests.find((q) => q.targetObjects?.includes(obj.id))
+          if (quest) {
+            showQuest(quest)
+          }
+        } else {
+          // Show object information
+          alert(`${obj.content?.title || obj.name}\n${obj.content?.text || 'Interactive object'}`)
+        }
+
+        // Play sound if available
+        if (obj.interaction?.sound) {
+          playSound(obj.interaction.sound)
+        }
+
+        // Trigger haptic feedback
+        if (obj.interaction?.vibration && navigator.vibrate) {
+          navigator.vibrate(100)
+        }
+      }
+
+      function showQuest(quest) {
+        currentQuest = quest
+        document.getElementById('questTitle').textContent = quest.title
+        document.getElementById('questDescription').textContent = quest.description
+
+        // Show rewards
+        const rewardsDiv = document.getElementById('questRewards')
+        rewardsDiv.innerHTML = '<h4>🏆 Rewards:</h4>'
+        quest.rewards?.forEach((reward) => {
+          const rewardEl = document.createElement('div')
+          rewardEl.textContent = `• ${reward.item} ${reward.quantity ? `(${reward.quantity})` : ''}`
+          rewardsDiv.appendChild(rewardEl)
+        })
+
+        document.getElementById('questPanel').classList.add('show')
+      }
+
+      function closeQuest() {
+        document.getElementById('questPanel').classList.remove('show')
+        currentQuest = null
+      }
+
+      function completeCurrentQuest() {
+        if (!currentQuest) return
+
+        // Move quest to completed
+        const questIndex = activeQuests.findIndex((q) => q.id === currentQuest.id)
+        if (questIndex !== -1) {
+          const completed = activeQuests.splice(questIndex, 1)[0]
+          completed.completedAt = new Date().toISOString()
+          completedQuests.push(completed)
+
+          // Save progress
+          const progress = {
+            completed: completedQuests,
+            timestamp: Date.now()
+          }
+          localStorage.setItem('festival-ar-progress', JSON.stringify(progress))
+
+          // Update UI
+          updateProgress()
+          updateQuestDisplay()
+          closeQuest()
+
+          // Show completion feedback
+          alert(
+            `🎉 Quest completed: ${completed.title}!\n\nReward: ${completed.rewards?.[0]?.item || 'Achievement unlocked!'}`
+          )
+
+          // Play completion sound
+          playSound('quest-complete.mp3')
+        }
+      }
+
+      function updateProgress() {
+        const total = activeQuests.length + completedQuests.length
+        const completed = completedQuests.length
+        const percentage = total > 0 ? (completed / total) * 100 : 0
+
+        document.getElementById('progressFill').style.width = `${percentage}%`
+        document.getElementById('progressText').textContent =
+          `${completed} / ${total} Quests Completed`
+      }
+
+      function updateQuestDisplay() {
+        const questList = document.getElementById('questList')
+        questList.innerHTML = ''
+
+        activeQuests.forEach((quest) => {
+          const questEl = document.createElement('div')
+          questEl.innerHTML = `
+                    <strong>${quest.title}</strong><br>
+                    <small>${quest.description}</small><br>
+                    <em>Difficulty: ${quest.difficulty} | Time: ${quest.estimatedTime}</em>
+                `
+          questEl.style.marginBottom = '10px'
+          questEl.style.padding = '10px'
+          questEl.style.background = 'rgba(255, 255, 255, 0.1)'
+          questEl.style.borderRadius = '8px'
+          questEl.style.cursor = 'pointer'
+          questEl.onclick = () => showQuest(quest)
+          questList.appendChild(questEl)
+        })
+      }
+
+      function updateLocationDisplay() {
+        document.getElementById('coordinates').textContent =
+          `${userLocation.lat.toFixed(6)}, ${userLocation.lng.toFixed(6)}`
+      }
+
+      function updateObjectCount() {
+        const visibleObjects = arObjects.filter(isObjectVisible)
+        document.getElementById('objectCount').textContent = `Objects: ${visibleObjects.length}`
+      }
+
+      function updateNearbyContent() {
+        // Remove distant objects and add nearby ones
+        const scene = document.querySelector('#arScene')
+
+        // Remove existing objects
+        arObjects.forEach((obj) => {
+          const existing = scene.querySelector(`#ar-object-${obj.id}`)
+          if (existing && !isObjectVisible(obj)) {
+            scene.removeChild(existing)
+          }
+        })
+
+        // Add newly visible objects
+        arObjects.forEach((obj) => {
+          const existing = scene.querySelector(`#ar-object-${obj.id}`)
+          if (!existing && isObjectVisible(obj)) {
+            // Create new object (simplified version of createARObjects)
+            const entity = document.createElement('a-entity')
+            entity.setAttribute('id', `ar-object-${obj.id}`)
+            entity.setAttribute(
+              'gps-entity-place',
+              `latitude: ${obj.location.lat}; longitude: ${obj.location.lng}`
+            )
+            // Add other attributes...
+            scene.appendChild(entity)
+          }
+        })
+
+        updateObjectCount()
+      }
+
+      function showARScene() {
+        document.getElementById('loadingScreen').style.display = 'none'
+        document.getElementById('arScene').style.display = 'block'
+      }
+
+      function toggleInfo() {
+        const panel = document.getElementById('infoPanel')
+        panel.classList.toggle('show')
+      }
+
+      function exitAR() {
+        if (watchId) {
+          navigator.geolocation.clearWatch(watchId)
+        }
+
+        // Return to main website or close
+        if (window.history.length > 1) {
+          window.history.back()
+        } else {
+          window.close()
+        }
+      }
+
+      function playSound(filename) {
+        try {
+          const audio = new Audio(`/sounds/ar/${filename}`)
+          audio.volume = arConfig?.settings?.audio?.volume || 0.7
+          audio.play().catch((e) => console.warn('Sound play failed:', e))
+        } catch (e) {
+          console.warn('Sound not available:', filename)
+        }
+      }
+
+      // Initialize when page loads
+      window.addEventListener('load', initAR)
+
+      // Handle page visibility changes
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          // Pause AR when page is hidden
+          console.log('AR paused')
+        } else {
+          // Resume AR when page is visible
+          console.log('AR resumed')
+          updateNearbyContent()
+        }
+      })
+
+      // Handle orientation changes
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+          // Refresh AR scene after orientation change
+          updateNearbyContent()
+        }, 500)
+      })
+    </script>
+  </body>
+</html>
