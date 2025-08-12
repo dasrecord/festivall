@@ -131,8 +131,8 @@ export default {
           icon: sequence
         },
         {
-          text: 'Find the Guardian of the Flame and ask him to declare the magic word.',
-          answer: 'eternal',
+          text: 'Find the Guardian of the Flame and identify his magic item.',
+          answer: 'lighter',
           type: 'text',
           category: 'Quest',
           icon: quest
@@ -272,7 +272,7 @@ export default {
           icon: trivia
         },
         {
-          text: 'Locate our Food Coordinator for your final question.',
+          text: 'Locate our Food Coordinator for your final clue.',
           answer: 'garlic',
           type: 'text',
           category: 'Quest',
