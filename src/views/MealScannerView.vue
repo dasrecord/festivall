@@ -180,17 +180,29 @@
         <div>
           <h4 style="color: var(--festivall-baby-blue)">Total Expected Attendance</h4>
           <h2>
-            {{ orders.reduce((total, order) => total + (parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0), 0) }}
+            {{
+              orders.reduce(
+                (total, order) =>
+                  total +
+                  (parseInt(order.original_ticket_quantity) ||
+                    parseInt(order.ticket_quantity) ||
+                    0),
+                0
+              )
+            }}
           </h2>
         </div>
         <div>
           <h4 style="color: orange">Current Attendance</h4>
           <h2>
-            {{ orders.reduce((total, order) => {
-              const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
-              const remaining = parseInt(order.ticket_quantity) || 0;
-              return total + (original - remaining);
-            }, 0) }}
+            {{
+              orders.reduce((total, order) => {
+                const original =
+                  parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+                const remaining = parseInt(order.ticket_quantity) || 0
+                return total + (original - remaining)
+              }, 0)
+            }}
           </h2>
         </div>
         <div>
@@ -273,23 +285,14 @@
   <div class="database">
     <h2>Order Database</h2>
     <div class="filter-controls">
-      <button 
-        @click="filter = 'all'" 
-        :class="{ active: filter === 'all' }"
-      >
+      <button @click="filter = 'all'" :class="{ active: filter === 'all' }">
         All Orders ({{ orders.length }})
       </button>
-      <button 
-        @click="filter = 'mealTickets'" 
-        :class="{ active: filter === 'mealTickets' }"
-      >
-        Has Meal Tickets ({{ orders.filter(order => order.meal_tickets_remaining > 0).length }})
+      <button @click="filter = 'mealTickets'" :class="{ active: filter === 'mealTickets' }">
+        Has Meal Tickets ({{ orders.filter((order) => order.meal_tickets_remaining > 0).length }})
       </button>
-      <button 
-        @click="filter = 'noMealTickets'" 
-        :class="{ active: filter === 'noMealTickets' }"
-      >
-        No Meal Tickets ({{ orders.filter(order => order.meal_tickets_remaining === 0).length }})
+      <button @click="filter = 'noMealTickets'" :class="{ active: filter === 'noMealTickets' }">
+        No Meal Tickets ({{ orders.filter((order) => order.meal_tickets_remaining === 0).length }})
       </button>
     </div>
     <ul>
