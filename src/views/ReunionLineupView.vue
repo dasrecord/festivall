@@ -126,10 +126,10 @@ const getEventsByDay = (targetDate) => {
     })
 }
 
-const getFridayEvents = computed(() => getEventsByDay(new Date('2025-08-29T00:00:00-06:00'))) // CST offset
-const getSaturdayEvents = computed(() => getEventsByDay(new Date('2025-08-30T00:00:00-06:00')))
-const getSundayEvents = computed(() => getEventsByDay(new Date('2025-08-31T00:00:00-06:00')))
-const getMondayEvents = computed(() => getEventsByDay(new Date('2025-09-01T00:00:00-06:00')))
+const getFridayEvents = computed(() => getEventsByDay(new Date('2025-08-29T12:00:00-06:00'))) // Fixed: Noon MST to avoid timezone shifts
+const getSaturdayEvents = computed(() => getEventsByDay(new Date('2025-08-30T12:00:00-06:00'))) // Fixed: Noon MST
+const getSundayEvents = computed(() => getEventsByDay(new Date('2025-08-31T12:00:00-06:00'))) // Fixed: Noon MST
+const getMondayEvents = computed(() => getEventsByDay(new Date('2025-09-01T12:00:00-06:00'))) // Fixed: Noon MST
 
 // Toggle day visibility
 const toggleDay = (day) => {
