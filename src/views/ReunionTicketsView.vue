@@ -39,6 +39,7 @@ const meals_image = ref(meals)
 
 const btcRate = ref(0)
 const paymentInstructions = ref('')
+const isSubmitting = ref(false)
 
 const route = useRoute()
 
@@ -210,7 +211,11 @@ const addOrder = async () => {
 }
 
 const submitForm = async () => {
+  if (isSubmitting.value) return // Prevent duplicate submissions
+
   try {
+    isSubmitting.value = true
+
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
       form.value.id_code = form.value.id_code_long.slice(0, 5)
@@ -289,6 +294,9 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Error submitting form:', error)
+    alert('An error occurred while submitting the form. Please try again.')
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -598,7 +606,9 @@ onMounted(() => {
             Total Price: {{ form.total_price }} BTC (25% Discount Applied)
           </div>
         </div>
-        <button type="submit">CONFIRM</button>
+        <button type="submit" :disabled="isSubmitting">
+          {{ isSubmitting ? 'PROCESSING...' : 'CONFIRM' }}
+        </button>
       </form>
       <div class="footer">
         <img :src="footer" alt="footer" style="max-width: 700px" />
@@ -699,6 +709,15 @@ button {
 button:hover {
   background-color: var(--reunion-frog-green);
   color: white;
+}
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+button:disabled:hover {
+  background-color: #ccc;
+  color: #666;
 }
 .highlight {
   color: var(--reunion-frog-green);
