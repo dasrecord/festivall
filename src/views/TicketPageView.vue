@@ -91,7 +91,7 @@
           "
         >
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
-          <strong>Gate Information</strong>
+          <strong>Front Gate Info</strong>
         </p>
         <p
           @click="showMealServiceModal = true"
@@ -359,17 +359,16 @@
           <img :src="bonus_icon" style="height: 64px; width: auto; margin: 0" alt="Bonus Icon" />
           <h2>Referral Earnings</h2>
           <strong> #{{ order.id_code }} </strong>
-          <strong>${{ referralEarnings }}</strong
-          ><br />
+          <strong>${{ referralEarnings }}</strong>
           <h3>
             💰
-            <strong style="text-decoration: underline; color: orange">Referral Instructions:</strong
-            ><br />
+            <strong style="text-decoration: underline; color: orange"
+              >Referral Instructions:</strong
+            >
             You can share your Festivall ID_CODE or your referral link with your friends and
             family.<br />
-            🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br /><br />
+            🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br />
           </h3>
-
           <h3>
             🔗
             <strong style="text-decoration: underline; color: orange">
@@ -381,7 +380,7 @@
               target="_blank"
               style="color: orange"
               >{{ `https://festivall.ca/reuniontickets/${order.id_code}` }} </a
-            ><br /><br />
+            ><br />
           </h3>
           <h3>
             📱
@@ -389,7 +388,6 @@
               This is your referral QR code:
             </strong>
           </h3>
-
           <div class="qr-code">
             <canvas ref="referralQrCanvas"></canvas>
           </div>
@@ -718,8 +716,12 @@ export default {
 
         let totalEarnings = 0
         referralSnapshot.forEach((doc) => {
-          const ticketType = doc.data().ticket_type
-          totalEarnings += ticketType === 'Weekend Pass' ? 20 : ticketType === 'Day Pass' ? 10 : 0
+          const orderData = doc.data()
+          const ticketType = orderData.ticket_type
+          const ticketQuantity = orderData.ticket_quantity || 1
+          const earningsPerTicket =
+            ticketType === 'Weekend Pass' ? 20 : ticketType === 'Day Pass' ? 10 : 0
+          totalEarnings += earningsPerTicket * ticketQuantity
         })
 
         referralEarnings.value = totalEarnings // Update the reactive variable
