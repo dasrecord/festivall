@@ -62,7 +62,9 @@
       <strong>Fixture Type:</strong> {{ applicant.fixture_type }}
     </p>
     <p v-if="applicant.applicant_types.includes('Vendor')">
-      <strong>Vendor Requirements:</strong> {{ applicant.vendor_requirements }}
+      <strong>Event Hours for VENDOR Services:</strong>
+      Vendors operational during Event Date<br />
+      Vendors are required to purchase weekend passes for each member of their party.
     </p>
 
     <h3>2. PAYMENT</h3>
@@ -378,19 +380,19 @@ export default {
     const handleSubmit = async () => {
       try {
         console.log('Starting contract submission process...')
-        
+
         // Complete all critical database operations first
         await updateApplication()
         console.log('✅ Application updated')
-        
+
         await saveContract()
         console.log('✅ Contract saved')
-        
+
         await addOrder()
         console.log('✅ Order added')
-    
+
         console.log('Starting notifications...')
-        
+
         // Send notifications after all critical operations are complete
         const notificationResults = await Promise.allSettled([
           sendSMS(
@@ -406,9 +408,9 @@ export default {
             `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
           )
         ])
-    
+
         console.log('Notification results:', notificationResults)
-    
+
         // Log results for debugging
         notificationResults.forEach((result, index) => {
           const types = ['SMS', 'Email', 'Slack']
@@ -419,7 +421,7 @@ export default {
             console.error(`❌ ${type} failed:`, result.reason)
           }
         })
-    
+
         // Redirect regardless of notification success/failure
         router.push({ name: 'reunionticket' })
       } catch (error) {
