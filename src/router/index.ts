@@ -368,10 +368,16 @@ const routes = [
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ14cUp_kw7XDZOpgtLfO9t4eAJho8O_jwTL5RO7TG8S03ejX_xZafzBTNsFloIimnW_ioUDkl1s' }
   },
   {
-    path: '/reunion-foodteam-signup',
+    path: '/reunion-foodteam-a-signup',
     name: 'reunion-foodteam-signup',
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3HJwOFBlAF2ninkICYzjQ8S9Mn6zuoDwV5trvBO5ilkjJ6UrXDRQt0gJSljvAoRTDIZ6fzIelz' }
+  },
+  {
+    path: '/reunion-foodteam-b-signup',
+    name: 'reunion-foodteam-b-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2BnuKTUJkP2Utiko_Mw7Tt9Qz0OHEFW7HI-pjjNajqMpYk0otR3DjpgIDSJg8tJh_TdUik6HIu' }
   },
   {
     path: '/reunion-stagecrew-signup',
@@ -390,6 +396,12 @@ const routes = [
     name: 'reunion-setupcrew-b-signup',
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0kXHYQnvWUCAD60AY0QMBBmVBNOd_PI1bVgDBWlTO0VGE9ZEqmOX3285NArq6DuZ8jkcT6V7GW' }
+  },
+  {
+    path: '/reunion-setupcrew-c-signup',
+    name: 'reunion-setupcrew-c-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2ZF6BGPPSmFljsUrkTHOG6KIRHyEZTfKCS80S2ahStKf7WhhGd9BPaAvsQym_xEh-mWrP96SOT' }
   },
   {
     path: '/reunion-cleanupcrew-signup',

@@ -50,6 +50,7 @@
               using our in-house ticketing system. They are the first point of contact for attendees
               and play a crucial role in ensuring a positive experience for everyone.
             </p>
+            <p>Team Lead: Prasenjit</p>
           </div>
         </div>
         <div class="crew">
@@ -60,8 +61,11 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
+            <button @click="router.push('/reunion-foodteam-a-signup')" class="volunteer-button">
               FOOD TEAM SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
+            </button>
+            <button @click="router.push('/reunion-foodteam-b-signup')" class="volunteer-button">
+              FOOD TEAM B SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
@@ -89,6 +93,10 @@
             </button>
             <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
               SETUP CREW B SIGNUP<br />Late Team [Aug 27 - Aug 29]<br />[Minimum One 8-Hour Shift
+              PreShow]
+            </button>
+            <button @click="router.push('/reunion-setupcrew-c-signup')" class="volunteer-button">
+              SETUP CREW C SIGNUP<br />Last Minute Team [Aug 27 - 29]<br />[Minimum One 8-Hour Shift
               PreShow]
             </button>
             <p>
