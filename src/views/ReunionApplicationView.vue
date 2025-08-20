@@ -626,9 +626,9 @@ onMounted(() => {
                 id="art_installation"
                 value="Art Installation"
                 v-model="form.applicant_types"
-                @change="trackCategorySelection(form.applicant_types)"
+                disabled
               />
-              Art Installation
+              Art Installation (Closed)
             </span>
             <span class="checkbox-label">
               <input
