@@ -18,5 +18,28 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (!assetInfo.name) return `assets/[name]-[hash][extname]`
+          
+          const info = assetInfo.name.split('.')
+          const extType = info[info.length - 1]
+          // Add hash to video files for better caching
+          if (/mp4|webm|avi|mov|mkv/i.test(extType)) {
+            return `videos/[name]-[hash][extname]`
+          }
+          return `assets/[name]-[hash][extname]`
+        }
+      }
+    }
+  },
+  server: {
+    headers: {
+      // Cache video files for 1 week in development
+      'Cache-Control': 'public, max-age=604800'
+    }
   }
 });

@@ -1,13 +1,26 @@
 <template>
   <div class="container">
     <div class="video-section">
-      <video autoplay muted loop>
-        <!-- <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" /> -->
-        <source src="/src/assets/videos/synergistic/syn_galaxy.mp4" type="video/mp4" />
-        <!-- <source src="/src/assets/videos/synergistic/syn_vortex.mp4" type="video/mp4" /> -->
-        <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
-        Your browser does not support the video tag.
-      </video>
+      <div class="video-container">
+        <video
+          v-if="shouldLoad"
+          ref="videoRef"
+          autoplay
+          muted
+          loop
+          preload="metadata"
+          @loadeddata="onVideoLoaded"
+        >
+          <!-- <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" /> -->
+          <source src="/src/assets/videos/synergistic/syn_galaxy.mp4" type="video/mp4" />
+          <!-- <source src="/src/assets/videos/synergistic/syn_vortex.mp4" type="video/mp4" /> -->
+          <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
+          Your browser does not support the video tag.
+        </video>
+        <div v-else class="video-placeholder">
+          <div class="loading-spinner">Loading Synergistic...</div>
+        </div>
+      </div>
       <div class="logo">
         <img src="/src/assets/images/synergistic_logo_white.png" alt="Synergistic Logo" />
       </div>
@@ -44,8 +57,19 @@
 
 <script>
 import axios from 'axios'
+import { useLazyVideo } from '@/composables/useLazyVideo.js'
 
 export default {
+  setup() {
+    const { videoRef, shouldLoad, isLoaded, onVideoLoaded } = useLazyVideo()
+
+    return {
+      videoRef,
+      shouldLoad,
+      isLoaded,
+      onVideoLoaded
+    }
+  },
   data() {
     return {
       form: {
@@ -207,6 +231,41 @@ img {
     top: 50%;
     left: 65%;
     transform: translate(-50%, -50%);
+  }
+}
+
+/* Video lazy loading styles */
+.video-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.loading-spinner {
+  color: white;
+  font-size: 1.2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
   }
 }
 </style>
