@@ -134,9 +134,24 @@
               <label>Ticket Quantity:</label>
               <span>{{ applicant.ticket_quantity }}</span>
             </div>
-            <div class="info-item" v-if="applicant.meal_tickets_remaining">
+            <div class="info-item" v-if="applicant.meal_tickets_remaining !== undefined">
               <label>Meal Tickets:</label>
-              <span>{{ applicant.meal_tickets_remaining }}</span>
+              <div class="meal-tickets-control">
+                <button 
+                  @click="decrementMealTickets" 
+                  :disabled="mealTickets <= 0" 
+                  class="meal-btn decrement-btn"
+                >
+                  -
+                </button>
+                <span class="meal-count">{{ mealTickets }}</span>
+                <button 
+                  @click="incrementMealTickets" 
+                  class="meal-btn increment-btn"
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -345,6 +360,7 @@ export default {
     const newSettime = ref('')
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
+    const mealTickets = ref(0)
 
     const loadApplicant = async () => {
       try {
@@ -361,6 +377,7 @@ export default {
 
         if (docSnap.exists()) {
           applicant.value = { id: docSnap.id, ...docSnap.data() }
+          mealTickets.value = applicant.value.meal_tickets_remaining || 0
         } else {
           error.value = 'Applicant not found'
         }
@@ -424,6 +441,32 @@ export default {
         `/scripts/notifications.js?action=remind_contract&id=${applicant.value.id}`,
         '_blank'
       )
+    }
+
+    // Meal Tickets Functions
+    const updateMealTickets = async (newValue) => {
+      if (!applicant.value) return
+      try {
+        const docRef = doc(reunion_db, 'orders_2025', applicant.value.id)
+        await updateDoc(docRef, { meal_tickets_remaining: newValue })
+        applicant.value.meal_tickets_remaining = newValue
+        mealTickets.value = newValue
+        console.log('Meal tickets updated for:', applicant.value.fullname)
+      } catch (error) {
+        console.error('Error updating meal tickets:', error)
+      }
+    }
+
+    const incrementMealTickets = () => {
+      const newValue = mealTickets.value + 1
+      updateMealTickets(newValue)
+    }
+
+    const decrementMealTickets = () => {
+      if (mealTickets.value > 0) {
+        const newValue = mealTickets.value - 1
+        updateMealTickets(newValue)
+      }
     }
 
     // SMS Function
@@ -582,6 +625,7 @@ export default {
       smsMessage,
       newCompensation,
       newSettime,
+      mealTickets,
       confirmPaymentReceived,
       revokeTicket,
       remindPayment,
@@ -591,6 +635,8 @@ export default {
       clearCompensation,
       addSettime,
       removeSettime,
+      incrementMealTickets,
+      decrementMealTickets,
       deliverContract,
       deliverTicket
     }
@@ -1047,6 +1093,75 @@ h1 {
   border-radius: 4px;
   color: var(--festivall-baby-blue) !important;
   font-weight: bold;
+}
+
+/* Meal Tickets Control */
+.meal-tickets-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meal-btn {
+  width: 32px !important;
+  height: 32px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background-color: var(--festivall-baby-blue) !important;
+  color: white !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  line-height: 1 !important;
+}
+
+.meal-btn:hover {
+  background-color: #0056b3 !important;
+  transform: scale(1.1) !important;
+}
+
+.meal-btn:disabled {
+  background-color: #6c757d !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  opacity: 0.6 !important;
+}
+
+.meal-btn:disabled:hover {
+  background-color: #6c757d !important;
+  transform: none !important;
+}
+
+.increment-btn {
+  background-color: #28a745 !important;
+}
+
+.increment-btn:hover {
+  background-color: #218838 !important;
+}
+
+.decrement-btn {
+  background-color: #dc3545 !important;
+}
+
+.decrement-btn:hover {
+  background-color: #c82333 !important;
+}
+
+.meal-count {
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  color: var(--festivall-baby-blue) !important;
+  min-width: 40px !important;
+  text-align: center !important;
 }
 
 /* Mobile responsiveness */
