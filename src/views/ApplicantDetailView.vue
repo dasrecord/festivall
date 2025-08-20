@@ -137,20 +137,15 @@
             <div class="info-item" v-if="applicant.meal_tickets_remaining !== undefined">
               <label>Meal Tickets:</label>
               <div class="meal-tickets-control">
-                <button 
-                  @click="decrementMealTickets" 
-                  :disabled="mealTickets <= 0" 
+                <button
+                  @click="decrementMealTickets"
+                  :disabled="mealTickets <= 0"
                   class="meal-btn decrement-btn"
                 >
                   -
                 </button>
                 <span class="meal-count">{{ mealTickets }}</span>
-                <button 
-                  @click="incrementMealTickets" 
-                  class="meal-btn increment-btn"
-                >
-                  +
-                </button>
+                <button @click="incrementMealTickets" class="meal-btn increment-btn">+</button>
               </div>
             </div>
           </div>

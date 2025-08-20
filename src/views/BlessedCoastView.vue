@@ -22,9 +22,22 @@
       traditional, ancestral and unceded territory of the Coast Salish peoples - Skwxwú7mesh
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
-    <video controls :src="videoSrc" class="responsive-video" allowfullscreen>
-      Your browser does not support the video tag.
-    </video>
+    <div ref="videoContainer" class="video-container">
+      <video
+        v-if="shouldLoad && videoSrc"
+        controls
+        :src="videoSrc"
+        class="responsive-video"
+        allowfullscreen
+        preload="metadata"
+        @loadeddata="onVideoLoaded"
+      >
+        Your browser does not support the video tag.
+      </video>
+      <div v-else class="video-placeholder">
+        <div class="loading-spinner">Loading Blessed Coast...</div>
+      </div>
+    </div>
     <div class="contact-form">
       <div class="contact-us">
         <h2>Drop Us A Line</h2>
@@ -70,6 +83,7 @@ import { useHead } from '@vueuse/head'
 import { ref, onMounted } from 'vue'
 import { logEvent } from 'firebase/analytics'
 import { festivall_analytics } from '@/firebase'
+import { useLazyVideo } from '@/composables/useLazyVideo.js'
 
 const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
 const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
@@ -82,6 +96,8 @@ export default {
     IconInstagram
   },
   setup() {
+    const { videoRef, shouldLoad, isLoaded, onVideoLoaded } = useLazyVideo()
+
     useHead({
       title: 'BLESSED COAST FESTIVAL',
       meta: [
@@ -167,7 +183,11 @@ export default {
       toggleEnlarge,
       videoSrc,
       submitForm,
-      form
+      form,
+      videoRef,
+      shouldLoad,
+      isLoaded,
+      onVideoLoaded
     }
   }
 }
@@ -367,6 +387,39 @@ a:hover {
 
   .contact-form {
     padding: 1rem;
+  }
+}
+
+/* Video lazy loading styles */
+.video-container {
+  width: 100%;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.loading-spinner {
+  color: white;
+  font-size: 1.2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
   }
 }
 </style>
