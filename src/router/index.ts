@@ -43,11 +43,6 @@ import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstal
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
-import HavenView from '@/views/HavenView.vue'
-import HavenBattleView from '@/views/HavenBattleView.vue'
-import HavenIDCodeInput from '@/views/HavenIDCodeInput.vue'
-import HavenTicketPageView from '@/views/HavenTicketPageView.vue'
-import HavenTicketScannerView from '@/views/HavenTicketScannerView.vue'
 import ReunionFAQView from '@/views/ReunionFAQView.vue'
 import ApplicantDetailView from '@/views/ApplicantDetailView.vue'
 
@@ -190,44 +185,7 @@ const routes = [
     component: DasButtonsView,
     meta: { requiresAuth: true, showHeader: false }
   },
-  {
-    path: '/haven',
-    name: 'haven',
-    component: HavenView
-  },
-  {
-    path: '/havenlogin',
-    name: 'havenlogin',
-    component: HavenIDCodeInput
-  },
-  {
-    path: '/havenresidencytickets',
-    name: 'havenresidencytickets',
-    component: ExternalRedirect,
-    props: { url:'https://buy.stripe.com/5kQaEXbUCd1v9lTgfZ28800'}
-  },
-  {
-    path: '/haventicket/:id_code',
-    name: 'HavenTicketPage',
-    component: HavenTicketPageView
-  },
-  {
-    path: '/haventicketscanner',
-    name: 'haventicketscanner',
-    component: HavenTicketScannerView,
-    meta: { requiresAuth: true, showHeader: false }
-  },
-  {
-    path: '/havenbattle',
-    name: 'havenbattle',
-    component: HavenBattleView
-  },
-  {
-    path: '/haveninstagram',
-    name: 'haveninstagram',
-    component: ExternalRedirect,
-    props: { url: "http://instagram.com/havenyxe"}
-  },
+
   {
     path: '/nye',
     name: 'nye',

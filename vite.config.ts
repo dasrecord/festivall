@@ -37,6 +37,8 @@ export default defineConfig({
     }
   },
   server: {
+    port: 5173,
+    host: 'localhost',
     headers: {
       // Cache video files for 1 week in development
       'Cache-Control': 'public, max-age=604800'

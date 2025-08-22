@@ -4,7 +4,7 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import ticket from '@/assets/images/icons/ticket.png'
 import meals from '@/assets/images/icons/meals.png'
 import footer from '@/assets/images/poster_footer_v1.png'
-import bitcoin_icon from '../assets/images/bitcoin.svg'
+import bitcoin_icon from '../assets/images/bitcoin.svg?url'
 
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'

@@ -25,10 +25,6 @@
           rotation DJ @ Bokeh on the Plaza
         </li>
         <li>
-          <img :src="headphones_icon" alt="headphones icon" class="icon" />
-          resident DJ at Haven @ Midtown Events
-        </li>
-        <li>
           <img :src="music_icon" alt="music icon" class="icon" />
           composer and producer for the internationally acclaimed Mike Saint-Jules
         </li>
