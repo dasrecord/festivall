@@ -22,22 +22,7 @@
       traditional, ancestral and unceded territory of the Coast Salish peoples - Skwxwú7mesh
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
-    <div ref="videoContainer" class="video-container">
-      <video
-        v-if="shouldLoad && videoSrc"
-        controls
-        :src="videoSrc"
-        class="responsive-video"
-        allowfullscreen
-        preload="metadata"
-        @loadeddata="onVideoLoaded"
-      >
-        Your browser does not support the video tag.
-      </video>
-      <div v-else class="video-placeholder">
-        <div class="loading-spinner">Loading Blessed Coast...</div>
-      </div>
-    </div>
+
     <div class="contact-form">
       <div class="contact-us">
         <h2>Drop Us A Line</h2>
@@ -83,10 +68,8 @@ import { useHead } from '@vueuse/head'
 import { ref, onMounted } from 'vue'
 import { logEvent } from 'firebase/analytics'
 import { festivall_analytics } from '@/firebase'
-import { useLazyVideo } from '@/composables/useLazyVideo.js'
 
 const images = import.meta.glob('@/assets/images/blessed/bc_landing_page/*.{jpg,jpeg,png}')
-const video = import('@/assets/videos/blessed_coast/bc_festival_trailer.mp4')
 
 export default {
   name: 'BlessedCoastView',
@@ -96,8 +79,6 @@ export default {
     IconInstagram
   },
   setup() {
-    const { videoRef, shouldLoad, isLoaded, onVideoLoaded } = useLazyVideo()
-
     useHead({
       title: 'BLESSED COAST FESTIVAL',
       meta: [
@@ -116,7 +97,6 @@ export default {
 
     const imageList = ref([])
     const enlargedImage = ref(null)
-    const videoSrc = ref('')
     const form = ref({
       name: '',
       email: '',
@@ -138,9 +118,6 @@ export default {
           const module = await images[path]()
           imageList.value.push(module.default)
         }
-
-        const videoModule = await video
-        videoSrc.value = videoModule.default
       } catch (error) {
         console.error('Error during onMounted hook:', error)
       }
@@ -181,13 +158,8 @@ export default {
       imageList,
       enlargedImage,
       toggleEnlarge,
-      videoSrc,
       submitForm,
-      form,
-      videoRef,
-      shouldLoad,
-      isLoaded,
-      onVideoLoaded
+      form
     }
   }
 }

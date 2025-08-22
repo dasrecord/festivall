@@ -1,6 +1,6 @@
 <script setup>
-// import reunion_map from '@/assets/images/reunion_map_(awesome_lathusca).svg'
-import reunion_map from '@/assets/images/reunion_map_(awesome_lathusca).svg'
+// Import SVG as URL for use in template
+import reunion_map from '@/assets/images/reunion_map_(awesome_lathusca).svg?url'
 </script>
 
 <template>

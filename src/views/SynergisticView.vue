@@ -2,23 +2,8 @@
   <div class="container">
     <div class="video-section">
       <div class="video-container">
-        <video
-          v-if="shouldLoad"
-          ref="videoRef"
-          autoplay
-          muted
-          loop
-          preload="metadata"
-          @loadeddata="onVideoLoaded"
-        >
-          <!-- <source src="/src/assets/videos/synergistic/syn_lotus.mp4" type="video/mp4" /> -->
-          <source src="/src/assets/videos/synergistic/syn_galaxy.mp4" type="video/mp4" />
-          <!-- <source src="/src/assets/videos/synergistic/syn_vortex.mp4" type="video/mp4" /> -->
-          <!-- <source src="/src/assets/videos/synergistic/syn_starfield.mp4" type="video/mp4" /> -->
-          Your browser does not support the video tag.
-        </video>
-        <div v-else class="video-placeholder">
-          <div class="loading-spinner">Loading Synergistic...</div>
+        <div class="video-placeholder">
+          <div class="loading-spinner">Synergistic Visual Experience</div>
         </div>
       </div>
       <div class="logo">
@@ -57,19 +42,8 @@
 
 <script>
 import axios from 'axios'
-import { useLazyVideo } from '@/composables/useLazyVideo.js'
 
 export default {
-  setup() {
-    const { videoRef, shouldLoad, isLoaded, onVideoLoaded } = useLazyVideo()
-
-    return {
-      videoRef,
-      shouldLoad,
-      isLoaded,
-      onVideoLoaded
-    }
-  },
   data() {
     return {
       form: {
@@ -141,9 +115,6 @@ export default {
 </script>
 
 <style scoped>
-* {
-  /* border: 1px solid lime; */
-}
 .container {
   display: flex;
   flex-direction: column;
@@ -195,9 +166,6 @@ select:hover {
   color: rgb(0, 0, 0);
 }
 
-video {
-  max-height: 100%;
-}
 .logo {
   position: absolute;
   width: 66vw;

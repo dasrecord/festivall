@@ -77,7 +77,7 @@
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import bitcoin_icon from '../assets/images/bitcoin.svg'
+import bitcoin_icon from '../assets/images/bitcoin.svg?url'
 import CalltoAction from '@/components/CalltoAction.vue'
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'

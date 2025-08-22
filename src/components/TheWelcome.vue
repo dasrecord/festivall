@@ -75,7 +75,7 @@ onMounted(() => {
       </RouterLink>
     </div>
 
-    <div class="wrapper">
+    <!-- <div class="wrapper">
       <RouterLink to="/haven" @click="trackBrandClick('Haven')">
         <WelcomeItem class="welcome-item">
           <template #icon>
@@ -90,7 +90,7 @@ onMounted(() => {
           </template>
         </WelcomeItem>
       </RouterLink>
-    </div>
+    </div> -->
     <div class="wrapper">
       <RouterLink to="/placeholder" @click="trackBrandClick('Placeholder')">
         <WelcomeItem class="welcome-item">

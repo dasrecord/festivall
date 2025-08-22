@@ -3,20 +3,8 @@
     <!-- Video Section -->
     <div class="video-section">
       <div class="video-container">
-        <video
-          v-if="shouldLoad"
-          ref="videoRef"
-          autoplay
-          muted
-          loop
-          preload="metadata"
-          @loadeddata="onVideoLoaded"
-        >
-          <source src="/videos/onyx/onyx_hair.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <div v-else class="video-placeholder">
-          <div class="loading-spinner">Loading Onyx...</div>
+        <div class="video-placeholder">
+          <div class="loading-spinner">Onyx Visual Experience</div>
         </div>
       </div>
       <div class="logo">
@@ -37,14 +25,10 @@
             initiatives to large-scale enterprise strategies.
           </p>
         </div>
-        <div class="video-buttons">
-          <button @mouseover="changeVideo('onyx_design.mp4')" @click="toggleForm">
-            Art & Design
-          </button>
-          <button @mouseover="changeVideo('onyx_hair.mp4')" @click="toggleForm">Hair</button>
-          <button @mouseover="changeVideo('onyx_photo.mp4')" @click="toggleForm">
-            Photography
-          </button>
+        <div class="action-buttons">
+          <button @click="toggleForm">Art & Design</button>
+          <button @click="toggleForm">Hair</button>
+          <button @click="toggleForm">Photography</button>
         </div>
       </div>
     </div>
@@ -82,19 +66,8 @@
 
 <script>
 import axios from 'axios'
-import { useLazyVideo } from '@/composables/useLazyVideo.js'
 
 export default {
-  setup() {
-    const { videoRef, shouldLoad, isLoaded, onVideoLoaded } = useLazyVideo()
-
-    return {
-      videoRef,
-      shouldLoad,
-      isLoaded,
-      onVideoLoaded
-    }
-  },
   data() {
     return {
       form: {
@@ -161,36 +134,6 @@ export default {
         alert('Error submitting form. Please try again.')
       }
     },
-    changeVideo(videoName) {
-      const newVideoSrc = `/videos/onyx/${videoName}?v=${Date.now()}`
-      console.log(`Changing video source to: ${newVideoSrc}`)
-      const video = document.querySelector('video')
-      const source = video.querySelector('source')
-
-      if (video && source) {
-        source.src = newVideoSrc
-        video.load()
-
-        video.onloadeddata = () => {
-          video.play().catch((error) => {
-            console.error('Error playing video:', error)
-          })
-        }
-
-        const enquiryMap = {
-          'onyx_design.mp4': 'Design',
-          'onyx_hair.mp4': 'Hair',
-          'onyx_photo.mp4': 'Photo'
-        }
-
-        this.form.enquiry = enquiryMap[videoName] || ''
-
-        video.onerror = () => {
-          console.error(`Error loading video: ${newVideoSrc}`)
-          alert('The selected video could not be loaded. Please try another.')
-        }
-      }
-    },
     toggleForm() {
       this.showForm = !this.showForm
     },
@@ -227,9 +170,6 @@ export default {
   overflow: hidden;
   margin: -1rem;
 }
-video {
-  max-height: 100%;
-}
 .logo {
   position: absolute;
   top: 20%;
@@ -239,14 +179,14 @@ video {
   padding: 1rem;
   border-radius: 15px;
 }
-.video-buttons {
+.action-buttons {
   display: flex;
   justify-content: center;
   align-items: center;
   /* margin-top: 1rem; */
   font-size: 1rem;
 }
-.video-buttons button {
+.action-buttons button {
   margin: 0 10px;
   /* padding: 10px 20px; */
   background-color: #000;
@@ -255,7 +195,7 @@ video {
   border-radius: 9px;
   cursor: pointer;
 }
-.video-buttons button:hover {
+.action-buttons button:hover {
   background-color: #fff;
   color: #000;
 }
