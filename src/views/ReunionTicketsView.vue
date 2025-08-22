@@ -45,6 +45,12 @@ const route = useRoute()
 
 const validateReferralID = async (referral_id_code) => {
   try {
+    // First validate the format - ID codes should be exactly 5 characters, alphanumeric
+    if (!referral_id_code || referral_id_code.length !== 5 || !/^[a-zA-Z0-9]{5}$/.test(referral_id_code)) {
+      alert('Invalid ID_CODE format. ID_CODEs are exactly 5 alphanumeric characters (letters and numbers only).')
+      return
+    }
+
     // Track referral code usage attempt
     logEvent(reunion_analytics, 'select_content', {
       content_type: 'referral_code',
@@ -108,6 +114,12 @@ const formatPhoneNumber = (phone) => {
 
 const handlePhoneInput = (event) => {
   form.value.phone = formatPhoneNumber(event.target.value)
+}
+
+const handleReferralIDInput = (event) => {
+  // Only allow alphanumeric characters and limit to 5 characters
+  const value = event.target.value.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toUpperCase()
+  form.value.referral_id_code = value
 }
 
 const fetchBtcRate = async () => {
@@ -499,7 +511,9 @@ onMounted(() => {
             type="text"
             id="referral_id_code"
             v-model="form.referral_id_code"
-            placeholder="Enter an Artist or Volunteer's ID_CODE if you know one!"
+            placeholder="Enter a 5-character ID_CODE (e.g., A1B2C)"
+            maxlength="5"
+            @input="handleReferralIDInput"
             @blur="validateReferralID(form.referral_id_code)"
           />
         </div>
