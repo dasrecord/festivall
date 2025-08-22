@@ -35,9 +35,6 @@
     "form_submit": [
       "ReunionContactView.vue"
     ],
-    "video_start": [
-      "ReunionView.vue"
-    ],
     "begin_checkout": [
       "ReunionTicketsView.vue"
     ]
