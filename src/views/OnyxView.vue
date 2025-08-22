@@ -1,12 +1,7 @@
 <template>
   <div class="container">
-    <!-- Video Section -->
-    <div class="video-section">
-      <div class="video-container">
-        <div class="video-placeholder">
-          <div class="loading-spinner">Onyx Visual Experience</div>
-        </div>
-      </div>
+    <!-- Header Section -->
+    <div class="header-section">
       <div class="logo">
         <span @click="toggleForm" style="cursor: pointer">ONYX</span>
         <div class="splash-text" style="font-size: 0.8rem">
@@ -162,8 +157,8 @@ export default {
   height: 96vh;
 }
 
-/* Video Section */
-.video-section {
+/* Header Section */
+.header-section {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -274,41 +269,6 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 5rem;
-  }
-}
-
-/* Video lazy loading styles */
-.video-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.video-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.loading-spinner {
-  color: white;
-  font-size: 1.2rem;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
   }
 }
 </style>
