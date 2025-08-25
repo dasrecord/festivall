@@ -14,12 +14,13 @@ export default {
         BUY TICKETS
       </h1>
     </RouterLink>
-    <RouterLink to="/reunionapplication" class="link">
+
+    <!-- <RouterLink to="/reunionapplication" class="link">
       <h1 class="volunteer">
         <span style="color: white">Looking to volunteer?‍</span><br />
         APPLY NOW
       </h1>
-    </RouterLink>
+    </RouterLink> -->
 
     <a href="https://instagram.com/reunion_festival">
       <h1 class="">
