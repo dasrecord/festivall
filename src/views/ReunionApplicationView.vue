@@ -605,9 +605,9 @@ onMounted(() => {
                 id="volunteer"
                 value="Volunteer"
                 v-model="form.applicant_types"
-                disabled
+                @change="trackCategorySelection(form.applicant_types)"
               />
-              Volunteer (Closed)
+              Volunteer
             </span>
 
             <span class="checkbox-label">
@@ -636,7 +636,7 @@ onMounted(() => {
                 id="vendor"
                 value="Vendor"
                 v-model="form.applicant_types"
-disabled
+                disabled
               />
               Vendor (Closed)
             </span>
