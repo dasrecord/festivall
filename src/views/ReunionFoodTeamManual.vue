@@ -83,6 +83,19 @@
         </div>
         <p>{{ completedTasks }} of {{ totalTasks }} tasks completed ({{ progressPercentage }}%)</p>
       </div>
+
+      <!-- Admin Panel (Firebase Auth Required) -->
+      <div v-if="isFirebaseAuthenticated" class="admin-panel">
+        <h3 style="color: #ff6b6b; margin-bottom: 1rem">🔧 Admin Controls</h3>
+        <div class="admin-actions">
+          <button @click="resetAllTasks" class="admin-btn danger">
+            Reset All Food Team Tasks
+          </button>
+          <p style="font-size: 0.9rem; color: #ccc; margin-top: 0.5rem">
+            ⚠️ This will reset all Food Team tasks. Use with caution.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Public Task Overview -->
@@ -123,9 +136,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
-import { reunion_db } from '@/firebase'
-import { doc, getDoc, setDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
+import { ref, computed, onUnmounted, onMounted } from 'vue'
+import { reunion_db, festivall_auth } from '@/firebase'
+import { doc, getDoc, setDoc, collection, query, where, onSnapshot, deleteDoc, getDocs, writeBatch } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
@@ -134,6 +148,7 @@ const userIdCode = ref('')
 const userName = ref('')
 const isAuthenticated = ref(false)
 const foodTasks = ref([])
+const isFirebaseAuthenticated = ref(false)
 let unsubscribe = null
 
 // Initialize food team tasks
@@ -370,6 +385,50 @@ const completeTask = async (taskId) => {
     console.error('Error completing task:', error)
   }
 }
+
+// Firebase Auth check
+const checkFirebaseAuth = () => {
+  onAuthStateChanged(festivall_auth, (user) => {
+    isFirebaseAuthenticated.value = !!user
+  })
+}
+
+// Admin reset functions
+const resetAllTasks = async () => {
+  if (!isFirebaseAuthenticated.value) {
+    alert('Admin authentication required')
+    return
+  }
+  
+  if (!confirm('Are you sure you want to reset ALL Food Team tasks? This action cannot be undone.')) {
+    return
+  }
+  
+  try {
+    const q = query(
+      collection(reunion_db, 'task_status_2025'),
+      where('department', '==', 'food_team')
+    )
+    const querySnapshot = await getDocs(q)
+    
+    const batch = writeBatch(reunion_db)
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref)
+    })
+    
+    await batch.commit()
+    console.log('All Food Team tasks reset successfully')
+    alert('All Food Team tasks have been reset')
+  } catch (error) {
+    console.error('Error resetting all tasks:', error)
+    alert('Error resetting all tasks')
+  }
+}
+
+// Initialize Firebase Auth check
+onMounted(() => {
+  checkFirebaseAuth()
+})
 
 // Cleanup listener when component is unmounted
 onUnmounted(() => {
@@ -636,5 +695,44 @@ button:disabled {
   .task-overview {
     grid-template-columns: 1fr;
   }
+}
+
+/* Admin Panel Styles */
+.admin-panel {
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 2px solid #ff6b6b;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-btn.danger {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.admin-btn.danger:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+}
+
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

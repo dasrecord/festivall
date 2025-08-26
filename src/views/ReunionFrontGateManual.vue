@@ -28,6 +28,19 @@
       <h2>Welcome {{ userName }}!</h2>
       <p>Department: <span class="highlight">Front Gate Scanner Operator</span></p>
 
+      <!-- Admin Panel (only visible if logged into Firebase Auth) -->
+      <div v-if="isFirebaseAuthenticated" class="admin-panel">
+        <h3>🛠️ Admin Controls</h3>
+        <div class="admin-actions">
+          <button @click="adminResetAllTasks" class="admin-btn reset">
+            Reset All Front Gate Tasks
+          </button>
+          <RouterLink to="/admin/tasks" class="admin-btn manage">
+            Full Task Manager
+          </RouterLink>
+        </div>
+      </div>
+
       <div
         class="scanner-access"
         style="
@@ -204,9 +217,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
-import { reunion_db } from '@/firebase'
-import { doc, getDoc, setDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
+import { ref, computed, onUnmounted, onMounted } from 'vue'
+import { reunion_db, festivall_auth } from '@/firebase'
+import { doc, getDoc, setDoc, collection, query, where, onSnapshot, deleteDoc, getDocs, writeBatch } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
@@ -215,6 +229,7 @@ const userIdCode = ref('')
 const userName = ref('')
 const isAuthenticated = ref(false)
 const frontGateTasks = ref([])
+const isFirebaseAuthenticated = ref(false)
 let unsubscribe = null
 
 // Initialize front gate tasks
@@ -530,6 +545,66 @@ const completeTask = async (taskId) => {
     console.error('Error completing task:', error)
   }
 }
+
+// Firebase Auth check
+const checkFirebaseAuth = () => {
+  onAuthStateChanged(festivall_auth, (user) => {
+    isFirebaseAuthenticated.value = !!user
+  })
+}
+
+// Admin reset functions
+const resetTask = async (taskId) => {
+  if (!isFirebaseAuthenticated.value) {
+    alert('Admin authentication required')
+    return
+  }
+  
+  try {
+    const taskRef = doc(reunion_db, 'task_status_2025', taskId)
+    await deleteDoc(taskRef)
+    console.log(`Task ${taskId} reset successfully`)
+  } catch (error) {
+    console.error('Error resetting task:', error)
+    alert('Error resetting task')
+  }
+}
+
+const resetAllTasks = async () => {
+  if (!isFirebaseAuthenticated.value) {
+    alert('Admin authentication required')
+    return
+  }
+  
+  if (!confirm('Are you sure you want to reset ALL Front Gate tasks? This action cannot be undone.')) {
+    return
+  }
+  
+  try {
+    const q = query(
+      collection(reunion_db, 'task_status_2025'),
+      where('department', '==', 'front_gate')
+    )
+    const querySnapshot = await getDocs(q)
+    
+    const batch = writeBatch(reunion_db)
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref)
+    })
+    
+    await batch.commit()
+    console.log('All Front Gate tasks reset successfully')
+    alert('All Front Gate tasks have been reset')
+  } catch (error) {
+    console.error('Error resetting all tasks:', error)
+    alert('Error resetting all tasks')
+  }
+}
+
+// Initialize Firebase Auth check
+onMounted(() => {
+  checkFirebaseAuth()
+})
 
 // Cleanup listener when component is unmounted
 onUnmounted(() => {

@@ -51,6 +51,7 @@ import ReunionFoodTeamManual from '@/views/ReunionFoodTeamManual.vue'
 import ReunionFrontGateManual from '@/views/ReunionFrontGateManual.vue'
 import ReunionStageCrewManual from '@/views/ReunionStageCrewManual.vue'
 import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
+import AdminTaskManager from '@/views/AdminTaskManager.vue'
 
 
 const routes = [
@@ -165,6 +166,12 @@ const routes = [
     path: '/dashboard/applicant/:id',
     name: 'applicant-detail',
     component: ApplicantDetailView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/tasks',
+    name: 'admin-task-manager',
+    component: AdminTaskManager,
     meta: { requiresAuth: true }
   },
   {
@@ -374,10 +381,22 @@ const routes = [
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2BnuKTUJkP2Utiko_Mw7Tt9Qz0OHEFW7HI-pjjNajqMpYk0otR3DjpgIDSJg8tJh_TdUik6HIu' }
   },
   {
-    path: '/reunion-stagecrew-signup',
-    name: 'reunion-stagecrew-signup',
+    path: '/reunion-stagecrew-a-signup',
+    name: 'reunion-stagecrew-a-signup',
     component: ExternalRedirect,
     props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0G8ipWXeewiySQ1CFfoA7s0ReBQzvMnMSs2Bdyi-jar9AXO8WDzulHzrIIP2UVVL3iNzVOKg9S' }
+  },
+  {
+    path: '/reunion-stagecrew-b-signup',
+    name: 'reunion-stagecrew-b-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3-AHMMD3JYl0BqgPyf6VslkHnq3F-T7O9jeXwO8Q_fk52lQKtIBvDS3p82s5VlGF6CKx8rJQ5Y' }
+  },
+  {
+    path: '/reunion-stagecrew-c-signup',
+    name: 'reunion-stagecrew-c-signup',
+    component: ExternalRedirect,
+    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3GW9UXMe8iWBWNT_BPvCpRfbudlDPjrZBcHowAm6XTtuHlhNtsyXTjT62RC9SIagoWqL71KFG9' }
   },
   {
     path: '/reunion-setupcrew-a-signup',
