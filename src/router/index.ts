@@ -45,6 +45,11 @@ import OnyxView from '@/views/OnyxView.vue'
 import ScavengerHuntView from '@/views/ScavengerHuntView.vue'
 import ReunionFAQView from '@/views/ReunionFAQView.vue'
 import ApplicantDetailView from '@/views/ApplicantDetailView.vue'
+import ReunionSetupCrewManual from '@/views/ReunionSetupCrewManual.vue'
+import ReunionFoodTeamManual from '@/views/ReunionFoodTeamManual.vue'
+import ReunionFrontGateManual from '@/views/ReunionFrontGateManual.vue'
+import ReunionStageCrewManual from '@/views/ReunionStageCrewManual.vue'
+import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
 
 
 const routes = [
@@ -248,6 +253,31 @@ const routes = [
     path: '/reunion-volunteer-responsibilities',
     name: 'reunion-volunteer-responsibilities',
     component: ReunionVolunteerResponsibilities
+  },
+  {
+    path: '/reunionsetupcrew',
+    name: 'reunionsetupcrew',
+    component: ReunionSetupCrewManual,
+  },
+  {
+    path: '/reunionfoodteam',
+    name: 'reunionfoodteam',
+    component: ReunionFoodTeamManual,
+  },
+  {
+    path: '/reunionfrontgate',
+    name: 'reunionfrontgate',
+    component: ReunionFrontGateManual,
+  },
+  {
+    path: '/reunionstagecrew',
+    name: 'reunionstagecrew',
+    component: ReunionStageCrewManual,
+  },
+  {
+    path: '/reunioncleanupcrew',
+    name: 'reunioncleanupcrew',
+    component: ReunionCleanupCrewManual,
   },
   {
     path: '/reunion-workshop-responsibilities',
