@@ -151,6 +151,61 @@
           </div>
         </div>
       </div>
+
+      <!-- Task Management Section -->
+      <div class="task-management-section">
+        <h2>📋 During the Festival: Task Management</h2>
+        <div class="task-info">
+          <p>
+            After booking your shift, you'll have access to real-time task coordination with your
+            team!
+          </p>
+
+          <div class="task-access-grid">
+            <div class="task-dept">
+              <h4>🚪 Front Gate</h4>
+              <button @click="router.push('/reunionfrontgate')" class="task-button">
+                Access Front Gate Tasks
+              </button>
+            </div>
+            <div class="task-dept">
+              <h4>🍽️ Food Team</h4>
+              <button @click="router.push('/reunionfoodteam')" class="task-button">
+                Access Food Team Tasks
+              </button>
+            </div>
+            <div class="task-dept">
+              <h4>🔧 Setup Crew</h4>
+              <button @click="router.push('/reunionsetupcrew')" class="task-button">
+                Access Setup Crew Tasks
+              </button>
+            </div>
+            <div class="task-dept">
+              <h4>🎵 Stage Crew</h4>
+              <button @click="router.push('/reunionstagecrew')" class="task-button">
+                Access Stage Crew Tasks
+              </button>
+            </div>
+            <div class="task-dept">
+              <h4>🧹 Cleanup Crew</h4>
+              <button @click="router.push('/reunioncleanupcrew')" class="task-button">
+                Access Cleanup Crew Tasks
+              </button>
+            </div>
+          </div>
+
+          <div class="task-features">
+            <h4>✨ Task System Features:</h4>
+            <ul>
+              <li>📱 Real-time coordination with your team</li>
+              <li>✅ Claim and complete tasks during your shift</li>
+              <li>👥 See what teammates are working on</li>
+              <li>🔄 Live updates across all devices</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <h3 style="margin-top: 1rem">
         If you have any questions or require further assistance,<br />
         please contact our Volunteer Coordinator - Caitlin, at:<br />
@@ -267,6 +322,100 @@ a:hover {
 .volunteer-button:hover {
   transform: scale(1.05);
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.task-management-section {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.task-management-section h2 {
+  color: var(--reunion-frog-green);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.task-info p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.task-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.task-dept {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #444;
+  transition: all 0.3s ease;
+}
+
+.task-dept:hover {
+  border-color: var(--reunion-frog-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.task-dept h4 {
+  color: var(--reunion-frog-green);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.task-button {
+  background-color: transparent;
+  color: var(--reunion-frog-green);
+  border: 2px solid var(--reunion-frog-green);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.task-button:hover {
+  background-color: var(--reunion-frog-green);
+  color: black;
+  transform: translateY(-1px);
+}
+
+.task-features {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.task-features h4 {
+  color: var(--reunion-frog-green);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.task-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-features li {
+  margin: 0.75rem 0;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 5px;
+  border-left: 3px solid var(--reunion-frog-green);
 }
 
 @media (max-width: 600px) {
