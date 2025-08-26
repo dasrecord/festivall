@@ -138,8 +138,14 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-stagecrew-signup')" class="volunteer-button">
-              STAGE CREW SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
+            <button @click="router.push('/reunion-stagecrew-a-signup')" class="volunteer-button">
+              STAGE CREW A SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
+            </button>
+            <button @click="router.push('/reunion-stagecrew-b-signup')" class="volunteer-button">
+              STAGE CREW B SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
+            </button>
+            <button @click="router.push('/reunion-stagecrew-c-signup')" class="volunteer-button">
+              STAGE CREW C SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,

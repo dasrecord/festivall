@@ -57,6 +57,16 @@
           />
           Scavenger Hunt
         </RouterLink>
+
+        <RouterLink to="/admin/tasks" class="scanner-link">
+          <img
+            :src="volunteer_icon"
+            alt="Task Manager"
+            class="action-icon"
+            style="width: 32px"
+          />
+          Task Manager
+        </RouterLink>
       </div>
     </div>
 
