@@ -39,6 +39,7 @@ import ReunionVendorResponsibilities from '@/views/ReunionVendorResponsibilities
 import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
+import ReunionVolunteerWelcome from '@/views/ReunionVolunteerWelcomeView.vue'
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
@@ -342,6 +343,11 @@ const routes = [
     path : '/reunion-volunteer-instructions',
     name : 'reunion-volunteer-instructions',
     component: ReunionVolunteerInstructions
+  },
+  {
+    path: '/reunion-volunteer-welcome',
+    name: 'reunion-volunteer-welcome',
+    component: ReunionVolunteerWelcome
   },
   {
     path: '/reunion-volunteer-signup',

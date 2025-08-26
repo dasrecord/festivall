@@ -240,12 +240,7 @@ const validateIdCode = async () => {
   }
 
   try {
-    const appDoc = await getDoc(doc(reunion_db, 'applications_2025', userIdCode.value))
-    if (appDoc.exists()) {
-      userName.value = appDoc.data().fullname
-      return true
-    }
-
+    // Check orders_2025 for ticket holders (volunteers should have tickets)
     const orderDoc = await getDoc(doc(reunion_db, 'orders_2025', userIdCode.value))
     if (orderDoc.exists()) {
       userName.value = orderDoc.data().fullname
