@@ -28,19 +28,6 @@
       <h2>Welcome {{ userName }}!</h2>
       <p>Department: <span class="highlight">Front Gate Scanner Operator</span></p>
 
-      <!-- Admin Panel (only visible if logged into Firebase Auth) -->
-      <div v-if="isFirebaseAuthenticated" class="admin-panel">
-        <h3>🛠️ Admin Controls</h3>
-        <div class="admin-actions">
-          <button @click="adminResetAllTasks" class="admin-btn reset">
-            Reset All Front Gate Tasks
-          </button>
-          <RouterLink to="/admin/tasks" class="admin-btn manage">
-            Full Task Manager
-          </RouterLink>
-        </div>
-      </div>
-
       <div
         class="scanner-access"
         style="
@@ -150,6 +137,19 @@
         </div>
         <p>{{ completedTasks }} of {{ totalTasks }} tasks completed ({{ progressPercentage }}%)</p>
       </div>
+
+      <!-- Admin Panel (Firebase Auth Required) -->
+      <div v-if="isFirebaseAuthenticated" class="admin-panel">
+        <h3 style="color: #ff6b6b; margin-bottom: 1rem">🔧 Admin Controls</h3>
+        <div class="admin-actions">
+          <button @click="resetAllTasks" class="admin-btn danger">
+            Reset All Front Gate Tasks
+          </button>
+          <p style="font-size: 0.9rem; color: #ccc; margin-top: 0.5rem">
+            ⚠️ This will reset all Front Gate tasks. Use with caution.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Public Task Overview -->
@@ -218,9 +218,19 @@
 
 <script setup>
 import { ref, computed, onUnmounted, onMounted } from 'vue'
-import { reunion_db, festivall_auth } from '@/firebase'
-import { doc, getDoc, setDoc, collection, query, where, onSnapshot, deleteDoc, getDocs, writeBatch } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
+import { reunion_db } from '@/firebase'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  deleteDoc,
+  getDocs,
+  writeBatch
+} from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
@@ -231,6 +241,7 @@ const isAuthenticated = ref(false)
 const frontGateTasks = ref([])
 const isFirebaseAuthenticated = ref(false)
 let unsubscribe = null
+let authCheckHandler = null
 
 // Initialize front gate tasks
 const initializeTasks = () => {
@@ -548,9 +559,17 @@ const completeTask = async (taskId) => {
 
 // Firebase Auth check
 const checkFirebaseAuth = () => {
-  onAuthStateChanged(festivall_auth, (user) => {
-    isFirebaseAuthenticated.value = !!user
-  })
+  // Check localStorage for user authentication (same as router guard)
+  authCheckHandler = () => {
+    const isAuthenticatedFromStorage = !!localStorage.getItem('user')
+    isFirebaseAuthenticated.value = isAuthenticatedFromStorage
+  }
+  
+  // Check immediately
+  authCheckHandler()
+  
+  // Also listen for storage changes (in case user logs in/out in another tab)
+  window.addEventListener('storage', authCheckHandler)
 }
 
 // Admin reset functions
@@ -559,7 +578,7 @@ const resetTask = async (taskId) => {
     alert('Admin authentication required')
     return
   }
-  
+
   try {
     const taskRef = doc(reunion_db, 'task_status_2025', taskId)
     await deleteDoc(taskRef)
@@ -571,27 +590,39 @@ const resetTask = async (taskId) => {
 }
 
 const resetAllTasks = async () => {
+  console.log('resetAllTasks called')
+  console.log('isFirebaseAuthenticated:', isFirebaseAuthenticated.value)
+  
   if (!isFirebaseAuthenticated.value) {
     alert('Admin authentication required')
     return
   }
-  
-  if (!confirm('Are you sure you want to reset ALL Front Gate tasks? This action cannot be undone.')) {
+
+  if (
+    !confirm('Are you sure you want to reset ALL Front Gate tasks? This action cannot be undone.')
+  ) {
+    console.log('User cancelled reset')
     return
   }
+
+  console.log('User confirmed reset, proceeding...')
   
   try {
     const q = query(
       collection(reunion_db, 'task_status_2025'),
       where('department', '==', 'front_gate')
     )
+    console.log('Querying for front_gate tasks...')
     const querySnapshot = await getDocs(q)
-    
+    console.log('Found', querySnapshot.size, 'tasks to delete')
+
     const batch = writeBatch(reunion_db)
     querySnapshot.forEach((doc) => {
+      console.log('Adding delete for task:', doc.id)
       batch.delete(doc.ref)
     })
-    
+
+    console.log('Committing batch delete...')
     await batch.commit()
     console.log('All Front Gate tasks reset successfully')
     alert('All Front Gate tasks have been reset')
@@ -610,6 +641,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribe) {
     unsubscribe()
+  }
+  if (authCheckHandler) {
+    window.removeEventListener('storage', authCheckHandler)
   }
 })
 </script>
