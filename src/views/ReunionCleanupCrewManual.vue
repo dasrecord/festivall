@@ -139,9 +139,19 @@
 
 <script setup>
 import { ref, computed, onUnmounted, onMounted } from 'vue'
-import { reunion_db, festivall_auth } from '@/firebase'
-import { doc, getDoc, setDoc, collection, query, where, onSnapshot, deleteDoc, getDocs, writeBatch } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
+import { reunion_db } from '@/firebase'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  deleteDoc,
+  getDocs,
+  writeBatch
+} from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
@@ -152,6 +162,7 @@ const isAuthenticated = ref(false)
 const cleanupTasks = ref([])
 const isFirebaseAuthenticated = ref(false)
 let unsubscribe = null
+let authCheckHandler = null
 
 // Initialize cleanup crew tasks
 const initializeTasks = () => {
@@ -418,9 +429,17 @@ const completeTask = async (taskId) => {
 
 // Firebase Auth check
 const checkFirebaseAuth = () => {
-  onAuthStateChanged(festivall_auth, (user) => {
-    isFirebaseAuthenticated.value = !!user
-  })
+  // Check localStorage for user authentication (same as router guard)
+  authCheckHandler = () => {
+    const isAuthenticatedFromStorage = !!localStorage.getItem('user')
+    isFirebaseAuthenticated.value = isAuthenticatedFromStorage
+  }
+  
+  // Check immediately
+  authCheckHandler()
+  
+  // Also listen for storage changes (in case user logs in/out in another tab)
+  window.addEventListener('storage', authCheckHandler)
 }
 
 // Admin reset functions
@@ -429,23 +448,25 @@ const resetAllTasks = async () => {
     alert('Admin authentication required')
     return
   }
-  
-  if (!confirm('Are you sure you want to reset ALL Cleanup Crew tasks? This action cannot be undone.')) {
+
+  if (
+    !confirm('Are you sure you want to reset ALL Cleanup Crew tasks? This action cannot be undone.')
+  ) {
     return
   }
-  
+
   try {
     const q = query(
       collection(reunion_db, 'task_status_2025'),
       where('department', '==', 'cleanup_crew')
     )
     const querySnapshot = await getDocs(q)
-    
+
     const batch = writeBatch(reunion_db)
     querySnapshot.forEach((doc) => {
       batch.delete(doc.ref)
     })
-    
+
     await batch.commit()
     console.log('All Cleanup Crew tasks reset successfully')
     alert('All Cleanup Crew tasks have been reset')
@@ -464,6 +485,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribe) {
     unsubscribe()
+  }
+  if (authCheckHandler) {
+    window.removeEventListener('storage', authCheckHandler)
   }
 })
 </script>

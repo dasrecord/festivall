@@ -19,7 +19,7 @@
             <div class="dept-card" v-for="dept in departments" :key="dept.id">
               <h3>{{ dept.icon }} {{ dept.name }}</h3>
               <p>{{ dept.description }}</p>
-              <button 
+              <button
                 @click="resetDepartment(dept.id, dept.name)"
                 class="reset-dept-btn"
                 :disabled="loading"
@@ -46,8 +46,8 @@
             <div v-if="selectedDepartment && departmentTasks.length > 0" class="tasks-list">
               <h3>{{ getDepartmentName(selectedDepartment) }} Tasks</h3>
               <div class="task-grid">
-                <div 
-                  v-for="task in departmentTasks" 
+                <div
+                  v-for="task in departmentTasks"
                   :key="task.id"
                   class="task-card"
                   :class="{ completed: task.completed }"
@@ -57,14 +57,14 @@
                     <p>{{ task.description }}</p>
                     <div class="task-status">
                       <span v-if="task.completed" class="status completed">
-                        ✅ Completed by {{ task.completedByName }} 
+                        ✅ Completed by {{ task.completedByName }}
                         <small>{{ formatDate(task.completedAt) }}</small>
                       </span>
                       <span v-else class="status incomplete">⏳ Not completed</span>
                       <span v-if="task.type" class="task-type">{{ task.type }}</span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     @click="resetTask(task.id, task.title, selectedDepartment)"
                     class="reset-task-btn"
                     :disabled="loading || !task.completed"
@@ -81,15 +81,13 @@
           <h2>🔍 Quick Task Lookup</h2>
           <div class="quick-reset">
             <label for="task-id">Task ID:</label>
-            <input 
-              v-model="quickTaskId" 
-              type="text" 
+            <input
+              v-model="quickTaskId"
+              type="text"
               placeholder="e.g., setup_001, frontgate_002"
               @keyup.enter="quickResetTask"
             />
-            <button @click="quickResetTask" :disabled="!quickTaskId || loading">
-              Quick Reset
-            </button>
+            <button @click="quickResetTask" :disabled="!quickTaskId || loading">Quick Reset</button>
           </div>
         </div>
       </div>
@@ -111,15 +109,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { reunion_db } from '@/firebase'
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  deleteDoc, 
-  doc,
-  writeBatch 
-} from 'firebase/firestore'
+import { collection, query, where, getDocs, deleteDoc, doc, writeBatch } from 'firebase/firestore'
 
 // Authentication state
 const isAuthenticated = ref(false)
@@ -140,21 +130,21 @@ const departments = [
     description: 'Entry scanning, payment processing, crowd control'
   },
   {
-    id: 'setup_crew', 
+    id: 'setup_crew',
     name: 'Setup Crew',
     icon: '🔧',
     description: 'Pre-festival setup, equipment, decorations'
   },
   {
     id: 'food_team',
-    name: 'Food Team', 
+    name: 'Food Team',
     icon: '🍽️',
     description: 'Kitchen operations, meal preparation, service'
   },
   {
     id: 'stage_crew',
     name: 'Stage Crew',
-    icon: '🎵', 
+    icon: '🎵',
     description: 'Audio/visual equipment, lighting, technical support'
   },
   {
@@ -173,7 +163,7 @@ const checkAuth = () => {
 
 // Get department name by ID
 const getDepartmentName = (deptId) => {
-  const dept = departments.find(d => d.id === deptId)
+  const dept = departments.find((d) => d.id === deptId)
   return dept ? dept.name : deptId
 }
 
@@ -192,7 +182,7 @@ const loadDepartmentTasks = async () => {
       where('department', '==', selectedDepartment.value)
     )
     const querySnapshot = await getDocs(q)
-    
+
     const tasks = []
     querySnapshot.forEach((doc) => {
       const data = doc.data()
@@ -207,7 +197,7 @@ const loadDepartmentTasks = async () => {
         type: data.type || 'standard'
       })
     })
-    
+
     departmentTasks.value = tasks
   } catch (error) {
     console.error('Error loading department tasks:', error)
@@ -220,32 +210,29 @@ const loadDepartmentTasks = async () => {
 // Reset entire department
 const resetDepartment = async (deptId, deptName) => {
   const confirmMsg = `⚠️ RESET ALL TASKS for ${deptName}?\n\nThis will reset ALL completed tasks in this department. This action cannot be undone.`
-  
+
   if (!confirm(confirmMsg)) return
 
   loading.value = true
   try {
     // Get all task documents for this department
-    const q = query(
-      collection(reunion_db, 'task_status_2025'),
-      where('department', '==', deptId)
-    )
+    const q = query(collection(reunion_db, 'task_status_2025'), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
-    
+
     // Use batch delete for efficiency
     const batch = writeBatch(reunion_db)
     let deleteCount = 0
-    
+
     querySnapshot.forEach((docSnapshot) => {
       batch.delete(docSnapshot.ref)
       deleteCount++
     })
-    
+
     await batch.commit()
-    
+
     addLogEntry(`✅ Reset ${deleteCount} tasks in ${deptName} department`)
     alert(`✅ Successfully reset ${deleteCount} tasks in ${deptName}`)
-    
+
     // Refresh current view if needed
     if (selectedDepartment.value === deptId) {
       await loadDepartmentTasks()
@@ -262,16 +249,16 @@ const resetDepartment = async (deptId, deptName) => {
 // Reset individual task
 const resetTask = async (taskId, taskTitle, deptId) => {
   const confirmMsg = `Reset task "${taskTitle}" (${taskId})?`
-  
+
   if (!confirm(confirmMsg)) return
 
   loading.value = true
   try {
     await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
-    
+
     addLogEntry(`✅ Reset task: ${taskId} (${taskTitle})`)
     alert(`✅ Task "${taskTitle}" has been reset`)
-    
+
     // Refresh current view
     if (selectedDepartment.value === deptId) {
       await loadDepartmentTasks()
@@ -291,18 +278,18 @@ const quickResetTask = async () => {
 
   const taskId = quickTaskId.value.trim()
   const confirmMsg = `Reset task "${taskId}"?`
-  
+
   if (!confirm(confirmMsg)) return
 
   loading.value = true
   try {
     await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
-    
+
     addLogEntry(`✅ Quick reset: ${taskId}`)
     alert(`✅ Task "${taskId}" has been reset`)
-    
+
     quickTaskId.value = ''
-    
+
     // Refresh current view if it matches
     if (selectedDepartment.value) {
       await loadDepartmentTasks()
@@ -324,7 +311,7 @@ const addLogEntry = (action) => {
     action: action
   }
   activityLog.value.unshift(entry)
-  
+
   // Keep only last 20 entries
   if (activityLog.value.length > 20) {
     activityLog.value = activityLog.value.slice(0, 20)
@@ -597,17 +584,17 @@ onMounted(() => {
   .admin-task-manager {
     padding: 1rem;
   }
-  
+
   .department-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .task-card {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .quick-reset {
     flex-direction: column;
     align-items: stretch;

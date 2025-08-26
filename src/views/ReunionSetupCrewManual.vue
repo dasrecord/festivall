@@ -88,9 +88,7 @@
       <div v-if="isFirebaseAuthenticated" class="admin-panel">
         <h3 style="color: #ff6b6b; margin-bottom: 1rem">🔧 Admin Controls</h3>
         <div class="admin-actions">
-          <button @click="resetAllTasks" class="admin-btn danger">
-            Reset All Setup Tasks
-          </button>
+          <button @click="resetAllTasks" class="admin-btn danger">Reset All Setup Tasks</button>
           <p style="font-size: 0.9rem; color: #ccc; margin-top: 0.5rem">
             ⚠️ This will reset all Setup Crew tasks. Use with caution.
           </p>
@@ -131,9 +129,19 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { reunion_db, festivall_auth } from '@/firebase'
-import { doc, getDoc, setDoc, deleteDoc, collection, query, where, onSnapshot, getDocs, writeBatch } from 'firebase/firestore'
-import { onAuthStateChanged } from 'firebase/auth'
+import { reunion_db } from '@/firebase'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  onSnapshot,
+  getDocs,
+  writeBatch
+} from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
@@ -144,6 +152,7 @@ const isAuthenticated = ref(false)
 const setupTasks = ref([])
 const isFirebaseAuthenticated = ref(false)
 let unsubscribe = null
+let authCheckHandler = null
 
 // Initialize setup crew tasks
 const initializeTasks = () => {
@@ -398,7 +407,7 @@ const resetTask = async (taskId) => {
   if (!confirm(`ADMIN: Reset task ${taskId} to unclaimed/incomplete?`)) {
     return
   }
-  
+
   try {
     // Delete the task status document to reset it completely
     await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
@@ -426,9 +435,17 @@ onMounted(() => {
 
 // Firebase Auth check
 const checkFirebaseAuth = () => {
-  onAuthStateChanged(festivall_auth, (user) => {
-    isFirebaseAuthenticated.value = !!user
-  })
+  // Check localStorage for user authentication (same as router guard)
+  authCheckHandler = () => {
+    const isAuthenticatedFromStorage = !!localStorage.getItem('user')
+    isFirebaseAuthenticated.value = isAuthenticatedFromStorage
+  }
+  
+  // Check immediately
+  authCheckHandler()
+  
+  // Also listen for storage changes (in case user logs in/out in another tab)
+  window.addEventListener('storage', authCheckHandler)
 }
 
 // Admin reset functions
@@ -437,23 +454,25 @@ const resetAllTasks = async () => {
     alert('Admin authentication required')
     return
   }
-  
-  if (!confirm('Are you sure you want to reset ALL Setup Crew tasks? This action cannot be undone.')) {
+
+  if (
+    !confirm('Are you sure you want to reset ALL Setup Crew tasks? This action cannot be undone.')
+  ) {
     return
   }
-  
+
   try {
     const q = query(
       collection(reunion_db, 'task_status_2025'),
       where('department', '==', 'setup_crew')
     )
     const querySnapshot = await getDocs(q)
-    
+
     const batch = writeBatch(reunion_db)
     querySnapshot.forEach((doc) => {
       batch.delete(doc.ref)
     })
-    
+
     await batch.commit()
     console.log('All Setup Crew tasks reset successfully')
     alert('All Setup Crew tasks have been reset')
@@ -472,6 +491,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribe) {
     unsubscribe()
+  }
+  if (authCheckHandler) {
+    window.removeEventListener('storage', authCheckHandler)
   }
 })
 </script>
