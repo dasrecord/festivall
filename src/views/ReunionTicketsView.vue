@@ -23,7 +23,7 @@ const form = ref({
   email: '',
   phone: '',
   ticket_type: '',
-  ticket_quantity: 1,
+  ticket_quantity: 0,
   selected_day: '',
   meal_packages: 0,
   meal_tickets_remaining: 0,
@@ -46,8 +46,14 @@ const route = useRoute()
 const validateReferralID = async (referral_id_code) => {
   try {
     // First validate the format - ID codes should be exactly 5 characters, alphanumeric
-    if (!referral_id_code || referral_id_code.length !== 5 || !/^[a-zA-Z0-9]{5}$/.test(referral_id_code)) {
-      alert('Invalid ID_CODE format. ID_CODEs are exactly 5 alphanumeric characters (letters and numbers only).')
+    if (
+      !referral_id_code ||
+      referral_id_code.length !== 5 ||
+      !/^[a-zA-Z0-9]{5}$/.test(referral_id_code)
+    ) {
+      alert(
+        'Invalid ID_CODE format. ID_CODEs are exactly 5 alphanumeric characters (letters and numbers only).'
+      )
       return
     }
 
@@ -118,7 +124,10 @@ const handlePhoneInput = (event) => {
 
 const handleReferralIDInput = (event) => {
   // Only allow alphanumeric characters and limit to 5 characters
-  const value = event.target.value.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toLowerCase()
+  const value = event.target.value
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .substring(0, 5)
+    .toLowerCase()
   form.value.referral_id_code = value
 }
 
@@ -227,6 +236,13 @@ const submitForm = async () => {
 
   try {
     isSubmitting.value = true
+
+    // Validate that they're purchasing something
+    if (form.value.ticket_quantity === 0 && form.value.meal_packages === 0) {
+      alert('Please select at least one ticket or meal package.')
+      isSubmitting.value = false
+      return
+    }
 
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
@@ -511,7 +527,7 @@ onMounted(() => {
             type="text"
             id="referral_id_code"
             v-model="form.referral_id_code"
-            placeholder="Enter a 5-character ID_CODE (e.g., A1B2C)"
+            placeholder="Enter a Festivall ID_CODE if you know one! (e.g., x7y8z9)"
             maxlength="5"
             @input="handleReferralIDInput"
             @blur="validateReferralID(form.referral_id_code)"
@@ -568,7 +584,7 @@ onMounted(() => {
             type="number"
             id="ticket_quantity"
             v-model="form.ticket_quantity"
-            min="1"
+            min="0"
             @input="calculateTotalPrice"
             required
           />
