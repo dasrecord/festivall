@@ -175,7 +175,7 @@ export default {
           icon: sequence
         },
         {
-          text: 'For this quest go to the Cote Corral and use a Nerf Gun to knock down the target to reveal the magic word.',
+          text: 'For this quest go to the Cote Corral look for the magic word.',
           answer: 'victory',
           type: 'text',
           category: 'Quest',
@@ -191,6 +191,7 @@ export default {
         },
         {
           text: 'I wonder where the next magic word is wading for you...',
+          subtext: 'Hint: Raise the temperature.',
           answer: 'ocean',
           type: 'text',
           category: 'Quest',
@@ -221,8 +222,9 @@ export default {
           icon: puzzle
         },
         {
-          text: 'Go to the barn and find a book titled "TITLE" and discover the hidden word highlighted on page ##.',
-          answer: 'imagine',
+          text: "Whispers speak of the story of Anno's seeds. What secret do they hold?",
+          subtext: 'Hint: Begin at the end.',
+          answer: 'magical events',
           type: 'text',
           category: 'Quest',
           icon: quest
