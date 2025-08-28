@@ -404,10 +404,10 @@ const checkFirebaseAuth = () => {
     console.log('isFirebaseAuthenticated set to:', isAuthenticatedFromStorage)
     isFirebaseAuthenticated.value = isAuthenticatedFromStorage
   }
-  
+
   // Check immediately
   authCheckHandler()
-  
+
   // Also listen for storage changes (in case user logs in/out in another tab)
   window.addEventListener('storage', authCheckHandler)
 }
