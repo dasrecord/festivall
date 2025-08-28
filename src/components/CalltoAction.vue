@@ -15,12 +15,12 @@ export default {
       </h1>
     </RouterLink>
 
-    <!-- <RouterLink to="/reunionapplication" class="link">
-      <h1 class="volunteer">
-        <span style="color: white">Looking to volunteer?‍</span><br />
-        APPLY NOW
+    <RouterLink to="/reunionlineup" class="link">
+      <h1 class="lineup">
+        <span style="color: white">Want to know who's playing?‍</span><br />
+        VIEW LINEUP
       </h1>
-    </RouterLink> -->
+    </RouterLink>
 
     <a href="https://instagram.com/reunion_festival">
       <h1 class="">
@@ -64,8 +64,7 @@ h1 {
 }
 /* top corners rounded */
 
-.tickets,
-.lineup {
+.tickets {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
