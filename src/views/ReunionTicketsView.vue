@@ -118,7 +118,7 @@ const handlePhoneInput = (event) => {
 
 const handleReferralIDInput = (event) => {
   // Only allow alphanumeric characters and limit to 5 characters
-  const value = event.target.value.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toUpperCase()
+  const value = event.target.value.replace(/[^a-zA-Z0-9]/g, '').substring(0, 5).toLowerCase()
   form.value.referral_id_code = value
 }
 
