@@ -243,8 +243,8 @@ export default {
           icon: cypher
         },
         {
-          text: 'Look for the symbol of knowledge hidden somewhere on the festival grounds.',
-          answer: 'brain',
+          text: "Where is our international headliner's original hometown?",
+          answer: 'Preston',
           type: 'text',
           category: 'Quest',
           icon: quest

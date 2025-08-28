@@ -33,7 +33,10 @@ export default {
     const route = useRoute() // Initialize useRoute at the top
 
     const login = () => {
-      signInWithEmailAndPassword(festivall_auth, email.value, password.value)
+      // Normalize email to lowercase for consistent authentication
+      const normalizedEmail = email.value.toLowerCase().trim()
+
+      signInWithEmailAndPassword(festivall_auth, normalizedEmail, password.value)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user

@@ -564,10 +564,10 @@ const checkFirebaseAuth = () => {
     const isAuthenticatedFromStorage = !!localStorage.getItem('user')
     isFirebaseAuthenticated.value = isAuthenticatedFromStorage
   }
-  
+
   // Check immediately
   authCheckHandler()
-  
+
   // Also listen for storage changes (in case user logs in/out in another tab)
   window.addEventListener('storage', authCheckHandler)
 }
@@ -592,7 +592,7 @@ const resetTask = async (taskId) => {
 const resetAllTasks = async () => {
   console.log('resetAllTasks called')
   console.log('isFirebaseAuthenticated:', isFirebaseAuthenticated.value)
-  
+
   if (!isFirebaseAuthenticated.value) {
     alert('Admin authentication required')
     return
@@ -606,7 +606,7 @@ const resetAllTasks = async () => {
   }
 
   console.log('User confirmed reset, proceeding...')
-  
+
   try {
     const q = query(
       collection(reunion_db, 'task_status_2025'),
