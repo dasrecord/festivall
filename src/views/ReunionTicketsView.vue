@@ -728,6 +728,7 @@ select {
 }
 button {
   background-color: white;
+  color: black; /* Explicit text color for iOS Safari */
   width: 100%;
   padding: 10px;
   border: none;
@@ -735,19 +736,28 @@ button {
   cursor: pointer;
   font-weight: bold;
   margin-top: 5px;
+  /* iOS Safari specific fixes */
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-text-fill-color: black;
+  text-decoration: none;
+  outline: none;
 }
 button:hover {
   background-color: var(--reunion-frog-green);
   color: white;
+  -webkit-text-fill-color: white;
 }
 button:disabled {
   background-color: #ccc;
   color: #666;
+  -webkit-text-fill-color: #666;
   cursor: not-allowed;
 }
 button:disabled:hover {
   background-color: #ccc;
   color: #666;
+  -webkit-text-fill-color: #666;
 }
 .highlight {
   color: var(--reunion-frog-green);
