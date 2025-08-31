@@ -636,7 +636,7 @@
         >
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-            Scavenger Hunt
+            Scavenger Hunt<br />Win some Bitcoin!
           </p>
         </RouterLink>
         <RouterLink v-else to="#">
