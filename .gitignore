@@ -31,3 +31,8 @@ coverage
 .env
 .env.festivall
 /public/qr_codes
+scripts/referral-debug.txt
+.gitignore
+scripts/revenue-debug.txt
+.gitignore
+scripts/reunion-festival-analytics.txt
