@@ -290,6 +290,11 @@ export default {
       feedback: [] // Tracks feedback for each question (correct/incorrect)
     }
   },
+  computed: {
+    progressKey() {
+      return `scavenger_hunt_progress_${this.id_code || 'anon'}`
+    }
+  },
   mounted() {
     // Initialize arrays with proper length
     this.answers = new Array(this.questions.length).fill('')
@@ -301,8 +306,82 @@ export default {
     // Update congratulations message with fullName
     this.questions[this.questions.length - 1].text =
       `Well done, ${this.fullName}! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`
+
+    // Load any saved progress from localStorage
+    this.loadProgress()
+  },
+  watch: {
+    answers: {
+      deep: true,
+      handler() {
+        this.persistProgress()
+      }
+    },
+    feedback: {
+      deep: true,
+      handler() {
+        this.persistProgress()
+      }
+    },
+    currentQuestion() {
+      this.persistProgress()
+    }
   },
   methods: {
+    persistProgress() {
+      try {
+        const payload = {
+          version: 1,
+          updatedAt: new Date().toISOString(),
+          currentQuestion: this.currentQuestion,
+          answers: this.answers,
+          feedback: this.feedback
+        }
+        window?.localStorage?.setItem(this.progressKey, JSON.stringify(payload))
+      } catch (e) {
+        // ignore storage errors (e.g., private mode)
+      }
+    },
+    loadProgress() {
+      try {
+        const raw = window?.localStorage?.getItem(this.progressKey)
+        if (!raw) return
+        const saved = JSON.parse(raw)
+        if (!saved) return
+        const len = this.questions.length
+        if (Array.isArray(saved.answers)) {
+          for (let i = 0; i < Math.min(len, saved.answers.length); i++) {
+            this.$set
+              ? this.$set(this.answers, i, saved.answers[i] || '')
+              : (this.answers[i] = saved.answers[i] || '')
+          }
+        }
+        if (Array.isArray(saved.feedback)) {
+          for (let i = 0; i < Math.min(len, saved.feedback.length); i++) {
+            this.$set
+              ? this.$set(this.feedback, i, saved.feedback[i] ?? null)
+              : (this.feedback[i] = saved.feedback[i] ?? null)
+          }
+        }
+        if (
+          saved.currentQuestion === 'score' ||
+          (typeof saved.currentQuestion === 'number' &&
+            saved.currentQuestion >= 0 &&
+            saved.currentQuestion < len)
+        ) {
+          this.currentQuestion = saved.currentQuestion
+        }
+      } catch (e) {
+        // ignore parse/storage errors
+      }
+    },
+    clearProgress() {
+      try {
+        window?.localStorage?.removeItem(this.progressKey)
+      } catch (e) {
+        // ignore
+      }
+    },
     nextQuestion() {
       if (this.currentQuestion < this.questions.length) {
         this.currentQuestion++
@@ -314,7 +393,11 @@ export default {
       }
     },
     restartHunt() {
+      // Reset state and clear saved progress
       this.currentQuestion = 0
+      this.answers = new Array(this.questions.length).fill('')
+      this.feedback = new Array(this.questions.length).fill(null)
+      this.clearProgress()
     },
     showScoreSlide() {
       this.currentQuestion = 'score' // Switch to the score slide
