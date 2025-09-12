@@ -1012,7 +1012,7 @@ export default {
       const csvContent = [
         ...searchedApplicants.value
           .filter((applicant) => applicant.email)
-          .map((applicant) => `${applicant.email}`)
+          .map((applicant) => `"${applicant.fullname || ''}",${applicant.email}`)
       ].join('\n')
 
       const filterNames = activeFilters.value
