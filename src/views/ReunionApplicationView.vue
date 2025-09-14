@@ -412,71 +412,72 @@ onMounted(() => {
     page_location: window.location.href
   })
 
-  if (import.meta.env.MODE === 'development') {
-    // Mock data for testing in development mode
-    form.value = {
-      id_code_long: 'a2c4e-' + uuidv4().slice(5),
-      id_code: 'a2c4e',
-      fullname: 'Prasenjit Das',
-      email: 'dasrecord@protonmail.com',
-      phone: '306-491-6040',
-      street_address: '736 Henry Dayday Road',
-      city: 'Saskatoon',
-      province: 'Saskatchewan',
-      country: 'Canada',
-      postal_code: 'S7W1E2',
-      formatted_phone: '(306)491-6040',
-      payment_type: 'inkind',
-      applicant_types: ['Artist', 'Volunteer', 'Workshop', 'Art Installation', 'Vendor'],
-      act_type: 'DJ',
-      act_name: 'Das Record',
-      genre: 'Ambient',
-      act_description: 'Live Piano over Liquid Drum and Bass',
-      mix_track_url: 'https://soundcloud.com/dasrecord/das-record-the-smirk-bootleg',
-      act_website: 'https://festivall.ca/dasrecord',
-      social_url: 'https://instagram.com/dasrecord',
-      press_kit_url: 'https://festivall.ca/about',
-      logo_url: 'https://1drv.ms/u/s!AmQS9nkxDiX4gehuc_5c2T_hUphbIQ?e=77rWMu',
-      volunteer_type: 'Stage Crew',
-      workshop_title: 'Bitcoin - Part 2',
-      workshop_description: 'An introduction to wallets & keys.',
-      workshop_requirements: 'Whiteboard or projector, 1 vocal mic.',
-      vendor_type: 'Merchandise',
-      vendor_description: 'Branded Hoodies',
-      vendor_requirements: 'Table for display.',
-      vendor_url: 'https://festivall.ca/reunion',
-      statement:
-        'Skill is hitting that others cannot hit, genius is hitting that others cannot see.',
-      rates: 'A bottle of amaretto.',
-      volunteer_availability: [
-        'Aug 24',
-        'Aug 25',
-        'Aug 26',
-        'Aug 27',
-        'Aug 28',
-        'Aug 29',
-        'Aug 30',
-        'Aug 31',
-        'Sept 1',
-        'Sept 2',
-        'Sept 3',
-        'Sept 4',
-        'Sept 5',
-        'Sept 6',
-        'Sept 7'
-      ],
-      installation_title: 'Video Game Arcade',
-      installation_description: 'A linux based retro video game arcade station.',
-      space_requirements: 'Indoor setting.',
-      other_requirements: '2 chairs and power access.',
-      portfolio_url: 'https://festivall.ca/',
-      fixture_type: 'Non-permanent',
-      contract_signed: false
-    }
-  }
+  // if (import.meta.env.MODE === 'development') {
+  //   // Mock data for testing in development mode
+  //   form.value = {
+  //     id_code_long: 'a2c4e-' + uuidv4().slice(5),
+  //     id_code: 'a2c4e',
+  //     fullname: 'Prasenjit Das',
+  //     email: 'dasrecord@protonmail.com',
+  //     phone: '306-491-6040',
+  //     street_address: '736 Henry Dayday Road',
+  //     city: 'Saskatoon',
+  //     province: 'Saskatchewan',
+  //     country: 'Canada',
+  //     postal_code: 'S7W1E2',
+  //     formatted_phone: '(306)491-6040',
+  //     payment_type: 'inkind',
+  //     applicant_types: ['Artist', 'Volunteer', 'Workshop', 'Art Installation', 'Vendor'],
+  //     act_type: 'DJ',
+  //     act_name: 'Das Record',
+  //     genre: 'Ambient',
+  //     act_description: 'Live Piano over Liquid Drum and Bass',
+  //     mix_track_url: 'https://soundcloud.com/dasrecord/das-record-the-smirk-bootleg',
+  //     act_website: 'https://festivall.ca/dasrecord',
+  //     social_url: 'https://instagram.com/dasrecord',
+  //     press_kit_url: 'https://festivall.ca/about',
+  //     logo_url: 'https://1drv.ms/u/s!AmQS9nkxDiX4gehuc_5c2T_hUphbIQ?e=77rWMu',
+  //     volunteer_type: 'Stage Crew',
+  //     workshop_title: 'Bitcoin - Part 2',
+  //     workshop_description: 'An introduction to wallets & keys.',
+  //     workshop_requirements: 'Whiteboard or projector, 1 vocal mic.',
+  //     vendor_type: 'Merchandise',
+  //     vendor_description: 'Branded Hoodies',
+  //     vendor_requirements: 'Table for display.',
+  //     vendor_url: 'https://festivall.ca/reunion',
+  //     statement:
+  //       'Skill is hitting that others cannot hit, genius is hitting that others cannot see.',
+  //     rates: 'A bottle of amaretto.',
+  //     volunteer_availability: [
+  //       'Aug 24',
+  //       'Aug 25',
+  //       'Aug 26',
+  //       'Aug 27',
+  //       'Aug 28',
+  //       'Aug 29',
+  //       'Aug 30',
+  //       'Aug 31',
+  //       'Sept 1',
+  //       'Sept 2',
+  //       'Sept 3',
+  //       'Sept 4',
+  //       'Sept 5',
+  //       'Sept 6',
+  //       'Sept 7'
+  //     ],
+  //     installation_title: 'Video Game Arcade',
+  //     installation_description: 'A linux based retro video game arcade station.',
+  //     space_requirements: 'Indoor setting.',
+  //     other_requirements: '2 chairs and power access.',
+  //     portfolio_url: 'https://festivall.ca/',
+  //     fixture_type: 'Non-permanent',
+  //     contract_signed: false
+  //   }
+  // }
   console.log(form.value)
 })
 </script>
+
 <template>
   <a href="/">
     <img
@@ -730,9 +731,8 @@ onMounted(() => {
                 id="volunteer"
                 value="Volunteer"
                 v-model="form.applicant_types"
-                disabled
               />
-              Volunteer (Closed)
+              Volunteer
             </span>
 
             <span class="checkbox-label">
@@ -877,6 +877,16 @@ onMounted(() => {
         <!-- VOLUNTEER -->
         <div v-if="form.applicant_types.includes('Volunteer')">
           VOLUNTEER SECTION
+          <small v-if="currentPhase === 1" style="display: block; color: white; margin-top: 4px"
+            >We’re prioritizing Setup Crew first. More teams unlock after
+            {{ new Date(VOLUNTEER_PHASES.phase1End).toLocaleDateString() }}.</small
+          >
+          <small
+            v-else-if="currentPhase === 2"
+            style="display: block; color: white; margin-top: 4px"
+            >Front Gate and Food Team are now open. Remaining teams unlock after
+            {{ new Date(VOLUNTEER_PHASES.phase2End).toLocaleDateString() }}.</small
+          >
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
@@ -885,16 +895,6 @@ onMounted(() => {
                 {{ team }}
               </option>
             </select>
-            <small v-if="currentPhase === 1" style="display: block; color: #2a7a2a; margin-top: 4px"
-              >We’re prioritizing Setup Crew first. More teams unlock after
-              {{ new Date(VOLUNTEER_PHASES.phase1End).toLocaleDateString() }}.</small
-            >
-            <small
-              v-else-if="currentPhase === 2"
-              style="display: block; color: #2a7a2a; margin-top: 4px"
-              >Front Gate and Food Team are now open. Remaining teams unlock after
-              {{ new Date(VOLUNTEER_PHASES.phase2End).toLocaleDateString() }}.</small
-            >
           </div>
           <div class="form-section">
             <label for="volunteer_availability">Availability:</label>
