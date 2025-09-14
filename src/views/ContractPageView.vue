@@ -238,7 +238,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { collection, getDocs, query, where, setDoc, doc } from 'firebase/firestore'
+import { setDoc, doc, getDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
@@ -269,60 +269,50 @@ export default {
 
     const loadApplicant = async (id_code) => {
       try {
-        let applicantData = null
-
-        // First, try to get from orders_2025 (most complete data)
-        let q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
-        let querySnapshot = await getDocs(q)
-
-        if (!querySnapshot.empty) {
-          applicantData = querySnapshot.docs[0].data()
-          console.log('Loaded from orders_2025:', applicantData)
-        } else {
-          // Second, try contracts_2025 (has signature data)
-          q = query(collection(reunion_db, 'contracts_2025'), where('id_code', '==', id_code))
-          querySnapshot = await getDocs(q)
-
-          if (!querySnapshot.empty) {
-            applicantData = querySnapshot.docs[0].data()
-            console.log('Loaded from contracts_2025:', applicantData)
-          } else {
-            // Last, try applications_2025 (original application)
-            q = query(collection(reunion_db, 'applications_2025'), where('id_code', '==', id_code))
-            querySnapshot = await getDocs(q)
-
-            if (!querySnapshot.empty) {
-              applicantData = querySnapshot.docs[0].data()
-              console.log('Loaded from applications_2025:', applicantData)
-            } else {
-              console.error('No document found in any collection!')
-              router.push({ name: 'EnterIDCode' })
-              return
-            }
-          }
+        const pSnap = await getDoc(doc(reunion_db, 'participants_2026', id_code))
+        if (!pSnap.exists()) {
+          console.error('No participant found in participants_2026')
+          router.push({ name: 'EnterIDCode' })
+          return
         }
-
+        const p = pSnap.data()
+        // Map unified structure to the flat applicant data the template expects
+        const applicantData = {
+          id_code: p.id_code,
+          fullname: p.contact?.fullname || '',
+          email: p.contact?.email || '',
+          phone: p.contact?.phone || '',
+          street_address: p.contact?.address?.street || '',
+          city: p.contact?.address?.city || '',
+          province: p.contact?.address?.province || '',
+          country: p.contact?.address?.country || '',
+          postal_code: p.contact?.address?.postal_code || '',
+          applicant_types: p.roles?.applicant_types || [],
+          act_type: p.roles?.act_type || '',
+          act_name: p.roles?.act_name || '',
+          workshop_title: p.application?.data?.workshop_title || '',
+          workshop_description: p.application?.data?.workshop_description || '',
+          workshop_requirements: p.application?.data?.workshop_requirements || '',
+          installation_title: p.application?.data?.installation_title || '',
+          fixture_type: p.application?.data?.fixture_type || '',
+          other_requirements: p.application?.data?.other_requirements || '',
+          vendor_requirements: p.application?.data?.vendor_requirements || '',
+          contract_signed: p.contract?.signed === true,
+          signature: p.contract?.signature || '',
+          signedAt: p.contract?.signedAt || '',
+          rates: p.application?.data?.rates || ''
+        }
         applicant.value = applicantData
+        console.log('Loaded from participants_2026:', applicantData)
       } catch (error) {
-        console.error('Error getting document:', error)
+        console.error('Error getting participant:', error)
         router.push({ name: 'EnterIDCode' })
       }
     }
 
     const updateApplication = async () => {
-      try {
-        const applicantDoc = doc(
-          collection(reunion_db, 'applications_2025'),
-          applicant.value.id_code
-        )
-        await setDoc(applicantDoc, {
-          ...applicant.value,
-          contract_signed: true
-        })
-        console.log('Application updated successfully!')
-      } catch (error) {
-        console.error('Error updating application:', error)
-      }
+      // No legacy updates; participants_2026 is updated in saveContract/addOrder
+      return
     }
 
     const saveContract = async () => {
@@ -332,21 +322,24 @@ export default {
       }
 
       try {
-        const contractDoc = doc(collection(reunion_db, 'contracts_2025'), applicant.value.id_code)
-        console.log('Saving contract with data:', {
-          ...applicant.value,
-          signature: signature.value,
-          signedAt: new Date().toISOString(),
-          contract_signed: true
-        })
-
-        await setDoc(contractDoc, {
-          ...applicant.value,
-          signature: signature.value,
-          signedAt: new Date().toISOString(),
-          contract_signed: true
-        })
-
+        const nowIso = new Date().toISOString()
+        await setDoc(
+          doc(reunion_db, 'participants_2026', applicant.value.id_code),
+          {
+            contract: {
+              signed: true,
+              signature: signature.value,
+              signedAt: nowIso,
+              contractVersion: '2026-01'
+            },
+            updatedAt: nowIso
+          },
+          { merge: true }
+        )
+        // Update local state for UI
+        applicant.value.contract_signed = true
+        applicant.value.signature = signature.value
+        applicant.value.signedAt = nowIso
         alert('Contract saved successfully!')
       } catch (error) {
         console.error('Error saving contract:', error)
@@ -356,24 +349,40 @@ export default {
 
     const addOrder = async () => {
       try {
-        const orderDoc = doc(collection(reunion_db, 'orders_2025'), applicant.value.id_code)
-        await setDoc(orderDoc, {
-          ...applicant.value,
-          signature: signature.value,
-          signedAt: new Date().toISOString(),
-          contract_signed: true,
-          checked_in: false,
-          paid: true,
-          ticket_type: 'Weekend Pass',
-          total_price: 0,
-          ticket_quantity: applicant.value.applicant_types.includes('Artist') ? 2 : 1,
-          meal_packages: applicant.value.applicant_types.includes('Volunteer') ? 2 : 0,
-          meal_tickets_remaining: applicant.value.applicant_types.includes('Volunteer') ? 4 : 0
-        })
+        const nowIso = new Date().toISOString()
+        const isArtist = applicant.value.applicant_types?.includes('Artist')
+        const isVolunteer = applicant.value.applicant_types?.includes('Volunteer')
+        const origQty = isArtist ? 2 : 1
+        const mealPkgs = isVolunteer ? 2 : 0
+        const mealRemain = isVolunteer ? 4 : 0
+        await setDoc(
+          doc(reunion_db, 'participants_2026', applicant.value.id_code),
+          {
+            updatedAt: nowIso,
+            order: {
+              timestamp: nowIso,
+              payment_type: 'inkind',
+              currency: 'CAD',
+              fiat_total_price_cad: 0,
+              paid: true,
+              ticket_type: 'Weekend Pass',
+              selected_day: '',
+              original_ticket_quantity: origQty,
+              ticket_quantity: origQty,
+              meal_packages: mealPkgs,
+              meal_tickets_remaining: mealRemain,
+              checked_in: false
+            },
+            activity: {
+              checked_in: false
+            }
+          },
+          { merge: true }
+        )
         alert('Please enter your ID Code on the next page to access your ticket.')
-        console.log('Order added successfully!')
+        console.log('Initialized order in participants_2026')
       } catch (error) {
-        console.error('Error adding order:', error)
+        console.error('Error initializing order:', error)
       }
     }
 

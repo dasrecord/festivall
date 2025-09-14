@@ -86,7 +86,7 @@ reunionFiles.forEach(fileName => {
     )
   } else {
     // Add new mounted() method
-    const dataMatch = scriptContent.match(/data\(\) \{[\s\S]*?\n  \}/)
+    const dataMatch = scriptContent.match(/data\(\) \{[\s\S]*?\n {2}\}/)
     if (dataMatch) {
       const insertPos = dataMatch.index + dataMatch[0].length
       scriptContent = scriptContent.slice(0, insertPos) + 

@@ -15,10 +15,17 @@ export default {
       </h1>
     </RouterLink>
 
-    <RouterLink to="/reunionlineup" class="link">
+    <!-- <RouterLink to="/reunionlineup" class="link">
       <h1 class="lineup">
         <span style="color: white">Want to know who's playing?‍</span><br />
         VIEW LINEUP
+      </h1>
+    </RouterLink> -->
+
+    <RouterLink to="/reunionapplication">
+      <h1 class="">
+        <span style="color: white">Want to volunteer?‍</span><br />
+        APPLY HERE
       </h1>
     </RouterLink>
 
