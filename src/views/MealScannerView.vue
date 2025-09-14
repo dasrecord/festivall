@@ -4,7 +4,7 @@
     style="height: 50px; width: 75px; margin: auto; display: block"
     alt="Festivall Emblem"
   />
-  <h1>REUNION 2025 MEAL SCANNER</h1>
+  <h1>REUNION 2026 MEAL SCANNER</h1>
 
   <!-- Scanner Operator Identification -->
   <div class="operator-section">
@@ -302,7 +302,7 @@
           <h2>
             <a
               :href="
-                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
+                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
                 order.id_code
               "
               target="_blank"
@@ -452,17 +452,33 @@ export default {
     this.lastMealServiceEnd = localStorage.getItem('lastMealServiceEnd')
 
     try {
-      const ordersCollection = collection(this.db, 'orders_2025')
-      const orderSnapshot = await getDocs(ordersCollection)
-      this.orders = orderSnapshot.docs.map((doc) => {
-        const data = doc.data()
-        data.meal_tickets_remaining = parseInt(data.meal_tickets_remaining, 10) || 0
-        data.ticket_quantity = parseInt(data.ticket_quantity, 10) || 0
-        return data
+      const participantsCollection = collection(this.db, 'participants_2026')
+      const snap = await getDocs(participantsCollection)
+      this.orders = snap.docs.map((d) => {
+        const p = d.data()
+        return {
+          id_code: p.id_code,
+          id_code_long: p.id_code_long,
+          fullname: p.contact?.fullname || '',
+          email: p.contact?.email || '',
+          phone: p.contact?.phone || '',
+          ticket_type: p.order?.ticket_type || '',
+          selected_day: p.order?.selected_day || '',
+          total_price: p.order?.fiat_total_price_cad || 0,
+          currency: 'CAD',
+          paid: p.order?.paid || false,
+          original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+          ticket_quantity: p.order?.ticket_quantity || 0,
+          meal_packages: p.order?.meal_packages || 0,
+          meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+          checked_in: p.order?.checked_in || false,
+          meal_redemption_history: p.activity?.meal_redemption_history || [],
+          last_meal_redemption: p.activity?.last_meal_redemption || null
+        }
       })
-      console.log(`Loaded ${this.orders.length} orders successfully`)
+      console.log(`Loaded ${this.orders.length} participants successfully`)
     } catch (error) {
-      console.error('Error loading orders:', error)
+      console.error('Error loading participants:', error)
       alert('Failed to load orders. Please refresh the page.')
     }
   },
@@ -563,7 +579,7 @@ export default {
         if (currentMealTickets >= amount) {
           const newMealTickets = currentMealTickets - amount
           const redemptionTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          const orderRef = doc(this.db, 'participants_2026', order.id_code)
 
           // Get existing redemption history or initialize empty array
           const existingRedemptions = order.meal_redemption_history || []
@@ -581,9 +597,9 @@ export default {
           const updatedRedemptions = [...existingRedemptions, newRedemption]
 
           await updateDoc(orderRef, {
-            meal_tickets_remaining: newMealTickets,
-            last_meal_redemption: redemptionTime,
-            meal_redemption_history: updatedRedemptions
+            'order.meal_tickets_remaining': newMealTickets,
+            'activity.last_meal_redemption': redemptionTime,
+            'activity.meal_redemption_history': updatedRedemptions
           })
 
           // Update local state after successful database update
@@ -632,21 +648,12 @@ export default {
         // If not found in loaded orders, query Firebase directly
         const { doc, getDoc } = await import('firebase/firestore')
 
-        // Check orders_2025 collection
-        const orderRef = doc(this.db, 'orders_2025', idCode)
-        const orderSnap = await getDoc(orderRef)
+        // Check participants_2026 collection
+        const ref = doc(this.db, 'participants_2026', idCode)
+        const snap = await getDoc(ref)
 
-        if (orderSnap.exists() && orderSnap.data().fullname) {
-          this.operatorFullName = orderSnap.data().fullname
-          return true
-        }
-
-        // Check applications_2025 collection as fallback
-        const appRef = doc(this.db, 'applications_2025', idCode)
-        const appSnap = await getDoc(appRef)
-
-        if (appSnap.exists() && appSnap.data().fullname) {
-          this.operatorFullName = appSnap.data().fullname
+        if (snap.exists() && (snap.data().contact?.fullname || snap.data().fullname)) {
+          this.operatorFullName = snap.data().contact?.fullname || snap.data().fullname
           return true
         }
 
@@ -689,13 +696,29 @@ export default {
     },
     async refreshOrders() {
       try {
-        const ordersCollection = collection(this.db, 'orders_2025')
-        const orderSnapshot = await getDocs(ordersCollection)
-        this.orders = orderSnapshot.docs.map((doc) => {
-          const data = doc.data()
-          data.meal_tickets_remaining = parseInt(data.meal_tickets_remaining, 10) || 0
-          data.ticket_quantity = parseInt(data.ticket_quantity, 10) || 0
-          return data
+        const participantsCollection = collection(this.db, 'participants_2026')
+        const snap = await getDocs(participantsCollection)
+        this.orders = snap.docs.map((d) => {
+          const p = d.data()
+          return {
+            id_code: p.id_code,
+            id_code_long: p.id_code_long,
+            fullname: p.contact?.fullname || '',
+            email: p.contact?.email || '',
+            phone: p.contact?.phone || '',
+            ticket_type: p.order?.ticket_type || '',
+            selected_day: p.order?.selected_day || '',
+            total_price: p.order?.fiat_total_price_cad || 0,
+            currency: 'CAD',
+            paid: p.order?.paid || false,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            meal_packages: p.order?.meal_packages || 0,
+            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+            checked_in: p.order?.checked_in || false,
+            meal_redemption_history: p.activity?.meal_redemption_history || [],
+            last_meal_redemption: p.activity?.last_meal_redemption || null
+          }
         })
         console.log('Orders refreshed successfully')
       } catch (error) {
@@ -761,7 +784,7 @@ export default {
         const updatePromises = ordersToUpdate.map(async (order) => {
           const newMealTickets = Math.max(0, order.meal_tickets_remaining - 1)
           const redemptionTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          const orderRef = doc(this.db, 'participants_2026', order.id_code)
 
           // Get existing redemption history or initialize empty array
           const existingRedemptions = order.meal_redemption_history || []
@@ -780,8 +803,8 @@ export default {
           const updatedRedemptions = [...existingRedemptions, newRedemption]
 
           await updateDoc(orderRef, {
-            meal_tickets_remaining: newMealTickets,
-            meal_redemption_history: updatedRedemptions
+            'order.meal_tickets_remaining': newMealTickets,
+            'activity.meal_redemption_history': updatedRedemptions
           })
 
           // Update local state

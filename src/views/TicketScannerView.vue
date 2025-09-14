@@ -4,7 +4,7 @@
     style="height: 50px; width: 75px; margin: auto; display: block"
     alt="Festivall Emblem"
   />
-  <h1>REUNION 2025 TICKET SCANNER</h1>
+  <h1>REUNION 2026 TICKET SCANNER</h1>
 
   <!-- Scanner Operator Identification -->
   <div class="operator-section">
@@ -182,7 +182,7 @@
       </div>
 
       <div>
-        <p v-if="matchingOrder && typeof matchingOrder === 'object'">
+        <div v-if="matchingOrder && typeof matchingOrder === 'object'">
           Payment Status:
           <span :style="{ color: paidStatus(matchingOrder) === 'Paid' ? 'green' : 'red' }">
             {{ paidStatus(matchingOrder) }}</span
@@ -219,7 +219,10 @@
 
           <!-- Entrance Activity History -->
           <div
-            v-if="matchingOrder.entrance_activity_history && matchingOrder.entrance_activity_history.length > 0"
+            v-if="
+              matchingOrder.entrance_activity_history &&
+              matchingOrder.entrance_activity_history.length > 0
+            "
             class="activity-history"
           >
             <h5>Recent Activity:</h5>
@@ -232,13 +235,13 @@
                 <small>
                   {{ activity.festival_day }}
                   {{ new Date(activity.timestamp).toLocaleTimeString() }}
-                  - {{ activity.action === 'check_in' ? 'Checked In' : 'Checked Out' }}
-                  by {{ activity.operator_name || activity.operator }}
+                  - {{ activity.action === 'check_in' ? 'Checked In' : 'Checked Out' }} by
+                  {{ activity.operator_name || activity.operator }}
                 </small>
               </div>
             </div>
           </div>
-        </p>
+        </div>
       </div>
     </div>
 
@@ -289,17 +292,29 @@
         <div>
           <h4 style="color: var(--festivall-baby-blue)">Total Expected Attendance</h4>
           <h2>
-            {{ orders.reduce((total, order) => total + (parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0), 0) }}
+            {{
+              orders.reduce(
+                (total, order) =>
+                  total +
+                  (parseInt(order.original_ticket_quantity) ||
+                    parseInt(order.ticket_quantity) ||
+                    0),
+                0
+              )
+            }}
           </h2>
         </div>
         <div>
           <h4 style="color: orange">Current Attendance</h4>
           <h2>
-            {{ orders.reduce((total, order) => {
-              const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
-              const remaining = parseInt(order.ticket_quantity) || 0;
-              return total + (original - remaining);
-            }, 0) }}
+            {{
+              orders.reduce((total, order) => {
+                const original =
+                  parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+                const remaining = parseInt(order.ticket_quantity) || 0
+                return total + (original - remaining)
+              }, 0)
+            }}
           </h2>
         </div>
         <div>
@@ -326,31 +341,28 @@
   <div class="database">
     <h2>Order Database</h2>
     <div class="filter-controls">
-      <button 
-        @click="filter = 'all'" 
-        :class="{ active: filter === 'all' }"
-      >
+      <button @click="filter = 'all'" :class="{ active: filter === 'all' }">
         All Orders ({{ orders.length }})
       </button>
-      <button 
-        @click="filter = 'checkedIn'" 
-        :class="{ active: filter === 'checkedIn' }"
-      >
-        People On-Site ({{ orders.filter(order => {
-          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
-          const remaining = parseInt(order.ticket_quantity) || 0;
-          return (original - remaining) > 0;
-        }).length }})
+      <button @click="filter = 'checkedIn'" :class="{ active: filter === 'checkedIn' }">
+        People On-Site ({{
+          orders.filter((order) => {
+            const original =
+              parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+            const remaining = parseInt(order.ticket_quantity) || 0
+            return original - remaining > 0
+          }).length
+        }})
       </button>
-      <button 
-        @click="filter = 'notCheckedIn'" 
-        :class="{ active: filter === 'notCheckedIn' }"
-      >
-        Not Yet Arrived ({{ orders.filter(order => {
-          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0;
-          const remaining = parseInt(order.ticket_quantity) || 0;
-          return (original - remaining) === 0;
-        }).length }})
+      <button @click="filter = 'notCheckedIn'" :class="{ active: filter === 'notCheckedIn' }">
+        Not Yet Arrived ({{
+          orders.filter((order) => {
+            const original =
+              parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+            const remaining = parseInt(order.ticket_quantity) || 0
+            return original - remaining === 0
+          }).length
+        }})
       </button>
     </div>
     <ul>
@@ -360,7 +372,7 @@
           <h2>
             <a
               :href="
-                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
+                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
                 order.id_code
               "
               target="_blank"
@@ -443,16 +455,18 @@ export default {
       } else if (this.filter === 'checkedIn') {
         // Show orders where people have checked in (original tickets > remaining tickets)
         return this.orders.filter((order) => {
-          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+          const original =
+            parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
           const remaining = parseInt(order.ticket_quantity) || 0
-          return (original - remaining) > 0
+          return original - remaining > 0
         })
       } else if (this.filter === 'notCheckedIn') {
         // Show orders where no one has checked in yet (original tickets = remaining tickets)
         return this.orders.filter((order) => {
-          const original = parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+          const original =
+            parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
           const remaining = parseInt(order.ticket_quantity) || 0
-          return (original - remaining) === 0
+          return original - remaining === 0
         })
       }
       return this.orders
@@ -471,12 +485,34 @@ export default {
     this.loadOperatorId()
 
     try {
-      const ordersCollection = collection(this.db, 'orders_2025') // fetch 2025 orders
-      const orderSnapshot = await getDocs(ordersCollection)
-      this.orders = orderSnapshot.docs.map((doc) => doc.data())
-      console.log(`Loaded ${this.orders.length} orders successfully`)
+      const participantsCollection = collection(this.db, 'participants_2026')
+      const snap = await getDocs(participantsCollection)
+      this.orders = snap.docs.map((d) => {
+        const p = d.data()
+        return {
+          id_code: p.id_code,
+          id_code_long: p.id_code_long,
+          fullname: p.contact?.fullname || '',
+          email: p.contact?.email || '',
+          phone: p.contact?.phone || '',
+          ticket_type: p.order?.ticket_type || '',
+          selected_day: p.order?.selected_day || '',
+          total_price: p.order?.fiat_total_price_cad || 0,
+          currency: 'CAD',
+          paid: p.order?.paid || false,
+          original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+          ticket_quantity: p.order?.ticket_quantity || 0,
+          meal_packages: p.order?.meal_packages || 0,
+          meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+          checked_in: p.order?.checked_in || false,
+          applicant_types: p.roles || p.applicant_types || [],
+          entrance_activity_history: p.activity?.entrance_activity_history || [],
+          last_entrance_activity: p.activity?.last_entrance_activity || null
+        }
+      })
+      console.log(`Loaded ${this.orders.length} participants successfully`)
     } catch (error) {
-      console.error('Error loading orders:', error)
+      console.error('Error loading participants:', error)
       alert('Failed to load orders. Please refresh the page.')
     }
   },
@@ -571,7 +607,7 @@ export default {
         if (order.ticket_quantity > 0) {
           const newTicketQuantity = order.ticket_quantity - 1
           const activityTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          const orderRef = doc(this.db, 'participants_2026', order.id_code)
 
           // Get existing entrance activity history or initialize empty array
           const existingActivity = order.entrance_activity_history || []
@@ -590,13 +626,13 @@ export default {
           const updatedActivity = [...existingActivity, newActivity]
 
           await updateDoc(orderRef, {
-            checked_in: true,
-            ticket_quantity: newTicketQuantity,
-            original_ticket_quantity: order.original_ticket_quantity,
-            last_entrance_activity: activityTime,
-            entrance_activity_history: updatedActivity
+            'order.checked_in': true,
+            'order.ticket_quantity': newTicketQuantity,
+            'order.original_ticket_quantity': order.original_ticket_quantity,
+            'activity.last_entrance_activity': activityTime,
+            'activity.entrance_activity_history': updatedActivity
           })
-          
+
           sendReunionFrontGate(
             `:ticket: ${order.fullname} has checked in.\n:id: ${order.id_code}\n:bust_in_silhouette: Operator: ${this.operatorFullName || this.operatorIdCode}`
           )
@@ -643,7 +679,7 @@ export default {
         if (order.ticket_quantity < order.original_ticket_quantity) {
           const newTicketQuantity = order.ticket_quantity + 1
           const activityTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'orders_2025', order.id_code)
+          const orderRef = doc(this.db, 'participants_2026', order.id_code)
 
           // Get existing entrance activity history or initialize empty array
           const existingActivity = order.entrance_activity_history || []
@@ -662,13 +698,13 @@ export default {
           const updatedActivity = [...existingActivity, newActivity]
 
           await updateDoc(orderRef, {
-            checked_in: newTicketQuantity > 0,
-            ticket_quantity: newTicketQuantity,
-            original_ticket_quantity: order.original_ticket_quantity,
-            last_entrance_activity: activityTime,
-            entrance_activity_history: updatedActivity
+            'order.checked_in': newTicketQuantity > 0,
+            'order.ticket_quantity': newTicketQuantity,
+            'order.original_ticket_quantity': order.original_ticket_quantity,
+            'activity.last_entrance_activity': activityTime,
+            'activity.entrance_activity_history': updatedActivity
           })
-          
+
           sendReunionFrontGate(
             `:ticket: ${order.fullname} has checked out.\n:id: ${order.id_code}\n:bust_in_silhouette: Operator: ${this.operatorFullName || this.operatorIdCode}`
           )
@@ -694,9 +730,31 @@ export default {
     },
     async refreshOrders() {
       try {
-        const ordersCollection = collection(this.db, 'orders_2025')
-        const orderSnapshot = await getDocs(ordersCollection)
-        this.orders = orderSnapshot.docs.map((doc) => doc.data())
+        const participantsCollection = collection(this.db, 'participants_2026')
+        const snap = await getDocs(participantsCollection)
+        this.orders = snap.docs.map((d) => {
+          const p = d.data()
+          return {
+            id_code: p.id_code,
+            id_code_long: p.id_code_long,
+            fullname: p.contact?.fullname || '',
+            email: p.contact?.email || '',
+            phone: p.contact?.phone || '',
+            ticket_type: p.order?.ticket_type || '',
+            selected_day: p.order?.selected_day || '',
+            total_price: p.order?.fiat_total_price_cad || 0,
+            currency: 'CAD',
+            paid: p.order?.paid || false,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            meal_packages: p.order?.meal_packages || 0,
+            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+            checked_in: p.order?.checked_in || false,
+            applicant_types: p.roles || p.applicant_types || [],
+            entrance_activity_history: p.activity?.entrance_activity_history || [],
+            last_entrance_activity: p.activity?.last_entrance_activity || null
+          }
+        })
         console.log('Orders refreshed successfully')
       } catch (error) {
         console.error('Error refreshing orders:', error)
@@ -731,21 +789,15 @@ export default {
         // If not found in loaded orders, query Firebase directly
         const { doc, getDoc } = await import('firebase/firestore')
 
-        // Check orders_2025 collection
-        const orderRef = doc(this.db, 'orders_2025', idCode)
+        // Check participants_2026 collection
+        const orderRef = doc(this.db, 'participants_2026', idCode)
         const orderSnap = await getDoc(orderRef)
 
-        if (orderSnap.exists() && orderSnap.data().fullname) {
-          this.operatorFullName = orderSnap.data().fullname
-          return true
-        }
-
-        // Check applications_2025 collection as fallback
-        const appRef = doc(this.db, 'applications_2025', idCode)
-        const appSnap = await getDoc(appRef)
-
-        if (appSnap.exists() && appSnap.data().fullname) {
-          this.operatorFullName = appSnap.data().fullname
+        if (
+          orderSnap.exists() &&
+          (orderSnap.data().contact?.fullname || orderSnap.data().fullname)
+        ) {
+          this.operatorFullName = orderSnap.data().contact?.fullname || orderSnap.data().fullname
           return true
         }
 
