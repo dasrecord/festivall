@@ -34,29 +34,16 @@ export default {
         // Convert to lowercase since UUIDs are stored in lowercase
         const normalizedIdCode = idCode.value.toLowerCase()
 
-        // Check if the ID code exists in 'orders_2025'
-        let q = query(
-          collection(reunion_db, 'orders_2025'),
+        // Check if the ID code exists in 'participants_2026'
+        const q = query(
+          collection(reunion_db, 'participants_2026'),
           where('id_code', '==', normalizedIdCode)
         )
-        let querySnapshot = await getDocs(q)
+        const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
           // Redirect to the ticket page if the ID code is valid
           router.push({ name: 'TicketPage', params: { id_code: normalizedIdCode } })
-          return
-        }
-
-        // Check if the ID code exists in 'applications_2025'
-        q = query(
-          collection(reunion_db, 'applications_2025'),
-          where('id_code', '==', normalizedIdCode)
-        )
-        querySnapshot = await getDocs(q)
-
-        if (!querySnapshot.empty) {
-          // Redirect to the contract page if the ID code is valid
-          router.push({ name: 'ContractPage', params: { id_code: normalizedIdCode } })
         } else {
           errorMessage.value = 'Invalid ID code. Please try again.'
         }

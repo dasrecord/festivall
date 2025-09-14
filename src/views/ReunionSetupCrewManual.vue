@@ -271,10 +271,11 @@ const validateIdCode = async () => {
   }
 
   try {
-    // Check orders_2025 for ticket holders (volunteers should have tickets)
-    const orderDoc = await getDoc(doc(reunion_db, 'orders_2025', userIdCode.value))
-    if (orderDoc.exists()) {
-      userName.value = orderDoc.data().fullname
+    // Check participants_2026 for ticket holders (volunteers should have tickets)
+    const pDoc = await getDoc(doc(reunion_db, 'participants_2026', userIdCode.value))
+    if (pDoc.exists()) {
+      const data = pDoc.data()
+      userName.value = data.contact?.fullname || data.fullname || ''
       return true
     }
 
@@ -301,7 +302,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'task_status_2025')
+    const statusRef = collection(reunion_db, 'tasks_2026')
     const q = query(statusRef, where('department', '==', 'setup_crew'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {

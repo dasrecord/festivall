@@ -14,6 +14,43 @@
 
       <div class="admin-actions">
         <div class="section">
+          <h2>📚 All Departments Overview</h2>
+          <div class="department-grid">
+            <div class="dept-card" v-for="group in allDepartmentTasks" :key="group.id">
+              <h3>{{ getDepartmentName(group.id) }}</h3>
+              <div class="task-grid">
+                <div
+                  v-for="task in group.tasks"
+                  :key="task.id"
+                  class="task-card"
+                  :class="{ completed: task.completed }"
+                >
+                  <div class="task-info">
+                    <h4>{{ task.title }}</h4>
+                    <p>{{ task.description }}</p>
+                    <div class="task-status">
+                      <span v-if="task.completed" class="status completed">
+                        ✅ Completed{{ task.completedByName ? ` by ${task.completedByName}` : '' }}
+                        <small>{{ formatDate(task.completedAt) }}</small>
+                      </span>
+                      <span v-else class="status incomplete">⏳ Not completed</span>
+                      <span v-if="task.type" class="task-type">{{ task.type }}</span>
+                    </div>
+                  </div>
+                  <button
+                    @click="resetTask(task.id, task.title, group.id)"
+                    class="reset-task-btn"
+                    :disabled="loading || !task.completed"
+                  >
+                    Reset Task
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
           <h2>🏢 Department-Wide Reset</h2>
           <div class="department-grid">
             <div class="dept-card" v-for="dept in departments" :key="dept.id">
@@ -110,6 +147,7 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { reunion_db } from '@/firebase'
 import { collection, query, where, getDocs, deleteDoc, doc, writeBatch } from 'firebase/firestore'
+import { getTasksForDepartment } from '@/data/task_definitions'
 
 // Authentication state
 const isAuthenticated = ref(false)
@@ -118,6 +156,7 @@ const loading = ref(false)
 // Task management state
 const selectedDepartment = ref('')
 const departmentTasks = ref([])
+const allDepartmentTasks = ref([])
 const quickTaskId = ref('')
 const activityLog = ref([])
 
@@ -167,6 +206,81 @@ const getDepartmentName = (deptId) => {
   return dept ? dept.name : deptId
 }
 
+// Merge helper: overlay statuses onto base definitions (handles personal vs one-time)
+const mergeBaseWithStatus = (baseTasks, statusDocs) => {
+  const statusById = {}
+  statusDocs.forEach((data) => {
+    const id = data.taskId
+    const key = data.originalTaskId || id
+    if (!statusById[key]) statusById[key] = []
+    statusById[key].push(data)
+  })
+
+  return baseTasks.map((t) => {
+    const statuses = statusById[t.id] || []
+    if (t.type === 'personal') {
+      const anyCompleted = statuses.some((s) => s.completed)
+      const latest = statuses.find((s) => s.completed) || statuses[0]
+      return {
+        id: t.id,
+        title: t.title,
+        description: t.description,
+        completed: !!anyCompleted,
+        completedBy: latest?.completedBy || null,
+        completedByName: latest?.completedByName || null,
+        completedAt: latest?.completedAt || null,
+        type: t.type
+      }
+    } else {
+      const s = statuses[0]
+      return {
+        id: t.id,
+        title: t.title,
+        description: t.description,
+        completed: s?.completed || false,
+        completedBy: s?.completedBy || null,
+        completedByName: s?.completedByName || null,
+        completedAt: s?.completedAt || null,
+        type: t.type || 'standard'
+      }
+    }
+  })
+}
+
+// Load all departments overview
+const loadAllTasks = async () => {
+  loading.value = true
+  try {
+    // Fetch all status docs once
+    const q = query(collection(reunion_db, 'tasks_2026'))
+    const snapshot = await getDocs(q)
+    const byDept = {}
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data()
+      const dept = data.department
+      if (!byDept[dept]) byDept[dept] = []
+      byDept[dept].push(data)
+    })
+
+    // Build merged lists per department
+    const groups = departments.map((dept) => {
+      const base = getTasksForDepartment(dept.id)
+      const statuses = byDept[dept.id] || []
+      return {
+        id: dept.id,
+        tasks: mergeBaseWithStatus(base, statuses)
+      }
+    })
+
+    allDepartmentTasks.value = groups
+  } catch (err) {
+    console.error('Error loading all department tasks:', err)
+    addLogEntry(`Error loading all tasks: ${err.message}`)
+  } finally {
+    loading.value = false
+  }
+}
+
 // Load tasks for selected department
 const loadDepartmentTasks = async () => {
   if (!selectedDepartment.value) {
@@ -176,29 +290,12 @@ const loadDepartmentTasks = async () => {
 
   loading.value = true
   try {
-    // Get all task status documents for this department
-    const q = query(
-      collection(reunion_db, 'task_status_2025'),
-      where('department', '==', selectedDepartment.value)
-    )
+    const deptId = selectedDepartment.value
+    const baseTasks = getTasksForDepartment(deptId)
+    const q = query(collection(reunion_db, 'tasks_2026'), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
-
-    const tasks = []
-    querySnapshot.forEach((doc) => {
-      const data = doc.data()
-      tasks.push({
-        id: data.taskId,
-        title: data.taskId, // We'll need to map this to actual titles
-        description: `Task ID: ${data.taskId}`,
-        completed: data.completed,
-        completedBy: data.completedBy,
-        completedByName: data.completedByName,
-        completedAt: data.completedAt,
-        type: data.type || 'standard'
-      })
-    })
-
-    departmentTasks.value = tasks
+    const statuses = querySnapshot.docs.map((d) => d.data())
+    departmentTasks.value = mergeBaseWithStatus(baseTasks, statuses)
   } catch (error) {
     console.error('Error loading department tasks:', error)
     addLogEntry(`Error loading ${selectedDepartment.value} tasks: ${error.message}`)
@@ -216,7 +313,7 @@ const resetDepartment = async (deptId, deptName) => {
   loading.value = true
   try {
     // Get all task documents for this department
-    const q = query(collection(reunion_db, 'task_status_2025'), where('department', '==', deptId))
+    const q = query(collection(reunion_db, 'tasks_2026'), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
 
     // Use batch delete for efficiency
@@ -237,6 +334,7 @@ const resetDepartment = async (deptId, deptName) => {
     if (selectedDepartment.value === deptId) {
       await loadDepartmentTasks()
     }
+    await loadAllTasks()
   } catch (error) {
     console.error('Error resetting department:', error)
     addLogEntry(`❌ Error resetting ${deptName}: ${error.message}`)
@@ -254,7 +352,7 @@ const resetTask = async (taskId, taskTitle, deptId) => {
 
   loading.value = true
   try {
-    await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
+    await deleteDoc(doc(reunion_db, 'tasks_2026', taskId))
 
     addLogEntry(`✅ Reset task: ${taskId} (${taskTitle})`)
     alert(`✅ Task "${taskTitle}" has been reset`)
@@ -263,6 +361,7 @@ const resetTask = async (taskId, taskTitle, deptId) => {
     if (selectedDepartment.value === deptId) {
       await loadDepartmentTasks()
     }
+    await loadAllTasks()
   } catch (error) {
     console.error('Error resetting task:', error)
     addLogEntry(`❌ Error resetting ${taskId}: ${error.message}`)
@@ -283,7 +382,7 @@ const quickResetTask = async () => {
 
   loading.value = true
   try {
-    await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
+    await deleteDoc(doc(reunion_db, 'tasks_2026', taskId))
 
     addLogEntry(`✅ Quick reset: ${taskId}`)
     alert(`✅ Task "${taskId}" has been reset`)
@@ -294,6 +393,7 @@ const quickResetTask = async () => {
     if (selectedDepartment.value) {
       await loadDepartmentTasks()
     }
+    await loadAllTasks()
   } catch (error) {
     console.error('Error in quick reset:', error)
     addLogEntry(`❌ Error quick resetting ${taskId}: ${error.message}`)
@@ -327,17 +427,27 @@ const formatDate = (dateString) => {
 // Initialize component
 onMounted(() => {
   checkAuth()
+  if (isAuthenticated.value) {
+    loadAllTasks()
+  }
 })
 </script>
 
 <style scoped>
 .admin-task-manager {
-  max-width: 1200px;
+  width: 100%;
+  max-width: none; /* use full available width */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 3rem; /* a bit more horizontal padding */
   background-color: #1a1a1a;
   color: white;
   min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.admin-interface {
+  width: 100%;
+  max-width: none;
 }
 
 .auth-required {
@@ -395,6 +505,10 @@ onMounted(() => {
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
+  overflow: hidden; /* prevent inner overflow */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .dept-card h3 {
@@ -446,7 +560,15 @@ onMounted(() => {
 
 .task-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); /* more columns on wide screens */
   gap: 1rem;
+}
+
+/* Inside department cards, use slightly smaller min column width to avoid overflow */
+.dept-card .task-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .task-card {
@@ -457,6 +579,7 @@ onMounted(() => {
   border: 1px solid #444;
   border-radius: 8px;
   padding: 1rem;
+  min-width: 0; /* allow flex children to shrink */
 }
 
 .task-card.completed {
@@ -465,11 +588,14 @@ onMounted(() => {
 
 .task-info {
   flex: 1;
+  min-width: 0; /* enable proper text wrapping */
 }
 
 .task-info h4 {
   color: var(--reunion-frog-green, #4caf50);
   margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .task-status {
@@ -477,6 +603,12 @@ onMounted(() => {
   gap: 1rem;
   align-items: center;
   margin-top: 0.5rem;
+}
+
+.task-info p {
+  margin: 0.25rem 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .status.completed {
@@ -561,6 +693,7 @@ onMounted(() => {
 .log-entries {
   max-height: 300px;
   overflow-y: auto;
+  overflow-wrap: anywhere;
 }
 
 .log-entry {
@@ -580,7 +713,7 @@ onMounted(() => {
   flex: 1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .admin-task-manager {
     padding: 1rem;
   }
@@ -598,6 +731,15 @@ onMounted(() => {
   .quick-reset {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* Stretch to full viewport width on desktop, ignoring outer layout constraints */
+@media (min-width: 1200px) {
+  .admin-task-manager {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 }
 </style>

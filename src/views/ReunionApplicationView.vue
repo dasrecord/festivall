@@ -66,7 +66,7 @@ const form = ref({
 
 const submitting = ref(false)
 const trackedSections = ref(new Set())
-// Date-based reveal phases (edit dates as needed)
+// Date-based reveal phases (no Firestore docs needed)
 const VOLUNTEER_PHASES = {
   // Phase 1: Only Setup Crew visible until June 15
   phase1End: new Date('2026-06-15T23:59:59Z'),
@@ -109,6 +109,19 @@ watch(
       }
     }
   }
+)
+
+// Keep volunteer_type valid if phase changes while user is on the page
+watch(
+  () => availableVolunteerTeams.value,
+  (teams) => {
+    if (form.value.applicant_types.includes('Volunteer')) {
+      if (!teams.includes(form.value.volunteer_type)) {
+        form.value.volunteer_type = teams[0] || ''
+      }
+    }
+  },
+  { immediate: true }
 )
 
 const fetchApplicantData = async (id_code) => {
@@ -288,12 +301,6 @@ const submitForm = async () => {
   form.value.raw_phone = form.value.phone.replace(/\D/g, '')
 
   try {
-    // Reserve a volunteer slot first if applicable (enforces Setup-first)
-    const assignedTeam = await claimVolunteerSlot()
-    if (assignedTeam) {
-      form.value.volunteer_type = assignedTeam
-    }
-
     // Generate `id_code_long` based on user-provided `id_code` or create a new one
     if (form.value.id_code) {
       // Use the provided `id_code` as the prefix for the UUID

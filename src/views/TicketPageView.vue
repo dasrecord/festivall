@@ -708,23 +708,23 @@ export default {
     const calculateReferralEarnings = async (id_code) => {
       try {
         const referralQuery = query(
-          collection(reunion_db, 'orders_2025'),
-          where('referral_id_code', '==', id_code)
+          collection(reunion_db, 'participants_2026'),
+          where('referral.referral_id_code', '==', id_code)
         )
 
         const referralSnapshot = await getDocs(referralQuery)
 
         let totalEarnings = 0
-        referralSnapshot.forEach((doc) => {
-          const orderData = doc.data()
-          const ticketType = orderData.ticket_type
-          const ticketQuantity = orderData.ticket_quantity || 1
+        referralSnapshot.forEach((docSnap) => {
+          const p = docSnap.data()
+          const ticketType = p.order?.ticket_type
+          const ticketQuantity = p.order?.original_ticket_quantity || p.order?.ticket_quantity || 0
           const earningsPerTicket =
             ticketType === 'Weekend Pass' ? 20 : ticketType === 'Day Pass' ? 10 : 0
           totalEarnings += earningsPerTicket * ticketQuantity
         })
 
-        referralEarnings.value = totalEarnings // Update the reactive variable
+        referralEarnings.value = totalEarnings
       } catch (error) {
         console.error('Error calculating referral earnings:', error)
       }
@@ -747,11 +747,11 @@ export default {
             return
           }
 
-          // Verify email matches ticket
+          // Verify email matches participant contact
           const verificationQuery = query(
-            collection(reunion_db, 'orders_2025'),
+            collection(reunion_db, 'participants_2026'),
             where('id_code', '==', id_code),
-            where('email', '==', email.toLowerCase().trim())
+            where('contact.email', '==', email.toLowerCase().trim())
           )
           const verificationSnapshot = await getDocs(verificationQuery)
 
@@ -765,12 +765,36 @@ export default {
           sessionStorage.setItem(`verified_${id_code}`, 'true')
         }
 
-        // Rest of your existing loadOrder code...
-        const q = query(collection(reunion_db, 'orders_2025'), where('id_code', '==', id_code))
+        // Load participant by id_code
+        const q = query(
+          collection(reunion_db, 'participants_2026'),
+          where('id_code', '==', id_code)
+        )
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
-          order.value = querySnapshot.docs[0].data()
+          const p = querySnapshot.docs[0].data()
+          // Normalize to previous shape for UI expectations
+          order.value = {
+            id_code: p.id_code,
+            id_code_long: p.id_code_long,
+            fullname: p.contact?.fullname || '',
+            email: p.contact?.email || '',
+            phone: p.contact?.phone || '',
+            ticket_type: p.order?.ticket_type || '',
+            selected_day: p.order?.selected_day || '',
+            total_price: p.order?.fiat_total_price_cad || 0,
+            currency: 'CAD',
+            paid: p.order?.paid || false,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            meal_packages: p.order?.meal_packages || 0,
+            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+            checked_in: p.order?.checked_in || false,
+            entrance_activity_history: p.activity?.entrance_activity_history || [],
+            last_entrance_activity: p.activity?.last_entrance_activity || null,
+            meal_redemption_history: p.activity?.meal_redemption_history || []
+          }
 
           // Add sample data for development/preview (only if no real data exists)
           addSampleDataForPreview(order.value)
