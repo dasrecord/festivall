@@ -11,7 +11,7 @@ import vendor_icon from '../assets/images/icons/vendor.png'
 import profit_icon from '../assets/images/icons/profit.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
@@ -66,6 +66,29 @@ const form = ref({
 
 const submitting = ref(false)
 const trackedSections = ref(new Set())
+// Date-based reveal phases (edit dates as needed)
+const VOLUNTEER_PHASES = {
+  // Phase 1: Only Setup Crew visible
+  phase1End: new Date('2026-04-15T23:59:59Z'),
+  // Phase 2: Setup + Front Gate + Food Team visible
+  phase2End: new Date('2026-05-01T23:59:59Z')
+  // Phase 3: All teams visible after phase2End
+}
+
+const orderedTeams = ['Setup Crew', 'Front Gate', 'Food Team', 'Stage Crew', 'Cleanup Crew']
+
+const currentPhase = computed(() => {
+  const now = new Date()
+  if (now <= VOLUNTEER_PHASES.phase1End) return 1
+  if (now <= VOLUNTEER_PHASES.phase2End) return 2
+  return 3
+})
+
+const availableVolunteerTeams = computed(() => {
+  if (currentPhase.value === 1) return ['Setup Crew']
+  if (currentPhase.value === 2) return ['Setup Crew', 'Front Gate', 'Food Team']
+  return [...orderedTeams]
+})
 
 // Watch for section visibility changes and track engagement
 watch(
@@ -78,27 +101,66 @@ watch(
           trackedSections.value.add(type)
         }
       })
+      // If Volunteer is selected, ensure selection is one of the currently available teams
+      if (newTypes.includes('Volunteer')) {
+        if (!availableVolunteerTeams.value.includes(form.value.volunteer_type)) {
+          form.value.volunteer_type = availableVolunteerTeams.value[0]
+        }
+      }
     }
   }
 )
 
 const fetchApplicantData = async (id_code) => {
+  if (!id_code) return
   try {
-    const docRef = doc(reunion_db, 'applications', id_code)
-    const docSnap = await getDoc(docRef)
-    if (docSnap.exists()) {
-      form.value = { ...form.value, ...docSnap.data() }
-    } else {
-      console.log('No such document in applications!')
-
-      // Try fetching from 'orders' collection
-      const ordersDocRef = doc(reunion_db, 'orders', id_code)
-      const ordersDocSnap = await getDoc(ordersDocRef)
-      if (ordersDocSnap.exists()) {
-        form.value = { ...form.value, ...ordersDocSnap.data() }
-      } else {
-        console.log('No such document in orders!')
+    // Autofill from prior-year orders_2025 only (returning applicants)
+    const oRef = doc(reunion_db, 'orders_2025', id_code)
+    const oSnap = await getDoc(oRef)
+    if (oSnap.exists()) {
+      const o = oSnap.data()
+      form.value = {
+        ...form.value,
+        id_code: o.id_code || id_code,
+        fullname: o.fullname || form.value.fullname,
+        email: o.email || form.value.email,
+        phone: o.formatted_phone || o.phone || form.value.phone,
+        street_address: o.street_address || form.value.street_address,
+        city: o.city || form.value.city,
+        province: o.province || form.value.province,
+        country: o.country || form.value.country,
+        postal_code: o.postal_code || form.value.postal_code,
+        applicant_types: o.applicant_types || form.value.applicant_types,
+        volunteer_type: o.volunteer_type || form.value.volunteer_type,
+        act_type: o.act_type || form.value.act_type,
+        act_name: o.act_name || form.value.act_name,
+        genre: o.genre || form.value.genre,
+        act_description: o.act_description || form.value.act_description,
+        mix_track_url: o.mix_track_url || form.value.mix_track_url,
+        act_website: o.act_website || form.value.act_website,
+        social_url: o.social_url || form.value.social_url,
+        press_kit_url: o.press_kit_url || form.value.press_kit_url,
+        logo_url: o.logo_url || form.value.logo_url,
+        volunteer_availability: o.volunteer_availability || form.value.volunteer_availability,
+        workshop_title: o.workshop_title || form.value.workshop_title,
+        workshop_description: o.workshop_description || form.value.workshop_description,
+        workshop_requirements: o.workshop_requirements || form.value.workshop_requirements,
+        vendor_type: o.vendor_type || form.value.vendor_type,
+        vendor_description: o.vendor_description || form.value.vendor_description,
+        vendor_requirements: o.vendor_requirements || form.value.vendor_requirements,
+        vendor_url: o.vendor_url || form.value.vendor_url,
+        statement: o.statement || form.value.statement,
+        installation_title: o.installation_title || form.value.installation_title,
+        installation_description: o.installation_description || form.value.installation_description,
+        space_requirements: o.space_requirements || form.value.space_requirements,
+        other_requirements: o.other_requirements || form.value.other_requirements,
+        portfolio_url: o.portfolio_url || form.value.portfolio_url,
+        fixture_type: o.fixture_type || form.value.fixture_type,
+        rates: o.rates || form.value.rates
       }
+      form.value.formatted_phone = formatPhoneNumber(form.value.phone)
+    } else {
+      console.log('No such document in orders_2025!')
     }
   } catch (error) {
     console.error('Error fetching document:', error)
@@ -107,8 +169,68 @@ const fetchApplicantData = async (id_code) => {
 
 const addApplicant = async () => {
   try {
-    await setDoc(doc(reunion_db, 'applications_2025', form.value.id_code), form.value)
-    console.log('Document successfully written!')
+    const nowIso = new Date().toISOString()
+    const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
+    await setDoc(
+      participantsDocRef,
+      {
+        id_code: form.value.id_code,
+        id_code_long: form.value.id_code_long,
+        status: 'applicant',
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        contact: {
+          fullname: form.value.fullname || '',
+          email: form.value.email || '',
+          phone: form.value.formatted_phone || form.value.phone || '',
+          phone_raw: form.value.raw_phone || (form.value.phone || '').replace(/\D/g, '') || '',
+          address: {
+            street: form.value.street_address || '',
+            city: form.value.city || '',
+            province: form.value.province || '',
+            country: form.value.country || '',
+            postal_code: form.value.postal_code || ''
+          }
+        },
+        roles: {
+          applicant_types: form.value.applicant_types || [],
+          volunteer_type: form.value.volunteer_type || '',
+          act_type: form.value.act_type || '',
+          act_name: form.value.act_name || ''
+        },
+        application: {
+          submittedAt: nowIso,
+          data: {
+            statement: form.value.statement || '',
+            genre: form.value.genre || '',
+            act_description: form.value.act_description || '',
+            mix_track_url: form.value.mix_track_url || '',
+            act_website: form.value.act_website || '',
+            social_url: form.value.social_url || '',
+            press_kit_url: form.value.press_kit_url || '',
+            logo_url: form.value.logo_url || '',
+            volunteer_availability: form.value.volunteer_availability || [],
+            workshop_title: form.value.workshop_title || '',
+            workshop_description: form.value.workshop_description || '',
+            workshop_requirements: form.value.workshop_requirements || '',
+            vendor_type: form.value.vendor_type || '',
+            vendor_description: form.value.vendor_description || '',
+            vendor_requirements: form.value.vendor_requirements || '',
+            vendor_url: form.value.vendor_url || '',
+            installation_title: form.value.installation_title || '',
+            installation_description: form.value.installation_description || '',
+            space_requirements: form.value.space_requirements || '',
+            other_requirements: form.value.other_requirements || '',
+            portfolio_url: form.value.portfolio_url || '',
+            fixture_type: form.value.fixture_type || '',
+            rates: form.value.rates || ''
+          }
+        }
+      },
+      { merge: true }
+    )
+
+    console.log('Document successfully written to participants_2026')
   } catch (error) {
     console.error('Error writing document:', error)
   }
@@ -134,16 +256,6 @@ const trackFormStart = () => {
     currency: 'CAD',
     event_category: 'application_form'
   })
-}
-
-const trackCategorySelection = (categories) => {
-  if (categories.length > 0) {
-    logEvent(reunion_analytics, 'select_content', {
-      content_type: 'application_category',
-      item_id: categories.join('_').toLowerCase(),
-      content_name: categories.join(', ')
-    })
-  }
 }
 
 const trackApplicationSubmit = (applicantTypes) => {
@@ -176,6 +288,12 @@ const submitForm = async () => {
   form.value.raw_phone = form.value.phone.replace(/\D/g, '')
 
   try {
+    // Reserve a volunteer slot first if applicable (enforces Setup-first)
+    const assignedTeam = await claimVolunteerSlot()
+    if (assignedTeam) {
+      form.value.volunteer_type = assignedTeam
+    }
+
     // Generate `id_code_long` based on user-provided `id_code` or create a new one
     if (form.value.id_code) {
       // Use the provided `id_code` as the prefix for the UUID
@@ -331,6 +449,7 @@ onMounted(() => {
         'Skill is hitting that others cannot hit, genius is hitting that others cannot see.',
       rates: 'A bottle of amaretto.',
       volunteer_availability: [
+        'Aug 24',
         'Aug 25',
         'Aug 26',
         'Aug 27',
@@ -338,7 +457,13 @@ onMounted(() => {
         'Aug 29',
         'Aug 30',
         'Aug 31',
-        'Sept 1'
+        'Sept 1',
+        'Sept 2',
+        'Sept 3',
+        'Sept 4',
+        'Sept 5',
+        'Sept 6',
+        'Sept 7'
       ],
       installation_title: 'Video Game Arcade',
       installation_description: 'A linux based retro video game arcade station.',
@@ -372,7 +497,7 @@ onMounted(() => {
           @click="$router.push('/reunion')"
         />
         <img :src="frog_image" alt="frog" class="frog-image" />
-        <h1>Interested in performing at Reunion 2025?</h1>
+        <h1>Interested in performing at Reunion 2026?</h1>
         <h3>
           Please fill out the form below.<br />
           If you have a
@@ -689,7 +814,6 @@ onMounted(() => {
               <option value="Hardstyle">Hardstyle</option>
               <option value="Progressive">Progressive</option>
               <option value="Chillout">Chillout</option>
-              <option value="Other">Other</option>
             </select>
           </div>
           <div class="form-section">
@@ -757,16 +881,29 @@ onMounted(() => {
             <label for="volunteer_type">Volunteer Type:</label>
             <select id="volunteer_type" v-model="form.volunteer_type" required>
               <option value="" disabled>What team are you interested in?</option>
-              <option value="Setup Crew">Setup Crew</option>
-              <option value="Cleanup Crew">Cleanup Crew</option>
-              <option value="Stage Crew">Stage Crew</option>
-              <option value="Front Gate">Front Gate</option>
-              <option value="Food Team">Food Team</option>
+              <option v-for="team in availableVolunteerTeams" :key="team" :value="team">
+                {{ team }}
+              </option>
             </select>
+            <small v-if="currentPhase === 1" style="display: block; color: #2a7a2a; margin-top: 4px"
+              >We’re prioritizing Setup Crew first. More teams unlock after
+              {{ new Date(VOLUNTEER_PHASES.phase1End).toLocaleDateString() }}.</small
+            >
+            <small
+              v-else-if="currentPhase === 2"
+              style="display: block; color: #2a7a2a; margin-top: 4px"
+              >Front Gate and Food Team are now open. Remaining teams unlock after
+              {{ new Date(VOLUNTEER_PHASES.phase2End).toLocaleDateString() }}.</small
+            >
           </div>
           <div class="form-section">
             <label for="volunteer_availability">Availability:</label>
             <div class="checkboxes">
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 24" />
+                Aug 24
+              </span>
+
               <span class="checkbox-label">
                 <input type="checkbox" v-model="form.volunteer_availability" value="Aug 25" />
                 Aug 25
@@ -805,6 +942,36 @@ onMounted(() => {
               <span class="checkbox-label">
                 <input type="checkbox" v-model="form.volunteer_availability" value="Sept 1" />
                 Sept 1
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 2" />
+                Sept 2
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 3" />
+                Sept 3
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 4" />
+                Sept 4
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 5" />
+                Sept 5
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 6" />
+                Sept 6
+              </span>
+
+              <span class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 7" />
+                Sept 7
               </span>
             </div>
           </div>

@@ -15,14 +15,13 @@
     </div>
 
     <h2>
-      AUG 29th - SEPT 1st, 2025 <br />
+      SEPT 4th - SEPT 7th 2026 <br />
       30 min from Saskatoon <br /><br />
       MUSIC - DANCING - CAMPING‍ <br />
       FAMILY - FRIENDS - FOOD‍ <br /><br />
 
       <span class="bitcoin">
-        <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> NO PRICE
-        INCREASE IN 2025!‍
+        <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> GET 2025 PRICES UNTIL DEC 21st!
 
         <br /><br />
       </span>

@@ -201,7 +201,7 @@ const emailPaymentInstructions = async () => {
       'https://relayproxy.vercel.app/email',
       {
         value1: form.value.email,
-        value2: 'Payment Instructions - Reunion 2025',
+        value2: 'Payment Instructions - Reunion 2026',
         value3: emailInstructions
       },
       {
@@ -217,15 +217,58 @@ const emailPaymentInstructions = async () => {
 
 const addOrder = async () => {
   try {
-    await setDoc(doc(reunion_db, 'orders_2025', form.value.id_code), {
-      ...form.value,
-      referral_id_code: form.value.referral_id_code || null, // Include referral ID_CODE
-      total_price:
-        form.value.payment_type === 'bitcoin'
-          ? parseFloat(form.value.total_price) // Store Bitcoin price as a number
-          : form.value.total_price // Store fiat price
-    })
-    console.log('Document successfully written!')
+    const nowIso = new Date().toISOString()
+    // Compute fiat total (discount applied for bitcoin)
+    let ticketPrice = 0
+    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 140
+    else if (form.value.ticket_type === 'Day Pass') ticketPrice = 80
+    let fiatTotal =
+      ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
+    if (form.value.payment_type === 'bitcoin') fiatTotal = fiatTotal * 0.75
+
+    const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
+    await setDoc(
+      participantsDocRef,
+      {
+        id_code: form.value.id_code,
+        id_code_long: form.value.id_code_long,
+        status: 'customer',
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        contact: {
+          fullname: form.value.fullname || '',
+          email: form.value.email || '',
+          phone: form.value.phone || ''
+        },
+        referral: {
+          referral_id_code: form.value.referral_id_code || null
+        },
+        order: {
+          timestamp: form.value.timestamp || nowIso,
+          payment_type: form.value.payment_type || '',
+          currency: 'CAD',
+          fiat_total_price_cad: Number(fiatTotal) || 0,
+          btc_amount:
+            form.value.payment_type === 'bitcoin' ? Number(form.value.total_price) : undefined,
+          btc_rate_cad:
+            form.value.payment_type === 'bitcoin' ? Number(btcRate.value || 0) : undefined,
+          paid: !!form.value.paid,
+          payment_reference: undefined,
+          ticket_type: form.value.ticket_type || '',
+          selected_day: form.value.selected_day || '',
+          original_ticket_quantity: Number(form.value.ticket_quantity || 0),
+          ticket_quantity: Number(form.value.ticket_quantity || 0),
+          meal_packages: Number(form.value.meal_packages || 0),
+          meal_tickets_remaining: Number(form.value.meal_tickets_remaining || 0),
+          checked_in: !!form.value.checked_in
+        },
+        activity: {
+          checked_in: !!form.value.checked_in
+        }
+      },
+      { merge: true }
+    )
+    console.log('Wrote order to participants_2026')
   } catch (error) {
     console.error('Error writing document:', error)
   }
@@ -466,8 +509,8 @@ onMounted(() => {
           *Youth 18 and under must be accompanied by an adult.*<br /><br />
           <div class="bitcoin">
             <h2>
-              <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> NO PRICE
-              INCREASE IN 2025!
+              <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> Earlybird
+              pricing available until Dec 21st, 2025!
               <br />
             </h2>
           </div>
