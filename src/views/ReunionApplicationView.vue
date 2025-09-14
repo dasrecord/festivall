@@ -68,10 +68,10 @@ const submitting = ref(false)
 const trackedSections = ref(new Set())
 // Date-based reveal phases (edit dates as needed)
 const VOLUNTEER_PHASES = {
-  // Phase 1: Only Setup Crew visible
-  phase1End: new Date('2026-04-15T23:59:59Z'),
-  // Phase 2: Setup + Front Gate + Food Team visible
-  phase2End: new Date('2026-05-01T23:59:59Z')
+  // Phase 1: Only Setup Crew visible until June 15
+  phase1End: new Date('2026-06-15T23:59:59Z'),
+  // Phase 2: Setup + Front Gate + Food Team visible until July 1
+  phase2End: new Date('2026-07-01T23:59:59Z')
   // Phase 3: All teams visible after phase2End
 }
 
