@@ -160,16 +160,34 @@ const calculateTotalPrice = () => {
   if (form.value.payment_type === 'bitcoin') {
     totalPrice *= 0.75 // Apply 25% discount
     form.value.total_price = (totalPrice / btcRate.value).toFixed(8) // Store Bitcoin price
+  } else if (form.value.payment_type === 'cash') {
+    // Add cash admin fee: $20 per Weekend Pass, $10 per Day Pass
+    const surchargePer =
+      form.value.ticket_type === 'Weekend Pass'
+        ? 20
+        : form.value.ticket_type === 'Day Pass'
+          ? 10
+          : 0
+    totalPrice += surchargePer * form.value.ticket_quantity
+    form.value.total_price = totalPrice // Store fiat price with surcharge
   } else {
-    form.value.total_price = totalPrice // Store fiat price
+    form.value.total_price = totalPrice // Store fiat price (e-transfer or others)
   }
 }
 
 const generatePaymentInstructions = () => {
   if (form.value.payment_type === 'etransfer') {
     paymentInstructions.value = `Please etransfer $${form.value.total_price} CAD to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
-  } else {
+  } else if (form.value.payment_type === 'bitcoin') {
     paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
+  } else if (form.value.payment_type === 'cash') {
+    const feeNote =
+      form.value.ticket_type === 'Weekend Pass'
+        ? '$20 per Weekend Pass'
+        : form.value.ticket_type === 'Day Pass'
+          ? '$10 per Day Pass'
+          : '$0'
+    paymentInstructions.value = `Please bring $${form.value.total_price} CAD in cash to the front gate.\nAn admin fee (${feeNote}) is included in your total.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nID Code: ${form.value.id_code}`
   }
 }
 
@@ -225,6 +243,15 @@ const addOrder = async () => {
     let fiatTotal =
       ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
     if (form.value.payment_type === 'bitcoin') fiatTotal = fiatTotal * 0.75
+    else if (form.value.payment_type === 'cash') {
+      const surchargePer =
+        form.value.ticket_type === 'Weekend Pass'
+          ? 20
+          : form.value.ticket_type === 'Day Pass'
+            ? 10
+            : 0
+      fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
+    }
 
     const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
     await setDoc(
@@ -465,6 +492,7 @@ onMounted(() => {
   //     checked_in: false
   //   }
   // }
+
   const id_code = route.params.id_code
   if (id_code) {
     form.value.referral_id_code = id_code
@@ -522,7 +550,7 @@ onMounted(() => {
               $140 CAD/PERSON/WEEKEND<br />
             </h2>
             <h3>
-              (Valid from 12:00PM Friday August 29th, 2025 - 12:00PM Monday September 1st, 2025)
+              (Valid from 12:00PM Friday September 4th, 2026 - 12:00PM Monday September 7th, 2026)
             </h3>
           </div>
           <div class="ticket">
@@ -636,9 +664,9 @@ onMounted(() => {
           <label for="day_selection">Select Day:</label>
           <select id="day_selection" v-model="form.selected_day" required>
             <option value="" disabled>Select a day</option>
-            <option value="Friday, August 29th, 2025">Friday, August 29th, 2025</option>
-            <option value="Saturday, August 30th, 2025">Saturday, August 30th, 2025</option>
-            <option value="Sunday, August 31st, 2025">Sunday, August 31st, 2025</option>
+            <option value="Friday, September 4th, 2026">Friday, September 4th, 2026</option>
+            <option value="Saturday, September 5th, 2026">Saturday, September 5th, 2026</option>
+            <option value="Sunday, September 6th, 2026">Sunday, September 6th, 2026</option>
           </select>
         </div>
         <div class="form-section">
@@ -662,6 +690,7 @@ onMounted(() => {
             <option value="" disabled>Choose a payment method.</option>
             <option value="etransfer">E-transfer</option>
             <option value="bitcoin">Bitcoin (25% off)</option>
+            <option value="cash">Cash at the door (+admin fee)</option>
           </select>
         </div>
         <div class="total">
