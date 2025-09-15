@@ -524,7 +524,7 @@ onMounted(() => {
         />
         <img :src="frog_image" alt="frog" class="frog-image" />
       </div>
-      <h1>Want to buy tickets for Reunion 2025?</h1>
+      <h1>Want to buy tickets for Reunion 2026?</h1>
       <h2>
         If you know an Artist's or Volunteer's
         <span class="highlight">Festivall ID_CODE</span><br />
@@ -743,7 +743,7 @@ onMounted(() => {
 }
 .frog-image {
   width: 100%;
-  max-width: 250px;
+  max-width: 150px;
 }
 
 .ticket {
