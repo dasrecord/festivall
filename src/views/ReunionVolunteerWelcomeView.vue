@@ -5,11 +5,16 @@
         :src="reunion_emblem"
         alt="reunion"
         class="reunion-emblem"
-        style="cursor: pointer"
+        style="cursor: pointer; width: 250px"
         @click="$router.push('/reunion')"
       />
-
-      <h1 class="welcome-title">🎉 Welcome to the Volunteer Team!</h1>
+      <h1 class="welcome-title">Welcome to the Volunteer Team!</h1>
+      <img
+        :src="volunteer_icon"
+        alt="volunteer icon"
+        class="volunteer-icon"
+        style="width: 64px; height: 64px"
+      />
 
       <div class="next-steps">
         <h3>What happens next?</h3>
@@ -103,12 +108,7 @@
       </div>
 
       <div class="footer-actions">
-        <button @click="router.push('/reunion')" class="secondary-button">
-          ← Back to Reunion Info
-        </button>
-        <button @click="router.push('/reunion-volunteer-instructions')" class="secondary-button">
-          View All Volunteer Info
-        </button>
+        <button @click="goBackToTicket" class="secondary-button">← Back to Your Ticket</button>
       </div>
     </div>
   </div>
@@ -117,8 +117,24 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.png'
 
 const router = useRouter()
+
+const goBackToTicket = () => {
+  // Try to get ID code from various sources
+  const idCode =
+    localStorage.getItem('volunteer_id_code') ||
+    localStorage.getItem('reunion_id_code') ||
+    localStorage.getItem('idCode')
+
+  if (idCode) {
+    router.push(`/reunionticket/${idCode}`)
+  } else {
+    // Fallback to ticket entry page if no ID code found
+    router.push('/reunionticket')
+  }
+}
 </script>
 
 <style scoped>
@@ -156,7 +172,6 @@ const router = useRouter()
 
 .next-steps {
   text-align: left;
-  margin: 3rem 0;
 }
 
 .next-steps h3 {
