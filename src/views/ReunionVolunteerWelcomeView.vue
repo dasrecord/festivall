@@ -27,10 +27,7 @@
                 Our Volunteer Coordinator will reach out to you on Slack regarding any updates and
                 coordination.
               </p>
-              <button
-                @click="window.open('https://festivall.ca/reunionslack', '_blank')"
-                class="dept-button primary-signup"
-              >
+              <button @click="router.push('/reunionslack')" class="dept-button primary-signup">
                 Click Here to Join Slack
               </button>
             </div>
