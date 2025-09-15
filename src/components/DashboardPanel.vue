@@ -508,7 +508,12 @@ import { reunion_db } from '@/firebase'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
 import contract_icon from '@/assets/images/icons/contract.png'
 import { useRouter } from 'vue-router'
-import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
+import {
+  sendSMS,
+  sendEmail,
+  sendReunionApplications,
+  sendReunionSales
+} from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
 import ticket_icon from '@/assets/images/icons/ticket.png'
@@ -1098,7 +1103,7 @@ export default {
 
         // Send notification only once, after both arrays are updated
         if (applicant) {
-          sendReunionApplications(
+          sendReunionSales(
             `:bust_in_silhouette: Payment confirmed for ${applicant.fullname}.\n:ticket: ${applicant.id_code}`
           )
         }
