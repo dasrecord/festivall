@@ -111,7 +111,9 @@
       <div class="slots">
         <h3>Slots</h3>
         <div v-for="group in groupedSlots" :key="group.key" class="slot-group">
-          <h4 class="group-title">{{ group.label }} <small v-if="group.items.length">• {{ group.items.length }}</small></h4>
+          <h4 class="group-title">
+            {{ group.label }} <small v-if="group.items.length">• {{ group.items.length }}</small>
+          </h4>
           <div class="slot-row" v-for="s in group.items" :key="s.id">
             <div class="meta">
               <strong>{{ teamLabels[s.team] || s.team }}</strong>
@@ -132,7 +134,9 @@
             </div>
           </div>
         </div>
-        <div v-if="!groupedSlots.length || !groupedSlots.some(g => g.items.length)" class="empty">No slots found.</div>
+        <div v-if="!groupedSlots.length || !groupedSlots.some((g) => g.items.length)" class="empty">
+          No slots found.
+        </div>
       </div>
     </div>
   </div>
@@ -166,9 +170,9 @@ export default {
         cleanupcrew: 'Cleanup Crew'
       },
       teamFilter: 'all',
-  groupBy: 'day',
-  statusFilter: 'all', // all | open | partial | full
-  hideInactive: true,
+      groupBy: 'day',
+      statusFilter: 'all', // all | open | partial | full
+      hideInactive: true,
       slots: [],
       unsub: null,
       form: {
@@ -181,7 +185,7 @@ export default {
         notes: ''
       },
       gen: {
-        year: 2025,
+        year: 2026,
         capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3 }
       },
       generating: false
