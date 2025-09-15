@@ -19,11 +19,6 @@
 
     <h2>Your Digital Ticket<br /></h2>
 
-    <!-- Development Mode Indicator -->
-    <div v-if="isDevelopmentMode" class="dev-indicator">
-      🎭 Development Mode: Sample activity data loaded for preview
-    </div>
-
     <div class="order-info">
       <p>
         <strong>Full Name:</strong> {{ order.fullname }}
@@ -774,6 +769,24 @@ export default {
 
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
+          
+          // Check if participant has a valid ticket (either purchased or earned through contract)
+          const hasValidOrder = p.order && p.order.paid === true
+          const hasSignedContract = p.contract && p.contract.signed === true
+          
+          if (!hasValidOrder && !hasSignedContract) {
+            alert('No valid ticket found for this ID code. You may need to purchase a ticket or complete your contract signing process.')
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+          
+          // If they only have a signed contract but no order, they might need to complete setup
+          if (hasSignedContract && !hasValidOrder) {
+            alert('Contract signed but ticket not yet activated. Please contact admin to complete your ticket setup.')
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+          
           // Normalize to previous shape for UI expectations
           order.value = {
             id_code: p.id_code,
@@ -796,9 +809,6 @@ export default {
             meal_redemption_history: p.activity?.meal_redemption_history || []
           }
 
-          // Add sample data for development/preview (only if no real data exists)
-          addSampleDataForPreview(order.value)
-
           await nextTick()
           generateQRCode(order.value.id_code_long, qrCanvas.value)
           await calculateReferralEarnings(order.value.id_code)
@@ -820,86 +830,6 @@ export default {
             console.error('Error generating QR code:', error)
           }
         })
-      }
-    }
-
-    const addSampleDataForPreview = (orderData) => {
-      // Only add sample data if no real activity data exists and we're in development
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Add sample entrance activity if none exists
-        if (
-          !orderData.entrance_activity_history ||
-          orderData.entrance_activity_history.length === 0
-        ) {
-          orderData.entrance_activity_history = [
-            {
-              timestamp: '2025-08-29T14:30:00.000Z',
-              action: 'check_in',
-              ticket_quantity_after: 0,
-              operator: 'JS123',
-              operator_name: 'Jane Smith',
-              festival_day: 'Friday'
-            },
-            {
-              timestamp: '2025-08-30T02:15:00.000Z',
-              action: 'check_out',
-              ticket_quantity_after: 1,
-              operator: 'MB456',
-              operator_name: 'Mike Brown',
-              festival_day: 'Saturday'
-            },
-            {
-              timestamp: '2025-08-30T12:45:00.000Z',
-              action: 'check_in',
-              ticket_quantity_after: 0,
-              operator: 'SL789',
-              operator_name: 'Sarah Lee',
-              festival_day: 'Saturday'
-            }
-          ]
-          orderData.last_entrance_activity = '2025-08-30T12:45:00.000Z'
-        }
-
-        // Add sample meal redemption history if none exists
-        if (!orderData.meal_redemption_history || orderData.meal_redemption_history.length === 0) {
-          orderData.meal_redemption_history = [
-            {
-              timestamp: '2025-08-29T13:15:00.000Z',
-              tickets_redeemed: 1,
-              remaining_after: 5,
-              redeemed_by: 'KT234',
-              festival_day: 'Friday',
-              reason: 'Normal redemption'
-            },
-            {
-              timestamp: '2025-08-29T19:30:00.000Z',
-              tickets_redeemed: 1,
-              remaining_after: 4,
-              redeemed_by: 'RM567',
-              festival_day: 'Friday',
-              reason: 'Normal redemption'
-            },
-            {
-              timestamp: '2025-08-30T13:00:00.000Z',
-              tickets_redeemed: 1,
-              remaining_after: 3,
-              redeemed_by: 'DP890',
-              festival_day: 'Saturday',
-              reason: 'Normal redemption'
-            },
-            {
-              timestamp: '2025-08-30T20:00:00.000Z',
-              tickets_redeemed: 2,
-              remaining_after: 1,
-              redeemed_by: 'ADMIN',
-              festival_day: 'Saturday',
-              reason: 'End of meal service - automatic deduction'
-            }
-          ]
-          orderData.last_meal_redemption = '2025-08-30T20:00:00.000Z'
-        }
-
-        console.log('🎭 Sample activity data added for development preview!')
       }
     }
 
@@ -990,11 +920,6 @@ export default {
       }
     })
 
-    // Development mode detection
-    const isDevelopmentMode = ref(
-      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    )
-
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 20
@@ -1035,8 +960,7 @@ export default {
       location_icon,
       map_icon,
       lineup_icon,
-      quiz_icon,
-      isDevelopmentMode
+      quiz_icon
     }
   }
 }
@@ -1280,33 +1204,6 @@ a:hover {
   font-size: 0.8rem;
   color: #ffeb3b;
   font-style: italic;
-}
-
-/* Development Mode Indicator */
-.dev-indicator {
-  background: linear-gradient(45deg, #ff6b35, #f7931e);
-  color: white;
-  padding: 0.5rem 1rem;
-  margin: 0.5rem 0;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  text-align: center;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
-  }
-  50% {
-    box-shadow: 0 2px 20px rgba(247, 147, 30, 0.6);
-  }
-  100% {
-    box-shadow: 0 2px 10px rgba(247, 147, 30, 0.3);
-  }
 }
 .modal {
   position: fixed;
