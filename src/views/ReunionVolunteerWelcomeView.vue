@@ -9,8 +9,7 @@
         @click="$router.push('/reunion')"
       />
 
-      <h1 class="welcome-title">🎉 Welcome to the Team!</h1>
-      <h2 class="success-message">Your volunteer shift has been successfully booked!</h2>
+      <h1 class="welcome-title">🎉 Welcome to the Volunteer Team!</h1>
 
       <div class="next-steps">
         <h3>What happens next?</h3>
@@ -18,65 +17,42 @@
           <div class="step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h4>Slack Invitation</h4>
+              <h3>Slack Invitation</h3>
               <p>
-                Our Volunteer Coordinator will reach out to you on Slack for any updates and
+                Our Volunteer Coordinator will reach out to you on Slack regarding any updates and
                 coordination.
               </p>
+              <button
+                @click="window.open('https://festivall.ca/reunionslack', '_blank')"
+                class="dept-button primary-signup"
+              >
+                Click Here to Join Slack
+              </button>
             </div>
           </div>
 
           <div class="step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h4>Confirm or Adjust Your Shift</h4>
+              <h3>Confirm/Adjust Your Shift</h3>
               <p>
-                Need to tweak your shift? Use the internal signup pages to view openings and switch
-                if needed. These routes are consolidated per team and include any legacy A/B/C
-                slots.
+                View all available shifts and claim the ones that work for you. You can see openings
+                across all teams or filter by your department.
               </p>
               <div class="department-access">
-                <h5>Go to your team’s signup:</h5>
-                <div class="department-buttons">
-                  <button
-                    @click="router.push('/reunion-frontgate-signup')"
-                    class="dept-button frontgate"
-                  >
-                    🚪 Front Gate Signup
-                  </button>
-                  <button
-                    @click="router.push('/reunion-foodteam-signup')"
-                    class="dept-button foodteam"
-                  >
-                    🍽️ Food Team Signup
-                  </button>
-                  <button
-                    @click="router.push('/reunion-setupcrew-signup')"
-                    class="dept-button setup"
-                  >
-                    🔧 Setup Crew Signup
-                  </button>
-                  <button
-                    @click="router.push('/reunion-stagecrew-signup')"
-                    class="dept-button stage"
-                  >
-                    🎵 Stage Crew Signup
-                  </button>
-                  <button
-                    @click="router.push('/reunion-cleanupcrew-signup')"
-                    class="dept-button cleanup"
-                  >
-                    🧹 Cleanup Crew Signup
-                  </button>
-                </div>
+                <button
+                  @click="router.push('/reunion-volunteer-signup')"
+                  class="dept-button primary-signup"
+                >
+                  📅 Sign Up for Shifts
+                </button>
               </div>
             </div>
           </div>
-
           <div class="step">
             <div class="step-number">3</div>
             <div class="step-content">
-              <h4>Access Your Department Manual</h4>
+              <h3>Access Your Department Manual</h3>
               <p>
                 Review and manage your specific Manual during the festival using our real-time
                 coordination system.
@@ -107,7 +83,7 @@
           <div class="step">
             <div class="step-number">4</div>
             <div class="step-content">
-              <h4>During the Festival</h4>
+              <h3>During the Festival</h3>
               <p>
                 Use the task management system to coordinate with your team in real-time. Claim
                 tasks, mark them complete, and see what your teammates are working on!
@@ -115,14 +91,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="important-note">
-        <h3>📱 Bookmark Your Department Page!</h3>
-        <p>
-          Save the link to your department's task page - you'll use it during the festival to
-          coordinate with your team.
-        </p>
       </div>
 
       <div class="contact-info">
@@ -228,9 +196,11 @@ const router = useRouter()
   flex-shrink: 0;
 }
 
-.step-content h4 {
+.step-content h4,
+.step-content h3 {
   color: var(--reunion-frog-green, #4caf50);
   margin-bottom: 0.5rem;
+  text-align: left;
 }
 
 .step-content p {
@@ -249,7 +219,7 @@ const router = useRouter()
 
 .department-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
 }
 
@@ -269,24 +239,40 @@ const router = useRouter()
 }
 
 .frontgate {
-  background: linear-gradient(135deg, #4caf50, #45a049);
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
   color: white;
 }
 .foodteam {
-  background: linear-gradient(135deg, #ff9800, #f57c00);
+  background: linear-gradient(135deg, #ff9800, #e65100);
   color: white;
 }
 .setup {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
+  background: linear-gradient(135deg, #2196f3, #0d47a1);
   color: white;
 }
 .stage {
-  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  background: linear-gradient(135deg, #9c27b0, #4a148c);
   color: white;
 }
 .cleanup {
-  background: linear-gradient(135deg, #607d8b, #455a64);
+  background: linear-gradient(135deg, #607d8b, #263238);
   color: white;
+}
+
+.primary-signup {
+  background: linear-gradient(135deg, var(--reunion-frog-green, #4caf50), #2e7d32);
+  color: white;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.primary-signup:hover {
+  background: linear-gradient(135deg, #2e7d32, var(--reunion-frog-green, #4caf50));
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
 }
 
 .important-note {
