@@ -32,7 +32,7 @@
       <strong>Venue Location/Directions:</strong>
       <a href="https://festivall.ca/reunionlocation" target="_blank">festivall.ca/reunionlocation</a
       ><br />
-      <strong>Event Date: </strong>AUG 29, 2025 - SEPT 01, 2025
+      <strong>Event Date: </strong>September 4th - September 7th, 2026
     </p>
     <p v-if="applicant.applicant_types.includes('Artist')">
       <strong>Event Hours for ARTIST Services:</strong> One 60-90min DJ/performance set during Event
@@ -238,7 +238,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { setDoc, doc, getDoc } from 'firebase/firestore'
+import { setDoc, doc, query, where, collection, getDocs } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
@@ -269,13 +269,22 @@ export default {
 
     const loadApplicant = async (id_code) => {
       try {
-        const pSnap = await getDoc(doc(reunion_db, 'participants_2026', id_code))
-        if (!pSnap.exists()) {
-          console.error('No participant found in participants_2026')
+        // Use query to find participant by id_code field (like other views do)
+        const q = query(
+          collection(reunion_db, 'participants_2026'),
+          where('id_code', '==', id_code.toLowerCase().trim())
+        )
+        const querySnapshot = await getDocs(q)
+
+        if (querySnapshot.empty) {
+          console.error('No participant found in participants_2026 with id_code:', id_code)
           router.push({ name: 'EnterIDCode' })
           return
         }
-        const p = pSnap.data()
+
+        const p = querySnapshot.docs[0].data()
+        console.log('Found participant data:', p)
+
         // Map unified structure to the flat applicant data the template expects
         const applicantData = {
           id_code: p.id_code,

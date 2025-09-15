@@ -16,7 +16,7 @@
 
 <script>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
@@ -28,6 +28,7 @@ export default {
     const idCode = ref('')
     const errorMessage = ref('')
     const router = useRouter()
+    const route = useRoute()
 
     const checkIdCode = async () => {
       try {
@@ -42,8 +43,14 @@ export default {
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
-          // Redirect to the ticket page if the ID code is valid
-          router.push({ name: 'TicketPage', params: { id_code: normalizedIdCode } })
+          // Determine which page to redirect to based on current path
+          if (route.path === '/reunioncontract') {
+            // If we're on the contract entry page, go to contract
+            router.push({ name: 'ContractPage', params: { id_code: normalizedIdCode } })
+          } else {
+            // Default to ticket page
+            router.push({ name: 'TicketPage', params: { id_code: normalizedIdCode } })
+          }
         } else {
           errorMessage.value = 'Invalid ID code. Please try again.'
         }
