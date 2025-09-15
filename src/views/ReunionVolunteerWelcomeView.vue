@@ -29,28 +29,28 @@
           <div class="step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h4>Access Your Department Tasks</h4>
+              <h4>Confirm or Adjust Your Shift</h4>
               <p>
-                Review and manage your specific tasks during the festival using our real-time
-                coordination system.
+                Need to tweak your shift? Use the internal signup pages to view openings and
+                switch if needed. These routes are consolidated per team and include any legacy A/B/C slots.
               </p>
               <div class="department-access">
-                <h5>Select your department to access task management:</h5>
+                <h5>Go to your team’s signup:</h5>
                 <div class="department-buttons">
-                  <button @click="router.push('/reunionfrontgate')" class="dept-button frontgate">
-                    🚪 Front Gate Tasks
+                  <button @click="router.push('/reunion-frontgate-signup')" class="dept-button frontgate">
+                    🚪 Front Gate Signup
                   </button>
-                  <button @click="router.push('/reunionfoodteam')" class="dept-button foodteam">
-                    🍽️ Food Team Tasks
+                  <button @click="router.push('/reunion-foodteam-signup')" class="dept-button foodteam">
+                    🍽️ Food Team Signup
                   </button>
-                  <button @click="router.push('/reunionsetupcrew')" class="dept-button setup">
-                    🔧 Setup Crew Tasks
+                  <button @click="router.push('/reunion-setupcrew-signup')" class="dept-button setup">
+                    🔧 Setup Crew Signup
                   </button>
-                  <button @click="router.push('/reunionstagecrew')" class="dept-button stage">
-                    🎵 Stage Crew Tasks
+                  <button @click="router.push('/reunion-stagecrew-signup')" class="dept-button stage">
+                    🎵 Stage Crew Signup
                   </button>
-                  <button @click="router.push('/reunioncleanupcrew')" class="dept-button cleanup">
-                    🧹 Cleanup Crew Tasks
+                  <button @click="router.push('/reunion-cleanupcrew-signup')" class="dept-button cleanup">
+                    🧹 Cleanup Crew Signup
                   </button>
                 </div>
               </div>
@@ -59,6 +59,37 @@
 
           <div class="step">
             <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Access Your Department Manual</h4>
+              <p>
+                Review and manage your specific Manual during the festival using our real-time
+                coordination system.
+              </p>
+              <div class="department-access">
+                <h5>Select your department to access task management:</h5>
+                <div class="department-buttons">
+                  <button @click="router.push('/reunionfrontgate')" class="dept-button frontgate">
+                    🚪 Front Gate Manual
+                  </button>
+                  <button @click="router.push('/reunionfoodteam')" class="dept-button foodteam">
+                    🍽️ Food Team Manual
+                  </button>
+                  <button @click="router.push('/reunionsetupcrew')" class="dept-button setup">
+                    🔧 Setup Crew Manual
+                  </button>
+                  <button @click="router.push('/reunionstagecrew')" class="dept-button stage">
+                    🎵 Stage Crew Manual
+                  </button>
+                  <button @click="router.push('/reunioncleanupcrew')" class="dept-button cleanup">
+                    🧹 Cleanup Crew Manual
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">4</div>
             <div class="step-content">
               <h4>During the Festival</h4>
               <p>

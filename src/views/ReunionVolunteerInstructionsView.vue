@@ -16,24 +16,7 @@
         safely commit to.
       </h3>
       <div class="instructions">
-        <div class="crew">
-          <img
-            :src="volunteer_icon"
-            alt="Volunteer Icon"
-            class="volunteer-icon"
-            style="width: 64px"
-          />
-          <div>
-            <button @click="router.push('/reunion-volunteer-signup')" class="volunteer-button">
-              ALL TEAMS SIGNUP
-            </button>
-            <p>
-              By selecting this option, you will be able to sign up for multiple teams and shifts
-              during the event. This option is ideal for volunteers who are willing to take on more
-              than the minimum shift requirements and help out in various areas.
-            </p>
-          </div>
-        </div>
+        
         <div class="crew">
           <img
             :src="frontgate_icon"
@@ -61,11 +44,8 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-foodteam-a-signup')" class="volunteer-button">
+            <button @click="router.push('/reunion-foodteam-signup')" class="volunteer-button">
               FOOD TEAM SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
-            </button>
-            <button @click="router.push('/reunion-foodteam-b-signup')" class="volunteer-button">
-              FOOD TEAM B SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
@@ -87,17 +67,8 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-setupcrew-a-signup')" class="volunteer-button">
-              SETUP CREW A SIGNUP<br />Early Team [Aug 18 - Aug 26]<br />[Minimum One 8-Hour Shift
-              PreShow]
-            </button>
-            <button @click="router.push('/reunion-setupcrew-b-signup')" class="volunteer-button">
-              SETUP CREW B SIGNUP<br />Late Team [Aug 27 - Aug 29]<br />[Minimum One 8-Hour Shift
-              PreShow]
-            </button>
-            <button @click="router.push('/reunion-setupcrew-c-signup')" class="volunteer-button">
-              SETUP CREW C SIGNUP<br />Last Minute Team [Aug 27 - 29]<br />[Minimum One 8-Hour Shift
-              PreShow]
+            <button @click="router.push('/reunion-setupcrew-signup')" class="volunteer-button">
+              SETUP CREW SIGNUP<br />[Minimum One 8-Hour Shift PreShow]
             </button>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
@@ -138,14 +109,8 @@
             style="width: 64px"
           />
           <div>
-            <button @click="router.push('/reunion-stagecrew-a-signup')" class="volunteer-button">
-              STAGE CREW A SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
-            </button>
-            <button @click="router.push('/reunion-stagecrew-b-signup')" class="volunteer-button">
-              STAGE CREW B SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
-            </button>
-            <button @click="router.push('/reunion-stagecrew-c-signup')" class="volunteer-button">
-              STAGE CREW C SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
+            <button @click="router.push('/reunion-stagecrew-signup')" class="volunteer-button">
+              STAGE CREW SIGNUP<br />[Minimum Two 4-Hour Shifts Per Weekend]
             </button>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
@@ -228,7 +193,6 @@ import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import { useRouter } from 'vue-router'
 
-import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import frontgate_icon from '@/assets/images/icons/front_gate.png'
 import foodteam_icon from '@/assets/images/icons/meals.png'
 import setupcrew_icon from '@/assets/images/icons/setup_crew.png'

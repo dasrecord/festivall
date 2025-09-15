@@ -40,6 +40,7 @@ import ReunionSlack from '@/views/ReunionSlack.vue'
 import TicketPageView from '@/views/TicketPageView.vue'
 import ReunionVolunteerInstructions from '@/views/ReunionVolunteerInstructionsView.vue'
 import ReunionVolunteerWelcome from '@/views/ReunionVolunteerWelcomeView.vue'
+import ReunionVolunteerSignupView from '@/views/ReunionVolunteerSignupView.vue'
 import ReunionArtInstallationResponsibilitiesView from '@/views/ReunionArtInstallationResponsibilitiesView.vue'
 import ReunionMapView from '@/views/ReunionMapView.vue'
 import OnyxView from '@/views/OnyxView.vue'
@@ -52,6 +53,7 @@ import ReunionFrontGateManual from '@/views/ReunionFrontGateManual.vue'
 import ReunionStageCrewManual from '@/views/ReunionStageCrewManual.vue'
 import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
 import AdminTaskManager from '@/views/AdminTaskManager.vue'
+import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 
 
 const routes = [
@@ -174,6 +176,14 @@ const routes = [
     component: AdminTaskManager,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/admin/volunteer-slots',
+    name: 'admin-volunteer-slots',
+    component: AdminVolunteerSlotsView,
+    meta: { requiresAuth: true }
+  },
+  // Alias for admin volunteer tasks (human-friendly path)
+  { path: '/admin/volunteer-tasks', redirect: { name: 'admin-volunteer-slots' } },
   {
     path: '/reunioncontract',
     name: 'EnterIDCode',
@@ -359,68 +369,46 @@ const routes = [
   {
     path: '/reunion-volunteer-signup',
     name: 'reunion-volunteer-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/AcZssZ2bQG0EOcqR7kFeMK4hgf33BZaGsC3B6uFPgyI=' }
+  component: ReunionVolunteerSignupView,
+  props: { teamKey: 'multi' }
   },
   {
     path: '/reunion-frontgate-signup',
     name: 'reunion-frontgate-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ14cUp_kw7XDZOpgtLfO9t4eAJho8O_jwTL5RO7TG8S03ejX_xZafzBTNsFloIimnW_ioUDkl1s' }
+  component: ReunionVolunteerSignupView,
+  props: { teamKey: 'frontgate' }
   },
   {
-    path: '/reunion-foodteam-a-signup',
+    path: '/reunion-foodteam-signup',
     name: 'reunion-foodteam-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3HJwOFBlAF2ninkICYzjQ8S9Mn6zuoDwV5trvBO5ilkjJ6UrXDRQt0gJSljvAoRTDIZ6fzIelz' }
+    component: ReunionVolunteerSignupView,
+    props: { teamKey: 'foodteam' }
   },
+  { path: '/reunion-foodteam-a-signup', redirect: { name: 'reunion-foodteam-signup' } },
+  { path: '/reunion-foodteam-b-signup', redirect: { name: 'reunion-foodteam-signup' } },
   {
-    path: '/reunion-foodteam-b-signup',
-    name: 'reunion-foodteam-b-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2BnuKTUJkP2Utiko_Mw7Tt9Qz0OHEFW7HI-pjjNajqMpYk0otR3DjpgIDSJg8tJh_TdUik6HIu' }
+    path: '/reunion-stagecrew-signup',
+    name: 'reunion-stagecrew-signup',
+    component: ReunionVolunteerSignupView,
+    props: { teamKey: 'stagecrew' }
   },
+  { path: '/reunion-stagecrew-a-signup', redirect: { name: 'reunion-stagecrew-signup' } },
+  { path: '/reunion-stagecrew-b-signup', redirect: { name: 'reunion-stagecrew-signup' } },
+  { path: '/reunion-stagecrew-c-signup', redirect: { name: 'reunion-stagecrew-signup' } },
   {
-    path: '/reunion-stagecrew-a-signup',
-    name: 'reunion-stagecrew-a-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0G8ipWXeewiySQ1CFfoA7s0ReBQzvMnMSs2Bdyi-jar9AXO8WDzulHzrIIP2UVVL3iNzVOKg9S' }
+    path: '/reunion-setupcrew-signup',
+    name: 'reunion-setupcrew-signup',
+    component: ReunionVolunteerSignupView,
+    props: { teamKey: 'setupcrew' }
   },
-  {
-    path: '/reunion-stagecrew-b-signup',
-    name: 'reunion-stagecrew-b-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3-AHMMD3JYl0BqgPyf6VslkHnq3F-T7O9jeXwO8Q_fk52lQKtIBvDS3p82s5VlGF6CKx8rJQ5Y' }
-  },
-  {
-    path: '/reunion-stagecrew-c-signup',
-    name: 'reunion-stagecrew-c-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3GW9UXMe8iWBWNT_BPvCpRfbudlDPjrZBcHowAm6XTtuHlhNtsyXTjT62RC9SIagoWqL71KFG9' }
-  },
-  {
-    path: '/reunion-setupcrew-a-signup',
-    name: 'reunion-setupcrew-a-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ160c_KP34OQwFWlr0pMQY8EgMzLZ1kFE_QqsH0LNsPd63eA2cBjQLuFPu7EgjzglFn9CWIU-e5' }
-  },
-    {
-    path: '/reunion-setupcrew-b-signup',
-    name: 'reunion-setupcrew-b-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0kXHYQnvWUCAD60AY0QMBBmVBNOd_PI1bVgDBWlTO0VGE9ZEqmOX3285NArq6DuZ8jkcT6V7GW' }
-  },
-  {
-    path: '/reunion-setupcrew-c-signup',
-    name: 'reunion-setupcrew-c-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2ZF6BGPPSmFljsUrkTHOG6KIRHyEZTfKCS80S2ahStKf7WhhGd9BPaAvsQym_xEh-mWrP96SOT' }
-  },
+  { path: '/reunion-setupcrew-a-signup', redirect: { name: 'reunion-setupcrew-signup' } },
+  { path: '/reunion-setupcrew-b-signup', redirect: { name: 'reunion-setupcrew-signup' } },
+  { path: '/reunion-setupcrew-c-signup', redirect: { name: 'reunion-setupcrew-signup' } },
   {
     path: '/reunion-cleanupcrew-signup',
     name: 'reunion-cleanupcrew-signup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2oH0RQRzM5NJKHD_yctNZNE9VPJJzEraRuywIbQzcJ70YPD98514kzV6gilAa6c-KTOegTHyPI' }
+  component: ReunionVolunteerSignupView,
+  props: { teamKey: 'cleanupcrew' }
   },
   {
     path: '/stayconnected',
