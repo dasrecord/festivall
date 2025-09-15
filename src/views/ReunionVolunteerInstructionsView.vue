@@ -16,7 +16,6 @@
         safely commit to.
       </h3>
       <div class="instructions">
-        
         <div class="crew">
           <img
             :src="frontgate_icon"
