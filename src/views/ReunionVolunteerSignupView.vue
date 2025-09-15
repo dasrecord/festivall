@@ -28,7 +28,7 @@
         <div class="form-section">
           <label for="team">Choose Team</label>
           <div class="team-row">
-            <select id="team" v-model="teamKeyLocal" @change="loadSlots">
+            <select id="team" v-model="teamKeyLocal" @change="onTeamChange">
               <option value="multi">All Teams</option>
               <option value="frontgate">Front Gate</option>
               <option value="foodteam">Food Team</option>
@@ -36,7 +36,9 @@
               <option value="stagecrew">Stage Crew</option>
               <option value="cleanupcrew">Cleanup Crew</option>
             </select>
-            <button class="refresh" @click="loadSlots" :disabled="loadingSlots">Refresh</button>
+            <button class="refresh" @click="refreshSlots" :disabled="loadingSlots">
+              {{ loadingSlots ? 'Loading...' : 'Refresh' }}
+            </button>
           </div>
         </div>
       </div>
@@ -135,16 +137,31 @@ export default {
   },
   computed: {
     effectiveTeamKey() {
-      return this.teamKey || this.teamKeyLocal
+      // If teamKey prop is 'multi', use the local selection instead
+      const result =
+        this.teamKey === 'multi' ? this.teamKeyLocal : this.teamKey || this.teamKeyLocal
+      console.log('effectiveTeamKey computed:', {
+        teamKey: this.teamKey,
+        teamKeyLocal: this.teamKeyLocal,
+        result: result
+      })
+      return result
     },
     filteredSlots() {
+      console.log('Filtering slots. effectiveTeamKey:', this.effectiveTeamKey)
+      console.log('Total slots:', this.slots.length)
+      console.log('Available teams in slots:', [...new Set(this.slots.map((s) => s.team))])
+
       if (!this.effectiveTeamKey || this.effectiveTeamKey === 'multi') return this.slots
       const key = this.effectiveTeamKey
-      return this.slots.filter((s) => {
+      const filtered = this.slots.filter((s) => {
         if (key === 'stagecrew') return s.team === 'stagecrew' || s.team?.startsWith('stagecrew_')
         if (key === 'setupcrew') return s.team === 'setupcrew' || s.team?.startsWith('setupcrew_')
         return s.team === key
       })
+
+      console.log(`Filtered to ${filtered.length} slots for team "${key}"`)
+      return filtered
     }
   },
   watch: {
@@ -212,6 +229,27 @@ export default {
         console.error('Failed to load slots', e)
       } finally {
         this.loadingSlots = false
+      }
+    },
+    onTeamChange() {
+      console.log('Team changed to:', this.teamKeyLocal)
+      this.loadSlots()
+    },
+    async refreshSlots() {
+      this.resultMessage = '' // Clear any previous messages
+      console.log('Refreshing slots...')
+      await this.loadSlots()
+      if (!this.loadingSlots) {
+        const filteredCount = this.filteredSlots.length
+        const totalCount = this.slots.length
+        const teamName =
+          this.effectiveTeamKey === 'multi'
+            ? 'All Teams'
+            : this.teamLabels[this.effectiveTeamKey] || this.effectiveTeamKey
+        this.resultMessage = `Refreshed! Showing ${filteredCount} of ${totalCount} slots for ${teamName}.`
+        setTimeout(() => {
+          this.resultMessage = ''
+        }, 3000)
       }
     },
     isClaimedByMe(slot) {
@@ -360,6 +398,16 @@ select {
   border: 1px solid #666;
   background: transparent;
   color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.refresh:hover:not(:disabled) {
+  border-color: var(--reunion-frog-green, #4caf50);
+  background: rgba(76, 175, 80, 0.1);
+}
+.refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .id-status {
   margin-top: 0.35rem;
