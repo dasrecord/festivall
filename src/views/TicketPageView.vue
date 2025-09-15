@@ -563,12 +563,12 @@
             order.applicant_types.includes('Volunteer')
           "
           style="grid-column: span 2"
-          to="/reunion-volunteer-instructions"
-          id="volunteer-instructions"
+          to="/reunion-volunteer-welcome"
+          id="volunteer-welcome"
         >
           <p>
             <img :src="volunteer_icon" style="height: auto; width: 36px" alt="Volunteer Icon" />
-            Signup for your Volunteer Shifts
+            Volunteer Hub & Shift Signup
           </p>
         </RouterLink>
         <div
