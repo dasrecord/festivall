@@ -9,35 +9,6 @@
       />
       <h1 class="highlight">Admin • Volunteer Shifts</h1>
 
-      <div class="toolbar">
-        <label>Team</label>
-        <select v-model="teamFilter">
-          <option value="all">All</option>
-          <option v-for="(label, key) in teamLabels" :key="key" :value="key">{{ label }}</option>
-        </select>
-
-        <label style="margin-left: 0.5rem">Group by</label>
-        <select v-model="groupBy">
-          <option value="day">Day</option>
-          <option value="team">Team</option>
-          <option value="status">Filled Status</option>
-          <option value="none">Chronological</option>
-        </select>
-
-        <label style="margin-left: 0.5rem">Status</label>
-        <select v-model="statusFilter">
-          <option value="all">All</option>
-          <option value="open">Open</option>
-          <option value="partial">Partial</option>
-          <option value="full">Full</option>
-        </select>
-
-        <label class="checkbox">
-          <input type="checkbox" v-model="hideInactive" /> Hide inactive
-        </label>
-        <button class="btn" @click="reload">Reload</button>
-      </div>
-
       <div class="form">
         <h3>Create / Edit Slot</h3>
         <div class="grid">
@@ -77,35 +48,106 @@
           Create a baseline set of shifts for all teams, based on our standard festival schedule.
           You can edit or disable any slot after generation.
         </p>
-        <div class="grid gen">
-          <label>Year</label>
-          <input type="number" v-model.number="gen.year" min="2024" />
+        <div class="gen-form">
+          <div class="gen-row">
+            <label>Year</label>
+            <input type="number" v-model.number="gen.year" min="2024" />
+          </div>
 
-          <label>Setup Crew capacity</label>
-          <input type="number" v-model.number="gen.capacity.setup" min="1" />
+          <div class="gen-section">
+            <h4 class="gen-section-title">Shift Concurrency</h4>
+            <div class="capacity-grid">
+              <div class="capacity-item">
+                <label>Setup Crew</label>
+                <input type="number" v-model.number="gen.capacity.setup" min="1" />
+              </div>
 
-          <label>Front Gate capacity</label>
-          <input type="number" v-model.number="gen.capacity.frontgate" min="1" />
+              <div class="capacity-item">
+                <label>Front Gate</label>
+                <input type="number" v-model.number="gen.capacity.frontgate" min="1" />
+              </div>
 
-          <label>Food Team capacity</label>
-          <input type="number" v-model.number="gen.capacity.food" min="1" />
+              <div class="capacity-item">
+                <label>Food Team</label>
+                <input type="number" v-model.number="gen.capacity.food" min="1" />
+              </div>
 
-          <label>Stage Crew capacity</label>
-          <input type="number" v-model.number="gen.capacity.stage" min="1" />
+              <div class="capacity-item">
+                <label>Stage Crew</label>
+                <input type="number" v-model.number="gen.capacity.stage" min="1" />
+              </div>
 
-          <label>Cleanup Crew capacity</label>
-          <input type="number" v-model.number="gen.capacity.cleanup" min="1" />
+              <div class="capacity-item">
+                <label>Cleanup Crew</label>
+                <input type="number" v-model.number="gen.capacity.cleanup" min="1" />
+              </div>
+            </div>
+          </div>
         </div>
         <div class="actions">
           <button class="btn primary" @click="generateAll" :disabled="generating">
             {{ generating ? 'Generating…' : 'Generate All Slots' }}
           </button>
         </div>
-        <small class="hint"
-          >Rules: Setup 8h (10–18) Aug 24–Sep 4; Front Gate 2h (10–24) Sep 4–6; Food 4h (11–15,
-          17–21) Sep 4–6; Stage 4h blocks 08–24 and 00–04 (next day) Sep 4–6; Cleanup 8h (10–18) Sep
-          7.</small
-        >
+        <small class="hint">
+          <strong>Current Paramters:</strong><br />
+          <ul>
+            <li>
+              <strong>Setup Crew:</strong> 8-hour shifts from 10:00 AM to 6:00 PM, every day from
+              <strong>August 24</strong> to <strong>September 4</strong>.
+            </li>
+            <li>
+              <strong>Front Gate:</strong> 2-hour shifts from 10:00 AM to 12:00 AM (midnight), on
+              <strong>September 4</strong> to <strong>September 6</strong>.
+            </li>
+            <li>
+              <strong>Food Team:</strong> Two 4-hour shifts daily:
+              <strong>11:00 AM to 3:00 PM</strong> (Lunch) and
+              <strong>5:00 PM to 9:00 PM</strong> (Supper), on <strong>September 4</strong> to
+              <strong>September 6</strong>.
+            </li>
+            <li>
+              <strong>Stage Crew:</strong> 4-hour blocks from
+              <strong>8:00 AM to 12:00 AM</strong> (midnight), plus an overnight shift from
+              <strong>12:00 AM to 4:00 AM</strong> (next day), on <strong>September 4</strong> to
+              <strong>September 6</strong>.
+            </li>
+            <li>
+              <strong>Cleanup Crew:</strong> A single 8-hour shift from
+              <strong>10:00 AM to 6:00 PM</strong>, on <strong>September 7</strong>.
+            </li>
+          </ul>
+        </small>
+      </div>
+
+      <div class="toolbar">
+        <label>Filter:</label>
+        <label>Team</label>
+        <select v-model="teamFilter">
+          <option value="all">All</option>
+          <option v-for="(label, key) in teamLabels" :key="key" :value="key">{{ label }}</option>
+        </select>
+
+        <label style="margin-left: 0.5rem">Group by</label>
+        <select v-model="groupBy">
+          <option value="day">Day</option>
+          <option value="team">Team</option>
+          <option value="status">Filled Status</option>
+          <option value="none">Chronological</option>
+        </select>
+
+        <label style="margin-left: 0.5rem">Status</label>
+        <select v-model="statusFilter">
+          <option value="all">All</option>
+          <option value="open">Open</option>
+          <option value="partial">Partial</option>
+          <option value="full">Full</option>
+        </select>
+
+        <label class="checkbox">
+          <input type="checkbox" v-model="hideInactive" /> Hide inactive
+        </label>
+        <button class="btn" @click="reload">Reload</button>
       </div>
 
       <div class="slots">
@@ -117,7 +159,7 @@
           <div class="slot-row" v-for="s in group.items" :key="s.id">
             <div class="meta">
               <strong>{{ teamLabels[s.team] || s.team }}</strong>
-              <div>{{ s.date }} • {{ s.start }}–{{ s.end }}</div>
+              <div>{{ s.date }} • {{ s.start }}-{{ s.end }}</div>
               <small v-if="s.notes">{{ s.notes }}</small>
             </div>
             <div class="capacity">
@@ -386,7 +428,7 @@ export default {
             claimed: []
           })
 
-        // Setup Crew A/B/C mentioned; rule says setupcrew overall 8h 10–18 daily Aug 24–Sep 4
+        // Setup Crew A/B/C mentioned; rule says setupcrew overall 8h 10-18 daily Aug 24-Sep 4
         const setupDates = this.dateRange(new Date(year, 7, 24), new Date(year, 8, 4)) // Aug=7, Sep=8
         for (const date of setupDates) {
           await add({
@@ -399,7 +441,7 @@ export default {
           })
         }
 
-        // Front Gate 2h shifts 10:00–24:00 on Sep 4–6
+        // Front Gate 2h shifts 10:00-24:00 on Sep 4-6
         const fgDates = this.dateRange(new Date(year, 8, 4), new Date(year, 8, 6))
         for (const date of fgDates) {
           let t = '10:00'
@@ -421,7 +463,7 @@ export default {
           }
         }
 
-        // Food Team: 11–15 and 17–21 on Sep 4–6
+        // Food Team: 11-15 and 17-21 on Sep 4-6
         const foodDates = fgDates
         for (const date of foodDates) {
           await add({
@@ -442,10 +484,10 @@ export default {
           })
         }
 
-        // Stage Crew: 4h blocks from 08:00–24:00, plus 00:00–04:00 (next day) on Sep 4–6
+        // Stage Crew: 4h blocks from 08:00-24:00, plus 00:00-04:00 (next day) on Sep 4-6
         const stageDates = fgDates
         for (const date of stageDates) {
-          // 08–24 blocks
+          // 08-24 blocks
           let t = '08:00'
           while (t !== '00:00') {
             const end = this.timeAdd(t, 240)
@@ -464,7 +506,7 @@ export default {
             }
           }
 
-          // Cleanup Crew: single 8h shift on Sep 7 from 10:00–18:00
+          // Cleanup Crew: single 8h shift on Sep 7 from 10:00-18:00
           const cleanupDate = this.toDateStr(year, 9, 7) // Sep = 9
           await add({
             team: 'cleanupcrew',
@@ -474,7 +516,7 @@ export default {
             capacity: this.gen.capacity.cleanup,
             notes: 'Cleanup (8h)'
           })
-          // 00–04 next-day block
+          // 00-04 next-day block
           const [Y, M, D] = date.split('-').map(Number)
           const nextDate = this.dateRange(new Date(Y, M - 1, D + 1), new Date(Y, M - 1, D + 1))[0]
           await add({
@@ -566,6 +608,49 @@ export default {
 .gen-desc {
   margin: 0 0 0.75rem;
   color: #ccc;
+}
+.gen-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.gen-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+.gen-section {
+  margin-top: 0.5rem;
+}
+.gen-section-title {
+  margin: 0 0 0.75rem;
+  color: var(--reunion-frog-green, #4caf50);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.capacity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+.capacity-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.capacity-item label {
+  font-size: 0.9rem;
+  color: #ddd;
+  font-weight: 500;
+}
+.capacity-item input {
+  width: 80px;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1e1e1e;
+  color: #fff;
 }
 .gen {
   grid-template-columns: 180px 1fr !important;
