@@ -337,7 +337,7 @@ const claimTask = async (taskId) => {
       setupTasks.value[taskIndex].assignedToName = userName.value
 
       // Save only the status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'setup_crew',
         assignedTo: userIdCode.value,
@@ -361,7 +361,7 @@ const unclaimTask = async (taskId) => {
       setupTasks.value[taskIndex].assignedToName = null
 
       // Remove status from Firestore or update to unclaimed
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'setup_crew',
         assignedTo: null,
@@ -387,7 +387,7 @@ const completeTask = async (taskId) => {
       setupTasks.value[taskIndex].completedAt = new Date().toISOString()
 
       // Save completion status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'setup_crew',
         assignedTo: userIdCode.value,
@@ -411,7 +411,7 @@ const resetTask = async (taskId) => {
 
   try {
     // Delete the task status document to reset it completely
-    await deleteDoc(doc(reunion_db, 'task_status_2025', taskId))
+    await deleteDoc(doc(reunion_db, 'task_status_2026', taskId))
     console.log(`Task ${taskId} has been reset`)
     alert(`Task ${taskId} has been reset to unclaimed/incomplete state`)
   } catch (error) {
@@ -464,7 +464,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2025'),
+      collection(reunion_db, 'task_status_2026'),
       where('department', '==', 'setup_crew')
     )
     const querySnapshot = await getDocs(q)

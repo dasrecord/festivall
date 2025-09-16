@@ -192,7 +192,7 @@ export default {
           where('id_code', '==', this.idCode.toLowerCase().trim())
         )
         const querySnapshot = await getDocs(q)
-        
+
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
           this.participant = {
@@ -214,7 +214,7 @@ export default {
         const base = collection(this.db, 'volunteer_slots_2026')
         const qy = query(base, where('active', '==', true))
         const snap = await getDocs(qy)
-        
+
         this.slots = snap.docs
           .map((d) => {
             const s = d.data()
@@ -270,26 +270,26 @@ export default {
         this.resultMessage = 'Please enter your ID Code first.'
         return
       }
-      
+
       this.claimingId = slot.id
-      
+
       try {
         const slotRef = doc(this.db, 'volunteer_slots_2026', slot.id)
         await runTransaction(this.db, async (tx) => {
           const snap = await tx.get(slotRef)
           if (!snap.exists()) throw new Error('Slot no longer exists.')
           const s = snap.data()
-          
+
           const capacity = s.capacity || 1
           const claimed = s.claimed || []
-          
+
           if ((claimed || []).some((c) => c.id_code === this.participant.id_code)) {
             throw new Error('You already claimed this slot.')
           }
           if (claimed.length >= capacity) {
             throw new Error('This slot is full.')
           }
-          
+
           const newClaim = {
             id_code: this.participant.id_code,
             fullname: this.participant.fullname,
@@ -308,7 +308,7 @@ export default {
           title: slot.title || '',
           created_at: new Date()
         }
-        
+
         await updateDoc(doc(this.db, 'participants_2026', this.participant.id_code), {
           'volunteer.claimed_slots': arrayUnion(claimSummary)
         }).catch(async () => {
