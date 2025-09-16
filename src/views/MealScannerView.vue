@@ -621,14 +621,14 @@ export default {
     },
     getFestivalDay(timestamp) {
       const redemptionDate = new Date(timestamp)
-      const festivalStart = new Date('2025-08-29T12:00:00') // Friday Aug 29, 12:00 PM
+      const festivalStart = new Date('2026-09-04T12:00:00') // Friday Sept 4, 12:00 PM
       const daysDiff = Math.floor((redemptionDate - festivalStart) / (1000 * 60 * 60 * 24))
 
       if (daysDiff < 0) return 'Pre-Festival'
       if (daysDiff === 0) return 'Friday'
       if (daysDiff === 1) return 'Saturday'
       if (daysDiff === 2) return 'Sunday'
-      if (daysDiff === 3) return 'Monday'
+      if (daysDiff === 3) return 'Monday (Labour Day)'
       return 'Post-Festival'
     },
     async lookupOperatorName(idCode) {

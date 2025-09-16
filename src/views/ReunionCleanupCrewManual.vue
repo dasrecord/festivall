@@ -326,7 +326,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'task_status_2025')
+    const statusRef = collection(reunion_db, 'task_status_2026')
     const q = query(statusRef, where('department', '==', 'cleanup_crew'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -361,7 +361,7 @@ const claimTask = async (taskId) => {
       cleanupTasks.value[taskIndex].assignedToName = userName.value
 
       // Save only the status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'cleanup_crew',
         assignedTo: userIdCode.value,
@@ -385,7 +385,7 @@ const unclaimTask = async (taskId) => {
       cleanupTasks.value[taskIndex].assignedToName = null
 
       // Remove status from Firestore or update to unclaimed
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'cleanup_crew',
         assignedTo: null,
@@ -411,7 +411,7 @@ const completeTask = async (taskId) => {
       cleanupTasks.value[taskIndex].completedAt = new Date().toISOString()
 
       // Save completion status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'cleanup_crew',
         assignedTo: userIdCode.value,
@@ -457,7 +457,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2025'),
+      collection(reunion_db, 'task_status_2026'),
       where('department', '==', 'cleanup_crew')
     )
     const querySnapshot = await getDocs(q)

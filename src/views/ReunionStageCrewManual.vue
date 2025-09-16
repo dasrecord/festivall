@@ -350,7 +350,7 @@ const claimTask = async (taskId) => {
       stageTasks.value[taskIndex].assignedToName = userName.value
 
       // Save only the status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: userIdCode.value,
@@ -374,7 +374,7 @@ const unclaimTask = async (taskId) => {
       stageTasks.value[taskIndex].assignedToName = null
 
       // Remove status from Firestore or update to unclaimed
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: null,
@@ -400,7 +400,7 @@ const completeTask = async (taskId) => {
       stageTasks.value[taskIndex].completedAt = new Date().toISOString()
 
       // Save completion status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2025', taskId), {
+      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: userIdCode.value,
@@ -446,7 +446,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2025'),
+      collection(reunion_db, 'task_status_2026'),
       where('department', '==', 'stage_crew')
     )
     const querySnapshot = await getDocs(q)

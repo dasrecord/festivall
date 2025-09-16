@@ -769,24 +769,28 @@ export default {
 
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
-          
+
           // Check if participant has a valid ticket (either purchased or earned through contract)
           const hasValidOrder = p.order && p.order.paid === true
           const hasSignedContract = p.contract && p.contract.signed === true
-          
+
           if (!hasValidOrder && !hasSignedContract) {
-            alert('No valid ticket found for this ID code. You may need to purchase a ticket or complete your contract signing process.')
+            alert(
+              'No valid ticket found for this ID code. You may need to purchase a ticket or complete your contract signing process.'
+            )
             router.push({ name: 'EnterIDCode' })
             return
           }
-          
+
           // If they only have a signed contract but no order, they might need to complete setup
           if (hasSignedContract && !hasValidOrder) {
-            alert('Contract signed but ticket not yet activated. Please contact admin to complete your ticket setup.')
+            alert(
+              'Contract signed but ticket not yet activated. Please contact admin to complete your ticket setup.'
+            )
             router.push({ name: 'EnterIDCode' })
             return
           }
-          
+
           // Normalize to previous shape for UI expectations
           order.value = {
             id_code: p.id_code,
