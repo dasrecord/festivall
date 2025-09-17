@@ -10,6 +10,8 @@ import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
 import ReunionLineupView from '@/views/ReunionLineupView.vue'
 import TicketScanner from '@/views/TicketScannerView.vue'
 import MealScanner from '@/views/MealScannerView.vue'
+import SelfCheckInView from '@/views/SelfCheckInView.vue'
+import SelfMealServiceView from '@/views/SelfMealServiceView.vue'
 import BlessedCoastView from '@/views/BlessedCoastView.vue'
 import FestivallLogin from '@/views/LoginView.vue'
 import Dashboard from '@/views/FestivallDashboard.vue'
@@ -354,6 +356,18 @@ const routes = [
     name: 'reunionmealscanner',
     component: MealScanner,
     meta: { requiresAuth: true, showHeader: false }
+  },
+  {
+    path: '/self-checkin',
+    name: 'self-checkin',
+    component: SelfCheckInView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/self-meal-service',
+    name: 'self-meal-service',
+    component: SelfMealServiceView,
+    meta: { showHeader: false }
   },
   {
     path: '/reunion-volunteer-welcome',
