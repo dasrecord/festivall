@@ -6,7 +6,7 @@
       alt="Festivall Emblem"
     />
     <h1>REUNION 2026 SELF MEAL SERVICE</h1>
-    
+
     <div class="instructions">
       <h3>🍽️ How to Redeem Meal Tickets:</h3>
       <ol>
@@ -32,7 +32,7 @@
       <h3>✅ Participant Found</h3>
       <p><strong>Name:</strong> {{ participant.fullname }}</p>
       <p><strong>Ticket Type:</strong> {{ participant.ticket_type }}</p>
-      
+
       <div class="meal-tickets-display">
         <h4>Meal Tickets Remaining:</h4>
         <div class="meal-tickets">
@@ -49,17 +49,13 @@
         </div>
         <p class="meal-count">{{ participant.meal_tickets_remaining }} tickets available</p>
       </div>
-      
+
       <div v-if="participant.meal_tickets_remaining > 0" class="action-section">
-        <button 
-          @click="redeemMealTicket"
-          :disabled="isProcessing"
-          class="redeem-btn"
-        >
+        <button @click="redeemMealTicket" :disabled="isProcessing" class="redeem-btn">
           {{ isProcessing ? 'Processing...' : '🍽️ Redeem 1 Meal Ticket' }}
         </button>
       </div>
-      
+
       <div v-else class="no-tickets">
         <h4>❌ No Meal Tickets Available</h4>
         <p>You can purchase additional meals for $15 cash at the food station.</p>
@@ -78,15 +74,26 @@
     </div>
 
     <!-- Recent Redemptions -->
-    <div v-if="participant && participant.meal_redemption_history && participant.meal_redemption_history.length > 0" class="recent-redemptions">
+    <div
+      v-if="
+        participant &&
+        participant.meal_redemption_history &&
+        participant.meal_redemption_history.length > 0
+      "
+      class="recent-redemptions"
+    >
       <h3>Recent Meal Redemptions</h3>
       <div class="redemption-list">
-        <div 
-          v-for="(redemption, index) in participant.meal_redemption_history.slice(-5)" 
+        <div
+          v-for="(redemption, index) in participant.meal_redemption_history.slice(-5)"
           :key="index"
           class="redemption-item"
         >
-          <span class="redemption-count">{{ redemption.tickets_redeemed }} ticket{{ redemption.tickets_redeemed !== 1 ? 's' : '' }}</span>
+          <span class="redemption-count"
+            >{{ redemption.tickets_redeemed }} ticket{{
+              redemption.tickets_redeemed !== 1 ? 's' : ''
+            }}</span
+          >
           <span class="redemption-time">{{ formatTime(redemption.timestamp) }}</span>
           <span class="redemption-day">{{ redemption.festival_day }}</span>
           <span v-if="redemption.reason" class="redemption-reason">{{ redemption.reason }}</span>
@@ -97,12 +104,8 @@
     <div class="meal-info">
       <h3>🕐 Meal Service Hours</h3>
       <div class="service-hours">
-        <div class="meal-time">
-          <strong>Lunch:</strong> 11:00 AM - 3:00 PM
-        </div>
-        <div class="meal-time">
-          <strong>Dinner:</strong> 5:00 PM - 9:00 PM
-        </div>
+        <div class="meal-time"><strong>Lunch:</strong> 11:00 AM - 3:00 PM</div>
+        <div class="meal-time"><strong>Dinner:</strong> 5:00 PM - 9:00 PM</div>
       </div>
     </div>
 
@@ -142,7 +145,7 @@ export default {
           where('id_code', '==', idCode.value.toLowerCase().trim())
         )
         const querySnapshot = await getDocs(q)
-        
+
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
           participant.value = {
@@ -163,15 +166,15 @@ export default {
 
     const redeemMealTicket = async () => {
       if (!participant.value || participant.value.meal_tickets_remaining <= 0) return
-      
+
       isProcessing.value = true
       resultMessage.value = ''
-      
+
       try {
         const timestamp = new Date().toISOString()
         const festivalDay = getFestivalDay(timestamp)
         const newMealTickets = participant.value.meal_tickets_remaining - 1
-        
+
         const redemptionEntry = {
           timestamp,
           tickets_redeemed: 1,
@@ -192,16 +195,15 @@ export default {
 
         participant.value.meal_tickets_remaining = newMealTickets
         participant.value.meal_redemption_history = updatedHistory
-        
+
         resultMessage.value = `Meal ticket redeemed successfully! ${newMealTickets} tickets remaining.`
         resultType.value = 'success'
-        
+
         // Clear result message after 10 seconds
         setTimeout(() => {
           resultMessage.value = ''
           resultType.value = ''
         }, 10000)
-        
       } catch (error) {
         console.error('Error redeeming meal ticket:', error)
         resultMessage.value = 'Redemption failed. Please try again or contact Food Team.'
@@ -527,29 +529,29 @@ h1 {
   .self-meal-page {
     padding: 1rem;
   }
-  
+
   .id-input {
     min-width: 250px;
     font-size: 1rem;
   }
-  
+
   .redeem-btn {
     font-size: 1rem;
     padding: 0.8rem 1.5rem;
     min-width: 200px;
   }
-  
+
   .redemption-item {
     flex-direction: column;
     text-align: center;
     gap: 0.25rem;
   }
-  
+
   .service-hours {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .meal-time {
     width: 100%;
     max-width: 250px;
