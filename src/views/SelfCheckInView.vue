@@ -6,7 +6,7 @@
       alt="Festivall Emblem"
     />
     <h1>REUNION 2026 SELF CHECK-IN</h1>
-    
+
     <div class="instructions">
       <h3>📱 How to Use Self Check-In:</h3>
       <ol>
@@ -31,14 +31,15 @@
       <h3>✅ Participant Found</h3>
       <p><strong>Name:</strong> {{ participant.fullname }}</p>
       <p><strong>Ticket Type:</strong> {{ participant.ticket_type }}</p>
-      <p><strong>Current Status:</strong> 
+      <p>
+        <strong>Current Status:</strong>
         <span :class="participant.checked_in ? 'checked-in' : 'checked-out'">
           {{ participant.checked_in ? 'Checked In' : 'Checked Out' }}
         </span>
       </p>
-      
+
       <div class="action-buttons">
-        <button 
+        <button
           v-if="!participant.checked_in"
           @click="checkIn"
           :disabled="isProcessing"
@@ -46,8 +47,8 @@
         >
           {{ isProcessing ? 'Processing...' : '🟢 Check In' }}
         </button>
-        
-        <button 
+
+        <button
           v-if="participant.checked_in"
           @click="checkOut"
           :disabled="isProcessing"
@@ -72,12 +73,14 @@
     <div v-if="participant && participant.entrance_activity_history" class="recent-activity">
       <h3>Recent Activity</h3>
       <div class="activity-list">
-        <div 
-          v-for="(activity, index) in participant.entrance_activity_history.slice(-3)" 
+        <div
+          v-for="(activity, index) in participant.entrance_activity_history.slice(-3)"
           :key="index"
           class="activity-item"
         >
-          <span class="activity-action">{{ activity.action === 'check_in' ? '🟢 Check In' : '🔴 Check Out' }}</span>
+          <span class="activity-action">{{
+            activity.action === 'check_in' ? '🟢 Check In' : '🔴 Check Out'
+          }}</span>
           <span class="activity-time">{{ formatTime(activity.timestamp) }}</span>
           <span class="activity-day">{{ activity.festival_day }}</span>
         </div>
@@ -119,7 +122,7 @@ export default {
           where('id_code', '==', idCode.value.toLowerCase().trim())
         )
         const querySnapshot = await getDocs(q)
-        
+
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
           participant.value = {
@@ -140,14 +143,14 @@ export default {
 
     const checkIn = async () => {
       if (!participant.value) return
-      
+
       isProcessing.value = true
       resultMessage.value = ''
-      
+
       try {
         const timestamp = new Date().toISOString()
         const festivalDay = getFestivalDay(timestamp)
-        
+
         const activityEntry = {
           timestamp,
           action: 'check_in',
@@ -167,10 +170,9 @@ export default {
 
         participant.value.checked_in = true
         participant.value.entrance_activity_history = updatedHistory
-        
+
         resultMessage.value = `Welcome to Reunion 2026, ${participant.value.fullname}!`
         resultType.value = 'success'
-        
       } catch (error) {
         console.error('Error checking in:', error)
         resultMessage.value = 'Check-in failed. Please try again or contact Front Gate.'
@@ -182,14 +184,14 @@ export default {
 
     const checkOut = async () => {
       if (!participant.value) return
-      
+
       isProcessing.value = true
       resultMessage.value = ''
-      
+
       try {
         const timestamp = new Date().toISOString()
         const festivalDay = getFestivalDay(timestamp)
-        
+
         const activityEntry = {
           timestamp,
           action: 'check_out',
@@ -209,10 +211,9 @@ export default {
 
         participant.value.checked_in = false
         participant.value.entrance_activity_history = updatedHistory
-        
+
         resultMessage.value = `Thank you for visiting, ${participant.value.fullname}! Safe travels.`
         resultType.value = 'success'
-        
       } catch (error) {
         console.error('Error checking out:', error)
         resultMessage.value = 'Check-out failed. Please try again or contact Front Gate.'
@@ -362,7 +363,8 @@ h1 {
   margin-top: 1.5rem;
 }
 
-.check-in-btn, .check-out-btn {
+.check-in-btn,
+.check-out-btn {
   padding: 1rem 2rem;
   font-size: 1.2rem;
   border: none;
@@ -390,7 +392,8 @@ h1 {
   background: linear-gradient(45deg, #c62828, #b71c1c);
 }
 
-.check-in-btn:disabled, .check-out-btn:disabled {
+.check-in-btn:disabled,
+.check-out-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -487,18 +490,19 @@ h1 {
   .self-checkin-page {
     padding: 1rem;
   }
-  
+
   .id-input {
     min-width: 250px;
     font-size: 1rem;
   }
-  
-  .check-in-btn, .check-out-btn {
+
+  .check-in-btn,
+  .check-out-btn {
     font-size: 1rem;
     padding: 0.8rem 1.5rem;
     min-width: 180px;
   }
-  
+
   .activity-item {
     flex-direction: column;
     text-align: center;
