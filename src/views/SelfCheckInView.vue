@@ -10,13 +10,28 @@
     <div class="instructions">
       <h3>📱 How to Use Self Check-In:</h3>
       <ol>
-        <li>Enter your ID Code below</li>
+        <li>Enter your ID Code below or scan your QR code</li>
         <li>Select Check In or Check Out</li>
         <li>Show confirmation to Front Gate volunteer if needed</li>
       </ol>
     </div>
 
-    <div class="id-input-section">
+    <!-- QR Scanner Section -->
+    <div v-if="hasWebcam" class="scanner-section">
+      <div class="scanner-toggle">
+        <button v-if="!showScanner" @click="showScanner = true" class="scanner-btn">
+          📷 Scan QR Code
+        </button>
+        <button v-else @click="showScanner = false" class="scanner-btn">⌨️ Manual Entry</button>
+      </div>
+
+      <div v-if="showScanner" class="qr-scanner-container">
+        <QrcodeStream @detect="onQrDetect" @init="onScannerInit" class="qr-scanner" />
+        <p class="scanner-hint">Point camera at your QR code</p>
+      </div>
+    </div>
+
+    <div v-if="!showScanner" class="id-input-section">
       <label for="idCode">Enter Your ID Code:</label>
       <input
         id="idCode"
@@ -100,15 +115,51 @@ import { ref, onMounted } from 'vue'
 import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs, query, where } from 'firebase/firestore'
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
+import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
   name: 'SelfCheckInView',
+  components: {
+    QrcodeStream
+  },
   setup() {
     const idCode = ref('')
     const participant = ref(null)
     const isProcessing = ref(false)
     const resultMessage = ref('')
     const resultType = ref('')
+    const hasWebcam = ref(false)
+    const showScanner = ref(false)
+
+    const checkWebcamAvailability = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        hasWebcam.value = devices.some((device) => device.kind === 'videoinput')
+      } catch (error) {
+        console.log('No webcam access:', error)
+        hasWebcam.value = false
+      }
+    }
+
+    const onQrDetect = (detectedCodes) => {
+      if (detectedCodes.length > 0) {
+        const qrContent = detectedCodes[0].rawValue
+        // Extract ID code from QR content (assuming it contains the ID code)
+        idCode.value = qrContent.trim().toLowerCase()
+        showScanner.value = false
+        lookupParticipant()
+      }
+    }
+
+    const onScannerInit = async (promise) => {
+      try {
+        await promise
+      } catch (error) {
+        console.error('Scanner initialization failed:', error)
+        hasWebcam.value = false
+        showScanner.value = false
+      }
+    }
 
     const lookupParticipant = async () => {
       if (!idCode.value || idCode.value.length < 3) {
@@ -249,6 +300,9 @@ export default {
     }
 
     onMounted(() => {
+      // Check for webcam availability
+      checkWebcamAvailability()
+
       // Focus on input when page loads
       const input = document.getElementById('idCode')
       if (input) input.focus()
@@ -267,10 +321,14 @@ export default {
       isProcessing,
       resultMessage,
       resultType,
+      hasWebcam,
+      showScanner,
       lookupParticipant,
       checkIn,
       checkOut,
-      formatTime
+      formatTime,
+      onQrDetect,
+      onScannerInit
     }
   }
 }
@@ -295,6 +353,52 @@ h1 {
   border-radius: 8px;
   margin-bottom: 2rem;
   border: 2px solid var(--festivall-baby-blue);
+}
+
+.scanner-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.scanner-toggle {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.scanner-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.scanner-btn:hover {
+  background-color: #45a049;
+}
+
+.qr-scanner-container {
+  text-align: center;
+}
+
+.qr-scanner {
+  max-width: 300px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.scanner-hint {
+  margin-top: 10px;
+  font-style: italic;
+  color: #ccc;
 }
 
 .instructions ol {
