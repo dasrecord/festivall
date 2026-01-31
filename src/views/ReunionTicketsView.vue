@@ -254,6 +254,30 @@ const addOrder = async () => {
     }
 
     const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
+
+    // Build order object conditionally to avoid undefined values
+    const orderData = {
+      timestamp: form.value.timestamp || nowIso,
+      payment_type: form.value.payment_type || '',
+      currency: 'CAD',
+      fiat_total_price_cad: Number(fiatTotal) || 0,
+      paid: !!form.value.paid,
+      payment_reference: null,
+      ticket_type: form.value.ticket_type || '',
+      selected_day: form.value.selected_day || '',
+      original_ticket_quantity: Number(form.value.ticket_quantity || 0),
+      ticket_quantity: Number(form.value.ticket_quantity || 0),
+      meal_packages: Number(form.value.meal_packages || 0),
+      meal_tickets_remaining: Number(form.value.meal_tickets_remaining || 0),
+      checked_in: !!form.value.checked_in
+    }
+
+    // Only add btc fields if payment type is bitcoin
+    if (form.value.payment_type === 'bitcoin') {
+      orderData.btc_amount = Number(form.value.total_price) || 0
+      orderData.btc_rate_cad = Number(btcRate.value || 0)
+    }
+
     await setDoc(
       participantsDocRef,
       {
@@ -270,25 +294,7 @@ const addOrder = async () => {
         referral: {
           referral_id_code: form.value.referral_id_code || null
         },
-        order: {
-          timestamp: form.value.timestamp || nowIso,
-          payment_type: form.value.payment_type || '',
-          currency: 'CAD',
-          fiat_total_price_cad: Number(fiatTotal) || 0,
-          btc_amount:
-            form.value.payment_type === 'bitcoin' ? Number(form.value.total_price) : undefined,
-          btc_rate_cad:
-            form.value.payment_type === 'bitcoin' ? Number(btcRate.value || 0) : undefined,
-          paid: !!form.value.paid,
-          payment_reference: undefined,
-          ticket_type: form.value.ticket_type || '',
-          selected_day: form.value.selected_day || '',
-          original_ticket_quantity: Number(form.value.ticket_quantity || 0),
-          ticket_quantity: Number(form.value.ticket_quantity || 0),
-          meal_packages: Number(form.value.meal_packages || 0),
-          meal_tickets_remaining: Number(form.value.meal_tickets_remaining || 0),
-          checked_in: !!form.value.checked_in
-        },
+        order: orderData,
         activity: {
           checked_in: !!form.value.checked_in
         }
@@ -323,16 +329,39 @@ const submitForm = async () => {
     generatePaymentInstructions()
     await textPaymentInstructions()
     await emailPaymentInstructions()
+
+    // Write to database FIRST
     await addOrder()
+
+    // Only send Slack notification AFTER successful database write
+    // Calculate display prices for Slack notification
+    let displayPrice = ''
+    if (form.value.payment_type === 'bitcoin') {
+      displayPrice = `:bitcoin: ${form.value.total_price} BTC`
+    } else {
+      // For cash/etransfer, use the fiatTotal calculated in addOrder
+      let ticketPrice = 0
+      if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 140
+      else if (form.value.ticket_type === 'Day Pass') ticketPrice = 80
+      let fiatTotal =
+        ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
+
+      if (form.value.payment_type === 'cash') {
+        const surchargePer =
+          form.value.ticket_type === 'Weekend Pass'
+            ? 20
+            : form.value.ticket_type === 'Day Pass'
+              ? 10
+              : 0
+        fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
+      }
+      displayPrice = `:moneybag: $${fiatTotal}`
+    }
 
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_sales',
       {
-        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:id: ${form.value.id_code}\n:label: ${form.value.referral_id_code || 'None'}\n${
-          form.value.payment_type === 'etransfer'
-            ? ':moneybag: $' + form.value.total_price
-            : ':bitcoin: ' + form.value.total_price + ' BTC'
-        }`
+        text: `:bust_in_silhouette: ${form.value.fullname}\\n:email: ${form.value.email}\\n:phone: ${form.value.phone}\\n:ticket: ${form.value.ticket_type}\\n:hash: ${form.value.ticket_quantity}\\n:knife_fork_plate: ${form.value.meal_packages}\\n:id: ${form.value.id_code}\\n:label: ${form.value.referral_id_code || 'None'}\\n${displayPrice}`
       },
       {
         headers: {

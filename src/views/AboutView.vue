@@ -14,10 +14,6 @@
         </li>
         <li>
           <img :src="headphones_icon" alt="headphones icon" class="icon" />
-          resident DJ @ Bon Temps Cafe
-        </li>
-        <li>
-          <img :src="headphones_icon" alt="headphones icon" class="icon" />
           resident DJ at Finn's @ The Parktown Hotel
         </li>
         <li>
@@ -38,9 +34,7 @@
           <br />
         </li>
       </ul>
-      Behind the scenes, I am the A&R for Evolved Music Group, an international artist management
-      agency and music firm, that supports artists with A&R and publishing consultants across
-      Canada, the US, and Europe.<br /><br />
+      <br />
       <div class="links">
         <div class="link">
           <RouterLink to="dasrecord" @click="trackLinkClick('artist_profile', 'Das Record Profile')"

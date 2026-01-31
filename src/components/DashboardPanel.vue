@@ -69,6 +69,9 @@
       <h2>Ticket Pool</h2>
       <div class="buttons">
         <button @click="loadApplicants('orders_2025', true)">Reunion Orders 2025</button>
+        <button @click="loadApplicants('participants_2026', true)">
+          Reunion Participants 2026
+        </button>
       </div>
       <h2>Talent Pool</h2>
       <div class="buttons">
@@ -155,8 +158,11 @@
               <p v-if="applicant.id_code" class="id_code">
                 <a
                   :href="
-                    'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
-                    applicant.id_code
+                    currentCollection === 'participants_2026'
+                      ? 'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
+                        applicant.id_code
+                      : 'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
+                        applicant.id_code
                   "
                   target="_blank"
                 >
@@ -533,6 +539,7 @@ export default {
   setup() {
     const applicants = ref([])
     const filteredApplicants = ref([])
+    const currentCollection = ref('orders_2025')
 
     // Add loading and error states
     const loading = ref(false)
@@ -655,6 +662,7 @@ export default {
     const loadApplicants = async (type, isFirestore = false) => {
       loading.value = true
       error.value = null
+      currentCollection.value = type
 
       try {
         let data = []
@@ -662,7 +670,39 @@ export default {
           // Fetch data from Firestore
           const applicantsCollection = collection(reunion_db, type)
           const applicantsSnapshot = await getDocs(applicantsCollection)
-          data = applicantsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          data = applicantsSnapshot.docs.map((doc) => {
+            const docData = doc.data()
+
+            // Normalize data structure for participants_2026 vs orders_2025
+            if (type === 'participants_2026') {
+              return {
+                id: doc.id,
+                id_code: docData.id_code,
+                fullname: docData.contact?.fullname || '',
+                email: docData.contact?.email || '',
+                phone: docData.contact?.phone || '',
+                status: docData.status || '',
+                applicant_types: docData.roles?.applicant_types || [],
+                act_name: docData.roles?.act_name || '',
+                ticket_type: docData.order?.ticket_type || '',
+                ticket_quantity: docData.order?.ticket_quantity || 0,
+                original_ticket_quantity: docData.order?.original_ticket_quantity || 0,
+                meal_tickets_remaining: docData.order?.meal_tickets_remaining || 0,
+                meal_packages: docData.order?.meal_packages || 0,
+                total_price: docData.order?.fiat_total_price_cad || 0,
+                payment_type: docData.order?.payment_type || '',
+                paid: docData.order?.paid || false,
+                checked_in: docData.order?.checked_in || false,
+                referral_id_code: docData.referral?.referral_id_code || '',
+                createdAt: docData.createdAt || '',
+                ...docData
+              }
+            } else {
+              return { id: doc.id, ...docData }
+            }
+          })
+
+          console.log(`Loaded ${data.length} documents from ${type}:`, data)
         } else {
           // Fetch static data from public folder
           const response = await fetch(`/data/applicants/${type}.json`)
@@ -1471,6 +1511,7 @@ export default {
     return {
       applicants,
       filteredApplicants,
+      currentCollection,
       relevantFilters,
       activeFilters,
       loadApplicants,
