@@ -6,7 +6,7 @@ import meals from '@/assets/images/icons/meals.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 import bitcoin_icon from '../assets/images/bitcoin.svg?url'
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
@@ -31,7 +31,8 @@ const form = ref({
   total_price: 0,
   paid: false,
   checked_in: false,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
+  honeypot: '' // Bot trap field
 })
 
 const ticket_image = ref(ticket)
@@ -40,6 +41,31 @@ const meals_image = ref(meals)
 const btcRate = ref(0)
 const paymentInstructions = ref('')
 const isSubmitting = ref(false)
+const recaptchaToken = ref('')
+const formStartTime = ref(null)
+const pageLoadTime = ref(Date.now())
+const mouseMovements = ref(0)
+const keyboardInteractions = ref(0)
+
+// Track user interactions for bot detection
+const trackUserInteraction = () => {
+  mouseMovements.value++
+}
+
+const trackKeyboardInteraction = () => {
+  keyboardInteractions.value++
+}
+
+// Add event listeners for interaction tracking
+onMounted(() => {
+  document.addEventListener('mousemove', trackUserInteraction)
+  document.addEventListener('keydown', trackKeyboardInteraction)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousemove', trackUserInteraction)
+  document.removeEventListener('keydown', trackKeyboardInteraction)
+})
 
 const route = useRoute()
 
@@ -297,6 +323,15 @@ const addOrder = async () => {
         order: orderData,
         activity: {
           checked_in: !!form.value.checked_in
+        },
+        security: {
+          recaptcha_token: recaptchaToken.value || null,
+          time_on_page: Date.now() - pageLoadTime.value,
+          form_fill_time: formStartTime.value ? Date.now() - formStartTime.value : null,
+          mouse_movements: mouseMovements.value,
+          keyboard_interactions: keyboardInteractions.value,
+          user_agent: navigator.userAgent,
+          submission_timestamp: Date.now()
         }
       },
       { merge: true }
@@ -312,6 +347,121 @@ const submitForm = async () => {
 
   try {
     isSubmitting.value = true
+
+    // Bot prevention checks
+    console.log('Running bot prevention checks...')
+
+    // 1. Honeypot field check
+    if (form.value.honeypot) {
+      // Silent fail - don't alert bots
+      console.log('Bot detected: honeypot filled')
+      isSubmitting.value = false
+      return
+    }
+
+    // 2. Timing checks
+    const timeOnPage = Date.now() - pageLoadTime.value
+    if (timeOnPage < 10000) {
+      // Less than 10 seconds
+      alert('Please take your time filling out the form.')
+      isSubmitting.value = false
+      return
+    }
+
+    const formFillTime = formStartTime.value ? Date.now() - formStartTime.value : 0
+    if (formFillTime > 0 && formFillTime < 5000) {
+      // Filled form in less than 5 seconds
+      alert('Please review your information carefully.')
+      isSubmitting.value = false
+      return
+    }
+
+    // 3. Content validation for suspicious patterns
+    const suspiciousPatterns = [
+      'http',
+      'https',
+      'www.',
+      '.com',
+      '.net',
+      '.org',
+      'bitcoin',
+      'crypto',
+      'btc',
+      'eth',
+      'spam',
+      'test',
+      'admin',
+      'root',
+      'null',
+      'undefined'
+    ]
+
+    const textToCheck = `${form.value.fullname} ${form.value.email}`.toLowerCase()
+    if (suspiciousPatterns.some((pattern) => textToCheck.includes(pattern))) {
+      alert('Please enter valid information.')
+      isSubmitting.value = false
+      return
+    }
+
+    // 4. Basic validation improvements
+    if (
+      form.value.fullname.length < 2 ||
+      form.value.fullname.length > 100 ||
+      form.value.email.includes(' ') ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email)
+    ) {
+      alert('Please enter valid information.')
+      isSubmitting.value = false
+      return
+    }
+
+    // 5. Phone number validation
+    const phoneDigits = form.value.phone.replace(/\D/g, '')
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      alert('Please enter a valid phone number.')
+      isSubmitting.value = false
+      return
+    }
+
+    // 6. reCAPTCHA v3 verification
+    console.log('Executing reCAPTCHA...')
+    try {
+      if (typeof window.grecaptcha !== 'undefined') {
+        const recaptchaResponse = await window.grecaptcha.execute(
+          '6LcGR5AqAAAAACvhGOLFKTqpM8PQoBmfQE7PiKhU',
+          {
+            action: 'ticket_purchase'
+          }
+        )
+        recaptchaToken.value = recaptchaResponse
+        console.log('reCAPTCHA completed successfully')
+      } else {
+        console.warn('reCAPTCHA not loaded, proceeding without it')
+      }
+    } catch (recaptchaError) {
+      console.warn('reCAPTCHA failed:', recaptchaError)
+      // Don't block submission for reCAPTCHA errors, just log them
+    }
+
+    // 7. Check for user interactions (mouse/keyboard)
+    if (mouseMovements.value < 5 || keyboardInteractions.value < 10) {
+      console.log('Suspicious: Low user interaction detected')
+      alert('Please interact with the form naturally before submitting.')
+      isSubmitting.value = false
+      return
+    }
+
+    // 8. Rate limiting check (simple client-side)
+    const lastSubmission = localStorage.getItem('lastTicketSubmission')
+    if (lastSubmission) {
+      const timeSinceLastSubmission = Date.now() - parseInt(lastSubmission)
+      if (timeSinceLastSubmission < 60000) {
+        // 1 minute
+        alert('Please wait before submitting another ticket request.')
+        isSubmitting.value = false
+        return
+      }
+    }
 
     // Validate that they're purchasing something
     if (form.value.ticket_quantity === 0 && form.value.meal_packages === 0) {
@@ -402,6 +552,9 @@ const submitForm = async () => {
         'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'
       )
 
+      // Store timestamp for rate limiting
+      localStorage.setItem('lastTicketSubmission', Date.now().toString())
+
       form.value = {
         id_code_long: '',
         id_code: '',
@@ -453,6 +606,9 @@ const trackPaymentMethodSelection = (paymentType) => {
 
 // Track when someone starts filling out the form
 const trackFormStart = () => {
+  if (!formStartTime.value) {
+    formStartTime.value = Date.now()
+  }
   logEvent(reunion_analytics, 'begin_checkout', {
     currency: 'CAD'
   })
@@ -621,6 +777,18 @@ onMounted(() => {
       <br />
       <!-- FORM -->
       <form @submit.prevent="submitForm">
+        <!-- Honeypot field - hidden from users but bots may fill it -->
+        <div class="honeypot" style="position: absolute; left: -9999px; opacity: 0">
+          <label for="website">Website (leave blank):</label>
+          <input
+            type="text"
+            id="website"
+            v-model="form.honeypot"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+
         <div class="form-section">
           <label for="referral_id_code">Referral ID_CODE:</label>
           <input
