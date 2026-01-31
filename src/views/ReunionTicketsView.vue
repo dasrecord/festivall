@@ -149,9 +149,9 @@ const calculateMealTickets = () => {
 const calculateTotalPrice = () => {
   let ticketPrice = 0
   if (form.value.ticket_type === 'Weekend Pass') {
-    ticketPrice = 140
+    ticketPrice = 200
   } else if (form.value.ticket_type === 'Day Pass') {
-    ticketPrice = 80
+    ticketPrice = 100
   }
 
   // Calculate total fiat price
@@ -161,12 +161,12 @@ const calculateTotalPrice = () => {
     totalPrice *= 0.75 // Apply 25% discount
     form.value.total_price = (totalPrice / btcRate.value).toFixed(8) // Store Bitcoin price
   } else if (form.value.payment_type === 'cash') {
-    // Add cash admin fee: $20 per Weekend Pass, $10 per Day Pass
+    // Add cash admin fee: $30 per Weekend Pass, $15 per Day Pass
     const surchargePer =
       form.value.ticket_type === 'Weekend Pass'
-        ? 20
+        ? 30
         : form.value.ticket_type === 'Day Pass'
-          ? 10
+          ? 15
           : 0
     totalPrice += surchargePer * form.value.ticket_quantity
     form.value.total_price = totalPrice // Store fiat price with surcharge
@@ -183,9 +183,9 @@ const generatePaymentInstructions = () => {
   } else if (form.value.payment_type === 'cash') {
     const feeNote =
       form.value.ticket_type === 'Weekend Pass'
-        ? '$20 per Weekend Pass'
+        ? '$30 per Weekend Pass'
         : form.value.ticket_type === 'Day Pass'
-          ? '$10 per Day Pass'
+          ? '$15 per Day Pass'
           : '$0'
     paymentInstructions.value = `Please bring $${form.value.total_price} CAD in cash to the front gate.\nAn admin fee (${feeNote}) is included in your total.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nID Code: ${form.value.id_code}`
   }
@@ -238,8 +238,8 @@ const addOrder = async () => {
     const nowIso = new Date().toISOString()
     // Compute fiat total (discount applied for bitcoin)
     let ticketPrice = 0
-    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 140
-    else if (form.value.ticket_type === 'Day Pass') ticketPrice = 80
+    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 200
+    else if (form.value.ticket_type === 'Day Pass') ticketPrice = 100
     let fiatTotal =
       ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
     if (form.value.payment_type === 'bitcoin') fiatTotal = fiatTotal * 0.75
@@ -536,18 +536,19 @@ onMounted(() => {
           *Children 12 and under free!*<br />
           *Youth 18 and under must be accompanied by an adult.*<br /><br />
           <div class="bitcoin">
-            <h2>
+            <!-- <h2>
               <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> Earlybird
               pricing available until Dec 21st, 2025!
               <br />
-            </h2>
+            </h2> -->
           </div>
 
           <div class="ticket">
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> WEEKEND PASS</span><br />
-              $140 CAD/PERSON/WEEKEND<br />
+              $200 CAD/PERSON/WEEKEND<br />
+              <span style="font-size: 14px">($230 at the gate)</span><br />
             </h2>
             <h3>
               (Valid from 12:00PM Friday September 4th, 2026 - 12:00PM Monday September 7th, 2026)
@@ -557,7 +558,8 @@ onMounted(() => {
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> DAY PASS</span><br />
-              $80 CAD/PERSON/DAY<br />
+              $100 CAD/PERSON/DAY<br />
+              <span style="font-size: 14px">($120 at the gate)</span><br />
             </h2>
             <h3>(Valid from 12:00PM - 12:00PM the following day)</h3>
           </div>
@@ -565,7 +567,7 @@ onMounted(() => {
             <img :src="meals_image" alt="meals" class="icon" />
             <h2>
               <span class="highlight"> MEAL PACKAGE</span><br />
-              $20 CAD/PERSON/DAY<br />
+              $30 CAD/PERSON/DAY<br />
             </h2>
             <h3>
               (Includes 1 lunch and 1 supper<br />
@@ -574,7 +576,7 @@ onMounted(() => {
             <br />
             <h4>
               Our food is obtained from local Saskatchewan farmers via the Wandering Market.<br />
-              Our seasonal menu will prepared by a Red Seal chef and her team.
+              Our seasonal menu will be prepared by a Red Seal chef and her team.
             </h4>
           </div>
 
@@ -590,6 +592,28 @@ onMounted(() => {
         </div>
       </h4>
       <br />
+
+      <!-- ADVANCE PURCHASE NOTICE -->
+      <div
+        class="advance-purchase-notice"
+        style="
+          background: var(--reunion-frog-green);
+          color: white;
+          padding: 15px;
+          border-radius: 10px;
+          margin: 20px 0;
+          text-align: center;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h3 style="margin: 0 0 8px 0; font-size: 18px">💰 Save Money - Buy Online Now!</h3>
+        <p style="margin: 0; font-size: 14px">
+          Day Pass: <strong>$100 online</strong> vs <strong>$120 at the gate</strong> • Weekend
+          Pass: <strong>$200 online</strong> vs <strong>$230 at the gate</strong> • Plus
+          <strong>25% off with Bitcoin!</strong>
+        </p>
+      </div>
+
       <!-- FORM -->
       <form @submit.prevent="submitForm">
         <div class="form-section">
@@ -645,8 +669,8 @@ onMounted(() => {
             required
           >
             <option value="" disabled>What kind of tickets would you like?</option>
-            <option value="Weekend Pass">Weekend Pass - $140 CAD</option>
-            <option value="Day Pass">Day Pass - $80 CAD</option>
+            <option value="Weekend Pass">Weekend Pass - $200 CAD</option>
+            <option value="Day Pass">Day Pass - $100 CAD</option>
           </select>
         </div>
         <div class="form-section">
