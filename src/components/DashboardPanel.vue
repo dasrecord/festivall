@@ -170,8 +170,11 @@
                 </a>
               </p>
               <!-- APPLICANT TYPE -->
-              <p v-if="applicant.applicant_types && applicant.applicant_types.length">
-                {{ applicant.applicant_types.join(', ') }}
+              <p
+                v-if="applicant.applicant_types && applicant.applicant_types.length"
+                class="applicant-types"
+              >
+                <strong>Types:</strong> {{ applicant.applicant_types.join(', ') }}
               </p>
             </div>
 
@@ -294,8 +297,10 @@
           <!-- TICKET DATA -->
           <div
             v-if="
-              (applicant.payment_type === 'inkind' && applicant.contract_signed === true) ||
-              applicant.payment_type !== 'inkind'
+              applicant.payment_type &&
+              (applicant.ticket_quantity > 0 ||
+                applicant.total_price ||
+                applicant.paid !== undefined)
             "
             class="ticket-content"
           >
@@ -394,7 +399,12 @@
           </div>
           <!-- DASHBOARD ACTIONS-->
           <div
-            v-if="applicant.payment_type === 'inkind' || applicant.payment_type === 'In Kind'"
+            v-if="
+              (applicant.applicant_types && applicant.applicant_types.length) ||
+              applicant.contract_signed !== undefined ||
+              applicant.phone ||
+              applicant.rates
+            "
             class="actions"
           >
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
@@ -404,10 +414,7 @@
             <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
             <p v-else style="color: red; font-size: large">Not Signed</p>
 
-            <a
-              v-if="applicant.applicant_types && applicant.applicant_types.length"
-              @click="remindContract(applicant.id_code)"
-            >
+            <a v-if="!applicant.contract_signed" @click="remindContract(applicant.id_code)">
               <img :src="reminder_icon" alt="Remind Applicant" class="action-icon" />
             </a>
             <div v-if="applicant.phone" class="message-section">
@@ -420,10 +427,7 @@
                 style="width: auto; height: 42px"
               />
             </div>
-            <div
-              v-if="applicant.applicant_types && applicant.applicant_types.length"
-              class="compensation-section"
-            >
+            <div v-if="true" class="compensation-section">
               <input
                 type="text"
                 v-model="applicant.additional_compensation"
@@ -450,8 +454,11 @@
 
             <div
               v-if="
-                applicant.applicant_types.includes('Artist') ||
-                applicant.applicant_types.includes('Workshop')
+                (applicant.applicant_types &&
+                  (applicant.applicant_types.includes('Artist') ||
+                    applicant.applicant_types.includes('Workshop'))) ||
+                applicant.act_name ||
+                applicant.workshop_title
               "
               class="settime-section"
             >
@@ -487,18 +494,42 @@
             <div class="contract-section">
               <button @click="generateContract(applicant.id_code)">Preview Contract</button>
               <a
-                v-if="applicant.applicant_types && applicant.applicant_types.length"
+                v-if="applicant.email"
                 :href="
                   deliverContract(
                     applicant.email,
                     applicant.fullname,
-                    applicant.applicant_types.join(', and '), // Join roles into a string
+                    applicant.applicant_types && applicant.applicant_types.length
+                      ? applicant.applicant_types.join(', and ')
+                      : 'Participant',
                     applicant.id_code
                   )
                 "
+                target="_blank"
               >
                 <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
               </a>
+            </div>
+
+            <!-- Meal Ticket Management -->
+            <div class="meal-management-section">
+              <h4>Meal Tickets: {{ applicant.meal_tickets_remaining || 0 }}</h4>
+              <div class="meal-tickets-control">
+                <button
+                  @click="decrementMealTickets(applicant.id_code)"
+                  :disabled="(applicant.meal_tickets_remaining || 0) <= 0"
+                  class="meal-btn decrement-btn"
+                >
+                  -
+                </button>
+                <span class="meal-count">{{ applicant.meal_tickets_remaining || 0 }}</span>
+                <button
+                  @click="incrementMealTickets(applicant.id_code)"
+                  class="meal-btn increment-btn"
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -539,7 +570,7 @@ export default {
   setup() {
     const applicants = ref([])
     const filteredApplicants = ref([])
-    const currentCollection = ref('orders_2025')
+    const currentCollection = ref('participants_2026')
 
     // Add loading and error states
     const loading = ref(false)
@@ -556,87 +587,64 @@ export default {
     const activeFilters = ref([])
 
     const filters = ref([
-      // { property: 'applicant_type', value: 'Artist', label: 'Artists' },
+      // Status filters - distinguish between applicants and customers
+      { property: 'status', value: 'applicant', label: 'Applicants' },
+      { property: 'status', value: 'customer', label: 'Customers' },
+      { property: 'status', value: 'participant', label: 'Participants' },
+
+      // Application type filters (for applicants)
       { property: 'applicant_types', value: 'Artist', label: 'Artists' },
-
-      // { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers' },
       { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers' },
-
-      // { property: 'applicant_type', value: 'Workshop', label: 'Workshops' },
       { property: 'applicant_types', value: 'Workshop', label: 'Workshops' },
-
       { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations' },
-
-      { property: 'applicant_type', value: 'Vendor', label: 'Vendors' },
       { property: 'applicant_types', value: 'Vendor', label: 'Vendors' },
 
-      { property: 'applicant_type', value: 'Musician', label: 'Musicians' },
+      // Act type filters (for artists)
+      { property: 'act_type', value: 'DJ', label: 'DJs' },
       { property: 'act_type', value: 'Musician', label: 'Musicians' },
-      { property: 'applicant_type', value: 'Dancer', label: 'Dancers' },
-      { property: 'applicant_type', value: 'DJ', label: 'DJs' },
-      { property: 'act_type', value: 'dj', label: 'DJs' },
-      { property: 'applicant_type', value: 'DJ/Band', label: 'DJ/Band' },
       { property: 'act_type', value: 'Live Band', label: 'Live Bands' },
+      { property: 'act_type', value: 'Dancer', label: 'Dancers' },
+      { property: 'act_type', value: 'Spoken Word', label: 'Spoken Word' },
+      { property: 'act_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter' },
+      { property: 'act_type', value: 'Rapper', label: 'Rappers' },
+
+      // Volunteer team filters
       { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew' },
       { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew' },
       { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew' },
       { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate' },
       { property: 'volunteer_type', value: 'Food Team', label: 'Food Team' },
-      { property: 'applicant_type', value: 'Promoter', label: 'Promoters' },
-      { property: 'applicant_type', value: 'Art Vendor', label: 'Art Vendors' },
-      { property: 'applicant_type', value: 'Event Manager', label: 'Event Manager' },
-      { property: 'applicant_type', value: 'A&R', label: 'A&R' },
-      { property: 'applicant_type', value: 'Accounts Manager', label: 'Accounts Manager' },
-      { property: 'applicant_type', value: 'Marketing', label: 'Marketing' },
-      { property: 'applicant_type', value: 'Operations Manager', label: 'Operations Manager' },
-      { property: 'applicant_type', value: 'Market Analyst', label: 'Market Analyst' },
-      { property: 'applicant_type', value: 'Social Media', label: 'Social Media' },
-      { property: 'applicant_type', value: 'UX', label: 'UX' },
-      { property: 'applicant_type', value: 'Web Dev', label: 'Web Dev' },
-      { property: 'applicant_type', value: 'Customer', label: 'Customer' },
+
+      // Application data filters
       { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track' },
       { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track' },
-      { property: 'willing', value: 'has_value', label: 'Willing' },
-      { property: 'url', value: 'has_value', label: 'Has URL' },
-      { property: 'build_crew', value: '', label: 'Build Crew' },
-      { property: 'kitchen_crew', value: '', label: 'Kitchen Crew' },
-      { property: 'security', value: '', label: 'Security' },
-      { property: 'first_aid', value: '', label: 'First Aid' },
-      { property: 'front_gate', value: '', label: 'Front Gate' },
-      { property: 'parking_attendant', value: '', label: 'Parking Attendant' },
-      { property: 'front_of_house', value: '', label: 'Front of House' },
-      { property: 'stage_tech', value: '', label: 'Stage Tech' },
-      { property: 'hospitality', value: '', label: 'Hospitality' },
-      { property: 'green_team', value: '', label: 'Green Team' },
-      { property: 'childrens_area', value: '', label: "Children's Area" },
-      { property: 'merch_table', value: '', label: 'Merch Table' },
-      { property: 'float_crew', value: '', label: 'Float Crew' },
-      { property: 'cleanup_crew', value: '', label: 'Cleanup Crew' },
-      // contract filters
+      { property: 'act_website', value: 'has_value', label: 'Has Website' },
+      { property: 'workshop_title', value: 'has_value', label: 'Has Workshop' },
+      { property: 'vendor_type', value: 'has_value', label: 'Has Vendor Info' },
+      { property: 'installation_title', value: 'has_value', label: 'Has Installation' },
+
+      // Contract filters (applies to both applicants and customers)
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
-      // ticket filters
-      { property: 'payment_type', value: 'customer_types', label: 'Customers' },
-      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin' },
-      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer' },
+
+      // Order/Payment filters (for customers and participants with orders)
+      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin Payment' },
+      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer Payment' },
+      { property: 'payment_type', value: 'inkind', label: 'In-Kind Payment' },
       { property: 'paid', value: true, label: 'Paid' },
       { property: 'paid', value: false, label: 'Unpaid' },
       { property: 'checked_in', value: true, label: 'Checked In' },
-      { property: 'checked_in', value: false, label: 'Not Checked In' }
+      { property: 'checked_in', value: false, label: 'Not Checked In' },
+
+      // Ticket type filters
+      { property: 'ticket_type', value: 'has_value', label: 'Has Ticket' },
+      { property: 'ticket_type', value: 'no_value', label: 'No Ticket' }
     ])
 
     const relevantFilters = computed(() => {
       if (!applicants.value.length) return []
 
       return filters.value.filter((filter) => {
-        // Handle special combined customer filter
-        if (filter.value === 'customer_types') {
-          return applicants.value.some(
-            (applicant) =>
-              applicant.payment_type === 'bitcoin' || applicant.payment_type === 'etransfer'
-          )
-        }
-
         return applicants.value.some((applicant) => {
           const prop = applicant[filter.property]
           if (filter.value === 'has_value') {
@@ -682,8 +690,37 @@ export default {
                 email: docData.contact?.email || '',
                 phone: docData.contact?.phone || '',
                 status: docData.status || '',
+                // Extract from roles
                 applicant_types: docData.roles?.applicant_types || [],
                 act_name: docData.roles?.act_name || '',
+                act_type: docData.roles?.act_type || '',
+                volunteer_type: docData.roles?.volunteer_type || '',
+                // Extract from application.data
+                genre: docData.application?.data?.genre || '',
+                act_description: docData.application?.data?.act_description || '',
+                mix_track_url: docData.application?.data?.mix_track_url || '',
+                act_website: docData.application?.data?.act_website || '',
+                social_url: docData.application?.data?.social_url || '',
+                press_kit_url: docData.application?.data?.press_kit_url || '',
+                logo_url: docData.application?.data?.logo_url || '',
+                volunteer_availability: docData.application?.data?.volunteer_availability || [],
+                workshop_title: docData.application?.data?.workshop_title || '',
+                workshop_description: docData.application?.data?.workshop_description || '',
+                workshop_requirements: docData.application?.data?.workshop_requirements || '',
+                vendor_type: docData.application?.data?.vendor_type || '',
+                vendor_description: docData.application?.data?.vendor_description || '',
+                vendor_requirements: docData.application?.data?.vendor_requirements || '',
+                vendor_url: docData.application?.data?.vendor_url || '',
+                installation_title: docData.application?.data?.installation_title || '',
+                installation_description: docData.application?.data?.installation_description || '',
+                space_requirements: docData.application?.data?.space_requirements || '',
+                other_requirements: docData.application?.data?.other_requirements || '',
+                portfolio_url: docData.application?.data?.portfolio_url || '',
+                fixture_type: docData.application?.data?.fixture_type || '',
+                rates: docData.application?.data?.rates || '',
+                statement: docData.application?.data?.statement || '',
+                // Contract and order data (if exists)
+                contract_signed: docData.contract?.signed || false,
                 ticket_type: docData.order?.ticket_type || '',
                 ticket_quantity: docData.order?.ticket_quantity || 0,
                 original_ticket_quantity: docData.order?.original_ticket_quantity || 0,
@@ -1233,7 +1270,7 @@ export default {
     })
 
     onMounted(() => {
-      loadApplicants('orders_2025', true)
+      loadApplicants('participants_2026', true)
       loadContractDeliveryTemplate()
       loadTicketDeliveryTemplate()
     })
@@ -1508,6 +1545,56 @@ export default {
       }
     }
 
+    const incrementMealTickets = async (id_code) => {
+      try {
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
+        const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+        const currentTickets = (applicant?.meal_tickets_remaining || 0) + 1
+
+        await updateDoc(docRef, {
+          meal_tickets_remaining: currentTickets
+        })
+
+        // Update both arrays
+        const updateApplicant = (applicant) => {
+          if (applicant.id_code === id_code || applicant.id === id_code) {
+            return { ...applicant, meal_tickets_remaining: currentTickets }
+          }
+          return applicant
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+      } catch (error) {
+        console.error('Error incrementing meal tickets:', error)
+      }
+    }
+
+    const decrementMealTickets = async (id_code) => {
+      try {
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
+        const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+        const currentTickets = Math.max(0, (applicant?.meal_tickets_remaining || 0) - 1)
+
+        await updateDoc(docRef, {
+          meal_tickets_remaining: currentTickets
+        })
+
+        // Update both arrays
+        const updateApplicant = (applicant) => {
+          if (applicant.id_code === id_code || applicant.id === id_code) {
+            return { ...applicant, meal_tickets_remaining: currentTickets }
+          }
+          return applicant
+        }
+
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+      } catch (error) {
+        console.error('Error decrementing meal tickets:', error)
+      }
+    }
+
     return {
       applicants,
       filteredApplicants,
@@ -1562,7 +1649,9 @@ export default {
       totalPages,
       paginatedApplicants,
       exportMealRedemptionData,
-      exportEntranceActivityData
+      exportEntranceActivityData,
+      incrementMealTickets,
+      decrementMealTickets
     }
   }
 }
@@ -1983,6 +2072,49 @@ a {
 .applicant.loading {
   opacity: 0.6;
   pointer-events: none;
+}
+
+/* Meal ticket controls */
+.meal-tickets-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.meal-btn {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--festivall-baby-blue);
+  background: transparent;
+  color: var(--festivall-baby-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.meal-btn:hover:not(:disabled) {
+  background: var(--festivall-baby-blue);
+  color: white;
+}
+
+.meal-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #666;
+  color: #666;
+}
+
+.meal-count {
+  font-weight: bold;
+  color: var(--festivall-baby-blue);
+  min-width: 30px;
+  text-align: center;
 }
 
 .applicant.loading::after {
