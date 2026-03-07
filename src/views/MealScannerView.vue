@@ -472,8 +472,8 @@ export default {
           meal_packages: p.order?.meal_packages || 0,
           meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
           checked_in: p.order?.checked_in || false,
-          meal_redemption_history: p.activity?.meal_redemption_history || [],
-          last_meal_redemption: p.activity?.last_meal_redemption || null
+          meal_redemption_history: p.order?.meal_redemption_history || [],
+          last_meal_redemption: p.order?.last_meal_redemption || null
         }
       })
       console.log(`Loaded ${this.orders.length} participants successfully`)
@@ -598,8 +598,8 @@ export default {
 
           await updateDoc(orderRef, {
             'order.meal_tickets_remaining': newMealTickets,
-            'activity.last_meal_redemption': redemptionTime,
-            'activity.meal_redemption_history': updatedRedemptions
+            'order.last_meal_redemption': redemptionTime,
+            'order.meal_redemption_history': updatedRedemptions
           })
 
           // Update local state after successful database update
@@ -716,8 +716,8 @@ export default {
             meal_packages: p.order?.meal_packages || 0,
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
             checked_in: p.order?.checked_in || false,
-            meal_redemption_history: p.activity?.meal_redemption_history || [],
-            last_meal_redemption: p.activity?.last_meal_redemption || null
+            meal_redemption_history: p.order?.meal_redemption_history || [],
+            last_meal_redemption: p.order?.last_meal_redemption || null
           }
         })
         console.log('Orders refreshed successfully')
@@ -804,7 +804,7 @@ export default {
 
           await updateDoc(orderRef, {
             'order.meal_tickets_remaining': newMealTickets,
-            'activity.meal_redemption_history': updatedRedemptions
+            'order.meal_redemption_history': updatedRedemptions
           })
 
           // Update local state

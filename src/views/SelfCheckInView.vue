@@ -181,7 +181,7 @@ export default {
             fullname: p.contact?.fullname || '',
             ticket_type: p.order?.ticket_type || '',
             checked_in: p.order?.checked_in || false,
-            entrance_activity_history: p.activity?.entrance_activity_history || []
+            entrance_activity_history: p.order?.entrance_activity_history || []
           }
         } else {
           participant.value = null
@@ -215,8 +215,8 @@ export default {
 
         await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
           'order.checked_in': true,
-          'activity.entrance_activity_history': updatedHistory,
-          'activity.last_entrance_activity': timestamp
+          'order.entrance_activity_history': updatedHistory,
+          'order.last_entrance_activity': timestamp
         })
 
         participant.value.checked_in = true
@@ -256,8 +256,8 @@ export default {
 
         await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
           'order.checked_in': false,
-          'activity.entrance_activity_history': updatedHistory,
-          'activity.last_entrance_activity': timestamp
+          'order.entrance_activity_history': updatedHistory,
+          'order.last_entrance_activity': timestamp
         })
 
         participant.value.checked_in = false

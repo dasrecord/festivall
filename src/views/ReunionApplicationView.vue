@@ -180,9 +180,65 @@ const fetchApplicantData = async (id_code) => {
   }
 }
 
+// Calculate compensation based on applicant types
+const calculateCompensation = () => {
+  let ticketQuantity = 0
+  let mealPackages = 0
+  let ticketType = ''
+
+  const applicantTypes = form.value.applicant_types || []
+
+  // Artist compensation: Weekend Pass + 1 Guest
+  if (applicantTypes.includes('Artist')) {
+    ticketQuantity += 2 // Weekend pass + 1 guest
+    ticketType = 'Weekend Pass'
+  }
+
+  // Volunteer compensation: Weekend Pass + 1 Meal Package per day worked
+  if (applicantTypes.includes('Volunteer')) {
+    // If not already getting a weekend pass from Artist role
+    if (!applicantTypes.includes('Artist')) {
+      ticketQuantity += 1 // Weekend pass
+      ticketType = 'Weekend Pass'
+    }
+    // Default 4 meal packages for festival days (Sept 4-7)
+    mealPackages = 4
+  }
+
+  // Workshop compensation: Weekend Pass (if not already covered)
+  if (
+    applicantTypes.includes('Workshop') &&
+    !applicantTypes.includes('Artist') &&
+    !applicantTypes.includes('Volunteer')
+  ) {
+    ticketQuantity += 1 // Weekend pass
+    ticketType = 'Weekend Pass'
+  }
+
+  // Art Installation compensation: Weekend Pass (if not already covered)
+  if (
+    applicantTypes.includes('Art Installation') &&
+    !applicantTypes.includes('Artist') &&
+    !applicantTypes.includes('Volunteer') &&
+    !applicantTypes.includes('Workshop')
+  ) {
+    ticketQuantity += 1 // Weekend pass
+    ticketType = 'Weekend Pass'
+  }
+
+  // Vendor gets 100% profit, no additional compensation needed
+
+  return {
+    ticketQuantity,
+    mealPackages,
+    ticketType
+  }
+}
+
 const addApplicant = async () => {
   try {
     const nowIso = new Date().toISOString()
+    const compensation = calculateCompensation()
     const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
     await setDoc(
       participantsDocRef,
@@ -246,12 +302,12 @@ const addApplicant = async () => {
         },
         order: {
           // Ticket management fields
-          ticket_type: '',
-          ticket_quantity: 0,
-          original_ticket_quantity: 0,
+          ticket_type: compensation.ticketType,
+          ticket_quantity: compensation.ticketQuantity,
+          original_ticket_quantity: compensation.ticketQuantity,
           // Meal ticket fields
-          meal_tickets_remaining: 0,
-          meal_packages: 0,
+          meal_tickets_remaining: compensation.mealPackages,
+          meal_packages: compensation.mealPackages,
           // Payment fields
           payment_type: '',
           fiat_total_price_cad: 0,
