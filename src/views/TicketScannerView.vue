@@ -505,9 +505,9 @@ export default {
           meal_packages: p.order?.meal_packages || 0,
           meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
           checked_in: p.order?.checked_in || false,
-          applicant_types: p.roles || p.applicant_types || [],
-          entrance_activity_history: p.activity?.entrance_activity_history || [],
-          last_entrance_activity: p.activity?.last_entrance_activity || null
+          applicant_types: p.roles?.applicant_types || p.applicant_types || [],
+          entrance_activity_history: p.order?.entrance_activity_history || [],
+          last_entrance_activity: p.order?.last_entrance_activity || null
         }
       })
       console.log(`Loaded ${this.orders.length} participants successfully`)
@@ -629,8 +629,8 @@ export default {
             'order.checked_in': true,
             'order.ticket_quantity': newTicketQuantity,
             'order.original_ticket_quantity': order.original_ticket_quantity,
-            'activity.last_entrance_activity': activityTime,
-            'activity.entrance_activity_history': updatedActivity
+            'order.last_entrance_activity': activityTime,
+            'order.entrance_activity_history': updatedActivity
           })
 
           sendReunionFrontGate(
@@ -701,8 +701,8 @@ export default {
             'order.checked_in': newTicketQuantity > 0,
             'order.ticket_quantity': newTicketQuantity,
             'order.original_ticket_quantity': order.original_ticket_quantity,
-            'activity.last_entrance_activity': activityTime,
-            'activity.entrance_activity_history': updatedActivity
+            'order.last_entrance_activity': activityTime,
+            'order.entrance_activity_history': updatedActivity
           })
 
           sendReunionFrontGate(
@@ -750,9 +750,9 @@ export default {
             meal_packages: p.order?.meal_packages || 0,
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
             checked_in: p.order?.checked_in || false,
-            applicant_types: p.roles || p.applicant_types || [],
-            entrance_activity_history: p.activity?.entrance_activity_history || [],
-            last_entrance_activity: p.activity?.last_entrance_activity || null
+            applicant_types: p.roles?.applicant_types || p.applicant_types || [],
+            entrance_activity_history: p.order?.entrance_activity_history || [],
+            last_entrance_activity: p.order?.last_entrance_activity || null
           }
         })
         console.log('Orders refreshed successfully')

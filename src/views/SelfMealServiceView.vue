@@ -203,7 +203,7 @@ export default {
             fullname: p.contact?.fullname || '',
             ticket_type: p.order?.ticket_type || '',
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            meal_redemption_history: p.activity?.meal_redemption_history || []
+            meal_redemption_history: p.order?.meal_redemption_history || []
           }
         } else {
           participant.value = null
@@ -239,8 +239,8 @@ export default {
 
         await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
           'order.meal_tickets_remaining': newMealTickets,
-          'activity.last_meal_redemption': timestamp,
-          'activity.meal_redemption_history': updatedHistory
+          'order.last_meal_redemption': timestamp,
+          'order.meal_redemption_history': updatedHistory
         })
 
         participant.value.meal_tickets_remaining = newMealTickets
