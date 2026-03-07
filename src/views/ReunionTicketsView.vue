@@ -295,7 +295,12 @@ const addOrder = async () => {
       ticket_quantity: Number(form.value.ticket_quantity || 0),
       meal_packages: Number(form.value.meal_packages || 0),
       meal_tickets_remaining: Number(form.value.meal_tickets_remaining || 0),
-      checked_in: !!form.value.checked_in
+      checked_in: !!form.value.checked_in,
+      // Critical scanning history fields for scanners
+      entrance_activity_history: [],
+      last_entrance_activity: null,
+      meal_redemption_history: [],
+      last_meal_redemption: null
     }
 
     // Only add btc fields if payment type is bitcoin

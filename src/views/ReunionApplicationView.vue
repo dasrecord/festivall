@@ -238,6 +238,35 @@ const addApplicant = async () => {
             fixture_type: form.value.fixture_type || '',
             rates: form.value.rates || ''
           }
+        },
+        contract: {
+          signed: false,
+          signedAt: null,
+          deliveredAt: null
+        },
+        order: {
+          // Ticket management fields
+          ticket_type: '',
+          ticket_quantity: 0,
+          original_ticket_quantity: 0,
+          // Meal ticket fields
+          meal_tickets_remaining: 0,
+          meal_packages: 0,
+          // Payment fields
+          payment_type: '',
+          fiat_total_price_cad: 0,
+          paid: false,
+          checked_in: false,
+          // Admission scanning history
+          entrance_activity_history: [],
+          last_entrance_activity: null,
+          // Meal scanning history
+          meal_redemption_history: [],
+          last_meal_redemption: null
+        },
+        referral: {
+          referral_id_code: '',
+          referredBy: null
         }
       },
       { merge: true }
@@ -722,14 +751,8 @@ onMounted(() => {
           <label for="applicant_type">Categories:</label>
           <div class="checkboxes">
             <span class="checkbox-label">
-              <input
-                type="checkbox"
-                id="artist"
-                value="Artist"
-                v-model="form.applicant_types"
-                disabled
-              />
-              Artist (Closed)
+              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
+              Artist
             </span>
 
             <span class="checkbox-label">
@@ -748,9 +771,8 @@ onMounted(() => {
                 id="workshop"
                 value="Workshop"
                 v-model="form.applicant_types"
-                disabled
               />
-              Workshop (Closed)
+              Workshop
             </span>
             <span class="checkbox-label">
               <input
@@ -758,19 +780,12 @@ onMounted(() => {
                 id="art_installation"
                 value="Art Installation"
                 v-model="form.applicant_types"
-                disabled
               />
-              Art Installation (Closed)
+              Art Installation
             </span>
             <span class="checkbox-label">
-              <input
-                type="checkbox"
-                id="vendor"
-                value="Vendor"
-                v-model="form.applicant_types"
-                disabled
-              />
-              Vendor (Closed)
+              <input type="checkbox" id="vendor" value="Vendor" v-model="form.applicant_types" />
+              Vendor
             </span>
           </div>
         </div>

@@ -40,12 +40,20 @@
               <label>ID Code:</label>
               <span class="id-code">#{{ applicant.id_code }}</span>
             </div>
+            <div class="info-item" v-if="applicant.status">
+              <label>Status:</label>
+              <span class="status-badge">{{ applicant.status }}</span>
+            </div>
             <div
               class="info-item"
               v-if="applicant.applicant_types && applicant.applicant_types.length"
             >
               <label>Applicant Types:</label>
               <span>{{ applicant.applicant_types.join(', ') }}</span>
+            </div>
+            <div class="info-item" v-if="applicant.createdAt">
+              <label>Application Date:</label>
+              <span>{{ new Date(applicant.createdAt).toLocaleDateString() }}</span>
             </div>
           </div>
         </div>
@@ -89,6 +97,113 @@
               <label>Mix/Track:</label>
               <a :href="applicant.mix_track_url" target="_blank">Listen</a>
             </div>
+            <div class="info-item" v-if="applicant.logo_url">
+              <label>Logo:</label>
+              <a :href="applicant.logo_url" target="_blank">View Logo</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Volunteer Information -->
+        <div
+          v-if="applicant.applicant_types && applicant.applicant_types.includes('Volunteer')"
+          class="section volunteer-info"
+        >
+          <h2>Volunteer Information</h2>
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.volunteer_type">
+              <label>Volunteer Type:</label>
+              <span>{{ applicant.volunteer_type }}</span>
+            </div>
+            <div
+              class="info-item full-width"
+              v-if="applicant.volunteer_availability && applicant.volunteer_availability.length"
+            >
+              <label>Availability:</label>
+              <span>{{ applicant.volunteer_availability.join(', ') }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workshop Information -->
+        <div
+          v-if="applicant.applicant_types && applicant.applicant_types.includes('Workshop')"
+          class="section workshop-info"
+        >
+          <h2>Workshop Information</h2>
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.workshop_title">
+              <label>Workshop Title:</label>
+              <span>{{ applicant.workshop_title }}</span>
+            </div>
+            <div class="info-item full-width" v-if="applicant.workshop_description">
+              <label>Workshop Description:</label>
+              <p>{{ applicant.workshop_description }}</p>
+            </div>
+            <div class="info-item full-width" v-if="applicant.workshop_requirements">
+              <label>Requirements:</label>
+              <p>{{ applicant.workshop_requirements }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vendor Information -->
+        <div
+          v-if="applicant.applicant_types && applicant.applicant_types.includes('Vendor')"
+          class="section vendor-info"
+        >
+          <h2>Vendor Information</h2>
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.vendor_type">
+              <label>Vendor Type:</label>
+              <span>{{ applicant.vendor_type }}</span>
+            </div>
+            <div class="info-item full-width" v-if="applicant.vendor_description">
+              <label>Description:</label>
+              <p>{{ applicant.vendor_description }}</p>
+            </div>
+            <div class="info-item full-width" v-if="applicant.vendor_requirements">
+              <label>Requirements:</label>
+              <p>{{ applicant.vendor_requirements }}</p>
+            </div>
+            <div class="info-item" v-if="applicant.vendor_url">
+              <label>Website:</label>
+              <a :href="applicant.vendor_url" target="_blank">{{ applicant.vendor_url }}</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Art Installation Information -->
+        <div
+          v-if="applicant.applicant_types && applicant.applicant_types.includes('Art Installation')"
+          class="section installation-info"
+        >
+          <h2>Art Installation Information</h2>
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.installation_title">
+              <label>Installation Title:</label>
+              <span>{{ applicant.installation_title }}</span>
+            </div>
+            <div class="info-item full-width" v-if="applicant.installation_description">
+              <label>Description:</label>
+              <p>{{ applicant.installation_description }}</p>
+            </div>
+            <div class="info-item full-width" v-if="applicant.space_requirements">
+              <label>Space Requirements:</label>
+              <p>{{ applicant.space_requirements }}</p>
+            </div>
+            <div class="info-item full-width" v-if="applicant.other_requirements">
+              <label>Other Requirements:</label>
+              <p>{{ applicant.other_requirements }}</p>
+            </div>
+            <div class="info-item" v-if="applicant.portfolio_url">
+              <label>Portfolio:</label>
+              <a :href="applicant.portfolio_url" target="_blank">View Portfolio</a>
+            </div>
+            <div class="info-item" v-if="applicant.fixture_type">
+              <label>Fixture Type:</label>
+              <span>{{ applicant.fixture_type }}</span>
+            </div>
           </div>
         </div>
 
@@ -129,6 +244,10 @@
               >
                 {{ applicant.checked_in ? 'Checked In' : 'Not Checked In' }}
               </span>
+            </div>
+            <div class="info-item" v-if="applicant.ticket_type">
+              <label>Ticket Type:</label>
+              <span>{{ applicant.ticket_type }}</span>
             </div>
             <div class="info-item" v-if="applicant.ticket_quantity">
               <label>Ticket Quantity:</label>
@@ -205,6 +324,29 @@
             </div>
           </div>
         </div>
+
+        <!-- Administrative Information -->
+        <div class="section admin-info">
+          <h2>Administrative Information</h2>
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.id">
+              <label>Document ID:</label>
+              <span class="id-code">{{ applicant.id }}</span>
+            </div>
+            <div class="info-item" v-if="applicant.id_code_long">
+              <label>Long ID Code:</label>
+              <span class="id-code">{{ applicant.id_code_long }}</span>
+            </div>
+            <div class="info-item" v-if="applicant.updatedAt">
+              <label>Last Updated:</label>
+              <span>{{ new Date(applicant.updatedAt).toLocaleString() }}</span>
+            </div>
+            <div class="info-item" v-if="applicant.referral_id_code">
+              <label>Referral Code:</label>
+              <span>{{ applicant.referral_id_code }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
@@ -248,19 +390,13 @@
           </a>
         </div>
 
-        <!-- Payment Actions -->
-        <div v-if="applicant.payment_type !== 'inkind'" class="payment-actions">
-          <button v-if="!applicant.paid" @click="confirmPaymentReceived" class="success-btn">
-            Confirm Payment Received
-          </button>
-          <button v-if="applicant.paid" @click="revokeTicket" class="danger-btn">
-            Revoke Ticket
-          </button>
-          <button @click="remindPayment" class="remind-btn">Remind Payment</button>
-        </div>
+        <!-- Applicant Actions (for all applicants) -->
+        <div
+          v-if="applicant.applicant_types && applicant.applicant_types.length"
+          class="applicant-actions"
+        >
+          <h3>Applicant Management</h3>
 
-        <!-- In-Kind Actions -->
-        <div v-if="applicant.payment_type === 'inkind'" class="inkind-actions">
           <!-- Mix Track URL -->
           <div v-if="applicant.mix_track_url" class="mix-track-section">
             <a :href="applicant.mix_track_url" target="_blank" class="mix-track-link">
@@ -268,18 +404,29 @@
             </a>
           </div>
 
-          <!-- Contract Status Display -->
+          <!-- Contract Status for all applicants -->
           <div class="contract-status-section">
             <h3>Contract Status:</h3>
             <p v-if="applicant.contract_signed" class="status-signed">✅ Signed</p>
             <p v-else class="status-not-signed">❌ Not Signed</p>
+
+            <button
+              @click="toggleContractSigned"
+              :class="applicant.contract_signed ? 'danger-btn' : 'success-btn'"
+            >
+              {{ applicant.contract_signed ? 'Mark Contract Not Signed' : 'Mark Contract Signed' }}
+            </button>
           </div>
 
           <button v-if="!applicant.contract_signed" @click="remindContract" class="remind-btn">
             Remind Contract
           </button>
 
-          <!-- SMS Section -->
+          <button v-if="applicant.email" @click="sendCustomEmail" class="remind-btn">
+            Send Custom Email
+          </button>
+
+          <!-- SMS Section for all applicants -->
           <div v-if="applicant.phone" class="sms-section">
             <input
               type="text"
@@ -330,6 +477,63 @@
               <button @click="addSettime" class="add-btn">Add Set Time</button>
             </div>
           </div>
+
+          <!-- Meal Ticket Management -->
+          <div class="meal-management-section">
+            <h3>Meal Tickets Management</h3>
+            <div class="meal-tickets-control">
+              <button
+                @click="decrementMealTickets"
+                :disabled="mealTickets <= 0"
+                class="meal-btn decrement-btn"
+              >
+                -
+              </button>
+              <span class="meal-count">{{ mealTickets }}</span>
+              <button @click="incrementMealTickets" class="meal-btn increment-btn">+</button>
+            </div>
+            <p class="meal-info">Current meal tickets: {{ mealTickets }}</p>
+          </div>
+        </div>
+
+        <!-- Payment Actions -->
+        <div v-if="applicant.payment_type !== 'inkind'" class="payment-actions">
+          <button v-if="!applicant.paid" @click="confirmPaymentReceived" class="success-btn">
+            Confirm Payment Received
+          </button>
+          <button v-if="applicant.paid" @click="revokeTicket" class="danger-btn">
+            Revoke Ticket
+          </button>
+          <button @click="remindPayment" class="remind-btn">Remind Payment</button>
+          <button
+            @click="toggleCheckedIn"
+            :class="applicant.checked_in ? 'danger-btn' : 'success-btn'"
+          >
+            {{ applicant.checked_in ? 'Mark Not Checked In' : 'Mark Checked In' }}
+          </button>
+        </div>
+
+        <!-- In-Kind Payment Actions -->
+        <div v-if="applicant.payment_type === 'inkind'" class="inkind-payment-actions">
+          <h3>In-Kind Payment Management</h3>
+
+          <div class="info-grid">
+            <div class="info-item" v-if="applicant.total_price">
+              <label>Compensation Value:</label>
+              <span>${{ applicant.total_price }}</span>
+            </div>
+            <div class="info-item">
+              <label>Payment Status:</label>
+              <span class="status-badge">In-Kind Arrangement</span>
+            </div>
+          </div>
+
+          <button
+            @click="toggleCheckedIn"
+            :class="applicant.checked_in ? 'danger-btn' : 'success-btn'"
+          >
+            {{ applicant.checked_in ? 'Mark Not Checked In' : 'Mark Checked In' }}
+          </button>
         </div>
       </div>
     </div>
@@ -361,17 +565,83 @@ export default {
       try {
         const applicantId = route.params.id
 
-        // Try to load from orders_2025 first, then applications_2025
-        let docRef = doc(reunion_db, 'orders_2025', applicantId)
-        let docSnap = await getDoc(docRef)
-
-        if (!docSnap.exists()) {
-          docRef = doc(reunion_db, 'applications_2025', applicantId)
-          docSnap = await getDoc(docRef)
-        }
+        // Load from consolidated participants_2026 collection
+        const docRef = doc(reunion_db, 'participants_2026', applicantId)
+        const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-          applicant.value = { id: docSnap.id, ...docSnap.data() }
+          const docData = docSnap.data()
+
+          // Normalize data from consolidated structure
+          applicant.value = {
+            id: docSnap.id,
+            id_code: docData.id_code,
+            id_code_long: docData.id_code_long,
+            fullname: docData.contact?.fullname || '',
+            email: docData.contact?.email || '',
+            phone: docData.contact?.phone || '',
+            status: docData.status || '',
+            // Extract from roles (try nested first, then top-level as fallback)
+            applicant_types: docData.roles?.applicant_types?.length
+              ? docData.roles.applicant_types
+              : docData.applicant_types || [],
+            act_name: docData.roles?.act_name || docData.act_name || '',
+            act_type: docData.roles?.act_type || docData.act_type || '',
+            volunteer_type: docData.roles?.volunteer_type || docData.volunteer_type || '',
+            // Extract from application.data
+            genre: docData.application?.data?.genre || '',
+            act_description: docData.application?.data?.act_description || '',
+            mix_track_url: docData.application?.data?.mix_track_url || '',
+            act_website: docData.application?.data?.act_website || '',
+            social_url: docData.application?.data?.social_url || '',
+            press_kit_url: docData.application?.data?.press_kit_url || '',
+            logo_url: docData.application?.data?.logo_url || '',
+            volunteer_availability: docData.application?.data?.volunteer_availability || [],
+            workshop_title: docData.application?.data?.workshop_title || '',
+            workshop_description: docData.application?.data?.workshop_description || '',
+            workshop_requirements: docData.application?.data?.workshop_requirements || '',
+            vendor_type: docData.application?.data?.vendor_type || '',
+            vendor_description: docData.application?.data?.vendor_description || '',
+            vendor_requirements: docData.application?.data?.vendor_requirements || '',
+            vendor_url: docData.application?.data?.vendor_url || '',
+            installation_title: docData.application?.data?.installation_title || '',
+            installation_description: docData.application?.data?.installation_description || '',
+            space_requirements: docData.application?.data?.space_requirements || '',
+            other_requirements: docData.application?.data?.other_requirements || '',
+            portfolio_url: docData.application?.data?.portfolio_url || '',
+            fixture_type: docData.application?.data?.fixture_type || '',
+            rates: docData.application?.data?.rates || '',
+            statement: docData.application?.data?.statement || '',
+            bio: docData.bio || '',
+            comments: docData.comments || '',
+            settimes: docData.settimes || [],
+            // Contract and order data (if exists)
+            contract_signed: docData.contract?.signed || false,
+            ticket_type: docData.order?.ticket_type || '',
+            ticket_quantity: docData.order?.ticket_quantity || 0,
+            original_ticket_quantity: docData.order?.original_ticket_quantity || 0,
+            meal_tickets_remaining: docData.order?.meal_tickets_remaining || 0,
+            meal_packages: docData.order?.meal_packages || 0,
+            total_price: docData.order?.fiat_total_price_cad || 0,
+            payment_type: docData.order?.payment_type || '',
+            paid: docData.order?.paid || false,
+            checked_in: docData.order?.checked_in || false,
+            referral_id_code: docData.referral?.referral_id_code || '',
+            createdAt: docData.createdAt || '',
+            updatedAt: docData.updatedAt || ''
+          }
+
+          // Infer applicant types from the data if applicant_types is empty
+          if (!applicant.value.applicant_types.length) {
+            const inferredTypes = []
+            if (applicant.value.act_type || applicant.value.act_name) inferredTypes.push('Artist')
+            if (applicant.value.volunteer_type) inferredTypes.push('Volunteer')
+            if (applicant.value.workshop_title) inferredTypes.push('Workshop')
+            if (applicant.value.vendor_type) inferredTypes.push('Vendor')
+            if (applicant.value.installation_title) inferredTypes.push('Art Installation')
+            applicant.value.applicant_types = inferredTypes
+          }
+
           mealTickets.value = applicant.value.meal_tickets_remaining || 0
         } else {
           error.value = 'Applicant not found'
@@ -394,7 +664,7 @@ export default {
 
     const emailLink = computed(() => {
       if (!applicant.value?.email) return '#'
-      const subject = encodeURIComponent('Reunion 2025')
+      const subject = encodeURIComponent('Reunion 2026')
       const body = encodeURIComponent(`Hello ${applicant.value.fullname || 'there'},\n\n`)
       return `mailto:${applicant.value.email}?subject=${subject}&body=${body}`
     })
@@ -402,8 +672,8 @@ export default {
     // Payment Actions
     const confirmPaymentReceived = async () => {
       try {
-        const docRef = doc(reunion_db, 'orders_2025', applicant.value.id)
-        await updateDoc(docRef, { paid: true })
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { 'order.paid': true })
         applicant.value.paid = true
         console.log('Payment confirmed for:', applicant.value.fullname)
       } catch (error) {
@@ -414,8 +684,8 @@ export default {
     const revokeTicket = async () => {
       if (confirm('Are you sure you want to revoke this ticket?')) {
         try {
-          const docRef = doc(reunion_db, 'orders_2025', applicant.value.id)
-          await updateDoc(docRef, { paid: false })
+          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+          await updateDoc(docRef, { 'order.paid': false })
           applicant.value.paid = false
           console.log('Ticket revoked for:', applicant.value.fullname)
         } catch (error) {
@@ -424,26 +694,47 @@ export default {
       }
     }
 
-    const remindPayment = () => {
-      window.open(
-        `/scripts/notifications.js?action=remind_payment&id=${applicant.value.id}`,
-        '_blank'
-      )
+    // Enhanced reminder functions with notifications
+    const remindPayment = async () => {
+      if (!applicant.value.phone) {
+        alert('Phone number not available for this applicant.')
+        return
+      }
+
+      try {
+        const { sendSMS } = await import('/scripts/notifications.js')
+        const message = `Hello ${applicant.value.fullname || 'there'}. This is a gentle reminder to make your payment for Reunion 2026, if you haven't already.`
+        await sendSMS(applicant.value.phone, message)
+        alert('Payment reminder sent successfully.')
+      } catch (error) {
+        console.error('Error sending payment reminder:', error)
+        alert('Failed to send payment reminder')
+      }
     }
 
-    const remindContract = () => {
-      window.open(
-        `/scripts/notifications.js?action=remind_contract&id=${applicant.value.id}`,
-        '_blank'
-      )
+    const remindContract = async () => {
+      if (!applicant.value.phone) {
+        alert('Phone number not available for this applicant.')
+        return
+      }
+
+      try {
+        const { sendSMS } = await import('/scripts/notifications.js')
+        const message = `Hello ${applicant.value.fullname || 'there'}. This is a gentle reminder to sign your contract for Reunion 2026, if you haven't already.`
+        await sendSMS(applicant.value.phone, message)
+        alert('Contract reminder sent successfully.')
+      } catch (error) {
+        console.error('Error sending contract reminder:', error)
+        alert('Failed to send contract reminder')
+      }
     }
 
     // Meal Tickets Functions
     const updateMealTickets = async (newValue) => {
       if (!applicant.value) return
       try {
-        const docRef = doc(reunion_db, 'orders_2025', applicant.value.id)
-        await updateDoc(docRef, { meal_tickets_remaining: newValue })
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { 'order.meal_tickets_remaining': newValue })
         applicant.value.meal_tickets_remaining = newValue
         mealTickets.value = newValue
         console.log('Meal tickets updated for:', applicant.value.fullname)
@@ -464,7 +755,7 @@ export default {
       }
     }
 
-    // SMS Function
+    // Enhanced SMS Function with notifications
     const sendSMSMessage = async () => {
       if (!smsMessage.value.trim()) {
         alert('Please enter a message')
@@ -472,24 +763,15 @@ export default {
       }
 
       try {
-        const response = await fetch('/scripts/notifications.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'send_sms',
-            phone: applicant.value.phone,
-            message: smsMessage.value
-          })
-        })
-
-        if (response.ok) {
-          console.log('SMS sent successfully')
-          smsMessage.value = ''
-        } else {
-          console.error('Failed to send SMS')
-        }
+        // Import and use the notification function like dashboard does
+        const { sendSMS } = await import('/scripts/notifications.js')
+        await sendSMS(applicant.value.phone, smsMessage.value)
+        console.log('SMS sent successfully')
+        smsMessage.value = ''
+        alert('SMS sent successfully!')
       } catch (error) {
         console.error('Error sending SMS:', error)
+        alert('Failed to send SMS')
       }
     }
 
@@ -501,8 +783,8 @@ export default {
       }
 
       try {
-        const docRef = doc(reunion_db, 'applications_2025', applicant.value.id)
-        await updateDoc(docRef, { rates: newCompensation.value })
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { 'application.data.rates': newCompensation.value })
         applicant.value.rates = newCompensation.value
         newCompensation.value = ''
         console.log('Compensation updated for:', applicant.value.fullname)
@@ -514,8 +796,8 @@ export default {
     const clearCompensation = async () => {
       if (confirm('Are you sure you want to clear the compensation?')) {
         try {
-          const docRef = doc(reunion_db, 'applications_2025', applicant.value.id)
-          await updateDoc(docRef, { rates: null })
+          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+          await updateDoc(docRef, { 'application.data.rates': null })
           applicant.value.rates = null
           console.log('Compensation cleared for:', applicant.value.fullname)
         } catch (error) {
@@ -535,7 +817,7 @@ export default {
         const currentSettimes = applicant.value.settimes || []
         const updatedSettimes = [...currentSettimes, newSettime.value]
 
-        const docRef = doc(reunion_db, 'applications_2025', applicant.value.id)
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
         await updateDoc(docRef, { settimes: updatedSettimes })
 
         applicant.value.settimes = updatedSettimes
@@ -552,7 +834,7 @@ export default {
           const updatedSettimes = [...applicant.value.settimes]
           updatedSettimes.splice(index, 1)
 
-          const docRef = doc(reunion_db, 'applications_2025', applicant.value.id)
+          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
           await updateDoc(docRef, { settimes: updatedSettimes })
 
           applicant.value.settimes = updatedSettimes
@@ -560,6 +842,62 @@ export default {
         } catch (error) {
           console.error('Error removing set time:', error)
         }
+      }
+    }
+
+    // Check-in Management
+    const toggleCheckedIn = async () => {
+      if (!applicant.value.order) {
+        alert('No order information available')
+        return
+      }
+
+      const newStatus = !applicant.value.checked_in
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { 'order.checked_in': newStatus })
+        applicant.value.checked_in = newStatus
+        console.log(`Check-in status updated: ${newStatus}`)
+      } catch (error) {
+        console.error('Error updating check-in status:', error)
+        alert('Failed to update check-in status')
+      }
+    }
+
+    // Contract signing toggle
+    const toggleContractSigned = async () => {
+      const newStatus = !applicant.value.contract_signed
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { 'contract.signed': newStatus })
+        applicant.value.contract_signed = newStatus
+        console.log(`Contract status updated: ${newStatus}`)
+      } catch (error) {
+        console.error('Error updating contract status:', error)
+        alert('Failed to update contract status')
+      }
+    }
+
+    // Enhanced email functions
+    const sendCustomEmail = async () => {
+      if (!applicant.value.email) {
+        alert('No email available for this applicant')
+        return
+      }
+
+      const subject = prompt('Email subject:', 'Reunion 2026')
+      if (!subject) return
+
+      const message = prompt('Email message:')
+      if (!message) return
+
+      try {
+        const { sendEmail } = await import('/scripts/notifications.js')
+        await sendEmail(applicant.value.email, subject, message)
+        alert('Email sent successfully!')
+      } catch (error) {
+        console.error('Error sending email:', error)
+        alert('Failed to send email')
       }
     }
 
@@ -592,7 +930,7 @@ export default {
     }
 
     const deliverContract = (email, fullname, roles, id_code) => {
-      const subject = encodeURIComponent('Reunion 2025')
+      const subject = encodeURIComponent('Reunion 2026')
       const personalizedBody = contractEmailBody.value
         .replace('{name}', fullname || '')
         .replace('{roles}', roles || '')
@@ -602,7 +940,7 @@ export default {
     }
 
     const deliverTicket = (email, fullname, id_code) => {
-      const subject = encodeURIComponent('Reunion 2025')
+      const subject = encodeURIComponent('Reunion 2026')
       const personalizedBody = ticketEmailBody.value
         .replace('{name}', fullname || '')
         .replace('{id_code}', id_code || '')
@@ -633,7 +971,10 @@ export default {
       incrementMealTickets,
       decrementMealTickets,
       deliverContract,
-      deliverTicket
+      deliverTicket,
+      toggleCheckedIn,
+      toggleContractSigned,
+      sendCustomEmail
     }
   }
 }
@@ -641,8 +982,8 @@ export default {
 
 <style scoped>
 .applicant-detail {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 2rem;
   background-color: #1f1e22;
   color: #f0f4f8;
@@ -715,7 +1056,19 @@ h1 {
 .content-grid {
   display: grid;
   gap: 2rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+@media (min-width: 1400px) {
+  .content-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1800px) {
+  .content-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .section {
@@ -787,6 +1140,16 @@ h1 {
   font-weight: bold;
 }
 
+.status-badge {
+  background-color: var(--festivall-baby-blue);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
 .settimes-list {
   display: flex;
   flex-direction: column;
@@ -806,6 +1169,7 @@ h1 {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #444;
+  grid-column: 1 / -1;
 }
 
 .actions button {
@@ -1091,6 +1455,29 @@ h1 {
 }
 
 /* Meal Tickets Control */
+.meal-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #2a2930;
+  margin-top: 1rem;
+}
+
+.meal-management-section h3 {
+  margin: 0;
+  color: var(--festivall-baby-blue);
+  font-size: 1rem;
+}
+
+.meal-info {
+  margin: 0;
+  color: #f0f4f8;
+  font-size: 0.9rem;
+}
+
 .meal-tickets-control {
   display: flex;
   align-items: center;
@@ -1175,6 +1562,10 @@ h1 {
   }
 
   .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-grid {
     grid-template-columns: 1fr;
   }
 }

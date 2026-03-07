@@ -4,13 +4,13 @@
 
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
-      :targetYear="2025"
+      :targetYear="2026"
       :targetMonth="8"
       :targetDay="29"
     />
     <CountdownTimer
       v-if="order.ticket_type === 'Day Pass'"
-      :targetYear="2025"
+      :targetYear="2026"
       :targetMonth="8"
       :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
@@ -26,7 +26,7 @@
         {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
       </p>
       <p v-if="order.ticket_type === 'Weekend Pass'">
-        <strong>Valid:</strong> 12:00 PM Friday August 29th - 12:00 PM Monday September 1st
+        <strong>Valid:</strong> 12:00 PM Friday September 4th - 12:00 PM Monday September 7th, 2026
       </p>
 
       <p v-if="order.ticket_type === 'Day Pass'">
@@ -608,10 +608,10 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2025, 7, 1)" to="/reunionlineup">
+        <RouterLink v-if="new Date() >= new Date(2026, 7, 1)" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2025 Lineup<br />Look & Listen!<br />
+            2026 Lineup<br />Look & Listen!<br />
           </p>
         </RouterLink>
         <RouterLink v-else to="#">
@@ -622,7 +622,7 @@
         </RouterLink>
 
         <RouterLink
-          v-if="new Date() >= new Date(2025, 7, 29, 12, 0, 0)"
+          v-if="new Date() >= new Date(2026, 8, 4, 12, 0, 0)"
           :to="{
             name: 'ScavengerHunt',
             params: { id_code: order.id_code },
@@ -808,9 +808,10 @@ export default {
             meal_packages: p.order?.meal_packages || 0,
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
             checked_in: p.order?.checked_in || false,
-            entrance_activity_history: p.activity?.entrance_activity_history || [],
-            last_entrance_activity: p.activity?.last_entrance_activity || null,
-            meal_redemption_history: p.activity?.meal_redemption_history || []
+            // Corrected field mapping for scanning history
+            entrance_activity_history: p.order?.entrance_activity_history || [],
+            last_entrance_activity: p.order?.last_entrance_activity || null,
+            meal_redemption_history: p.order?.meal_redemption_history || []
           }
 
           await nextTick()
