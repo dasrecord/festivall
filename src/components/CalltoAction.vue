@@ -10,28 +10,28 @@ export default {
   <div class="call-to-action">
     <RouterLink to="/reuniontickets">
       <h1 class="tickets">
-        <span style="color: white">Ready to buy tickets?‍</span><br />
+        <span style="color: white">Ready to buy tickets?</span><br />
         BUY TICKETS
       </h1>
     </RouterLink>
 
     <!-- <RouterLink to="/reunionlineup" class="link">
       <h1 class="lineup">
-        <span style="color: white">Want to know who's playing?‍</span><br />
+        <span style="color: white">Want to know who's playing?</span><br />
         VIEW LINEUP
       </h1>
     </RouterLink> -->
 
     <RouterLink to="/reunionapplication">
       <h1 class="">
-        <span style="color: white">Want to volunteer?‍</span><br />
+        <span style="color: white">Want to participate?</span><br />
         APPLY HERE
       </h1>
     </RouterLink>
 
     <a href="https://instagram.com/reunion_festival">
       <h1 class="">
-        <span style="color: white">Need our socials‍?</span><br />
+        <span style="color: white">Need our socials?</span><br />
         CLICK HERE
       </h1>
     </a>
