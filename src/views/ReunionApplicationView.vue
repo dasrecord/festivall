@@ -190,43 +190,26 @@ const calculateCompensation = () => {
 
   // Artist compensation: Weekend Pass + 1 Guest
   if (applicantTypes.includes('Artist')) {
-    ticketQuantity += 2 // Weekend pass + 1 guest
+    ticketQuantity = 2 // Weekend pass + 1 guest
     ticketType = 'Weekend Pass'
   }
-
-  // Volunteer compensation: Weekend Pass + 1 Meal Package per day worked
-  if (applicantTypes.includes('Volunteer')) {
-    // If not already getting a weekend pass from Artist role
-    if (!applicantTypes.includes('Artist')) {
-      ticketQuantity += 1 // Weekend pass
-      ticketType = 'Weekend Pass'
-    }
-    // Default 4 meal packages for festival days (Sept 4-7)
-    mealPackages = 4
+  // Volunteer compensation: Weekend Pass + Meal Packages
+  else if (applicantTypes.includes('Volunteer')) {
+    ticketQuantity = 1 // Weekend pass
+    ticketType = 'Weekend Pass'
+    mealPackages = 4 // 4 meal packages for festival days (Sept 4-7)
   }
-
-  // Workshop compensation: Weekend Pass (if not already covered)
-  if (
-    applicantTypes.includes('Workshop') &&
-    !applicantTypes.includes('Artist') &&
-    !applicantTypes.includes('Volunteer')
-  ) {
-    ticketQuantity += 1 // Weekend pass
+  // Workshop compensation: Weekend Pass
+  else if (applicantTypes.includes('Workshop')) {
+    ticketQuantity = 1 // Weekend pass
     ticketType = 'Weekend Pass'
   }
-
-  // Art Installation compensation: Weekend Pass (if not already covered)
-  if (
-    applicantTypes.includes('Art Installation') &&
-    !applicantTypes.includes('Artist') &&
-    !applicantTypes.includes('Volunteer') &&
-    !applicantTypes.includes('Workshop')
-  ) {
-    ticketQuantity += 1 // Weekend pass
+  // Art Installation compensation: Weekend Pass
+  else if (applicantTypes.includes('Art Installation')) {
+    ticketQuantity = 1 // Weekend pass
     ticketType = 'Weekend Pass'
   }
-
-  // Vendor gets 100% profit, no additional compensation needed
+  // Vendor gets 100% profit, no ticket compensation
 
   return {
     ticketQuantity,
@@ -323,7 +306,10 @@ const addApplicant = async () => {
         referral: {
           referral_id_code: '',
           referredBy: null
-        }
+        },
+        bio: '',
+        comments: '',
+        settimes: []
       },
       { merge: true }
     )

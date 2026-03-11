@@ -593,58 +593,63 @@ export default {
       { property: 'status', value: 'participant', label: 'Participants' },
 
       // Application type filters (for applicants)
-      { property: 'applicant_types', value: 'Artist', label: 'Artists' },
-      { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers' },
-      { property: 'applicant_types', value: 'Workshop', label: 'Workshops' },
-      { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations' },
-      { property: 'applicant_types', value: 'Vendor', label: 'Vendors' },
+      { property: 'applicant_types', value: 'Artist', label: 'Artists', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'applicant_types', value: 'Workshop', label: 'Workshops', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'applicant_types', value: 'Vendor', label: 'Vendors', collections: ['applications_2025', 'participants_2026'] },
 
       // Act type filters (for artists)
-      { property: 'act_type', value: 'DJ', label: 'DJs' },
-      { property: 'act_type', value: 'Musician', label: 'Musicians' },
-      { property: 'act_type', value: 'Live Band', label: 'Live Bands' },
-      { property: 'act_type', value: 'Dancer', label: 'Dancers' },
-      { property: 'act_type', value: 'Spoken Word', label: 'Spoken Word' },
-      { property: 'act_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter' },
-      { property: 'act_type', value: 'Rapper', label: 'Rappers' },
+      { property: 'act_type', value: 'DJ', label: 'DJs', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Musician', label: 'Musicians', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Live Band', label: 'Live Bands', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Dancer', label: 'Dancers', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Spoken Word', label: 'Spoken Word', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'Rapper', label: 'Rappers', collections: ['applications_2025', 'participants_2026'] },
 
       // Volunteer team filters
-      { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew' },
-      { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew' },
-      { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew' },
-      { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate' },
-      { property: 'volunteer_type', value: 'Food Team', label: 'Food Team' },
+      { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'volunteer_type', value: 'Food Team', label: 'Food Team', collections: ['applications_2025', 'participants_2026'] },
 
       // Application data filters
-      { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track' },
-      { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track' },
-      { property: 'act_website', value: 'has_value', label: 'Has Website' },
-      { property: 'workshop_title', value: 'has_value', label: 'Has Workshop' },
-      { property: 'vendor_type', value: 'has_value', label: 'Has Vendor Info' },
-      { property: 'installation_title', value: 'has_value', label: 'Has Installation' },
+      { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_website', value: 'has_value', label: 'Has Website', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'workshop_title', value: 'has_value', label: 'Has Workshop', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'vendor_type', value: 'has_value', label: 'Has Vendor Info', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'installation_title', value: 'has_value', label: 'Has Installation', collections: ['applications_2025', 'participants_2026'] },
 
       // Contract filters (applies to both applicants and customers)
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
 
-      // Order/Payment filters (for customers and participants with orders)
-      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin Payment' },
-      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer Payment' },
-      { property: 'payment_type', value: 'inkind', label: 'In-Kind Payment' },
-      { property: 'paid', value: true, label: 'Paid' },
-      { property: 'paid', value: false, label: 'Unpaid' },
-      { property: 'checked_in', value: true, label: 'Checked In' },
-      { property: 'checked_in', value: false, label: 'Not Checked In' },
+      // Order/Payment filters (for orders/customers only)
+      { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin Payment', collections: ['orders_2025'] },
+      { property: 'payment_type', value: 'etransfer', label: 'E-Transfer Payment', collections: ['orders_2025'] },
+      { property: 'payment_type', value: 'inkind', label: 'In-Kind Payment', collections: ['orders_2025'] },
+      { property: 'paid', value: true, label: 'Paid', collections: ['orders_2025'] },
+      { property: 'paid', value: false, label: 'Unpaid', collections: ['orders_2025'] },
+      { property: 'checked_in', value: true, label: 'Checked In', collections: ['orders_2025'] },
+      { property: 'checked_in', value: false, label: 'Not Checked In', collections: ['orders_2025'] },
 
-      // Ticket type filters
-      { property: 'ticket_type', value: 'has_value', label: 'Has Ticket' },
-      { property: 'ticket_type', value: 'no_value', label: 'No Ticket' }
     ])
 
     const relevantFilters = computed(() => {
       if (!applicants.value.length) return []
 
       return filters.value.filter((filter) => {
+        // First check if this filter has collection restrictions
+        if (filter.collections) {
+          if (!filter.collections.includes(currentCollection.value)) {
+            return false
+          }
+        }
+
+        // Then check if the filter exists in the data
         return applicants.value.some((applicant) => {
           const prop = applicant[filter.property]
           if (filter.value === 'has_value') {
