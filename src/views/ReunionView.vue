@@ -20,15 +20,14 @@
       MUSIC - DANCING - CAMPING‍ <br />
       FAMILY - FRIENDS - FOOD‍ <br /><br />
 
-      <span class="bitcoin">
+      <!-- <span class="bitcoin">
         <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> GET 2025 PRICES UNTIL DEC 21st!
-
         <br /><br />
-      </span>
+      </span> -->
 
-      WEEKEND PASS - $140 CAD<br />
-      DAY PASS - $80 CAD‍ <br />
-      MEAL PLANS - $20 CAD/DAY<br />
+      WEEKEND PASS - $200 CAD<br />
+      DAY PASS - $100 CAD‍ <br />
+      MEAL PLANS - $30 CAD/DAY<br />
       <span class="bitcoin">
         25% discount if you pay with bitcoin!‍
         <img :src="bitcoin_icon" alt="bitcoin" style="height: 16px; width: 16px" /> <br />
