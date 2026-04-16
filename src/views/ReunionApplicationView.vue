@@ -124,17 +124,23 @@ watch(
   { immediate: true }
 )
 
+const normalizeIdCode = (value) => (value || '').trim().toLowerCase()
+
 const fetchApplicantData = async (id_code) => {
-  if (!id_code) return
+  const normalizedIdCode = normalizeIdCode(id_code)
+  if (!normalizedIdCode) return
+
+  form.value.id_code = normalizedIdCode
+
   try {
     // Autofill from prior-year orders_2025 only (returning applicants)
-    const oRef = doc(reunion_db, 'orders_2025', id_code)
+    const oRef = doc(reunion_db, 'orders_2025', normalizedIdCode)
     const oSnap = await getDoc(oRef)
     if (oSnap.exists()) {
       const o = oSnap.data()
       form.value = {
         ...form.value,
-        id_code: o.id_code || id_code,
+        id_code: normalizeIdCode(o.id_code || normalizedIdCode),
         fullname: o.fullname || form.value.fullname,
         email: o.email || form.value.email,
         phone: o.formatted_phone || o.phone || form.value.phone,
@@ -370,6 +376,7 @@ const submitForm = async () => {
   submitting.value = true
 
   form.value.raw_phone = form.value.phone.replace(/\D/g, '')
+  form.value.id_code = normalizeIdCode(form.value.id_code)
 
   try {
     // Generate `id_code_long` based on user-provided `id_code` or create a new one
@@ -380,7 +387,7 @@ const submitForm = async () => {
     } else {
       // Generate a completely new UUID and use the first 5 characters as the `id_code`
       form.value.id_code_long = uuidv4()
-      form.value.id_code = form.value.id_code_long.slice(0, 5)
+      form.value.id_code = form.value.id_code_long.slice(0, 5).toLowerCase()
     }
 
     // Add the applicant to the database
@@ -715,6 +722,7 @@ onMounted(() => {
             id="id_code"
             v-model="form.id_code"
             placeholder="Enter your ID_CODE if you have one!"
+            @input="form.id_code = normalizeIdCode(form.id_code)"
             @blur="fetchApplicantData(form.id_code)"
             @focus="trackIDCodeUsage()"
           />
