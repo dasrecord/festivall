@@ -67,13 +67,29 @@ const showDays = reactive({
 const fetchEvents = async () => {
   loading.value = true
   try {
-    const q = query(collection(reunion_db, 'orders_2025'), where('contract_signed', '==', true))
+    const q = query(collection(reunion_db, 'participants_2026'), where('contract.signed', '==', true))
     const snapshot = await getDocs(q)
-    events.value = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      settimes: Array.isArray(doc.data().settimes) ? doc.data().settimes : [] // Ensure settimes is an array
-    }))
+    events.value = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data()
+      const roles = data.roles || {}
+      const appData = (data.application && data.application.data) || {}
+
+      return {
+        id: docSnap.id,
+        ...data,
+        act_name: roles.act_name || data.act_name || '',
+        workshop_title: appData.workshop_title || data.workshop_title || '',
+        mix_track_url: appData.mix_track_url || data.mix_track_url || '',
+        social_url: appData.social_url || data.social_url || '',
+        genre: appData.genre || data.genre || '',
+        act_description:
+          appData.act_description ||
+          appData.workshop_description ||
+          data.act_description ||
+          '',
+        settimes: Array.isArray(data.settimes) ? data.settimes : []
+      }
+    })
 
     // Log the fetched events to verify the data
     console.log('Fetched Events:', events.value)
@@ -126,10 +142,10 @@ const getEventsByDay = (targetDate) => {
     })
 }
 
-const getFridayEvents = computed(() => getEventsByDay(new Date('2025-08-29T12:00:00-06:00'))) // Fixed: Noon MST to avoid timezone shifts
-const getSaturdayEvents = computed(() => getEventsByDay(new Date('2025-08-30T12:00:00-06:00'))) // Fixed: Noon MST
-const getSundayEvents = computed(() => getEventsByDay(new Date('2025-08-31T12:00:00-06:00'))) // Fixed: Noon MST
-const getMondayEvents = computed(() => getEventsByDay(new Date('2025-09-01T12:00:00-06:00'))) // Fixed: Noon MST
+const getFridayEvents = computed(() => getEventsByDay(new Date('2026-09-04T12:00:00-06:00')))
+const getSaturdayEvents = computed(() => getEventsByDay(new Date('2026-09-05T12:00:00-06:00')))
+const getSundayEvents = computed(() => getEventsByDay(new Date('2026-09-06T12:00:00-06:00')))
+const getMondayEvents = computed(() => getEventsByDay(new Date('2026-09-07T12:00:00-06:00')))
 
 // Toggle day visibility
 const toggleDay = (day) => {

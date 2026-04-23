@@ -194,28 +194,24 @@ const calculateCompensation = () => {
 
   const applicantTypes = form.value.applicant_types || []
 
-  // Artist compensation: Weekend Pass + 1 Guest
+  // Ticket quantity: highest entitlement wins
   if (applicantTypes.includes('Artist')) {
     ticketQuantity = 2 // Weekend pass + 1 guest
     ticketType = 'Weekend Pass'
-  }
-  // Volunteer compensation: Weekend Pass + Meal Packages
-  else if (applicantTypes.includes('Volunteer')) {
-    ticketQuantity = 1 // Weekend pass
-    ticketType = 'Weekend Pass'
-    mealPackages = 4 // 4 meal packages for festival days (Sept 4-7)
-  }
-  // Workshop compensation: Weekend Pass
-  else if (applicantTypes.includes('Workshop')) {
-    ticketQuantity = 1 // Weekend pass
-    ticketType = 'Weekend Pass'
-  }
-  // Art Installation compensation: Weekend Pass
-  else if (applicantTypes.includes('Art Installation')) {
+  } else if (
+    applicantTypes.includes('Volunteer') ||
+    applicantTypes.includes('Workshop') ||
+    applicantTypes.includes('Art Installation')
+  ) {
     ticketQuantity = 1 // Weekend pass
     ticketType = 'Weekend Pass'
   }
   // Vendor gets 100% profit, no ticket compensation
+
+  // Meal packages: always set if Volunteer is one of the types
+  if (applicantTypes.includes('Volunteer')) {
+    mealPackages = 2 // 2 meal packages (4 meal tickets) for volunteers
+  }
 
   return {
     ticketQuantity,
@@ -295,7 +291,7 @@ const addApplicant = async () => {
           ticket_quantity: compensation.ticketQuantity,
           original_ticket_quantity: compensation.ticketQuantity,
           // Meal ticket fields
-          meal_tickets_remaining: compensation.mealPackages,
+          meal_tickets_remaining: compensation.mealPackages * 2,
           meal_packages: compensation.mealPackages,
           // Payment fields
           payment_type: '',
