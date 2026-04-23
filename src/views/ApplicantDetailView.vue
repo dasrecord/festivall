@@ -271,7 +271,7 @@
         </div>
 
         <!-- Contract Information -->
-        <div v-if="applicant.payment_type === 'inkind'" class="section contract-info">
+        <div v-if="applicant.payment_type === 'inkind' || applicant.rates" class="section contract-info">
           <h2>Contract Information</h2>
           <div class="info-grid">
             <div class="info-item">
@@ -287,7 +287,7 @@
             </div>
             <div class="info-item" v-if="applicant.rates">
               <label>Compensation:</label>
-              <span>${{ applicant.rates }}</span>
+              <span>{{ applicant.rates }}</span>
             </div>
           </div>
         </div>
@@ -452,7 +452,7 @@
               Clear Compensation
             </button>
             <p v-if="applicant.rates" class="current-compensation">
-              Current Fee: ${{ applicant.rates }}
+              Current Fee: {{ applicant.rates }}
             </p>
           </div>
 

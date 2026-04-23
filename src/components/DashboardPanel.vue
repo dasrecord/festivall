@@ -435,7 +435,7 @@
               />
               <img
                 @click="
-                  updateCompensation(applicant.id_code, applicant.additional_compensation),
+                  updateCompensation(applicant, applicant.additional_compensation),
                     (applicant.additional_compensation = '')
                 "
                 :src="compensation_icon"
@@ -446,7 +446,7 @@
 
               <p v-if="applicant.rates">
                 Fee: {{ applicant.rates }}
-                <button @click="clearCompensation(applicant.id_code, '')">
+                <button @click="clearCompensation(applicant)">
                   Clear Compensation
                 </button>
               </p>
@@ -879,53 +879,33 @@ export default {
 
     const router = useRouter()
 
-    const updateCompensation = async (id_code, additional_compensation) => {
+    const updateCompensation = async (applicant, additional_compensation) => {
       try {
-        const docRef = doc(reunion_db, 'applications_2025', id_code)
-        await updateDoc(docRef, {
-          rates: additional_compensation
-        })
+        const docRef = doc(reunion_db, currentCollection.value, applicant.id)
+        await updateDoc(docRef, { 'application.data.rates': additional_compensation })
 
-        // Update both applicants and filteredApplicants arrays
-        const updateApplicant = (applicant) => {
-          if (applicant.id_code === id_code) {
-            return {
-              ...applicant,
-              rates: additional_compensation, // Update the rates field that's displayed
-              additional_compensation: '' // Clear the input field
-            }
-          }
-          return applicant
-        }
+        const update = (a) =>
+          a.id === applicant.id
+            ? { ...a, rates: additional_compensation, additional_compensation: '' }
+            : a
 
-        applicants.value = applicants.value.map(updateApplicant)
-        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+        applicants.value = applicants.value.map(update)
+        filteredApplicants.value = filteredApplicants.value.map(update)
       } catch (error) {
         console.error('Error updating compensation:', error)
       }
     }
 
-    const clearCompensation = async (id_code) => {
+    const clearCompensation = async (applicant) => {
       try {
-        const docRef = doc(reunion_db, 'applications_2025', id_code)
-        await updateDoc(docRef, {
-          rates: ''
-        })
+        const docRef = doc(reunion_db, currentCollection.value, applicant.id)
+        await updateDoc(docRef, { 'application.data.rates': '' })
 
-        // Update both applicants and filteredApplicants arrays
-        const updateApplicant = (applicant) => {
-          if (applicant.id_code === id_code) {
-            return {
-              ...applicant,
-              rates: '', // Clear the rates field
-              additional_compensation: '' // Clear the input field
-            }
-          }
-          return applicant
-        }
+        const update = (a) =>
+          a.id === applicant.id ? { ...a, rates: '', additional_compensation: '' } : a
 
-        applicants.value = applicants.value.map(updateApplicant)
-        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+        applicants.value = applicants.value.map(update)
+        filteredApplicants.value = filteredApplicants.value.map(update)
       } catch (error) {
         console.error('Error clearing compensation:', error)
       }
@@ -933,7 +913,7 @@ export default {
 
     const updateSettime = async (id_code, newSettime) => {
       try {
-        const docRef = doc(reunion_db, 'orders_2025', id_code)
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
 
         // Fetch the current document to get the existing set times
         const docSnap = await getDoc(docRef)
@@ -968,7 +948,7 @@ export default {
 
     const removeSettime = async (id_code, index) => {
       try {
-        const docRef = doc(reunion_db, 'orders_2025', id_code)
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
 
         // Fetch the current document to get the existing set times
         const docSnap = await getDoc(docRef)
@@ -1150,7 +1130,7 @@ export default {
     }
 
     const deliverContract = (email, fullname, roles, id_code) => {
-      const subject = encodeURIComponent('Reunion 2025')
+      const subject = encodeURIComponent('Reunion 2026')
       const personalizedBody = contractEmailBody.value
         .replace('{name}', fullname || '')
         .replace('{roles}', roles || '')
@@ -1161,10 +1141,8 @@ export default {
 
     const confirmPaymentReceived = async (id_code) => {
       try {
-        const docRef = doc(reunion_db, 'orders_2025', id_code)
-        await updateDoc(docRef, {
-          paid: true
-        })
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
+        await updateDoc(docRef, { 'order.paid': true })
 
         // Find the applicant for the notification
         const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
@@ -1198,10 +1176,8 @@ export default {
 
     const revokeTicket = async (id_code) => {
       try {
-        const docRef = doc(reunion_db, 'orders_2025', id_code)
-        await updateDoc(docRef, {
-          paid: false
-        })
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
+        await updateDoc(docRef, { 'order.paid': false })
 
         // Find the applicant for the notification
         const applicant = applicants.value.find((applicant) => applicant.id_code === id_code)
@@ -1238,7 +1214,7 @@ export default {
     }
 
     const deliverTicket = (email, fullname, id_code) => {
-      const subject = encodeURIComponent('Reunion 2025')
+      const subject = encodeURIComponent('Reunion 2026')
       const personalizedBody = ticketEmailBody.value
         .replace('{name}', fullname || '')
         .replace('{id_code}', id_code || '')
@@ -1556,9 +1532,7 @@ export default {
         const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
         const currentTickets = (applicant?.meal_tickets_remaining || 0) + 1
 
-        await updateDoc(docRef, {
-          meal_tickets_remaining: currentTickets
-        })
+        await updateDoc(docRef, { 'order.meal_tickets_remaining': currentTickets })
 
         // Update both arrays
         const updateApplicant = (applicant) => {
@@ -1581,9 +1555,7 @@ export default {
         const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
         const currentTickets = Math.max(0, (applicant?.meal_tickets_remaining || 0) - 1)
 
-        await updateDoc(docRef, {
-          meal_tickets_remaining: currentTickets
-        })
+        await updateDoc(docRef, { 'order.meal_tickets_remaining': currentTickets })
 
         // Update both arrays
         const updateApplicant = (applicant) => {
