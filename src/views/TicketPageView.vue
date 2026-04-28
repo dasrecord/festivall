@@ -121,6 +121,21 @@
           <img :src="bonus_icon" style="height: 32px; width: auto; margin: 0" alt="Bonus Icon" />
           <strong>Referral Earnings: ${{ referralEarnings }}</strong>
         </p>
+<p
+          @click="showFMRadioModal = true"
+          style="
+            justify-content: center;
+            background-color: black;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+          "
+        >
+          <img :src="radio_icon" style="height: auto; width: 32px; margin: 0" alt="FM Radio Icon" />
+          <strong>FM Radio Info</strong>
+        </p>
+        
       </div>
 
       <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
@@ -401,6 +416,52 @@
         </div>
       </div>
 
+      <!-- FM Radio Modal -->
+      <div v-if="showFMRadioModal" class="modal" @click.self="showFMRadioModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showFMRadioModal = false"></div>
+          <img
+            class="festivall-emblem"
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="radio_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="FM Radio Icon"
+          />
+          <h2>🎶 FM Radio Broadcast</h2>
+          <h3>
+            📻
+            <strong style="text-decoration: underline; color: orange">Tune In:</strong><br />
+            The main stage music is broadcast live over FM during the festival.<br />
+            🚗 Listen from your car while you approach the festival grounds!<br />
+            📻 Bring an FM radio or boombox for your campsite and listen at a respectful volume.<br />
+          </h3>
+          <h3>
+            🔊
+            <strong style="text-decoration: underline; color: orange">Broadcast Frequency:</strong><br />
+            <strong style="font-size: 1.5rem; color: orange">TBA</strong><br />
+            Check back closer to the festival for the exact frequency.<br />
+          </h3>
+          <h3>
+            ℹ️
+            <strong style="text-decoration: underline; color: orange">Tips:</strong><br />
+            📡 FM signal covers the full festival grounds and surrounding campsites.<br />
+            🔋 Bring extra batteries for portable radios and boomboxes.<br />
+            🎛️ Adjust your antenna for the best reception at your campsite.<br />
+          </h3>
+          <h3>
+            📧 Questions? Contact us at
+            <a href="mailto:reunion@festivall.ca" style="text-decoration: underline; color: orange">
+              reunion@festivall.ca
+            </a>
+          </h3>
+          <button @click="showFMRadioModal = false">Close</button>
+        </div>
+      </div>
+
       <!-- Gate Information Modal -->
       <div v-if="showGateInfoModal" class="modal" @click.self="showGateInfoModal = false">
         <div class="modal-content" @click.stop>
@@ -677,6 +738,7 @@ import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
+import radio_icon from '@/assets/images/icons/radio.png'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 
 export default {
@@ -699,6 +761,7 @@ export default {
     const showReferralModal = ref(false)
     const showMealRedemptionHistoryModal = ref(false)
     const showEntranceActivityModal = ref(false)
+    const showFMRadioModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -811,7 +874,12 @@ export default {
             // Corrected field mapping for scanning history
             entrance_activity_history: p.order?.entrance_activity_history || [],
             last_entrance_activity: p.order?.last_entrance_activity || null,
-            meal_redemption_history: p.order?.meal_redemption_history || []
+            meal_redemption_history: p.order?.meal_redemption_history || [],
+            // Roles & application data
+            applicant_types: p.roles?.applicant_types || [],
+            payment_type: p.order?.payment_type || '',
+            rates: p.application?.data?.rates || '',
+            settimes: p.application?.data?.settimes || []
           }
 
           await nextTick()
@@ -953,6 +1021,7 @@ export default {
       showReferralModal,
       showMealRedemptionHistoryModal,
       showEntranceActivityModal,
+      showFMRadioModal,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -965,7 +1034,8 @@ export default {
       location_icon,
       map_icon,
       lineup_icon,
-      quiz_icon
+      quiz_icon,
+      radio_icon
     }
   }
 }
