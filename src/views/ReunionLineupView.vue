@@ -9,6 +9,18 @@
     />
     <p>{{ new Date().getFullYear() }} LINEUP</p>
 
+    <!-- ── My Schedule ─────────────────────────────────────────────── -->
+    <div class="my-schedule">
+      <button class="my-schedule-toggle" @click="myScheduleOpen = !myScheduleOpen">
+        <span>★ MY SCHEDULE</span>
+        <span class="toggle-chevron" :class="{ open: myScheduleOpen }">▾</span>
+      </button>
+      <div v-if="myScheduleOpen" class="my-schedule-body">
+        <p v-if="!starredEvents.length" class="no-starred">No acts starred yet — tap ☆ on any act to add it here.</p>
+        <lineup-day v-else :events="starredEvents" :loading="loading" class="setinfo" />
+      </div>
+    </div>
+
     <div class="main-stage">
       <!-- Toggle Buttons -->
       <div class="toggle-buttons">
@@ -44,13 +56,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import LineupDay from '@/components/CalendarModule.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
+import { useLineupState } from '@/composables/useLineupState'
+
+const { isStarred, updateCurrentAct } = useLineupState()
 
 // Reactive state
 const loading = ref(false)
@@ -87,7 +102,13 @@ const fetchEvents = async () => {
           appData.workshop_description ||
           data.act_description ||
           '',
-        settimes: Array.isArray(data.settimes) ? data.settimes : []
+        settimes: Array.isArray(data.settimes)
+          ? data.settimes.map((t) => {
+              if (t && typeof t.toDate === 'function') return t.toDate().toISOString()
+              if (typeof t === 'string') return t.replace(/^"|"$/g, '')
+              return t
+            })
+          : []
       }
     })
 
@@ -147,6 +168,22 @@ const getSaturdayEvents = computed(() => getEventsByDay(new Date('2026-09-05T12:
 const getSundayEvents = computed(() => getEventsByDay(new Date('2026-09-06T12:00:00-06:00')))
 const getMondayEvents = computed(() => getEventsByDay(new Date('2026-09-07T12:00:00-06:00')))
 
+// ── My Schedule ───────────────────────────────────────────────────────────────
+const myScheduleOpen = ref(false)
+
+const starredEvents = computed(() => {
+  const slots = []
+  for (const event of events.value) {
+    for (const settime of event.settimes) {
+      const key = `${event.id}::${settime}`
+      if (isStarred(key)) {
+        slots.push({ ...event, settimes: [settime] })
+      }
+    }
+  }
+  return slots.sort((a, b) => new Date(a.settimes[0]).getTime() - new Date(b.settimes[0]).getTime())
+})
+
 // Toggle day visibility
 const toggleDay = (day) => {
   showDays[day] = !showDays[day]
@@ -158,6 +195,9 @@ const toggleDay = (day) => {
   })
 }
 
+// ── Now-playing interval ─────────────────────────────────────────────────────
+let nowPlayingInterval = null
+
 // Fetch events on component mount
 onMounted(() => {
   // Track page view
@@ -166,7 +206,14 @@ onMounted(() => {
     page_location: window.location.href
   })
 
-  fetchEvents()
+  fetchEvents().then(() => {
+    updateCurrentAct(events.value)
+    nowPlayingInterval = setInterval(() => updateCurrentAct(events.value), 60_000)
+  })
+})
+
+onUnmounted(() => {
+  clearInterval(nowPlayingInterval)
 })
 </script>
 
@@ -238,5 +285,57 @@ p {
   max-width: 100%;
   height: auto;
   margin-bottom: 1rem;
+}
+
+/* ── My Schedule ─────────────────────────────────────────────────────────── */
+.my-schedule {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.my-schedule-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--reunion-light-gray);
+  color: #f5c518;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  border: none;
+  cursor: pointer;
+}
+
+.my-schedule-toggle:hover {
+  background-color: #2a2a2a;
+}
+
+.toggle-chevron {
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.toggle-chevron.open {
+  transform: rotate(180deg);
+}
+
+.my-schedule-body {
+  padding: 0.5rem 0;
+  background-color: var(--reunion-light-gray);
+}
+
+.no-starred {
+  padding: 1rem;
+  text-align: center;
+  color: #aaa;
+  font-weight: normal;
+  font-size: 0.9rem;
 }
 </style>
