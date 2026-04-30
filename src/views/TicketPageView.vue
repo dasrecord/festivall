@@ -740,6 +740,7 @@ import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
 import radio_icon from '@/assets/images/icons/radio.png'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import { useLineupState } from '@/composables/useLineupState'
 
 export default {
   name: 'TicketPageView',
@@ -750,6 +751,7 @@ export default {
   setup() {
     const route = useRoute()
     const router = useRouter()
+    const { currentAct } = useLineupState()
     const order = ref(null)
     const qrCanvas = ref(null)
     const referralEarnings = ref(0)
@@ -1035,6 +1037,7 @@ export default {
       map_icon,
       lineup_icon,
       quiz_icon,
+      currentAct,
       radio_icon
     }
   }
