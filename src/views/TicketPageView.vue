@@ -616,8 +616,8 @@
         </RouterLink>
         <RouterLink v-else to="#">
           <p>
-            <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Final Lineup<br />coming soon!
+            <img :src="lineup_icon" style="height: auto; width: 32px; " alt="Coming Soon Icon" />
+            2026 Lineup<br />TBA
           </p>
         </RouterLink>
 

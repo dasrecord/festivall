@@ -47,6 +47,14 @@
       <p><strong>Name:</strong> {{ participant.fullname }}</p>
       <p><strong>Ticket Type:</strong> {{ participant.ticket_type }}</p>
       <p>
+        <strong>Tickets On-Site:</strong>
+        <span class="checked-in">
+          {{ participant.original_ticket_quantity - participant.ticket_quantity }}
+        </span>
+        /
+        <span>{{ participant.original_ticket_quantity }}</span>
+      </p>
+      <p>
         <strong>Current Status:</strong>
         <span :class="participant.checked_in ? 'checked-in' : 'checked-out'">
           {{ participant.checked_in ? 'Checked In' : 'Checked Out' }}
@@ -55,7 +63,7 @@
 
       <div class="action-buttons">
         <button
-          v-if="!participant.checked_in"
+          v-if="participant.ticket_quantity > 0"
           @click="checkIn"
           :disabled="isProcessing"
           class="check-in-btn"
@@ -64,7 +72,7 @@
         </button>
 
         <button
-          v-if="participant.checked_in"
+          v-if="participant.ticket_quantity < participant.original_ticket_quantity"
           @click="checkOut"
           :disabled="isProcessing"
           class="check-out-btn"
@@ -116,6 +124,7 @@ import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs, query, where } from 'firebase/firestore'
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
+import { sendReunionFrontGate } from '/scripts/notifications.js'
 
 export default {
   name: 'SelfCheckInView',
@@ -168,20 +177,29 @@ export default {
       }
 
       try {
-        const q = query(
-          collection(reunion_db, 'participants_2026'),
-          where('id_code', '==', idCode.value.toLowerCase().trim())
+        const searchValue = idCode.value.toLowerCase().trim()
+        // Try short id_code first (manual entry), then id_code_long (QR scan)
+        let querySnapshot = await getDocs(
+          query(collection(reunion_db, 'participants_2026'), where('id_code', '==', searchValue))
         )
-        const querySnapshot = await getDocs(q)
+        if (querySnapshot.empty) {
+          querySnapshot = await getDocs(
+            query(collection(reunion_db, 'participants_2026'), where('id_code_long', '==', searchValue))
+          )
+        }
 
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
           participant.value = {
             id_code: p.id_code,
+            id_code_long: p.id_code_long,
             fullname: p.contact?.fullname || '',
             ticket_type: p.order?.ticket_type || '',
             checked_in: p.order?.checked_in || false,
-            entrance_activity_history: p.order?.entrance_activity_history || []
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            entrance_activity_history: p.order?.entrance_activity_history || [],
+            last_entrance_activity: p.order?.last_entrance_activity || null
           }
         } else {
           participant.value = null
@@ -199,12 +217,24 @@ export default {
       resultMessage.value = ''
 
       try {
+        if (participant.value.ticket_quantity <= 0) {
+          resultMessage.value = 'No tickets remaining to check in.'
+          resultType.value = 'error'
+          return
+        }
+
+        if (!participant.value.original_ticket_quantity) {
+          participant.value.original_ticket_quantity = participant.value.ticket_quantity
+        }
+
+        const newTicketQuantity = participant.value.ticket_quantity - 1
         const timestamp = new Date().toISOString()
         const festivalDay = getFestivalDay(timestamp)
 
         const activityEntry = {
           timestamp,
           action: 'check_in',
+          ticket_quantity_after: newTicketQuantity,
           festival_day: festivalDay,
           operator: 'self_service',
           operator_name: 'Self Check-In'
@@ -215,12 +245,20 @@ export default {
 
         await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
           'order.checked_in': true,
+          'order.ticket_quantity': newTicketQuantity,
+          'order.original_ticket_quantity': participant.value.original_ticket_quantity,
           'order.entrance_activity_history': updatedHistory,
           'order.last_entrance_activity': timestamp
         })
 
+        sendReunionFrontGate(
+          `:ticket: ${participant.value.fullname} has checked in (self).\n:id: ${participant.value.id_code}\n:bust_in_silhouette: Operator: Self Check-In`
+        )
+
         participant.value.checked_in = true
+        participant.value.ticket_quantity = newTicketQuantity
         participant.value.entrance_activity_history = updatedHistory
+        participant.value.last_entrance_activity = timestamp
 
         resultMessage.value = `Welcome to Reunion 2026, ${participant.value.fullname}!`
         resultType.value = 'success'
@@ -240,12 +278,20 @@ export default {
       resultMessage.value = ''
 
       try {
+        if (participant.value.ticket_quantity >= participant.value.original_ticket_quantity) {
+          resultMessage.value = 'Cannot check out more tickets than the original quantity.'
+          resultType.value = 'error'
+          return
+        }
+
+        const newTicketQuantity = participant.value.ticket_quantity + 1
         const timestamp = new Date().toISOString()
         const festivalDay = getFestivalDay(timestamp)
 
         const activityEntry = {
           timestamp,
           action: 'check_out',
+          ticket_quantity_after: newTicketQuantity,
           festival_day: festivalDay,
           operator: 'self_service',
           operator_name: 'Self Check-Out'
@@ -255,13 +301,21 @@ export default {
         const updatedHistory = [...existingHistory, activityEntry]
 
         await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
-          'order.checked_in': false,
+          'order.checked_in': newTicketQuantity > 0,
+          'order.ticket_quantity': newTicketQuantity,
+          'order.original_ticket_quantity': participant.value.original_ticket_quantity,
           'order.entrance_activity_history': updatedHistory,
           'order.last_entrance_activity': timestamp
         })
 
-        participant.value.checked_in = false
+        sendReunionFrontGate(
+          `:ticket: ${participant.value.fullname} has checked out (self).\n:id: ${participant.value.id_code}\n:bust_in_silhouette: Operator: Self Check-Out`
+        )
+
+        participant.value.checked_in = newTicketQuantity > 0
+        participant.value.ticket_quantity = newTicketQuantity
         participant.value.entrance_activity_history = updatedHistory
+        participant.value.last_entrance_activity = timestamp
 
         resultMessage.value = `Thank you for visiting, ${participant.value.fullname}! Safe travels.`
         resultType.value = 'success'
