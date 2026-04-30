@@ -10,27 +10,36 @@
 
     <!-- Events List -->
     <div v-else class="events-list">
-      <ul v-if="events.length">
-        <li v-for="event in events" :key="event.id" class="event-item">
-          <!-- Iterate over all set times -->
-          <div v-for="(settime, index) in event.settimes" :key="index" class="event-time">
+      <template v-if="events.length">
+        <div
+          v-for="(item, idx) in flatSlots"
+          :key="item.id + '-' + (item.settimes && item.settimes[0])"
+          class="event-item"
+          :class="{ 'is-now': idx === currentSlotIndex }"
+        >
+          <!-- Red time line inside the current event -->
+          <div v-if="idx === currentSlotIndex" class="time-line">
+            <span class="time-line-label">NOW</span>
+          </div>
+
+          <!-- Single set time -->
+          <div class="event-time">
             <h3 class="set-time">
-              {{ formatTime(settime) }}
+              {{ formatTime(item.settimes[0]) }}
             </h3>
             <a
-              v-if="event.mix_track_url"
-              :href="event.mix_track_url"
+              v-if="item.mix_track_url"
+              :href="item.mix_track_url"
               target="_blank"
               rel="noopener noreferrer"
               class="mix-track-link"
             >
-              <!-- <img :src="music_icon" alt="Music" class="icon" /> -->
               LISTEN
               <img :src="listen_icon" alt="Listen" class="icon" />
             </a>
-            <p v-if="event.social_url">
+            <p v-if="item.social_url">
               <a
-                :href="event.social_url"
+                :href="item.social_url"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mix-track-link"
@@ -43,28 +52,40 @@
 
           <!-- Event Details -->
           <div class="event-details">
-            <h3 class="artist-name">
-              {{ event.act_name || event.workshop_title || 'Untitled Event' }}
-            </h3>
-            <p v-if="event.genre">Genre: {{ event.genre }}</p>
+            <div class="event-details-header">
+              <h3 class="artist-name">
+                {{ item.act_name || item.workshop_title || 'Untitled Event' }}
+              </h3>
+              <button
+                class="star-btn"
+                :class="{ starred: isStarred(slotKey(item)) }"
+                :aria-label="isStarred(slotKey(item)) ? 'Remove from My Schedule' : 'Add to My Schedule'"
+                @click="toggleStar(slotKey(item))"
+              >
+                {{ isStarred(slotKey(item)) ? '★' : '☆' }}
+              </button>
+            </div>
+            <p v-if="item.genre">Genre: {{ item.genre }}</p>
             <p>
               {{
-                event.act_description || event.workshop_description || 'No description available'
+                item.act_description || item.workshop_description || 'No description available'
               }}
             </p>
           </div>
-        </li>
-      </ul>
+        </div>
+      </template>
       <p v-else class="no-events">No events scheduled for this day.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-import music_icon from '@/assets/images/icons/artist.png'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import link_icon from '@/assets/images/icons/link.png'
 import listen_icon from '@/assets/images/icons/mix_track.png'
+import { useLineupState } from '@/composables/useLineupState'
+
+const { toggleStar, isStarred } = useLineupState()
 
 // Props
 const props = defineProps({
@@ -82,7 +103,61 @@ const props = defineProps({
   }
 })
 
-// Time formatting utility
+// ── Reactive clock for the time line ─────────────────────────────────────────
+const now = ref(Date.now())
+let clockInterval = null
+
+onMounted(() => {
+  clockInterval = setInterval(() => {
+    now.value = Date.now()
+  }, 60_000)
+})
+
+onUnmounted(() => {
+  clearInterval(clockInterval)
+})
+
+// ── Flatten: one slot per settime ────────────────────────────────────────────
+const flatSlots = computed(() => {
+  const slots = []
+  for (const event of props.events) {
+    for (const settime of event.settimes) {
+      slots.push({ ...event, settimes: [settime] })
+    }
+  }
+  slots.sort((a, b) => new Date(a.settimes[0]).getTime() - new Date(b.settimes[0]).getTime())
+  return slots
+})
+
+// ── Time line position ────────────────────────────────────────────────────────
+const timeLineInsertIndex = computed(() => {
+  if (!flatSlots.value.length) return -1
+
+  const firstStart = new Date(flatSlots.value[0].settimes[0]).getTime()
+  const lastStart = new Date(flatSlots.value[flatSlots.value.length - 1].settimes[0]).getTime()
+  const dayEnd = lastStart + 90 * 60 * 1000
+
+  if (now.value < firstStart || now.value >= dayEnd) return -1
+
+  let insertAfter = -1
+  for (let i = 0; i < flatSlots.value.length; i++) {
+    const start = new Date(flatSlots.value[i].settimes[0]).getTime()
+    if (start <= now.value) {
+      insertAfter = i
+    } else {
+      break
+    }
+  }
+  return insertAfter
+})
+
+// ── Current slot index (which event card gets the inline time line) ───────────────────────────
+const currentSlotIndex = computed(() => timeLineInsertIndex.value)
+
+// ── Per-slot unique key used for starring ─────────────────────────────────────
+const slotKey = (item) => `${item.id}::${item.settimes[0]}`
+
+// ── Time formatting ───────────────────────────────────────────────────────────
 const formatTime = (timestamp) => {
   if (!timestamp) return 'TBA'
   const date = new Date(timestamp)
@@ -121,6 +196,7 @@ const formatTime = (timestamp) => {
 }
 
 .event-item {
+  position: relative;
   display: grid;
   grid-template-columns: 2fr 3fr;
   gap: 0.3rem;
@@ -129,6 +205,64 @@ const formatTime = (timestamp) => {
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
   border-radius: 10px;
+}
+
+.time-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.time-line::before {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: #e53935;
+  box-shadow: 0 0 6px rgba(229, 57, 53, 0.7);
+}
+
+.time-line-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #e53935;
+  padding: 0 6px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.time-line::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: #e53935;
+  box-shadow: 0 0 6px rgba(229, 57, 53, 0.7);
+}
+
+.event-details-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #fff;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.star-btn.starred {
+  color: #f5c518;
 }
 
 .event-time {
