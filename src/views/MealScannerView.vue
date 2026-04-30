@@ -380,6 +380,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
+import { sendReunionFood } from '/scripts/notifications.js'
 
 export default {
   components: {
@@ -606,6 +607,10 @@ export default {
           order.meal_tickets_remaining = newMealTickets
           order.last_meal_redemption = redemptionTime
           order.meal_redemption_history = updatedRedemptions
+
+          sendReunionFood(
+            `:fork_and_knife: ${order.fullname} redeemed 1 meal ticket.\n:id: ${order.id_code}\n:ticket: Remaining: ${newMealTickets}\n:bust_in_silhouette: Operator: ${this.operatorFullName || this.operatorIdCode}`
+          )
 
           console.log(`Meal ticket redeemed for ${order.fullname}. Remaining: ${newMealTickets}`)
           console.log('Redemption history:', updatedRedemptions)

@@ -139,6 +139,7 @@ import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs, query, where } from 'firebase/firestore'
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
+import { sendReunionFood } from '/scripts/notifications.js'
 
 export default {
   name: 'SelfMealServiceView',
@@ -190,20 +191,27 @@ export default {
       }
 
       try {
-        const q = query(
-          collection(reunion_db, 'participants_2026'),
-          where('id_code', '==', idCode.value.toLowerCase().trim())
+        const searchValue = idCode.value.toLowerCase().trim()
+        // Try short id_code first (manual entry), then id_code_long (QR scan)
+        let querySnapshot = await getDocs(
+          query(collection(reunion_db, 'participants_2026'), where('id_code', '==', searchValue))
         )
-        const querySnapshot = await getDocs(q)
+        if (querySnapshot.empty) {
+          querySnapshot = await getDocs(
+            query(collection(reunion_db, 'participants_2026'), where('id_code_long', '==', searchValue))
+          )
+        }
 
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
           participant.value = {
             id_code: p.id_code,
+            id_code_long: p.id_code_long,
             fullname: p.contact?.fullname || '',
             ticket_type: p.order?.ticket_type || '',
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            meal_redemption_history: p.order?.meal_redemption_history || []
+            meal_redemption_history: p.order?.meal_redemption_history || [],
+            last_meal_redemption: p.order?.last_meal_redemption || null
           }
         } else {
           participant.value = null
@@ -245,6 +253,10 @@ export default {
 
         participant.value.meal_tickets_remaining = newMealTickets
         participant.value.meal_redemption_history = updatedHistory
+
+        sendReunionFood(
+          `:fork_and_knife: ${participant.value.fullname} redeemed 1 meal ticket (self).\n:id: ${participant.value.id_code}\n:ticket: Remaining: ${newMealTickets}\n:bust_in_silhouette: Operator: Self Meal Service`
+        )
 
         resultMessage.value = `Meal ticket redeemed successfully! ${newMealTickets} tickets remaining.`
         resultType.value = 'success'

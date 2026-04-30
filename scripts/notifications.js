@@ -109,6 +109,42 @@ export const sendReunionFrontGate = async (message) => {
   }
 };
 
+export const sendReunionFood = async (message) => {
+  if (!message) {
+    alert('Message is required.');
+    return;
+  }
+
+  const payload = {
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: message
+        }
+      }
+    ]
+  };
+
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+
+  console.log('Sending payload:', JSON.stringify(payload)); // Add logging for debugging
+
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/reunion_food',
+      payload,
+      { headers }
+    );
+    console.log('Response data:', response.data); // Log the response data for debugging
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+  }
+}
+
 export const sendReunionApplications = async (message) => {
   if (!message) {
     alert('Message is required.');
