@@ -7,7 +7,6 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import bitcoin from '@/assets/images/icons/bitcoin.png'
 import campsite_parking from '@/assets/images/icons/campsite_parking.png'
 import meals from '@/assets/images/icons/meals.png'
-import ticket from '@/assets/images/icons/ticket.png'
 import kitchen from '@/assets/images/icons/kitchen.png'
 import paw from '@/assets/images/icons/paw.png'
 import playground from '@/assets/images/icons/playground.png'
@@ -21,6 +20,13 @@ import target from '@/assets/images/icons/target.png'
 import ticket_scanner from '@/assets/images/icons/ticket_scanner.png'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import arcade from '@/assets/images/icons/arcade.png'
+import quiz from '@/assets/images/icons/quiz.png'
+import grounds_map from '@/assets/images/icons/grounds_map.png'
+import lineup from '@/assets/images/icons/lineup.png'
+import front_gate from '@/assets/images/icons/front_gate.png'
+import radio from '@/assets/images/icons/radio.png'
+import workshop from '@/assets/images/icons/workshop.png'
+import art_installation from '@/assets/images/icons/art_installation.png'
 import { analyticsMixin } from '@/mixins/analytics.js'
 
 export default {
@@ -34,22 +40,30 @@ export default {
     return {
       reunion_emblem: reunion_emblem,
       frogImage: FrogImage,
-      bitcoin: bitcoin,
-      campsite_parking: campsite_parking,
-      meals: meals,
-      ticket: ticket,
-      kitchen: kitchen,
-      paw: paw,
-      playground: playground,
-      pool: pool,
-      potable_water: potable_water,
-      projector: projector,
-      quiet: quiet,
-      showers: showers,
-      speakers: speakers,
-      target: target,
-      ticket_scanner: ticket_scanner,
-      arcade: arcade
+      amenities: [
+        { icon: ticket_scanner, label: 'In house ticketing system' },
+        { icon: front_gate, label: 'Self check-in kiosk' },
+        { icon: meals, label: 'Self-serve meal redemption kiosk' },
+        { icon: grounds_map, label: 'Interactive grounds map' },
+        { icon: lineup, label: 'Interactive lineup & personal schedule' },
+        { icon: quiz, label: 'Scavenger hunt — win Bitcoin!' },
+        { icon: radio, label: 'Festival FM radio broadcast' },
+        { icon: workshop, label: 'Live workshops' },
+        { icon: art_installation, label: 'Art installations' },
+        { icon: campsite_parking, label: 'Campsite parking' },
+        { icon: potable_water, label: 'Potable water on site' },
+        { icon: bitcoin, label: 'Bitcoin and Lightning accepted' },
+        { icon: kitchen, label: 'Shared kitchen available' },
+        { icon: quiet, label: 'Quiet family camping area' },
+        { icon: showers, label: 'Warm showers available' },
+        { icon: speakers, label: 'Custom sound system' },
+        { icon: projector, label: 'Projection mapped visuals' },
+        { icon: pool, label: 'Wading pool to cool off' },
+        { icon: playground, label: "Children's Playground" },
+        { icon: target, label: 'Nerf gun battle arena' },
+        { icon: arcade, label: 'Retro video game arcade' },
+        { icon: paw, label: 'Leave pets at home.' },
+      ]
     }
   },
   mounted() {
@@ -75,69 +89,9 @@ export default {
     </h1>
     <h2>AMENITIES & INFO:</h2>
     <div class="amenities">
-      <div class="amenity">
-        <img :src="ticket_scanner" alt="ticket_scanner" class="amenity-icon" />
-        <span>In house ticketing system‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="campsite_parking" alt="campsite_parking" class="amenity-icon" />
-        <span>Campsite‍ parking</span>
-      </div>
-      <div class="amenity">
-        <img :src="meals" alt="meals" class="amenity-icon" />
-        <span>Meals available on site‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="potable_water" alt="potable_water" class="amenity-icon" />
-        <span>Potable water available on site‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="ticket" alt="target" class="amenity-icon" />
-        <span>Scannable meal tickets</span>
-      </div>
-      <div class="amenity">
-        <img :src="bitcoin" alt="bitcoin" class="amenity-icon" />
-        <span>Bitcoin and Lightning accepted</span>
-      </div>
-      <div class="amenity">
-        <img :src="kitchen" alt="kitchen" class="amenity-icon" />
-        <span>Shared kitchen available‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="quiet" alt="quiet" class="amenity-icon" />
-        <span>Quiet family camping area‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="showers" alt="showers" class="amenity-icon" />
-        <span>Warm showers available‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="speakers" alt="speakers" class="amenity-icon" />
-        <span>Custom sound system‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="projector" alt="projector" class="amenity-icon" />
-        <span>Projection mapped visuals‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="pool" alt="pool" class="amenity-icon" />
-        <span>Wading pool‍ to cool off</span>
-      </div>
-      <div class="amenity">
-        <img :src="playground" alt="playground" class="amenity-icon" />
-        <span>Children's Playground‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="target" alt="target" class="amenity-icon" />
-        <span>Nerf gun battle arena‍</span>
-      </div>
-      <div class="amenity">
-        <img :src="arcade" alt="arcade" class="amenity-icon" />
-        <span>Retro video game arcade</span>
-      </div>
-      <div class="amenity">
-        <img :src="paw" alt="paw" class="amenity-icon" />
-        <span>Leave pets at home.</span>
+      <div v-for="item in amenities" :key="item.label" class="amenity">
+        <img :src="item.icon" :alt="item.label" class="amenity-icon" />
+        <span>{{ item.label }}</span>
       </div>
     </div>
     <DetailsPanel>
@@ -181,26 +135,56 @@ img {
 }
 
 .amenities {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin: 2rem 0;
+  width: 100%;
+  max-width: 900px;
+}
+
+@media (min-width: 480px) {
+  .amenities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .amenities {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .amenity {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  padding: 1.2rem 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.amenity:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.amenity span {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  opacity: 0.9;
 }
 
 .amenity-icon {
-  height: auto;
-  width: 64px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 @media (min-width: 1024px) {
   .basic {
