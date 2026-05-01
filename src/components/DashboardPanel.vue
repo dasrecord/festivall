@@ -114,6 +114,7 @@
       <div class="export-buttons">
         <button @click="exportContactsCSV">Export Phone Numbers</button>
         <button @click="exportEmailsCSV">Export Emails</button>
+        <button @click="exportLineupNames">Export Lineup Names</button>
         <button @click="exportMealRedemptionData">Export Meal Service Data</button>
         <button @click="exportEntranceActivityData">Export Entrance Activity Data</button>
         <!-- <button @click="generateLineup">Download .ics</button> -->
@@ -1043,6 +1044,32 @@ export default {
       URL.revokeObjectURL(url)
     }
 
+    const exportLineupNames = () => {
+      const actNames = searchedApplicants.value
+        .map((a) => a.act_name)
+        .filter(Boolean)
+
+      const workshopTitles = searchedApplicants.value
+        .map((a) => a.workshop_title)
+        .filter(Boolean)
+
+      const lines = [...actNames, ...workshopTitles]
+
+      if (lines.length === 0) {
+        alert('No act names or workshop titles in current view.')
+        return
+      }
+
+      const content = lines.join('\n')
+      const blob = new Blob([content], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `lineup_names_${new Date().toISOString().split('T')[0]}.txt`
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+
     const exportContactsCSV = () => {
       const csvContent = [
         ...searchedApplicants.value
@@ -1606,6 +1633,7 @@ export default {
       generateLineup,
       exportContactsCSV,
       exportEmailsCSV,
+      exportLineupNames,
       generateContract,
       remindContract,
       remindPayment,
