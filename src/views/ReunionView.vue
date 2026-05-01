@@ -15,7 +15,7 @@
     </div>
 
     <h2>
-      SEPT 4th - SEPT 7th 2026 <br />
+      {{ festivalDateRange }} <br />
       30 min from Saskatoon <br /><br />
       MUSIC - DANCING - CAMPING‍ <br />
       FAMILY - FRIENDS - FOOD‍ <br /><br />
@@ -81,6 +81,7 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import { RouterLink } from 'vue-router'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase.js'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   components: {
@@ -93,22 +94,31 @@ export default {
     return {
       frogImage: frog_image,
       reunion_emblem: reunion_emblem,
-      bitcoin_icon: bitcoin_icon
+      bitcoin_icon: bitcoin_icon,
+      festival: REUNION_FESTIVAL
+    }
+  },
+  computed: {
+    festivalDateRange() {
+      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEPT','OCT','NOV','DEC']
+      const month = months[this.festival.month - 1]
+      const ord = (n) => { const s = ['th','st','nd','rd']; const v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]) }
+      return `${month} ${ord(this.festival.day)} - ${month} ${ord(this.festival.endDay)} ${this.festival.year}`
     }
   },
   mounted() {
     // Track page view with Firebase
     logEvent(reunion_analytics, 'page_view', {
-      page_title: 'Reunion Festival 2025',
+      page_title: 'Reunion Festival 2026',
       page_location: window.location.href
     })
 
     // Track page view with Facebook Pixel
     if (typeof fbq !== 'undefined') {
       fbq('track', 'ViewContent', {
-        content_name: 'Reunion Festival 2025',
+        content_name: 'Reunion Festival 2026',
         content_category: 'Festival',
-        content_ids: ['reunion2025'],
+        content_ids: ['reunion2026'],
         content_type: 'product'
       })
     }
@@ -117,7 +127,7 @@ export default {
     trackVideoLoad() {
       // Firebase tracking
       logEvent(reunion_analytics, 'video_start', {
-        video_title: 'Reunion Festival 2025 Promo',
+        video_title: 'Reunion Festival 2026 Promo',
         video_url: 'https://www.youtube.com/embed/xibNU7F_RKQ'
       })
 
