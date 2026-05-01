@@ -1,6 +1,6 @@
 <template>
   <div class="basic">
-    <CountdownTimer :targetYear="2026" :targetMonth="9" :targetDay="4" />
+    <CountdownTimer />
 
     <div class="title">
       <img

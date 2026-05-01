@@ -61,7 +61,7 @@ export default {
 
 <template>
   <div class="basic">
-    <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
+    <CountdownTimer />
     <h1>
       <img
         :src="reunion_emblem"

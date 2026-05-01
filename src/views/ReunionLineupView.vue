@@ -64,6 +64,7 @@ import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
 import { useLineupState } from '@/composables/useLineupState'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 const { isStarred, updateCurrentAct } = useLineupState()
 
@@ -163,10 +164,10 @@ const getEventsByDay = (targetDate) => {
     })
 }
 
-const getFridayEvents = computed(() => getEventsByDay(new Date('2026-09-04T12:00:00-06:00')))
-const getSaturdayEvents = computed(() => getEventsByDay(new Date('2026-09-05T12:00:00-06:00')))
-const getSundayEvents = computed(() => getEventsByDay(new Date('2026-09-06T12:00:00-06:00')))
-const getMondayEvents = computed(() => getEventsByDay(new Date('2026-09-07T12:00:00-06:00')))
+const getFridayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.fridayDate))
+const getSaturdayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.saturdayDate))
+const getSundayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.sundayDate))
+const getMondayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.mondayDate))
 
 // ── My Schedule ───────────────────────────────────────────────────────────────
 const myScheduleOpen = ref(false)
