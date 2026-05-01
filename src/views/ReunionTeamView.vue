@@ -109,7 +109,7 @@ export default {
 </script>
 <template>
   <div class="basic">
-    <CountdownTimer :targetYear="2025" :targetMonth="8" :targetDay="29" />
+    <CountdownTimer />
     <img
       :src="reunion_emblem"
       alt="reunion"
@@ -267,8 +267,7 @@ export default {
           />
         </template>
       </TeamCard>
-
-      <TeamCard>
+      <!-- <TeamCard>
         <template v-slot:headshot>
           <img :src="Caitlin" alt="Caitlin" />
         </template>
@@ -286,7 +285,7 @@ export default {
             style="width: 75px; border-radius: 0; border-radius: 0"
           />
         </template>
-      </TeamCard>
+      </TeamCard> -->
       <TeamCard>
         <template v-slot:headshot>
           <img :src="Brandon_and_Liam" alt="Brandon_and_Liam" />
@@ -327,7 +326,7 @@ export default {
           <img :src="community_icon" alt="Community Icon" style="width: 75px; border-radius: 0" />
         </template>
       </TeamCard> -->
-      <TeamCard>
+      <!-- <TeamCard>
         <template v-slot:headshot>
           <img :src="Cory" alt="Cory" />
         </template>
@@ -348,8 +347,8 @@ export default {
             style="width: 75px; border-radius: 0; border-radius: 0"
           />
         </template>
-      </TeamCard>
-      <TeamCard>
+      </TeamCard> -->
+      <!-- <TeamCard>
         <template v-slot:headshot>
           <img :src="Becca" alt="Becca" />
         </template>
@@ -363,7 +362,7 @@ export default {
         <template v-slot:icon>
           <img :src="graphics_icon" alt="Graphics Icon" style="width: 75px; border-radius: 0" />
         </template>
-      </TeamCard>
+      </TeamCard> -->
       <TeamCard>
         <template v-slot:headshot>
           <img :src="Nish" alt="Nish" />

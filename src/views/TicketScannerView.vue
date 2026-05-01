@@ -418,6 +418,7 @@ import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFrontGate } from '/scripts/notifications.js'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import artist_icon from '@/assets/images/icons/artist.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
@@ -762,7 +763,7 @@ export default {
     },
     getFestivalDay(timestamp) {
       const activityDate = new Date(timestamp)
-      const festivalStart = new Date('2025-08-29T12:00:00') // Friday Aug 29, 12:00 PM
+      const festivalStart = REUNION_FESTIVAL.startDate
       const daysDiff = Math.floor((activityDate - festivalStart) / (1000 * 60 * 60 * 24))
 
       if (daysDiff < 0) return 'Pre-Festival'

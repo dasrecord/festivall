@@ -16,19 +16,21 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+
 export default {
   props: {
     targetYear: {
       type: Number,
-      required: true
+      default: () => REUNION_FESTIVAL.year
     },
     targetMonth: {
       type: Number,
-      required: true
+      default: () => REUNION_FESTIVAL.month
     },
     targetDay: {
       type: Number,
-      required: true
+      default: () => REUNION_FESTIVAL.day
     }
   },
   data() {

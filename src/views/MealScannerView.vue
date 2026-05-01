@@ -380,6 +380,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   components: {
@@ -621,7 +622,7 @@ export default {
     },
     getFestivalDay(timestamp) {
       const redemptionDate = new Date(timestamp)
-      const festivalStart = new Date('2026-09-04T12:00:00') // Friday Sept 4, 12:00 PM
+      const festivalStart = REUNION_FESTIVAL.startDate
       const daysDiff = Math.floor((redemptionDate - festivalStart) / (1000 * 60 * 60 * 24))
 
       if (daysDiff < 0) return 'Pre-Festival'

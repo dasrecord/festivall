@@ -116,6 +116,7 @@ import { reunion_db } from '@/firebase'
 import { collection, doc, updateDoc, getDocs, query, where } from 'firebase/firestore'
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   name: 'SelfCheckInView',
@@ -276,7 +277,7 @@ export default {
 
     const getFestivalDay = (timestamp) => {
       const date = new Date(timestamp)
-      const festivalStart = new Date('2026-09-04T12:00:00')
+      const festivalStart = REUNION_FESTIVAL.startDate
       const daysDiff = Math.floor((date - festivalStart) / (1000 * 60 * 60 * 24))
 
       if (daysDiff < 0) return 'Pre-Festival'

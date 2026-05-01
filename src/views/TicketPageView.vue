@@ -4,14 +4,9 @@
 
     <CountdownTimer
       v-if="order.ticket_type === 'Weekend Pass'"
-      :targetYear="2026"
-      :targetMonth="8"
-      :targetDay="29"
     />
     <CountdownTimer
       v-if="order.ticket_type === 'Day Pass'"
-      :targetYear="2026"
-      :targetMonth="8"
       :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
     />
     <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
@@ -669,7 +664,7 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= new Date(2026, 7, 1)" to="/reunionlineup">
+        <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
             2026 Lineup<br />Look & Listen!<br />
@@ -683,7 +678,7 @@
         </RouterLink>
 
         <RouterLink
-          v-if="new Date() >= new Date(2026, 8, 4, 12, 0, 0)"
+          v-if="new Date() >= REUNION_FESTIVAL.festivalOpenDate"
           :to="{
             name: 'ScavengerHunt',
             params: { id_code: order.id_code },
@@ -741,6 +736,7 @@ import quiz_icon from '@/assets/images/icons/quiz.png'
 import radio_icon from '@/assets/images/icons/radio.png'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useLineupState } from '@/composables/useLineupState'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   name: 'TicketPageView',
@@ -1038,7 +1034,8 @@ export default {
       lineup_icon,
       quiz_icon,
       currentAct,
-      radio_icon
+      radio_icon,
+      REUNION_FESTIVAL
     }
   }
 }
