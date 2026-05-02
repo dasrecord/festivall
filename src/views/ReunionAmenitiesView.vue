@@ -46,20 +46,20 @@ export default {
         // Arrival & tech
         { icon: ticket_scanner, label: 'In house ticketing system' },
         { icon: front_gate, label: 'Self check-in kiosk' },
-        { icon: lineup, label: 'Interactive lineup & personal schedule' },
-        { icon: grounds_map, label: 'Interactive grounds map' },
+        { icon: lineup, label: 'Customize schedule' },
+        { icon: grounds_map, label: 'Detailed grounds map' },
         { icon: sms, label: 'Text notifications' },
         // Music & vibes
         { icon: speakers, label: 'Custom sound system' },
         { icon: radio, label: 'Festival FM radio broadcast' },
         { icon: projector, label: 'Projection mapped visuals' },
         // Food
-        { icon: meals, label: 'Self-serve meal redemption kiosk' },
+        { icon: meals, label: 'Self-serve meal kiosk' },
         { icon: kitchen, label: 'Shared kitchen available' },
         { icon: potable_water, label: 'Potable water on site' },
         { icon: bitcoin, label: 'Bitcoin and Lightning accepted' },
         // Activities
-        { icon: quiz, label: 'Scavenger hunt — win Bitcoin!' },
+        { icon: quiz, label: 'Scavenger hunt' },
         { icon: photography, label: 'Interactive photo booth' },
         { icon: workshop, label: 'Live workshops' },
         { icon: art_installation, label: 'Art installations' },
@@ -69,10 +69,10 @@ export default {
         { icon: campsite_parking, label: 'Campsite parking' },
         { icon: showers, label: 'Warm showers available' },
         { icon: pool, label: 'Wading pool to cool off' },
-        { icon: playground, label: "Children's Playground" },
+        { icon: playground, label: "Children's playground" },
         { icon: quiet, label: 'Quiet family camping area' },
         // Rules
-        { icon: paw, label: 'Leave pets at home.' },
+        { icon: paw, label: 'Leave pets at home' },
       ]
     }
   },
