@@ -27,6 +27,8 @@ import front_gate from '@/assets/images/icons/front_gate.png'
 import radio from '@/assets/images/icons/radio.png'
 import workshop from '@/assets/images/icons/workshop.png'
 import art_installation from '@/assets/images/icons/art_installation.png'
+import sms from '@/assets/images/icons/sms.png'
+import photography from '@/assets/images/icons/photography.png'
 import { analyticsMixin } from '@/mixins/analytics.js'
 
 export default {
@@ -41,27 +43,35 @@ export default {
       reunion_emblem: reunion_emblem,
       frogImage: FrogImage,
       amenities: [
+        // Arrival & tech
         { icon: ticket_scanner, label: 'In house ticketing system' },
         { icon: front_gate, label: 'Self check-in kiosk' },
-        { icon: meals, label: 'Self-serve meal redemption kiosk' },
-        { icon: grounds_map, label: 'Interactive grounds map' },
         { icon: lineup, label: 'Interactive lineup & personal schedule' },
-        { icon: quiz, label: 'Scavenger hunt — win Bitcoin!' },
+        { icon: grounds_map, label: 'Interactive grounds map' },
+        { icon: sms, label: 'Text notifications' },
+        // Music & vibes
+        { icon: speakers, label: 'Custom sound system' },
         { icon: radio, label: 'Festival FM radio broadcast' },
-        { icon: workshop, label: 'Live workshops' },
-        { icon: art_installation, label: 'Art installations' },
-        { icon: campsite_parking, label: 'Campsite parking' },
+        { icon: projector, label: 'Projection mapped visuals' },
+        // Food
+        { icon: meals, label: 'Self-serve meal redemption kiosk' },
+        { icon: kitchen, label: 'Shared kitchen available' },
         { icon: potable_water, label: 'Potable water on site' },
         { icon: bitcoin, label: 'Bitcoin and Lightning accepted' },
-        { icon: kitchen, label: 'Shared kitchen available' },
-        { icon: quiet, label: 'Quiet family camping area' },
+        // Activities
+        { icon: quiz, label: 'Scavenger hunt — win Bitcoin!' },
+        { icon: photography, label: 'Interactive photo booth' },
+        { icon: workshop, label: 'Live workshops' },
+        { icon: art_installation, label: 'Art installations' },
+        { icon: arcade, label: 'Retro video game arcade' },
+        { icon: target, label: 'Nerf gun battle arena' },
+        // Site & comfort
+        { icon: campsite_parking, label: 'Campsite parking' },
         { icon: showers, label: 'Warm showers available' },
-        { icon: speakers, label: 'Custom sound system' },
-        { icon: projector, label: 'Projection mapped visuals' },
         { icon: pool, label: 'Wading pool to cool off' },
         { icon: playground, label: "Children's Playground" },
-        { icon: target, label: 'Nerf gun battle arena' },
-        { icon: arcade, label: 'Retro video game arcade' },
+        { icon: quiet, label: 'Quiet family camping area' },
+        // Rules
         { icon: paw, label: 'Leave pets at home.' },
       ]
     }
