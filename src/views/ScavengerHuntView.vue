@@ -1,7 +1,29 @@
 <template>
   <div class="form-container" :style="{ backgroundImage: `url(${backgroundImage})` }">
+    <!-- Difficulty Selector -->
+    <div class="form-slide" :class="{ active: difficulty === null, previous: difficulty !== null }">
+      <div class="difficulty-selector">
+        <h1>Reunion<br>Scavenger Hunt</h1>
+        <p class="selector-subtitle">Choose your path</p>
+        <div class="difficulty-options">
+          <div class="difficulty-option junior" @click="selectDifficulty('junior')">
+            <span class="diff-icon">🧒</span>
+            <h2>Junior</h2>
+            <p>12 challenges</p>
+            <p>For the young adventurers</p>
+          </div>
+          <div class="difficulty-option senior" @click="selectDifficulty('senior')">
+            <span class="diff-icon">🎓</span>
+            <h2>Senior</h2>
+            <p>21 DIFFICULT challenges</p>
+            <p class="diff-prize">⚡ Bitcoin prizes for top 5</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Quick Navigation -->
-    <div class="quick-nav" v-if="currentQuestion !== 'score'">
+    <div class="quick-nav" v-if="difficulty !== null && currentQuestion !== 'score'">
       <div class="nav-dots">
         <span
           v-for="(question, index) in questions"
@@ -23,58 +45,60 @@
     </div>
 
     <!-- Question Slides -->
-    <div
-      class="form-slide"
-      v-for="(question, index) in questions"
-      :key="index"
-      :class="{
-        active: currentQuestion === index,
-        previous: currentQuestion > index,
-        next: currentQuestion < index
-      }"
-    >
-      <div class="question">
-        <img v-if="question.icon" :src="question.icon" alt="Category Icon" class="category-icon" />
+    <template v-if="difficulty !== null">
+      <div
+        class="form-slide"
+        v-for="(question, index) in questions"
+        :key="index"
+        :class="{
+          active: currentQuestion === index,
+          previous: currentQuestion > index,
+          next: currentQuestion < index
+        }"
+      >
+        <div class="question">
+          <img v-if="question.icon" :src="question.icon" alt="Category Icon" class="category-icon" />
 
-        <h1 v-html="formatText(question.category)"></h1>
-        <h2 v-html="formatText(question.text)"></h2>
-        <img v-if="question.image" :src="question.image" alt="Question Image" />
-        <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
+          <h1 v-html="formatText(question.category)"></h1>
+          <h2 v-html="formatText(question.text)"></h2>
+          <img v-if="question.image" :src="question.image" alt="Question Image" />
+          <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
 
-        <!-- Input for answers -->
-        <input
-          v-if="question.type === 'text'"
-          type="text"
-          v-model="answers[index]"
-          @blur="checkAnswer(index)"
-          @keyup.enter="checkAnswer(index)"
-          placeholder="Type your answer here..."
-        />
+          <!-- Input for answers -->
+          <input
+            v-if="question.type === 'text'"
+            type="text"
+            v-model="answers[index]"
+            @blur="checkAnswer(index)"
+            @keyup.enter="checkAnswer(index)"
+            placeholder="Type your answer here..."
+          />
 
-        <!-- Feedback for correct/incorrect answers -->
-        <p
-          v-if="feedback[index]"
-          :class="{
-            correct: feedback[index] === 'correct',
-            incorrect: feedback[index] === 'incorrect'
-          }"
-        >
-          {{ feedback[index] === 'correct' ? 'Correct!' : 'Incorrect.' }}
-        </p>
-
-        <!-- Navigation buttons -->
-        <div class="controls">
-          <button v-if="index > 0" @click="prevQuestion">Previous</button>
-          <p v-if="index > 0 && question.type === 'text'">
-            {{ getQuestionNumber(index) }}/{{ countScoredQuestions() }}
+          <!-- Feedback for correct/incorrect answers -->
+          <p
+            v-if="feedback[index]"
+            :class="{
+              correct: feedback[index] === 'correct',
+              incorrect: feedback[index] === 'incorrect'
+            }"
+          >
+            {{ feedback[index] === 'correct' ? 'Correct!' : 'Incorrect.' }}
           </p>
-          <button v-if="index < questions.length - 1" @click="nextQuestion">
-            {{ question.type === 'information' ? 'Begin' : 'Next' }}
-          </button>
-          <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
+
+          <!-- Navigation buttons -->
+          <div class="controls">
+            <button v-if="index > 0" @click="prevQuestion">Previous</button>
+            <p v-if="index > 0 && question.type === 'text'">
+              {{ getQuestionNumber(index) }}/{{ countScoredQuestions() }}
+            </p>
+            <button v-if="index < questions.length - 1" @click="nextQuestion">
+              {{ question.type === 'information' ? 'Begin' : 'Next' }}
+            </button>
+            <button v-if="index === questions.length - 1" @click="showScoreSlide">Finish</button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
 
     <!-- Score Slide -->
     <div
@@ -83,9 +107,15 @@
       v-if="currentQuestion === 'score'"
     >
       <div class="score">
-        <h2>Great job, {{ fullName }}!</h2>
+        <h2>{{ difficulty === 'senior' ? '🏆' : '⭐' }} Great job, {{ fullName }}!</h2>
         <h3>Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
-        <button @click="restartHunt">Go Back</button>
+        <p v-if="difficulty === 'senior'" class="score-prize-note">
+          Top 5 scores win Bitcoin. Submit to enter!
+        </p>
+        <p v-else class="score-junior-note">
+          Amazing effort! You crushed it! 🎉
+        </p>
+        <button @click="restartHunt">Change Mode</button>
         <button @click="sendScore">Submit Score</button>
       </div>
     </div>
@@ -107,7 +137,8 @@ export default {
   props: ['id_code', 'fullName'],
   data() {
     return {
-      currentQuestion: 0, // Tracks the current slide (index or 'score')
+      difficulty: null, // null | 'junior' | 'senior'
+      currentQuestion: 0,
       backgroundImage: faded_frog,
       chess_1: chess_1,
       binary: binary,
@@ -117,11 +148,111 @@ export default {
       sequence: sequence,
       puzzle: puzzle,
 
-      questions: [
+      // ── JUNIOR question set (12 scored questions) ────────────────────────
+      questionsJunior: [
         {
-          text: `Welcome!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`,
+          text: 'Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 12 fun challenges and find magic words hidden around the festival!',
           type: 'information',
-          category: 'Reunion\nScavenger Hunt'
+          category: 'Junior\nScavenger Hunt'
+        },
+        {
+          text: 'What colour do you get when you mix red and blue?',
+          answer: 'purple',
+          type: 'text',
+          category: 'Trivia',
+          icon: trivia
+        },
+        {
+          text: 'How many legs does a spider have?',
+          answer: '8',
+          type: 'text',
+          category: 'Trivia',
+          icon: trivia
+        },
+        {
+          text: "I have hands but I can't clap. What am I?",
+          answer: 'clock',
+          type: 'text',
+          category: 'Riddle',
+          icon: riddle
+        },
+        {
+          text: 'What is the next number?\n2, 4, 6, 8, ?',
+          answer: '10',
+          type: 'text',
+          category: 'Sequence',
+          icon: sequence
+        },
+        {
+          text: 'Find the Guardian of the Flame and ask for his magic item.',
+          answer: 'lighter',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: 'What is a baby dog called?',
+          answer: 'puppy',
+          type: 'text',
+          category: 'Trivia',
+          icon: trivia
+        },
+        {
+          text: 'Visit the main stage and look for the secret symbol.',
+          answer: 'star',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          // UPDATE: set `answer` to the magic word printed inside the Junior flipbook
+          text: 'Go to the Flipbook Station for your next clue.',
+          answer: 'motion',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: 'What do caterpillars turn into?',
+          answer: 'butterfly',
+          type: 'text',
+          category: 'Trivia',
+          icon: trivia
+        },
+        {
+          text: "I'm tall when I'm young and short when I'm old. What am I?",
+          answer: 'candle',
+          type: 'text',
+          category: 'Riddle',
+          icon: riddle
+        },
+        {
+          text: "Find one of our Children's Coordinators and ask for the magic word.",
+          answer: 'friendship',
+          type: 'text',
+          category: 'Quest',
+          icon: quest
+        },
+        {
+          text: 'What is 4 × 3?',
+          answer: '12',
+          type: 'text',
+          category: 'Puzzle',
+          icon: puzzle
+        },
+        {
+          text: "Amazing work, __NAME__!\n You finished the Junior Hunt!\n You're a superstar! 🌟",
+          type: 'information',
+          category: 'Congratulations!'
+        }
+      ],
+
+      // ── SENIOR question set (21 scored questions) ────────────────────────
+      questionsSenior: [
+        {
+          text: 'Welcome, __NAME__.\n This is HARD.\n 21 brain-bending challenges stand between you and the leaderboard.\n The top 5 scores win Bitcoin.\n Think you\'re up for it?',
+          type: 'information',
+          category: 'Senior\nScavenger Hunt'
         },
         {
           text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
@@ -175,14 +306,14 @@ export default {
           icon: sequence
         },
         {
-          text: 'For this quest go to the Cote Corral look for the magic word.',
+          text: 'For this quest go to the Cote Corral and look for the magic word.',
           answer: 'victory',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the the binary number 101010?',
+          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 101010?',
           image: binary,
           answer: '42',
           type: 'text',
@@ -274,43 +405,68 @@ export default {
           icon: trivia
         },
         {
-          text: 'Locate our Food Coordinator for your final clue.',
-          answer: 'garlic',
+          // UPDATE: set `answer` to the magic word printed inside the Senior flipbook
+          text: 'Go to the Flipbook Station for your next clue.',
+          answer: 'illusion',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: `Well done! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`,
+          text: "Well done, __NAME__.\n You've completed the Senior Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
           type: 'information',
           category: 'Congratulations!'
         }
       ],
-      answers: [], // Tracks user answers
-      feedback: [] // Tracks feedback for each question (correct/incorrect)
+
+      answers: [],
+      feedback: []
     }
   },
   computed: {
+    questions() {
+      const base =
+        this.difficulty === 'junior'
+          ? this.questionsJunior
+          : this.difficulty === 'senior'
+            ? this.questionsSenior
+            : []
+      if (!base.length) return base
+      const name = this.fullName || 'Guest'
+      const out = [...base]
+      out[0] = { ...out[0], text: out[0].text.replace('__NAME__', name) }
+      out[out.length - 1] = {
+        ...out[out.length - 1],
+        text: out[out.length - 1].text.replace('__NAME__', name)
+      }
+      return out
+    },
     progressKey() {
-      return `scavenger_hunt_progress_${this.id_code || 'anon'}`
+      return `scavenger_hunt_progress_${this.difficulty}_${this.id_code || 'anon'}`
     }
   },
   mounted() {
-    // Initialize arrays with proper length
-    this.answers = new Array(this.questions.length).fill('')
-    this.feedback = new Array(this.questions.length).fill(null)
-
-    // Update welcome message with fullName
-    this.questions[0].text = `Welcome ${this.fullName}!\n Get ready to test your wits against a combination of brainteasers and onsite quests.\n The top 5 scores at the end of the festival will be entered to win some bitcoin!`
-
-    // Update congratulations message with fullName
-    this.questions[this.questions.length - 1].text =
-      `Well done, ${this.fullName}! You have completed the scavenger hunt.\n If your score is in the top 5, you will be entered to win some bitcoin!\n\n Thank you for participating!`
-
-    // Load any saved progress from localStorage
-    this.loadProgress()
+    // Restore previously chosen difficulty — triggers watcher which loads saved progress
+    try {
+      const savedMode = window?.localStorage?.getItem(
+        `scavenger_hunt_mode_${this.id_code || 'anon'}`
+      )
+      if (savedMode === 'junior' || savedMode === 'senior') {
+        this.difficulty = savedMode
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
   },
   watch: {
+    difficulty(newVal) {
+      if (!newVal) return
+      const len = this.questions.length
+      this.answers = new Array(len).fill('')
+      this.feedback = new Array(len).fill(null)
+      this.currentQuestion = 0
+      this.loadProgress()
+    },
     answers: {
       deep: true,
       handler() {
@@ -328,7 +484,16 @@ export default {
     }
   },
   methods: {
+    selectDifficulty(mode) {
+      this.difficulty = mode
+      try {
+        window?.localStorage?.setItem(`scavenger_hunt_mode_${this.id_code || 'anon'}`, mode)
+      } catch (e) {
+        // ignore
+      }
+    },
     persistProgress() {
+      if (!this.difficulty) return
       try {
         const payload = {
           version: 1,
@@ -378,6 +543,7 @@ export default {
     clearProgress() {
       try {
         window?.localStorage?.removeItem(this.progressKey)
+        window?.localStorage?.removeItem(`scavenger_hunt_mode_${this.id_code || 'anon'}`)
       } catch (e) {
         // ignore
       }
@@ -393,24 +559,21 @@ export default {
       }
     },
     restartHunt() {
-      // Reset state and clear saved progress
       this.currentQuestion = 0
-      this.answers = new Array(this.questions.length).fill('')
-      this.feedback = new Array(this.questions.length).fill(null)
+      this.answers = []
+      this.feedback = []
       this.clearProgress()
+      this.difficulty = null
     },
     showScoreSlide() {
-      this.currentQuestion = 'score' // Switch to the score slide
+      this.currentQuestion = 'score'
     },
     checkAnswer(index) {
-      if (!this.questions[index].answer) {
-        // Skip checking for information type questions
+      if (!this.questions[index]?.answer) {
         return
       }
-
       const userAnswer = this.answers[index]?.trim().toLowerCase()
       const correctAnswer = this.questions[index].answer?.toLowerCase()
-
       if (userAnswer === correctAnswer) {
         this.feedback[index] = 'correct'
       } else {
@@ -419,14 +582,13 @@ export default {
     },
     calculateScore() {
       return this.feedback.filter(
-        (status, index) => status === 'correct' && this.questions[index].type === 'text'
+        (status, index) => status === 'correct' && this.questions[index]?.type === 'text'
       ).length
     },
     countScoredQuestions() {
       return this.questions.filter((question) => question.type === 'text').length
     },
     getQuestionNumber(currentIndex) {
-      // Count how many text-type questions come before the current index
       let count = 0
       for (let i = 0; i <= currentIndex; i++) {
         if (this.questions[i].type === 'text') {
@@ -436,23 +598,24 @@ export default {
       return count
     },
     goToQuestion(index) {
-      // Allow navigation to any question
       this.currentQuestion = index
     },
     async sendScore() {
       const score = this.calculateScore()
+      const total = this.countScoredQuestions()
+      const modeLabel =
+        this.difficulty === 'senior' ? ':mortar_board: *SENIOR*' : ':children_crossing: *JUNIOR*'
       const payload = {
         blocks: [
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:id: ${this.id_code}\n:ballot_box_with_check: ${score}/${this.countScoredQuestions()}`
+              text: `:id: ${this.id_code} | ${modeLabel}\n:ballot_box_with_check: ${score}/${total}`
             }
           }
         ]
       }
-
       try {
         const response = await fetch('https://relayproxy.vercel.app/festivall_notifications', {
           method: 'POST',
@@ -461,7 +624,6 @@ export default {
           },
           body: JSON.stringify(payload)
         })
-
         if (response.ok) {
           alert('Score submitted successfully!')
         } else {
@@ -723,6 +885,121 @@ button:disabled {
     padding-top: 10px;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+  background-color: rgba(0, 0, 0, 0.85);
+  padding: 2rem;
+  border-radius: 16px;
+  text-align: center;
+  width: 90%;
+  max-width: 600px;
+  color: white;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.difficulty-selector h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.selector-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.difficulty-options {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.difficulty-option {
+  flex: 1;
+  max-width: 220px;
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.difficulty-option:hover {
+  transform: scale(1.05);
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.difficulty-option.junior {
+  border-color: rgba(100, 220, 100, 0.5);
+}
+
+.difficulty-option.junior:hover {
+  border-color: limegreen;
+  background-color: rgba(50, 200, 50, 0.15);
+}
+
+.difficulty-option.senior {
+  border-color: rgba(5, 155, 250, 0.5);
+}
+
+.difficulty-option.senior:hover {
+  border-color: var(--festivall-baby-blue);
+  background-color: rgba(5, 155, 250, 0.15);
+}
+
+.diff-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.difficulty-option h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.difficulty-option p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0.25rem 0;
+}
+
+.diff-prize {
+  color: gold;
+  font-weight: bold;
+  opacity: 1 !important;
+}
+
+.score-prize-note {
+  color: gold;
+  font-weight: bold;
+  margin: 0.75rem 0 1.5rem;
+  font-size: 1rem;
+}
+
+.score-junior-note {
+  color: limegreen;
+  font-weight: bold;
+  margin: 0.75rem 0 1.5rem;
+  font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+  .difficulty-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .difficulty-option {
+    width: 100%;
+    max-width: 280px;
   }
 }
 </style>
