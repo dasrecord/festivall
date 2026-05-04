@@ -701,7 +701,7 @@ export default {
           query(
             collection(reunion_db, 'participants_2026'),
             orderBy('scavenger_hunt.score', 'desc'),
-            limit(50)
+            limit(20)
           )
         )
         const all = snap.docs.map((d) => d.data()).filter((d) => d.scavenger_hunt?.score != null)
