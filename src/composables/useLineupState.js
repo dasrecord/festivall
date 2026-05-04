@@ -69,6 +69,7 @@ function updateCurrentAct(allEvents) {
         act_name: event.act_name || '',
         workshop_title: event.workshop_title || '',
         genre: event.genre || '',
+        act_description: event.act_description || '',
         social_url: event.social_url || '',
         mix_track_url: event.mix_track_url || '',
         settime: start,

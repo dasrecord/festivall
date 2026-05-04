@@ -24,12 +24,18 @@
     <div class="main-stage">
       <!-- Toggle Buttons -->
       <div class="toggle-buttons">
+        <button v-if="isDev" class="today-btn" @click="toggleDay('today')">⚡ TODAY</button>
         <button @click="toggleDay('friday')">Friday</button>
         <button @click="toggleDay('saturday')">Saturday</button>
         <button @click="toggleDay('sunday')">Sunday</button>
         <button @click="toggleDay('monday')">Monday</button>
       </div>
       <div class="days">
+        <!-- Dev: today's real date events for testing now-playing -->
+        <div v-if="showDays.today" class="day">
+          <h2>TODAY (TEST)</h2>
+          <lineup-day :events="getTodayEvents" :loading="loading" class="setinfo" />
+        </div>
         <!-- Day sections with filtered events -->
         <div v-if="showDays.friday" class="day">
           <h2>FRIDAY</h2>
@@ -68,11 +74,14 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 const { isStarred, updateCurrentAct } = useLineupState()
 
+const isDev = import.meta.env.DEV
+
 // Reactive state
 const loading = ref(false)
 const events = ref([])
 
 const showDays = reactive({
+  today: false,
   friday: false,
   saturday: false,
   sunday: false,
@@ -168,6 +177,7 @@ const getFridayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.fridayDat
 const getSaturdayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.saturdayDate))
 const getSundayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.sundayDate))
 const getMondayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.mondayDate))
+const getTodayEvents = computed(() => getEventsByDay(new Date()))
 
 // ── My Schedule ───────────────────────────────────────────────────────────────
 const myScheduleOpen = ref(false)
@@ -275,6 +285,12 @@ p {
 .toggle-buttons button:hover {
   background-color: white;
   color: black;
+}
+
+.toggle-buttons .today-btn {
+  background-color: #430789;
+  outline: 2px dashed #fff;
+  outline-offset: -3px;
 }
 
 .main-stage {
