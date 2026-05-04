@@ -19,6 +19,7 @@
             <p class="diff-prize">⚡ Bitcoin prizes for top 5</p>
           </div>
         </div>
+        <button class="leaderboard-link-btn" @click="openLeaderboard">🏆 View Leaderboard</button>
       </div>
     </div>
 
@@ -116,7 +117,41 @@
           Amazing effort! You crushed it! 🎉
         </p>
         <button @click="restartHunt">Change Mode</button>
-        <button @click="sendScore">Submit Score</button>
+        <button @click="sendScore" :disabled="scoreSubmitted">{{ scoreSubmitted ? 'Submitted ✓' : 'Submit Score' }}</button>
+        <button v-if="scoreSubmitted" @click="openLeaderboard" class="leaderboard-link-btn">🏆 View Leaderboard</button>
+      </div>
+    </div>
+
+    <!-- Leaderboard Overlay -->
+    <div class="leaderboard-overlay" v-if="viewingLeaderboard">
+      <div class="leaderboard-panel">
+        <h2>🏆 Leaderboard</h2>
+        <div v-if="leaderboardLoading" class="lb-loading">Loading...</div>
+        <div v-else class="lb-tables">
+          <div class="lb-section">
+            <h3>🎓 Senior — Top 5</h3>
+            <ol v-if="leaderboardData.senior.length">
+              <li v-for="(e, i) in leaderboardData.senior" :key="i">
+                <span class="lb-rank">{{ i + 1 }}</span>
+                <span class="lb-name">{{ e.name }}</span>
+                <span class="lb-score">{{ e.score }}/{{ e.total }}</span>
+              </li>
+            </ol>
+            <p v-else class="lb-empty">No scores yet</p>
+          </div>
+          <div class="lb-section">
+            <h3>🧒 Junior — Top 5</h3>
+            <ol v-if="leaderboardData.junior.length">
+              <li v-for="(e, i) in leaderboardData.junior" :key="i">
+                <span class="lb-rank">{{ i + 1 }}</span>
+                <span class="lb-name">{{ e.name }}</span>
+                <span class="lb-score">{{ e.score }}/{{ e.total }}</span>
+              </li>
+            </ol>
+            <p v-else class="lb-empty">No scores yet</p>
+          </div>
+        </div>
+        <button class="lb-back-btn" @click="viewingLeaderboard = false">← Back</button>
       </div>
     </div>
   </div>
@@ -132,6 +167,8 @@ import riddle from '@/assets/images/icons/riddle.png'
 import cypher from '@/assets/images/icons/cypher.png'
 import sequence from '@/assets/images/icons/sequence.png'
 import puzzle from '@/assets/images/icons/quiz.png'
+import { reunion_db } from '@/firebase.js'
+import { doc, updateDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -420,7 +457,11 @@ export default {
       ],
 
       answers: [],
-      feedback: []
+      feedback: [],
+      viewingLeaderboard: false,
+      leaderboardData: { senior: [], junior: [] },
+      leaderboardLoading: false,
+      scoreSubmitted: false
     }
   },
   computed: {
@@ -617,6 +658,16 @@ export default {
         ]
       }
       try {
+        // Write score to participant's existing record in participants_2026
+        await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
+          scavenger_hunt: {
+            score,
+            total,
+            difficulty: this.difficulty,
+            submittedAt: new Date()
+          }
+        })
+        // Notify Slack
         const response = await fetch('https://relayproxy.vercel.app/festivall_notifications', {
           method: 'POST',
           headers: {
@@ -625,7 +676,9 @@ export default {
           body: JSON.stringify(payload)
         })
         if (response.ok) {
-          alert('Score submitted successfully!')
+          this.scoreSubmitted = true
+          alert('Score submitted! Opening leaderboard...')
+          await this.openLeaderboard()
         } else {
           alert('Failed to submit score. Please try again.')
         }
@@ -636,6 +689,40 @@ export default {
     },
     formatText(text) {
       return text.replace(/\n/g, '<br>')
+    },
+    async openLeaderboard() {
+      this.viewingLeaderboard = true
+      await this.loadLeaderboard()
+    },
+    async loadLeaderboard() {
+      this.leaderboardLoading = true
+      try {
+        const snap = await getDocs(
+          query(
+            collection(reunion_db, 'participants_2026'),
+            orderBy('scavenger_hunt.score', 'desc'),
+            limit(50)
+          )
+        )
+        const all = snap.docs.map((d) => d.data()).filter((d) => d.scavenger_hunt?.score != null)
+        const toEntry = (d) => ({
+          name: d.fullname || 'Unknown',
+          score: d.scavenger_hunt.score,
+          total: d.scavenger_hunt.total
+        })
+        this.leaderboardData.senior = all
+          .filter((d) => d.scavenger_hunt.difficulty === 'senior')
+          .slice(0, 5)
+          .map(toEntry)
+        this.leaderboardData.junior = all
+          .filter((d) => d.scavenger_hunt.difficulty === 'junior')
+          .slice(0, 5)
+          .map(toEntry)
+      } catch (err) {
+        console.error('Failed to load leaderboard:', err)
+      } finally {
+        this.leaderboardLoading = false
+      }
     }
   }
 }
@@ -1001,5 +1088,126 @@ button:disabled {
     width: 100%;
     max-width: 280px;
   }
+}
+
+/* Leaderboard */
+.leaderboard-link-btn {
+  margin-top: 1.25rem;
+  background-color: rgba(255, 215, 0, 0.15);
+  border-color: gold;
+  color: gold;
+  width: 100%;
+}
+
+.leaderboard-link-btn:hover:not(:disabled) {
+  background-color: rgba(255, 215, 0, 0.3);
+  color: gold;
+}
+
+.leaderboard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background-color: rgba(0, 0, 0, 0.92);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'League Spartan', sans-serif;
+  color: white;
+}
+
+.leaderboard-panel {
+  background-color: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 560px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+}
+
+.leaderboard-panel h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: gold;
+}
+
+.lb-tables {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lb-section {
+  flex: 1;
+  min-width: 180px;
+}
+
+.lb-section h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.lb-section ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lb-section li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.lb-section li:first-child {
+  background-color: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.lb-rank {
+  font-weight: 800;
+  min-width: 1.2rem;
+  color: gold;
+}
+
+.lb-name {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-score {
+  font-weight: 600;
+  color: limegreen;
+  white-space: nowrap;
+}
+
+.lb-empty {
+  opacity: 0.5;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.lb-loading {
+  opacity: 0.7;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+
+.lb-back-btn {
+  margin-top: 1.5rem;
 }
 </style>
