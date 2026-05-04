@@ -13,7 +13,7 @@ const mapObject = ref(null)
 // ── Stage definitions ─────────────────────────────────────────────────────────
 // Add an entry here for every stage_icon layer you add in Illustrator.
 const STAGE_ICONS = [
-  { svgId: 'stage_area', label: 'Main Stage' }
+  { svgId: 'stage_area', label: 'Main Stage', offsetX: 0, offsetY: +10 }
 ]
 
 const stageOverlays = ref([]) // [{ label, style }]
@@ -28,7 +28,7 @@ function positionOverlays() {
   const vb = svgEl.viewBox.baseVal
   if (!vb || !vb.width || !vb.height) return
 
-  stageOverlays.value = STAGE_ICONS.flatMap(({ svgId, label }) => {
+  stageOverlays.value = STAGE_ICONS.flatMap(({ svgId, label, offsetX = 0, offsetY = 0 }) => {
     const el = svgDoc.getElementById(svgId)
     if (!el) return []
 
@@ -41,8 +41,8 @@ function positionOverlays() {
     const w = parseFloat(el.getAttribute('width') || 0)
     const h = parseFloat(el.getAttribute('height') || 0)
 
-    const xPct = ((x + w / 2) / vb.width)  * 100
-    const yPct = ((y + h / 2) / vb.height) * 100
+    const xPct = ((x + w / 2 + offsetX) / vb.width)  * 100
+    const yPct = ((y + h / 2 + offsetY) / vb.height) * 100
     return [{ label, style: { left: `${xPct}%`, top: `${yPct}%` } }]
   })
 }
