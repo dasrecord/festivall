@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
 import { useLineupState } from '@/composables/useLineupState'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const { currentAct, updateCurrentAct } = useLineupState()
 
@@ -16,8 +17,45 @@ const STAGE_ICONS = [
   { svgId: 'stage_area', label: 'Main Stage', offsetX: 0, offsetY: +10 }
 ]
 
+// ── Meals icon definition ─────────────────────────────────────────────────────
+// svgId: name this layer 'meals_area' in Illustrator for live positioning.
+// fallbackSvgPos: raw SVG coords used until the layer is named.
+const MEAL_ICONS = [
+  {
+    svgId: 'meals_area',
+    fallbackSvgPos: { x: 234.3, y: 268.69, w: 16, h: -2},
+    offsetX: 10,
+    offsetY: 0
+  }
+]
+
 const stageOverlays = ref([]) // [{ label, style }]
-const bioOpen = ref(false)
+const mealOverlays  = ref([]) // [{ style }]
+const bioOpen      = ref(false)
+const mealCardOpen = ref(false)
+
+// Shared helper: resolve CSS position from an SVG element ID or fallback coords.
+// getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
+function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offsetY = 0 }) {
+  let x, y, w, h
+  const el = svgDoc.getElementById(svgId)
+  if (el) {
+    const transform = el.getAttribute('transform') || ''
+    const m = transform.match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
+    x = m ? parseFloat(m[1]) : 0
+    y = m ? parseFloat(m[2]) : 0
+    w = parseFloat(el.getAttribute('width') || 0)
+    h = parseFloat(el.getAttribute('height') || 0)
+  } else if (fallbackSvgPos) {
+    ;({ x, y, w, h } = fallbackSvgPos)
+  } else {
+    return null
+  }
+  return {
+    left: `${((x + w / 2 + offsetX) / vb.width)  * 100}%`,
+    top:  `${((y + h / 2 + offsetY) / vb.height) * 100}%`
+  }
+}
 
 function positionOverlays() {
   const svgDoc = mapObject.value?.contentDocument
@@ -28,22 +66,40 @@ function positionOverlays() {
   const vb = svgEl.viewBox.baseVal
   if (!vb || !vb.width || !vb.height) return
 
-  stageOverlays.value = STAGE_ICONS.flatMap(({ svgId, label, offsetX = 0, offsetY = 0 }) => {
-    const el = svgDoc.getElementById(svgId)
-    if (!el) return []
+  stageOverlays.value = STAGE_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
 
-    // getBBox() returns zeros for <use> elements referencing <symbol> in most
-    // browsers — parse the transform + width/height attributes directly instead
-    const transform = el.getAttribute('transform') || ''
-    const m = transform.match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
-    const x = m ? parseFloat(m[1]) : 0
-    const y = m ? parseFloat(m[2]) : 0
-    const w = parseFloat(el.getAttribute('width') || 0)
-    const h = parseFloat(el.getAttribute('height') || 0)
+  mealOverlays.value = MEAL_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ style }] : []
+  })
+}
 
-    const xPct = ((x + w / 2 + offsetX) / vb.width)  * 100
-    const yPct = ((y + h / 2 + offsetY) / vb.height) * 100
-    return [{ label, style: { left: `${xPct}%`, top: `${yPct}%` } }]
+// ── Upcoming meal logic ───────────────────────────────────────────────────────
+const MEAL_WINDOW_MS = 90 * 60 * 1000  // 1.5 h serving window
+
+const nextMeal = computed(() => {
+  const meals = REUNION_FESTIVAL.meals
+  if (!meals?.length) return null
+  const now = new Date()
+  const serving = meals.find((m) => {
+    const start = new Date(m.time)
+    return now >= start && now < new Date(start.getTime() + MEAL_WINDOW_MS)
+  })
+  if (serving) return { ...serving, isNow: true }
+  const upcoming = meals
+    .filter((m) => new Date(m.time) > now)
+    .sort((a, b) => new Date(a.time) - new Date(b.time))[0]
+  return upcoming ? { ...upcoming, isNow: false } : null
+})
+
+function formatMealTime(isoString) {
+  return new Date(isoString).toLocaleTimeString('en-CA', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/Edmonton'  // Mountain Time
   })
 }
 
@@ -136,6 +192,38 @@ onMounted(() => {
         </div>
       </Transition>
     </template>
+
+    <!-- Meals overlay — positioned right of the meals icon, expands rightward -->
+    <template v-if="nextMeal && mealOverlays.length">
+      <div
+        v-for="(overlay, index) in mealOverlays"
+        :key="index"
+        class="meal-overlay"
+        :style="overlay.style"
+        @click="mealCardOpen = !mealCardOpen"
+      >
+        <div class="meal-badge" :class="{ 'meal-badge--now': nextMeal.isNow }">
+          {{ nextMeal.isNow ? '🍽 NOW SERVING' : '🍽 NEXT MEAL' }}
+        </div>
+        <div class="meal-info">
+          {{ nextMeal.label }}<template v-if="!nextMeal.isNow">&nbsp;· {{ formatMealTime(nextMeal.time) }}</template>
+        </div>
+      </div>
+
+      <!-- Meal menu card -->
+      <Transition name="bio">
+        <div v-if="mealCardOpen" class="bio-card">
+          <button class="bio-close" @click="mealCardOpen = false">✕</button>
+          <p class="bio-act-name">{{ nextMeal.isNow ? '🍽 Now Serving' : '🍽 Next Meal' }}</p>
+          <p class="bio-genre">
+            {{ nextMeal.label }}<template v-if="!nextMeal.isNow">&nbsp;· {{ formatMealTime(nextMeal.time) }}</template>
+          </p>
+          <ul class="meal-menu-list">
+            <li v-for="item in nextMeal.menu" :key="item">{{ item }}</li>
+          </ul>
+        </div>
+      </Transition>
+    </template>
   </div>
 </template>
 
@@ -190,11 +278,11 @@ onMounted(() => {
   padding: 4px 0;
 }
 
-/* Text is doubled so the scroll loop is seamless */
+/* Text is doubled so the scroll loop is seamless — no padding-left so
+   -50% lands exactly on the second copy, creating a gapless loop */
 .ticker-text {
   display: inline-block;
-  padding-left: 100%;
-  animation: ticker-scroll 9s linear infinite;
+  animation: ticker-scroll 12s linear infinite;
 }
 
 @keyframes ticker-scroll {
@@ -259,4 +347,50 @@ onMounted(() => {
 /* Transition */
 .bio-enter-active, .bio-leave-active { transition: opacity 0.2s, transform 0.2s; }
 .bio-enter-from, .bio-leave-to { opacity: 0; transform: translateX(-50%) translateY(12px); }
+
+/* ── Meals overlay ─────────────────────────────────────────────────────────── */
+.meal-overlay {
+  position: absolute;
+  transform: translateX(0);  /* extends rightward from the anchor point */
+  pointer-events: all;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 10;
+}
+
+.meal-badge {
+  background: #1a6b2f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 5px;
+  border-radius: 3px 3px 0 0;
+  white-space: nowrap;
+}
+
+.meal-badge--now {
+  background: #c47d0a;
+}
+
+.meal-info {
+  background: rgba(26, 107, 47, 0.88);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 0 0 3px 3px;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.meal-menu-list {
+  margin: 0.5rem 0 0;
+  padding: 0 0 0 1.1rem;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.7;
+}
 </style>
