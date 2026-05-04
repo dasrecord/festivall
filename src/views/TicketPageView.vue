@@ -714,7 +714,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
+import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
 import frog_image from '@/assets/images/frog.png'
 import festivall_emblem_black from '@/assets/images/festivall_emblem_black.png'
@@ -792,9 +792,10 @@ export default {
           throw new Error('ID code is undefined')
         }
 
-        // Security check: require email verification
+        // Security check: require email verification (skip if admin is logged in via Firebase Auth)
+        const isAdmin = !!festivall_auth.currentUser
         const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
-        if (!storedAuth) {
+        if (!isAdmin && !storedAuth) {
           const email = prompt(
             'For security, please enter the email address associated with this ticket:'
           )
