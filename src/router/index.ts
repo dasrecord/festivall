@@ -55,6 +55,7 @@ import ReunionStageCrewManual from '@/views/ReunionStageCrewManual.vue'
 import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
 import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
+import BudgetView from '@/views/BudgetView.vue'
 
 
 const routes = [
@@ -169,6 +170,12 @@ const routes = [
     path: '/dashboard/applicant/:id',
     name: 'applicant-detail',
     component: ApplicantDetailView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard/budget',
+    name: 'dashboard-budget',
+    component: BudgetView,
     meta: { requiresAuth: true }
   },
   {
