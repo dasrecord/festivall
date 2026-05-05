@@ -302,7 +302,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'tasks_2026')
+    const statusRef = collection(reunion_db, 'task_status_2026')
     const q = query(statusRef, where('department', '==', 'setup_crew'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {

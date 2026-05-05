@@ -101,28 +101,30 @@
       <h2>Food Team Responsibilities</h2>
       <div class="task-overview">
         <div class="task-category">
-          <h3>Kitchen Operations</h3>
+          <h3>Your Role</h3>
           <ul>
-            <li>Food preparation and cooking</li>
-            <li>Kitchen setup and workflow organization</li>
-            <li>Food safety and sanitation protocols</li>
-            <li>Inventory tracking and supply management</li>
+            <li>Food volunteers support Angela (Food Coordinator) on the service side</li>
+            <li>Angela leads the kitchen — your job is order fulfillment and guest service</li>
+            <li>Use the Meal Scanner app to redeem guest QR codes (1 ticket per meal)</li>
+            <li>Monitor and assist the self-serve kiosk for guests placing orders</li>
           </ul>
         </div>
         <div class="task-category">
-          <h3>Service Management</h3>
+          <h3>Meal Ticket System</h3>
           <ul>
-            <li>Set up food service stations and equipment</li>
-            <li>Coordinate volunteer food service staff</li>
-            <li>Maintain service area cleanliness</li>
-            <li>Handle kitchen cleanup and breakdown</li>
+            <li>Scan guest QR code → redeem 1 meal ticket per meal ordered</li>
+            <li>Successful redeems post automatically to the Food Team Slack channel</li>
+            <li>No tickets remaining? Charge <strong>$15 cash per meal</strong></li>
+            <li>Scanner issues? Report to Angela immediately</li>
           </ul>
         </div>
         <div class="task-category">
-          <h3>Note</h3>
+          <h3>Before Service Opens</h3>
           <ul>
-            <li><strong>Meal scanning is handled by dedicated scanner operators</strong></li>
-            <li>Food team focuses on preparation, cooking, and service setup</li>
+            <li>Confirm you’re active in the Food Team Slack channel</li>
+            <li>Test the Meal Scanner app with your Operator ID</li>
+            <li>Boot up and verify the self-serve kiosk is functional</li>
+            <li>Set up the service handout station per Angela’s direction</li>
           </ul>
         </div>
       </div>
@@ -164,8 +166,9 @@ const initializeTasks = () => {
   return [
     {
       id: 'food_001',
-      title: 'Kitchen Setup & Prep',
-      description: 'Set up cooking stations, prep ingredients, and organize kitchen workflow',
+      title: 'Service Area Setup',
+      description:
+        'Set up the food service handout station: arrange serving equipment, plates, cups, cutlery, and any condiments per Angela’s direction',
       department: 'food_team',
       priority: 'high',
       assignedTo: null,
@@ -177,9 +180,9 @@ const initializeTasks = () => {
     },
     {
       id: 'food_002',
-      title: 'Food Safety & Sanitation',
+      title: 'Self-Serve Kiosk Verification',
       description:
-        'Implement food safety protocols, temperature monitoring, and sanitation procedures',
+        'Boot up and test the self-serve kiosk system, verify it’s connected and accepting orders correctly before service opens',
       department: 'food_team',
       priority: 'high',
       assignedTo: null,
@@ -191,8 +194,9 @@ const initializeTasks = () => {
     },
     {
       id: 'food_003',
-      title: 'Service Station Setup',
-      description: 'Set up food service lines, utensils, plates, and serving equipment',
+      title: 'Slack Channel Check-In',
+      description:
+        'Confirm you are active in the Food Team Slack channel — successful meal ticket redeems are sent there automatically and you need to be monitoring it during service',
       department: 'food_team',
       priority: 'high',
       assignedTo: null,
@@ -204,10 +208,11 @@ const initializeTasks = () => {
     },
     {
       id: 'food_004',
-      title: 'Inventory Management',
-      description: 'Track food inventory, supplies, and coordinate resupply needs',
+      title: 'Meal Scanner Test',
+      description:
+        'Open the Meal Scanner app, verify your Operator ID loads correctly, and run a test scan to confirm the scanner and database connection are working before guests arrive',
       department: 'food_team',
-      priority: 'medium',
+      priority: 'high',
       assignedTo: null,
       assignedToName: null,
       completed: false,
@@ -217,8 +222,23 @@ const initializeTasks = () => {
     },
     {
       id: 'food_005',
-      title: 'Volunteer Coordination',
-      description: 'Organize food service volunteers and assign serving duties',
+      title: 'Order Fulfillment (On-Demand)',
+      description:
+        'Greet guests warmly, scan their QR code to redeem 1 meal ticket per meal ordered, and hand out their order. If a guest has no meal tickets remaining, charge $15 cash per meal. Report any scanner issues to Angela',
+      department: 'food_team',
+      priority: 'high',
+      assignedTo: null,
+      assignedToName: null,
+      completed: false,
+      completedBy: null,
+      completedByName: null,
+      completedAt: null
+    },
+    {
+      id: 'food_006',
+      title: 'Kiosk Monitoring & Guest Assistance',
+      description:
+        'Monitor the self-serve kiosk throughout service — assist guests who are having trouble placing orders, flag any kiosk errors to the tech team via Slack',
       department: 'food_team',
       priority: 'medium',
       assignedTo: null,
@@ -229,11 +249,26 @@ const initializeTasks = () => {
       completedAt: null
     },
     {
-      id: 'food_006',
-      title: 'Kitchen Cleanup',
-      description: 'Maintain ongoing cleanliness and post-service deep cleaning',
+      id: 'food_007',
+      title: 'Service Area Restocking & Cleanliness',
+      description:
+        'Maintain the service area during the event — restock plates, cups, cutlery, and condiments as needed; keep the handout station tidy between orders',
       department: 'food_team',
       priority: 'medium',
+      assignedTo: null,
+      assignedToName: null,
+      completed: false,
+      completedBy: null,
+      completedByName: null,
+      completedAt: null
+    },
+    {
+      id: 'food_008',
+      title: 'End of Service Breakdown',
+      description:
+        'Clean and break down the service station per Angela’s direction, secure leftover food and supplies, log scanner off, and confirm kiosk is powered down',
+      department: 'food_team',
+      priority: 'high',
       assignedTo: null,
       assignedToName: null,
       completed: false,
@@ -294,7 +329,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'tasks_2026')
+    const statusRef = collection(reunion_db, 'task_status_2026')
     const q = query(statusRef, where('department', '==', 'food_team'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
