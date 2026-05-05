@@ -13,6 +13,7 @@ import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted, watch, computed } from 'vue'
 import axios from 'axios'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import { reunion_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
@@ -66,28 +67,16 @@ const form = ref({
 
 const submitting = ref(false)
 const trackedSections = ref(new Set())
-// Date-based reveal phases (no Firestore docs needed)
-const VOLUNTEER_PHASES = {
-  // Phase 1: Only Setup Crew visible until June 15
-  phase1End: new Date('2026-06-15T23:59:59Z'),
-  // Phase 2: Setup + Front Gate + Food Team visible until July 1
-  phase2End: new Date('2026-07-01T23:59:59Z')
-  // Phase 3: All teams visible after phase2End
-}
-
-const orderedTeams = ['Setup Crew', 'Front Gate', 'Food Team', 'Stage Crew', 'Cleanup Crew']
 
 const currentPhase = computed(() => {
   const now = new Date()
-  if (now <= VOLUNTEER_PHASES.phase1End) return 1
-  if (now <= VOLUNTEER_PHASES.phase2End) return 2
+  if (now <= REUNION_FESTIVAL.volunteerPhases.phase1End) return 1
+  if (now <= REUNION_FESTIVAL.volunteerPhases.phase2End) return 2
   return 3
 })
 
 const availableVolunteerTeams = computed(() => {
-  if (currentPhase.value === 1) return ['Setup Crew']
-  if (currentPhase.value === 2) return ['Setup Crew', 'Front Gate', 'Food Team']
-  return [...orderedTeams]
+  return REUNION_FESTIVAL.volunteerTeamsByPhase[`phase${currentPhase.value}`]
 })
 
 // Watch for section visibility changes and track engagement
@@ -889,7 +878,7 @@ onMounted(() => {
             <textarea
               id="act_description"
               v-model="form.act_description"
-              placeholder="Please use third person.1000 Character Limit"
+              placeholder="Please use third person. 1000 Character Limit"
               required
               maxlength="1000"
             ></textarea>

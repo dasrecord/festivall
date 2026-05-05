@@ -209,7 +209,8 @@ export default {
         foodteam: 'Food Team',
         setupcrew: 'Setup Crew',
         stagecrew: 'Stage Crew',
-        cleanupcrew: 'Cleanup Crew'
+        cleanupcrew: 'Cleanup Crew',
+        arcadeattendant: 'Arcade Attendant'
       },
       teamFilter: 'all',
       groupBy: 'day',
@@ -228,7 +229,7 @@ export default {
       },
       gen: {
         year: 2026,
-        capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3 }
+        capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3, arcade: 1 }
       },
       generating: false
     }
