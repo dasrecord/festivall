@@ -39,7 +39,7 @@
           text-align: left;
         "
       >
-        <h3 style="color: #e91e63; margin-bottom: 0.75rem">�️ Your Role</h3>
+        <h3 style="color: #e91e63; margin-bottom: 0.75rem">🕹️ Your Role</h3>
         <p style="margin-bottom: 0.75rem">
           The Arcade Trailer is operational during all festival stage hours. You are responsible for
           managing the full lifecycle of the trailer: starting the generator, booting arcade systems,
@@ -335,7 +335,7 @@ const authenticateUser = async () => {
 const loadTasks = async () => {
   try {
     const defaultTasks = initializeTasks()
-    const statusRef = collection(reunion_db, 'tasks_2026')
+    const statusRef = collection(reunion_db, 'task_status_2026')
     const q = query(statusRef, where('department', '==', 'arcade_attendant'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
