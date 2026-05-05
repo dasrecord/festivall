@@ -47,6 +47,7 @@
       Setup Crew: [One 8-Hour Shift PreShow]<br />
       Cleanup Crew: [One 8-Hour Shift PostShow]<br />
       Stage Crew: [Two 4-Hour Shifts Per Weekend]<br />
+      Arcade Attendant: [On-Demand — Operational During Festival Stage Hours]<br />
     </p>
     <p v-if="applicant.applicant_types.includes('Workshop')">
       <strong>Event Hours for WORKSHOP Services:</strong>

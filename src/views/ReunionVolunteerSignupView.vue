@@ -35,6 +35,7 @@
               <option value="setupcrew">Setup Crew</option>
               <option value="stagecrew">Stage Crew</option>
               <option value="cleanupcrew">Cleanup Crew</option>
+              <option value="arcadeattendant">Arcade Attendant</option>
             </select>
             <button class="refresh" @click="refreshSlots" :disabled="loadingSlots">
               {{ loadingSlots ? 'Loading...' : 'Refresh' }}
@@ -129,7 +130,8 @@ export default {
         foodteam: 'Food Team',
         setupcrew: 'Setup Crew',
         stagecrew: 'Stage Crew',
-        cleanupcrew: 'Cleanup Crew'
+        cleanupcrew: 'Cleanup Crew',
+        arcadeattendant: 'Arcade Attendant'
       }
     }
   },

@@ -53,6 +53,7 @@ import ReunionFoodTeamManual from '@/views/ReunionFoodTeamManual.vue'
 import ReunionFrontGateManual from '@/views/ReunionFrontGateManual.vue'
 import ReunionStageCrewManual from '@/views/ReunionStageCrewManual.vue'
 import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
+import ReunionArcadeAttendantManual from '@/views/ReunionArcadeAttendantManual.vue'
 import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 
@@ -297,6 +298,11 @@ const routes = [
     path: '/reunioncleanupcrew',
     name: 'reunioncleanupcrew',
     component: ReunionCleanupCrewManual,
+  },
+  {
+    path: '/reunionarcadeattendant',
+    name: 'reunionarcadeattendant',
+    component: ReunionArcadeAttendantManual,
   },
   {
     path: '/reunion-workshop-responsibilities',
