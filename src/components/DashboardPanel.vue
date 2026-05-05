@@ -62,6 +62,11 @@
           <img :src="task_icon" alt="Task Manager" class="action-icon" style="width: 24px" />
           Task Manager
         </RouterLink>
+
+        <RouterLink to="/dashboard/budget" class="scanner-link">
+          <img :src="task_icon" alt="Budget" class="action-icon" style="width: 24px" />
+          Budget 2026
+        </RouterLink>
       </div>
     </div>
 
