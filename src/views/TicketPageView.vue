@@ -1,32 +1,24 @@
 <template>
   <div class="ticket-page" v-if="order">
-    <img :src="festivall_emblem_black" style="height: 50px; width: 75px" alt="Festivall Emblem" />
-
-    <CountdownTimer
-      v-if="order.ticket_type === 'Weekend Pass'"
-    />
-    <CountdownTimer
-      v-if="order.ticket_type === 'Day Pass'"
-      :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
-    />
-    <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
-    <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
-
-    <h2>Your Digital Ticket<br /></h2>
+    <div class="ticket-header">
+      <img :src="festivall_emblem_black" style="height: 38px; width: auto" alt="Festivall Emblem" />
+      <div class="ticket-title">
+        <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
+        <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
+        <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
+      </div>
+      <img :src="frog_image" style="height: 52px; width: 52px" alt="Frog" />
+    </div>
 
     <div class="order-info">
-      <p>
-        <strong>Full Name:</strong> {{ order.fullname }}
-        <strong>Ticket Type:</strong>
-        {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
-      </p>
-      <p v-if="order.ticket_type === 'Weekend Pass'">
-        <strong>Valid:</strong> 12:00 PM Friday September 4th - 12:00 PM Monday September 7th, 2026
-      </p>
-
-      <p v-if="order.ticket_type === 'Day Pass'">
-        <strong>Valid: </strong> 12:00 PM {{ order.selected_day }}
-        for 24H
+      <div class="ticket-identity">
+        <span class="ticket-name">{{ order.fullname }}</span>
+        <span class="ticket-badge">{{ order.ticket_type === 'Weekend Pass' ? 'Weekend' : 'Day Pass' }}</span>
+      </div>
+      <p class="ticket-valid">
+        <strong>Valid:</strong>
+        <span v-if="order.ticket_type === 'Weekend Pass'">Sep 4–7, 2026 · 12PM–12PM</span>
+        <span v-else>{{ order.selected_day }} · 24H</span>
       </p>
 
       <div class="quantities">
@@ -69,68 +61,34 @@
         </div>
       </div>
       <div class="status-bar">
-        <p
-          @click="showGateInfoModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showGateInfoModal = true">
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
           <strong>Front Gate Info</strong>
         </p>
-        <p
-          @click="showMealServiceModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
-          <img
-            :src="meals_icon"
-            style="height: auto; width: 32px; margin: 0; filter: invert(1)"
-            alt="Meal Service Icon"
-          />
+        <p class="status-btn" @click="showMealServiceModal = true">
+          <img :src="meals_icon" style="height: auto; width: 32px; margin: 0; filter: invert(1)" alt="Meal Service Icon" />
           <strong>Meal Service Info</strong>
         </p>
-        <p
-          @click="showReferralModal = true"
-          v-if="referralEarnings >= 0"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showReferralModal = true" v-if="referralEarnings >= 0">
           <img :src="bonus_icon" style="height: 32px; width: auto; margin: 0" alt="Bonus Icon" />
-          <strong>Referral Earnings: ${{ referralEarnings }}</strong>
+          <strong>Referral: ${{ referralEarnings }}</strong>
         </p>
-<p
-          @click="showFMRadioModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showFMRadioModal = true">
           <img :src="radio_icon" style="height: auto; width: 32px; margin: 0" alt="FM Radio Icon" />
-          <strong>FM Radio Info</strong>
+          <strong>FM Radio</strong>
         </p>
-        
+        <p
+          class="status-btn"
+          v-if="
+            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
+            order.applicant_types.includes('Volunteer') &&
+            order.volunteer_claimed_slots && order.volunteer_claimed_slots.length > 0
+          "
+          @click="showVolunteerShiftsModal = true"
+        >
+          <img :src="my_shifts_icon" style="height: auto; width: 32px; margin: 0" alt="Volunteer Shifts" />
+          <strong>My Shifts ({{ order.volunteer_claimed_slots.length }})</strong>
+        </p>
       </div>
 
       <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
@@ -411,6 +369,66 @@
         </div>
       </div>
 
+      <!-- Volunteer Shifts Modal -->
+      <div v-if="showVolunteerShiftsModal" class="modal" @click.self="showVolunteerShiftsModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showVolunteerShiftsModal = false"></div>
+          <img
+            class="festivall-emblem"
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="volunteer_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="Volunteer Icon"
+          />
+          <h2>My Volunteer Shifts</h2>
+
+          <div v-if="order.volunteer_claimed_slots && order.volunteer_claimed_slots.length > 0" class="redemption-section">
+            <h3>
+              🗓️ <strong style="text-decoration: underline; color: orange">Your Claimed Shifts:</strong>
+            </h3>
+            <div class="history-list">
+              <div
+                v-for="(slot, index) in order.volunteer_claimed_slots"
+                :key="index"
+                class="history-item"
+                style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
+              >
+                <div style="font-weight: bold; color: #4caf50;">
+                  {{ {
+                    frontgate: '🚪 Front Gate',
+                    foodteam: '🍽️ Food Team',
+                    setupcrew: '🔧 Setup Crew',
+                    stagecrew: '🎵 Stage Crew',
+                    cleanupcrew: '🧹 Cleanup Crew',
+                    arcadeattendant: '🕹️ Arcade Attendant'
+                  }[slot.team] || slot.team }}
+                </div>
+                <div>{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
+                <div v-if="slot.title" style="font-size: 0.85rem; color: #ccc;">{{ slot.title }}</div>
+              </div>
+            </div>
+            <br />
+          </div>
+
+          <h3 v-else>
+            📊 <strong style="color: orange">No shifts claimed yet!</strong><br />
+            Head to the Volunteer Hub to sign up for your shift.
+          </h3>
+
+          <h3>
+            📧 Questions? Contact
+            <a href="mailto:reunionvolunteercoordinator@festivall.ca" style="text-decoration: underline; color: orange">
+              reunionvolunteercoordinator@festivall.ca
+            </a>
+          </h3>
+          <button @click="showVolunteerShiftsModal = false">Close</button>
+        </div>
+      </div>
+
       <!-- FM Radio Modal -->
       <div v-if="showFMRadioModal" class="modal" @click.self="showFMRadioModal = false">
         <div class="modal-content" @click.stop>
@@ -664,36 +682,17 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
+        <RouterLink :to="new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '/reunionlineup' : '#'">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2026 Lineup<br />Look & Listen!<br />
-          </p>
-        </RouterLink>
-        <RouterLink v-else to="#">
-          <p>
-            <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Final Lineup<br />coming soon!
+            {{ new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '2026 Lineup · Look & Listen!' : 'Lineup · Coming Soon!' }}
           </p>
         </RouterLink>
 
-        <RouterLink
-          v-if="new Date() >= REUNION_FESTIVAL.festivalOpenDate"
-          :to="{
-            name: 'ScavengerHunt',
-            params: { id_code: order.id_code },
-            query: { fullName: order.fullname.split(' ')[0] }
-          }"
-        >
+        <RouterLink :to="new Date() >= REUNION_FESTIVAL.festivalOpenDate ? { name: 'ScavengerHunt', params: { id_code: order.id_code }, query: { fullName: order.fullname.split(' ')[0] } } : '#'">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-            Scavenger Hunt<br />Win some Bitcoin!
-          </p>
-        </RouterLink>
-        <RouterLink v-else to="#">
-          <p>
-            <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Scavenger Hunt<br />Coming Soon!
+            Scavenger Hunt<br />{{ new Date() >= REUNION_FESTIVAL.festivalOpenDate ? 'Win some Bitcoin!' : 'Coming Soon!' }}
           </p>
         </RouterLink>
       </div>
@@ -724,7 +723,7 @@ import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
 import payment_icon from '@/assets/images/icons/compensation.png'
 import status_icon from '@/assets/images/icons/front_gate.png'
-
+import my_shifts_icon from '@/assets/images/icons/my_shifts.png'
 import bonus_icon from '@/assets/images/icons/bonus.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import dj_icon from '@/assets/images/icons/dj.png'
@@ -760,6 +759,7 @@ export default {
     const showMealRedemptionHistoryModal = ref(false)
     const showEntranceActivityModal = ref(false)
     const showFMRadioModal = ref(false)
+    const showVolunteerShiftsModal = ref(false)
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -878,7 +878,9 @@ export default {
             applicant_types: p.roles?.applicant_types || [],
             payment_type: p.order?.payment_type || '',
             rates: p.application?.data?.rates || '',
-            settimes: p.application?.data?.settimes || []
+            settimes: p.application?.data?.settimes || [],
+            // Volunteer shift data
+            volunteer_claimed_slots: p.volunteer?.claimed_slots || []
           }
 
           await nextTick()
@@ -1021,6 +1023,7 @@ export default {
       showMealRedemptionHistoryModal,
       showEntranceActivityModal,
       showFMRadioModal,
+      showVolunteerShiftsModal,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -1028,6 +1031,7 @@ export default {
       status_icon,
       bonus_icon,
       volunteer_icon,
+      my_shifts_icon,
       workshop_icon,
       dj_icon,
       location_icon,
@@ -1074,8 +1078,42 @@ strong {
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* justify-content: center; */
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.ticket-title {
+  flex: 1;
+  text-align: center;
+}
+
+.ticket-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.ticket-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.ticket-badge {
+  background: var(--reunion-frog-green);
+  color: black;
+  font-weight: bold;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.ticket-valid {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0 !important;
+  opacity: 0.85;
 }
 
 h1,
@@ -1091,9 +1129,9 @@ a {
 .order-info {
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
-  /* max-width: 85%; */
   padding: 0.5rem 0.5rem;
   z-index: 2;
+  width: 100%;
 }
 
 .order-info p {
@@ -1106,6 +1144,23 @@ a {
 
 .order-info img {
   margin: 0 0.5rem 0.7rem 0;
+}
+
+.status-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-btn {
+  justify-content: center;
+  background-color: black;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
 }
 
 .quantities {
