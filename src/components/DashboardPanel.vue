@@ -67,6 +67,11 @@
           <img :src="task_icon" alt="Budget" class="action-icon" style="width: 24px" />
           Budget 2026
         </RouterLink>
+
+        <RouterLink to="/reunionmap" class="scanner-link">
+          <img :src="map_icon" alt="Grounds Map" class="action-icon" style="width: 32px" />
+          Grounds Map
+        </RouterLink>
       </div>
     </div>
 
@@ -569,6 +574,7 @@ import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import art_installation_icon from '@/assets/images/icons/art_installation.png'
 import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 import task_icon from '@/assets/images/icons/task.png'
+import map_icon from '@/assets/images/icons/grounds_map.png'
 
 export default {
   name: 'DashboardPanel',
@@ -1601,6 +1607,7 @@ export default {
       art_installation_icon,
       scavenger_hunt_icon,
       task_icon,
+      map_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
