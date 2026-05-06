@@ -38,7 +38,7 @@
                     </div>
                   </div>
                   <button
-                    @click="resetTask(task.id, task.title, group.id)"
+                    @click="resetTask(task.id, task.title, group.id, task.type)"
                     class="reset-task-btn"
                     :disabled="loading || !task.completed"
                   >
@@ -102,7 +102,7 @@
                     </div>
                   </div>
                   <button
-                    @click="resetTask(task.id, task.title, selectedDepartment)"
+                    @click="resetTask(task.id, task.title, selectedDepartment, task.type)"
                     class="reset-task-btn"
                     :disabled="loading || !task.completed"
                   >
@@ -191,6 +191,12 @@ const departments = [
     name: 'Cleanup Crew',
     icon: '🧹',
     description: 'Post-festival cleanup, equipment storage'
+  },
+  {
+    id: 'arcade_attendant',
+    name: 'Arcade Attendant',
+    icon: '🕹️',
+    description: 'Arcade trailer, flipbook station, generator'
   }
 ]
 
@@ -252,7 +258,7 @@ const loadAllTasks = async () => {
   loading.value = true
   try {
     // Fetch all status docs once
-    const q = query(collection(reunion_db, 'tasks_2026'))
+    const q = query(collection(reunion_db, 'task_status_2026'))
     const snapshot = await getDocs(q)
     const byDept = {}
     snapshot.forEach((docSnap) => {
@@ -292,7 +298,7 @@ const loadDepartmentTasks = async () => {
   try {
     const deptId = selectedDepartment.value
     const baseTasks = getTasksForDepartment(deptId)
-    const q = query(collection(reunion_db, 'tasks_2026'), where('department', '==', deptId))
+    const q = query(collection(reunion_db, 'task_status_2026'), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
     const statuses = querySnapshot.docs.map((d) => d.data())
     departmentTasks.value = mergeBaseWithStatus(baseTasks, statuses)
@@ -313,7 +319,7 @@ const resetDepartment = async (deptId, deptName) => {
   loading.value = true
   try {
     // Get all task documents for this department
-    const q = query(collection(reunion_db, 'tasks_2026'), where('department', '==', deptId))
+    const q = query(collection(reunion_db, 'task_status_2026'), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
 
     // Use batch delete for efficiency
@@ -345,14 +351,26 @@ const resetDepartment = async (deptId, deptName) => {
 }
 
 // Reset individual task
-const resetTask = async (taskId, taskTitle, deptId) => {
+const resetTask = async (taskId, taskTitle, deptId, taskType) => {
   const confirmMsg = `Reset task "${taskTitle}" (${taskId})?`
 
   if (!confirm(confirmMsg)) return
 
   loading.value = true
   try {
-    await deleteDoc(doc(reunion_db, 'tasks_2026', taskId))
+    if (taskType === 'personal') {
+      // Personal tasks: find all user-specific docs via originalTaskId
+      const q = query(
+        collection(reunion_db, 'task_status_2026'),
+        where('originalTaskId', '==', taskId)
+      )
+      const snap = await getDocs(q)
+      const batch = writeBatch(reunion_db)
+      snap.forEach((d) => batch.delete(d.ref))
+      await batch.commit()
+    } else {
+      await deleteDoc(doc(reunion_db, 'task_status_2026', taskId))
+    }
 
     addLogEntry(`✅ Reset task: ${taskId} (${taskTitle})`)
     alert(`✅ Task "${taskTitle}" has been reset`)
@@ -382,7 +400,16 @@ const quickResetTask = async () => {
 
   loading.value = true
   try {
-    await deleteDoc(doc(reunion_db, 'tasks_2026', taskId))
+    // Delete direct doc (standard/one-time) and any personal docs with this originalTaskId
+    const batch = writeBatch(reunion_db)
+    batch.delete(doc(reunion_db, 'task_status_2026', taskId))
+    const personalQ = query(
+      collection(reunion_db, 'task_status_2026'),
+      where('originalTaskId', '==', taskId)
+    )
+    const personalSnap = await getDocs(personalQ)
+    personalSnap.forEach((d) => batch.delete(d.ref))
+    await batch.commit()
 
     addLogEntry(`✅ Quick reset: ${taskId}`)
     alert(`✅ Task "${taskId}" has been reset`)

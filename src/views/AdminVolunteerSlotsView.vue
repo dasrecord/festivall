@@ -81,6 +81,11 @@
                 <label>Cleanup Crew</label>
                 <input type="number" v-model.number="gen.capacity.cleanup" min="1" />
               </div>
+
+              <div class="capacity-item">
+                <label>Arcade Attendant</label>
+                <input type="number" v-model.number="gen.capacity.arcade" min="1" />
+              </div>
             </div>
           </div>
         </div>
@@ -115,6 +120,10 @@
             <li>
               <strong>Cleanup Crew:</strong> A single 8-hour shift from
               <strong>10:00 AM to 6:00 PM</strong>, on <strong>September 7</strong>.
+            </li>
+            <li>
+              <strong>Arcade Attendant:</strong> 4-hour shifts from <strong>12:00 PM to 12:00 AM</strong>
+              (3 shifts/day), on <strong>September 4</strong> to <strong>September 6</strong>.
             </li>
           </ul>
         </small>
@@ -197,6 +206,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 export default {
   name: 'AdminVolunteerSlotsView',
@@ -228,7 +238,7 @@ export default {
         notes: ''
       },
       gen: {
-        year: 2026,
+        year: REUNION_FESTIVAL.year,
         capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3, arcade: 1 }
       },
       generating: false
@@ -506,17 +516,6 @@ export default {
               t = '00:00'
             }
           }
-
-          // Cleanup Crew: single 8h shift on Sep 7 from 10:00-18:00
-          const cleanupDate = this.toDateStr(year, 9, 7) // Sep = 9
-          await add({
-            team: 'cleanupcrew',
-            date: cleanupDate,
-            start: '10:00',
-            end: '18:00',
-            capacity: this.gen.capacity.cleanup,
-            notes: 'Cleanup (8h)'
-          })
           // 00-04 next-day block
           const [Y, M, D] = date.split('-').map(Number)
           const nextDate = this.dateRange(new Date(Y, M - 1, D + 1), new Date(Y, M - 1, D + 1))[0]
@@ -528,6 +527,36 @@ export default {
             capacity: this.gen.capacity.stage,
             notes: 'Stage Crew (overnight 4h)'
           })
+        }
+
+        // Cleanup Crew: single 8h shift on Sep 7 from 10:00-18:00
+        const cleanupDate = this.toDateStr(year, 9, 7)
+        await add({
+          team: 'cleanupcrew',
+          date: cleanupDate,
+          start: '10:00',
+          end: '18:00',
+          capacity: this.gen.capacity.cleanup,
+          notes: 'Cleanup (8h)'
+        })
+
+        // Arcade Attendant: 4h shifts 12:00-24:00 on Sep 4-6
+        const arcadeDates = fgDates
+        for (const date of arcadeDates) {
+          let t = '12:00'
+          while (t !== '00:00') {
+            const end = this.timeAdd(t, 240)
+            await add({
+              team: 'arcadeattendant',
+              date,
+              start: t,
+              end: end === '00:00' ? '24:00' : end,
+              capacity: this.gen.capacity.arcade,
+              notes: 'Arcade Attendant (4h)'
+            })
+            t = end
+            if (t === '00:00') break
+          }
         }
 
         alert('Default schedule generated.')
