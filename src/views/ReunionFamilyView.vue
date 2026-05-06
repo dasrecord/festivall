@@ -10,14 +10,17 @@
     />
     <h2>About Our Festival</h2>
     <h3>
-      The Reunion is an independent electronic music festival located just outside Saskatoon. We
-      prioritize high quality local acts and support them with a cohesive and multitalented
-      volunteer team. Our custom built sound system and in-house projection mapping team create a
-      premium audio-visual experience for the most discerning of electronic music lovers. We are a
-      family friendly event with an interest in growth, community, and sustainability.<br /><br />
+      The Reunion is Saskatchewan's only family friendly electronic music festival — and we've built
+      it from the ground up to prove it. Set just outside Saskatoon, we celebrate the region's best
+      electronic artists with a custom built sound system, projection mapped visuals, and a Festival
+      FM radio broadcast. Off the dancefloor, there's a retro arcade, Nerf battle arena, kids'
+      playground, wading pool, warm showers, live workshops, art installations, and a scavenger hunt
+      with Bitcoin prizes. Arrive through our self check-in kiosk, navigate with our interactive
+      grounds map, and stay in touch via text notifications. This is grassroots done differently.<br /><br />
     </h3>
 
-    <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent>
+    <StoriesHighlights :groups="storyGroups" />
+    <!-- CAROUSEL <CarouselComponent :slides="slides" :interval="3600" controls indicators></CarouselComponent> CAROUSEL -->
     <DetailsPanel>
       <template #link1>
         <RouterLink to="/reunionfamily">Learn more</RouterLink>
@@ -38,38 +41,59 @@
 
 <script>
 import CountdownTimer from '@/components/CountdownTimer.vue'
-import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
+// CAROUSEL import CarouselComponent from '@/components/carousel/CarouselComponent.vue' CAROUSEL
 import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
+import StoriesHighlights from '@/components/StoriesHighlights.vue'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import { analyticsMixin } from '@/mixins/analytics.js'
 
-// Dynamically import all images from the @/assets/images directory
-const images = import.meta.glob('@/assets/images/reunion_about/*.jpg')
+import thumb1 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-1-our_story.png'
+import thumb2 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-2-three_families.png'
+import thumb3 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-3-build_something.png'
+import thumb4 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-4-events.png'
+import thumb5 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-5-learning.png'
+import thumb6 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-6-the_magic.png'
+import thumb7 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-7-scavenger_hunt.png'
+import thumb8 from '@/assets/images/reunion_about/thumbnails/reunion_story_thumbnails-8-new_features.png'
+
+// CAROUSEL const images = import.meta.glob('@/assets/images/reunion_about/*.jpg') CAROUSEL
 
 export default {
   mixins: [analyticsMixin],
   components: {
     CountdownTimer,
-    CarouselComponent,
+    // CAROUSEL CarouselComponent, CAROUSEL
+    StoriesHighlights,
     DetailsPanel,
     CalltoAction
   },
   data() {
     return {
       reunion_emblem,
-      slides: []
+      // CAROUSEL slides: [], CAROUSEL
+      storyGroups: [
+        { label: 'Our Story',       thumb: thumb1, url: 'https://www.instagram.com/stories/highlights/18072141676939371/' },
+        { label: 'Three Families',  thumb: thumb2, url: 'https://www.instagram.com/stories/highlights/18004709648616914/' },
+        { label: 'Build Something', thumb: thumb3, url: 'https://www.instagram.com/stories/highlights/18076507999907549/' },
+        { label: 'Events',          thumb: thumb4, url: 'https://www.instagram.com/stories/highlights/18044287133275354/' },
+
+        { label: 'The Magic',       thumb: thumb6, url: 'https://www.instagram.com/stories/highlights/18066522173133927/' },
+
+        { label: 'New Features',    thumb: thumb8, url: 'https://www.instagram.com/stories/highlights/17992549121821119/' }
+      ]
     }
   },
   async created() {
     // Track page view
     this.trackPageView('Reunion Family', 'reunion')
 
-    // Load all images
-    for (const path in images) {
-      const image = await images[path]()
-      this.slides.push(image.default)
-    }
+    // CAROUSEL
+    // for (const path in images) {
+    //   const image = await images[path]()
+    //   this.slides.push(image.default)
+    // }
+    // CAROUSEL
   }
 }
 </script>
