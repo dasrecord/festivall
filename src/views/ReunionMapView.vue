@@ -6,7 +6,7 @@ import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.s
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
-const { currentAct, updateCurrentAct } = useLineupState()
+const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
 
 const mapContainer = ref(null)
 const mapObject = ref(null)
@@ -33,6 +33,45 @@ const stageOverlays = ref([]) // [{ label, style }]
 const mealOverlays  = ref([]) // [{ style }]
 const bioOpen      = ref(false)
 const mealCardOpen = ref(false)
+const settingsOpen = ref(false)
+const showStageOverlay = ref(true)
+const showMealOverlay  = ref(true)
+
+// ── Ticker text helpers ───────────────────────────────────────────────────────
+// Build doubled strings in JS so there are zero stray whitespace nodes in the
+// DOM — this makes the -50% animation loop land perfectly every time.
+const SEP = '     ' // 5 spaces as separator between the two copies
+
+function makeTickerText(parts) {
+  const text = parts.filter(Boolean).join(' · ') + ' ·'
+  return text + SEP + text
+}
+
+const nowPlayingTicker = computed(() =>
+  currentAct.value
+    ? makeTickerText([currentAct.value.act_name || currentAct.value.workshop_title, currentAct.value.genre])
+    : ''
+)
+
+const upNextTicker = computed(() =>
+  upcomingAct.value
+    ? makeTickerText([
+        upcomingAct.value.act_name || upcomingAct.value.workshop_title,
+        formatSettime(upcomingAct.value.settime),
+        upcomingAct.value.genre
+      ])
+    : ''
+)
+
+const mealTicker = computed(() => {
+  if (!nextMeal.value) return ''
+  const text = nextMeal.value.isNow
+    ? nextMeal.value.label + ' ·'
+    : nextMeal.value.label + ' · ' + formatMealTime(nextMeal.value.time) + ' ·'
+  return text + SEP + text
+})
+
+
 
 // Shared helper: resolve CSS position from an SVG element ID or fallback coords.
 // getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
@@ -103,6 +142,14 @@ function formatMealTime(isoString) {
   })
 }
 
+function formatSettime(ms) {
+  return new Date(ms).toLocaleTimeString('en-CA', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/Edmonton'
+  })
+}
+
 // ── Fetch events to populate currentAct if not already set ───────────────────
 async function fetchAndUpdateCurrentAct() {
   if (currentAct.value !== null) return
@@ -160,8 +207,8 @@ onMounted(() => {
       Your browser does not support SVG.
     </object>
 
-    <!-- Now-playing overlay — positioned over #stage_area in the SVG -->
-    <template v-if="currentAct">
+    <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
+    <template v-if="showStageOverlay && (currentAct || upcomingAct)">
       <div
         v-for="overlay in stageOverlays"
         :key="overlay.label"
@@ -169,32 +216,45 @@ onMounted(() => {
         :style="overlay.style"
         @click="bioOpen = !bioOpen"
       >
-        <div class="now-badge">▶ NOW PLAYING</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            {{ currentAct.act_name || currentAct.workshop_title }}
-            <template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{ currentAct.act_name || currentAct.workshop_title }}
-            <template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template>
-          </span>
-        </div>
+        <!-- NOW PLAYING row -->
+        <template v-if="currentAct">
+          <div class="now-badge">▶ NOW PLAYING</div>
+          <div class="ticker-wrap">
+            <span class="ticker-text">{{ nowPlayingTicker }}</span>
+          </div>
+        </template>
+        <!-- UP NEXT row -->
+        <template v-if="upcomingAct">
+          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': currentAct }">▷ UP NEXT</div>
+          <div class="ticker-wrap ticker-wrap--upcoming">
+            <span class="ticker-text">{{ upNextTicker }}</span>
+          </div>
+        </template>
       </div>
 
-      <!-- Bio card — shown on tap, dismissed by tapping X or outside -->
+      <!-- Bio card — tap overlay to open, tap X to close -->
       <Transition name="bio">
         <div v-if="bioOpen" class="bio-card">
-          <button class="bio-close" @click="bioOpen = false">✕</button>
-          <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
-          <p v-if="currentAct.genre" class="bio-genre">{{ currentAct.genre }}</p>
-          <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
-          <p v-else class="bio-text bio-empty">No bio available.</p>
+          <button class="bio-close" @click.stop="bioOpen = false">✕</button>
+          <template v-if="currentAct">
+            <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
+            <p class="bio-genre">▶ NOW PLAYING<template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template></p>
+            <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
+            <p v-else class="bio-text bio-empty">No bio available.</p>
+          </template>
+          <template v-if="upcomingAct">
+            <hr v-if="currentAct" class="bio-divider" />
+            <p class="bio-act-name">{{ upcomingAct.act_name || upcomingAct.workshop_title }}</p>
+            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(upcomingAct.settime) }}<template v-if="upcomingAct.genre">&nbsp;· {{ upcomingAct.genre }}</template></p>
+            <p v-if="upcomingAct.act_description" class="bio-text">{{ upcomingAct.act_description }}</p>
+            <p v-else class="bio-text bio-empty">No bio available.</p>
+          </template>
         </div>
       </Transition>
     </template>
 
     <!-- Meals overlay — positioned right of the meals icon, expands rightward -->
-    <template v-if="nextMeal && mealOverlays.length">
+    <template v-if="showMealOverlay && nextMeal && mealOverlays.length">
       <div
         v-for="(overlay, index) in mealOverlays"
         :key="index"
@@ -206,7 +266,7 @@ onMounted(() => {
           {{ nextMeal.isNow ? '🍽 NOW SERVING' : '🍽 NEXT MEAL' }}
         </div>
         <div class="meal-info">
-          {{ nextMeal.label }}<template v-if="!nextMeal.isNow">&nbsp;· {{ formatMealTime(nextMeal.time) }}</template>
+          <span class="meal-ticker-text">{{ mealTicker }}</span>
         </div>
       </div>
 
@@ -224,6 +284,22 @@ onMounted(() => {
         </div>
       </Transition>
     </template>
+
+    <!-- Settings toggle -->
+    <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
+    <Transition name="bio">
+      <div v-if="settingsOpen" class="settings-panel">
+        <p class="settings-title">Map Overlays</p>
+        <label class="settings-row">
+          <span>Stage Info</span>
+          <input type="checkbox" v-model="showStageOverlay" />
+        </label>
+        <label class="settings-row">
+          <span>Meals</span>
+          <input type="checkbox" v-model="showMealOverlay" />
+        </label>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -265,6 +341,18 @@ onMounted(() => {
   white-space: nowrap;
 }
 
+.now-badge--upcoming {
+  background: #0a5a8a;
+}
+
+.now-badge--sep {
+  margin-top: 3px;
+}
+
+.ticker-wrap--upcoming {
+  background: rgba(10, 90, 138, 0.88);
+}
+
 .ticker-wrap {
   background: rgba(67, 7, 137, 0.88);
   color: #fff;
@@ -282,12 +370,13 @@ onMounted(() => {
    -50% lands exactly on the second copy, creating a gapless loop */
 .ticker-text {
   display: inline-block;
+  will-change: transform;
   animation: ticker-scroll 12s linear infinite;
 }
 
 @keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 /* ── Bio card ────────────────────────────────────────────────────────────────── */
@@ -335,11 +424,21 @@ onMounted(() => {
   text-transform: uppercase;
 }
 
+.bio-genre--upcoming {
+  color: #6ab8e8;
+}
+
 .bio-text {
   font-size: 0.88rem;
   line-height: 1.55;
   margin: 0;
   color: rgba(255,255,255,0.88);
+}
+
+.bio-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin: 0.85rem 0;
 }
 
 .bio-empty { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -382,8 +481,16 @@ onMounted(() => {
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 0 0 3px 3px;
-  padding: 4px 6px;
+  overflow: hidden;
+  width: 110px;
   white-space: nowrap;
+  padding: 4px 0;
+}
+
+.meal-ticker-text {
+  display: inline-block;
+  will-change: transform;
+  animation: ticker-scroll 12s linear infinite;
 }
 
 .meal-menu-list {
@@ -392,5 +499,70 @@ onMounted(() => {
   font-size: 0.88rem;
   color: rgba(255,255,255,0.88);
   line-height: 1.7;
+}
+
+/* ── Settings toggle ─────────────────────────────────────────────────────────── */
+.settings-toggle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30, 5, 60, 0.72);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, color 0.15s;
+}
+
+.settings-toggle:hover,
+.settings-toggle--active {
+  background: rgba(67, 7, 137, 0.92);
+  color: #fff;
+}
+
+.settings-panel {
+  position: absolute;
+  top: 3rem;
+  right: 0.5rem;
+  background: rgba(30, 5, 60, 0.96);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  min-width: 155px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 20;
+}
+
+.settings-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9a0f0;
+  margin: 0 0 0.55rem;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+.settings-row + .settings-row {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 0.2rem;
+  padding-top: 0.45rem;
 }
 </style>
