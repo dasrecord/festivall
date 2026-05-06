@@ -56,6 +56,7 @@ import ReunionCleanupCrewManual from '@/views/ReunionCleanupCrewManual.vue'
 import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 import BudgetView from '@/views/BudgetView.vue'
+import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 
 
 const routes = [
@@ -509,6 +510,12 @@ const routes = [
     name: 'videolibrary',
     component: ExternalRedirect,
     props: { url: 'https://drive.google.com/drive/folders/1l-xagltGwdnR1z7Jh5sw8PSu4h4oUjGl?usp=sharing' }
+  },
+  {
+    path: '/bitcoin-wallet',
+    name: 'bitcoin-wallet',
+    component: BitcoinWalletView,
+    meta: { showHeader: true }
   }
 ]
 
