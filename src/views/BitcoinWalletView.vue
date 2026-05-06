@@ -600,4 +600,30 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 600px) {
+  .dark-theme {
+    padding: 1rem 0.5rem;
+  }
+
+  .content {
+    width: 95vw;
+    padding: 1rem 0.75rem;
+  }
+
+  .step-section,
+  .info-section,
+  .final-notes {
+    padding: 1rem 0.9rem;
+  }
+
+  .wallet-cta {
+    padding: 1.25rem 0.9rem;
+  }
+
+  .seed-explainer,
+  .key-rules {
+    padding: 1rem 0.9rem;
+  }
+}
 </style>
