@@ -87,7 +87,6 @@ import { useLineupState } from '@/composables/useLineupState'
 
 const { toggleStar, isStarred } = useLineupState()
 
-// Props
 const props = defineProps({
   events: {
     type: Array,
@@ -103,7 +102,7 @@ const props = defineProps({
   }
 })
 
-// ── Reactive clock for the time line ─────────────────────────────────────────
+// Reactive clock for the time line
 const now = ref(Date.now())
 let clockInterval = null
 
@@ -117,7 +116,7 @@ onUnmounted(() => {
   clearInterval(clockInterval)
 })
 
-// ── Flatten: one slot per settime ────────────────────────────────────────────
+// Flatten: one slot per settime
 const flatSlots = computed(() => {
   const slots = []
   for (const event of props.events) {
@@ -129,7 +128,7 @@ const flatSlots = computed(() => {
   return slots
 })
 
-// ── Time line position ────────────────────────────────────────────────────────
+// Time line position
 const timeLineInsertIndex = computed(() => {
   if (!flatSlots.value.length) return -1
 
@@ -151,13 +150,13 @@ const timeLineInsertIndex = computed(() => {
   return insertAfter
 })
 
-// ── Current slot index (which event card gets the inline time line) ───────────────────────────
+// Current slot index (which event card gets the inline time line)
 const currentSlotIndex = computed(() => timeLineInsertIndex.value)
 
-// ── Per-slot unique key used for starring ─────────────────────────────────────
+// Per-slot unique key used for starring
 const slotKey = (item) => `${item.id}::${item.settimes[0]}`
 
-// ── Time formatting ───────────────────────────────────────────────────────────
+// Time formatting
 const formatTime = (timestamp) => {
   if (!timestamp) return 'TBA'
   const date = new Date(timestamp)
