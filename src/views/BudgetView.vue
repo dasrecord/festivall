@@ -19,19 +19,22 @@
         <div class="summary-cell">
           <span class="summary-label">Revenue</span>
           <span class="summary-amount green">{{ fmtCAD(totalRevenue) }}</span>
+          <span class="summary-sub">Expected: {{ fmtCAD(expectedRevenue) }}</span>
         </div>
         <div class="summary-cell">
           <span class="summary-label">Meal Cost</span>
           <span class="summary-amount amber">{{ fmtCAD(mealTicketCost) }}</span>
-          <span class="summary-sub">{{ mealTicketsRedeemed }}× $15</span>
+          <span class="summary-sub">Expected: {{ fmtCAD(expectedMealCost) }}</span>
         </div>
         <div class="summary-cell">
           <span class="summary-label">Expenses</span>
           <span class="summary-amount red">{{ fmtCAD(totalExpenses) }}</span>
+          <span class="summary-sub">Expected: {{ fmtCAD(expectedExpenses) }}</span>
         </div>
         <div class="summary-cell">
           <span class="summary-label">Net</span>
           <span class="summary-amount" :class="net >= 0 ? 'green' : 'red'">{{ fmtCAD(net) }}</span>
+          <span class="summary-sub">Expected: {{ fmtCAD(expectedNet) }}</span>
         </div>
       </div>
 
@@ -201,6 +204,42 @@ const budgetItems = ref([])
 let unsubscribeBudget = null
 
 // ── Participant derived data ──────────────────────────────────────────────────
+// Expected vs Actual Revenue
+const expectedRevenue = computed(() =>
+  participants.value.reduce(
+    (sum, p) => sum + Number(p.order?.fiat_total_price_cad || 0),
+    0
+  )
+)
+
+// Expected vs Actual Meal Tickets
+const expectedMealTickets = computed(() =>
+  participants.value.reduce((sum, p) => sum + (p.order?.meal_packages || 0), 0)
+)
+const expectedMealCost = computed(() => expectedMealTickets.value * 15)
+
+
+// ...existing code...
+
+
+
+const expectedArtistTotal = computed(() =>
+  artistsMonetary.value.reduce((sum, a) => sum + (a.parsedAmount || 0), 0) +
+  artistsNonMonetary.value.length * 0 // If you want to estimate non-monetary, adjust here
+)
+const expectedStaffTotal = computed(() =>
+  staffMonetary.value.reduce((sum, s) => sum + (s.parsedAmount || 0), 0) +
+  staffNonMonetary.value.length * 0 // If you want to estimate non-monetary, adjust here
+)
+
+const expectedExpenses = computed(() =>
+  expectedArtistTotal.value +
+  expectedStaffTotal.value +
+  expectedMealCost.value +
+  manualTotal.value
+)
+
+const expectedNet = computed(() => expectedRevenue.value - expectedExpenses.value)
 const paidParticipants = computed(() =>
   participants.value.filter(
     (p) => p.order?.paid === true && Number(p.order?.fiat_total_price_cad || 0) > 0
@@ -252,45 +291,57 @@ const parseAmount = (ratesStr) => {
 const isMonetary = (ratesStr) => parseAmount(ratesStr) !== null
 
 // ── Artists ───────────────────────────────────────────────────────────────────
-const artistsWithRates = computed(() =>
-  participants.value.filter(
-    (p) =>
-      (p.roles?.applicant_types || []).includes('Artist') &&
-      p.application?.data?.rates
-  )
-)
+// Deduplicate participants for compensation lists
+const compensatedParticipants = computed(() => {
+  // Only those with a compensation/rates field
+  return participants.value.filter((p) => p.application?.data?.rates)
+})
+
+// Prioritize: Artist > Staff (Volunteer), Monetary > Non-Monetary
+const uniqueCompensated = computed(() => {
+  const seen = new Set()
+  const result = []
+  // First, add all compensated Artists
+  compensatedParticipants.value.forEach((p) => {
+    if ((p.roles?.applicant_types || []).includes('Artist') && !seen.has(p.id)) {
+      result.push(p)
+      seen.add(p.id)
+    }
+  })
+  // Then, add compensated Volunteers not already added
+  compensatedParticipants.value.forEach((p) => {
+    if ((p.roles?.applicant_types || []).includes('Volunteer') && !seen.has(p.id)) {
+      result.push(p)
+      seen.add(p.id)
+    }
+  })
+  return result
+})
 
 const artistsMonetary = computed(() =>
-  artistsWithRates.value
-    .filter((a) => isMonetary(a.application?.data?.rates))
+  uniqueCompensated.value
+    .filter((a) => (a.roles?.applicant_types || []).includes('Artist') && isMonetary(a.application?.data?.rates))
     .map((a) => ({ ...a, parsedAmount: parseAmount(a.application.data.rates) }))
 )
 
 const artistsNonMonetary = computed(() =>
-  artistsWithRates.value.filter((a) => !isMonetary(a.application?.data?.rates))
-)
-
-const artistMonetaryTotal = computed(() =>
-  artistsMonetary.value.reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
-)
-
-// ── Staff ─────────────────────────────────────────────────────────────────────
-const staffWithRates = computed(() =>
-  participants.value.filter(
-    (p) =>
-      (p.roles?.applicant_types || []).includes('Volunteer') &&
-      p.application?.data?.rates
-  )
+  uniqueCompensated.value
+    .filter((a) => (a.roles?.applicant_types || []).includes('Artist') && !isMonetary(a.application?.data?.rates))
 )
 
 const staffMonetary = computed(() =>
-  staffWithRates.value
-    .filter((s) => isMonetary(s.application?.data?.rates))
+  uniqueCompensated.value
+    .filter((s) => (s.roles?.applicant_types || []).includes('Volunteer') && isMonetary(s.application?.data?.rates) && !(s.roles?.applicant_types || []).includes('Artist'))
     .map((s) => ({ ...s, parsedAmount: parseAmount(s.application.data.rates) }))
 )
 
 const staffNonMonetary = computed(() =>
-  staffWithRates.value.filter((s) => !isMonetary(s.application?.data?.rates))
+  uniqueCompensated.value
+    .filter((s) => (s.roles?.applicant_types || []).includes('Volunteer') && !isMonetary(s.application?.data?.rates) && !(s.roles?.applicant_types || []).includes('Artist'))
+)
+
+const artistMonetaryTotal = computed(() =>
+  artistsMonetary.value.reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
 )
 
 const staffMonetaryTotal = computed(() =>
