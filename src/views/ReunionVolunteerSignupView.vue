@@ -311,17 +311,11 @@ export default {
           created_at: new Date()
         }
 
-        await updateDoc(doc(this.db, 'participants_2026', this.participant.id_code), {
-          'volunteer.claimed_slots': arrayUnion(claimSummary)
-        }).catch(async () => {
-          await setDoc(
-            doc(this.db, 'participants_2026', this.participant.id_code),
-            {
-              volunteer: { claimed_slots: [claimSummary] }
-            },
-            { merge: true }
-          )
-        })
+        await setDoc(
+          doc(this.db, 'participants_2026', this.participant.id_code),
+          { volunteer: { claimed_slots: arrayUnion(claimSummary) } },
+          { mergeFields: ['volunteer.claimed_slots'] }
+        )
 
         // Also record in central collection (optional audit trail)
         await addDoc(collection(this.db, 'volunteer_signups_2026'), {
