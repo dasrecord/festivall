@@ -64,8 +64,8 @@
         </RouterLink>
 
         <RouterLink to="/dashboard/budget" class="scanner-link">
-          <img :src="task_icon" alt="Budget" class="action-icon" style="width: 24px" />
-          Budget 2026
+          <img :src="budget_icon" alt="Budget" class="action-icon" style="width: 24px" />
+          Budget Manager
         </RouterLink>
 
         <RouterLink to="/reunionmap" class="scanner-link">
@@ -575,6 +575,7 @@ import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import art_installation_icon from '@/assets/images/icons/art_installation.png'
 import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 import task_icon from '@/assets/images/icons/task.png'
+import budget_icon from '@/assets/images/icons/budget.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 
 export default {
@@ -1634,6 +1635,7 @@ export default {
       art_installation_icon,
       scavenger_hunt_icon,
       task_icon,
+      budget_icon,
       map_icon,
       sendEmail,
       compensation_icon,
