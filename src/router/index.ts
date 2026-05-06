@@ -515,7 +515,7 @@ const routes = [
     path: '/bitcoin-wallet',
     name: 'bitcoin-wallet',
     component: BitcoinWalletView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   }
 ]
 
