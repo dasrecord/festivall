@@ -770,7 +770,7 @@ export default {
       if (daysDiff === 0) return 'Friday'
       if (daysDiff === 1) return 'Saturday'
       if (daysDiff === 2) return 'Sunday'
-      if (daysDiff === 3) return 'Monday'
+      if (daysDiff === 3) return 'Monday (Labour Day)'
       return 'Post-Festival'
     },
     async lookupOperatorName(idCode) {
