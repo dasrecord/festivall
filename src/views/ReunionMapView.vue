@@ -147,8 +147,19 @@ onMounted(() => {
   listenToVolunteerShifts()
 })
 <script setup>
+// Accept user id_code as a prop (from ticket click-through)
+import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
+import { defineProps } from 'vue'
+const props = defineProps({
+  id_code: { type: String, required: false }
+})
+
+// Modal refs for legacy overlays (needed for template)
+const showKitchenModal = ref(false)
+const showWashroomModal = ref(false)
+const showLostFoundModal = ref(false)
 import { ref, computed, onMounted } from 'vue'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
 import { useLineupState } from '@/composables/useLineupState'
@@ -162,7 +173,7 @@ const mapObject = ref(null)
 // ── Overlay definitions for map features (with nudge/offsets) ────────────────
 // Add an entry for each feature, matching the SVG layer name and desired offset.
 const STAGE_ICONS = [
-  { svgId: 'stage_area', label: 'Main Stage', offsetX: 0, offsetY: +10 }
+  { svgId: 'stage_area_icon', label: 'Main Stage', offsetX: 0, offsetY: +10 }
 ]
 
 const MEAL_ICONS = [
@@ -406,6 +417,68 @@ async function fetchAndUpdateCurrentAct() {
 
 function onObjectLoad() {
   positionOverlays()
+  // Make all *_icon elements clickable
+  const svgDoc = mapObject.value?.contentDocument
+  if (svgDoc) {
+    const iconElements = svgDoc.querySelectorAll('[id$="_icon"]')
+    iconElements.forEach((el) => {
+      el.style.cursor = 'pointer'
+      el.addEventListener('click', (event) => {
+        handleSvgIconClick(el.id, event)
+      })
+    })
+  }
+}
+// Handler for clicking SVG icons
+function handleSvgIconClick(iconId, event) {
+  // If washroom icon clicked, open supply report modal
+  if (iconId.includes('washroom') || iconId.includes('washrooms')) {
+    openWashroomSupplyModal()
+  } else {
+    // Default: show alert for other icons (customize as needed)
+    alert(`Clicked icon: ${iconId}`)
+  }
+}
+
+// Modal state for washroom supply report
+const showWashroomSupplyModal = ref(false)
+const washroomSupplyType = ref('toilet_paper')
+const washroomSupplySubmitting = ref(false)
+const washroomSupplyError = ref('')
+
+function openWashroomSupplyModal() {
+  washroomSupplyType.value = 'toilet_paper'
+  washroomSupplyError.value = ''
+  showWashroomSupplyModal.value = true
+}
+
+async function submitWashroomSupplyAlert() {
+  washroomSupplySubmitting.value = true
+  washroomSupplyError.value = ''
+  try {
+    const col = collection(reunion_db, 'alerts_2026')
+    const userId = props.id_code || 'ANONYMOUS'
+    const userName = 'User ' + userId.slice(-5)
+    const supply = washroomSupplyType.value
+    const message = `Low ${supply.replace('_', ' ')} reported.`
+    await addDoc(col, {
+      type: 'washroom',
+      status: 'low',
+      supply,
+      message,
+      created_at: new Date().toISOString(),
+      userId,
+      userName
+    })
+    // Send Slack notification
+    sendVolunteerCoordinator(`🚻 *Washroom Alert*: Low ${supply.replace('_', ' ')} reported by ${userName}`)
+    showWashroomSupplyModal.value = false
+  } catch (e) {
+    console.error('Washroom alert Firestore error:', e)
+    washroomSupplyError.value = 'Failed to submit alert: ' + (e && e.message ? e.message : e)
+  } finally {
+    washroomSupplySubmitting.value = false
+  }
 }
 
 onMounted(() => {
@@ -682,6 +755,22 @@ onMounted(() => {
       </div>
     </Transition>
   </div>
+
+  <!-- Washroom Supply Modal -->
+  <Transition name="bio">
+    <div v-if="showWashroomSupplyModal" class="bio-card">
+      <button class="bio-close" @click="showWashroomSupplyModal = false">✕</button>
+      <h3>Report Low Washroom Supplies</h3>
+      <p>Select the supply that is low:</p>
+      <label><input type="radio" value="toilet_paper" v-model="washroomSupplyType" /> Toilet Paper</label><br />
+      <label><input type="radio" value="hand_sanitizer" v-model="washroomSupplyType" /> Hand Sanitizer</label><br />
+      <label><input type="radio" value="soap" v-model="washroomSupplyType" /> Soap</label><br />
+      <button :disabled="washroomSupplySubmitting" @click="submitWashroomSupplyAlert">
+        {{ washroomSupplySubmitting ? 'Reporting...' : 'Report' }}
+      </button>
+      <p v-if="washroomSupplyError" style="color: #f88;">{{ washroomSupplyError }}</p>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
