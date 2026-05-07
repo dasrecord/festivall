@@ -398,24 +398,31 @@
                 style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
               >
                 <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 600;' : 'color: #4caf50; font-weight: bold;'">
+                  <img
+                    v-if="slot.team && teamIcons && Object.prototype.hasOwnProperty.call(teamIcons, slot.team.toLowerCase()) && teamIcons[slot.team.toLowerCase()]"
+                    :src="teamIcons[slot.team.toLowerCase()]"
+                    :alt="slot.team + ' icon'"
+                    style="height: 1.2em; margin-right: 0.3em; vertical-align: middle;"
+                  />
                   {{ {
-                    frontgate: '🚪 Front Gate',
-                    foodteam: '🍽️ Food Team',
-                    setupcrew: '🔧 Setup Crew',
-                    stagecrew: '🎵 Stage Crew',
-                    cleanupcrew: '🧹 Cleanup Crew',
-                    arcadeattendant: '🕹️ Arcade Attendant'
-                  }[slot.team] || slot.team }}
+                    frontgate: 'Front Gate',
+                    foodteam: 'Food Team',
+                    setupcrew: 'Setup Crew',
+                    stagecrew: 'Stage Crew',
+                    cleanupcrew: 'Cleanup Crew',
+                    arcadeattendant: 'Arcade Attendant'
+                  }[slot.team && slot.team.toLowerCase()] || slot.team }}
                   <span v-if="slot.active === false" class="inactive-badge">inactive</span>
                 </div>
                 <div :style="slot.active === false ? 'color: #aaa;' : ''">{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
                 <div v-if="slot.title" :style="slot.active === false ? 'color: #bbb; font-size: 0.85rem;' : 'font-size: 0.85rem; color: #ccc;'">{{ slot.title }}</div>
                 <div v-if="slot.active === false" style="color: #b0b0b0; font-size: 0.92em; margin-top: 0.2em;">
-                  <span style="font-size: 1em;">This shift was disabled by organizers. You do not need to attend.</span>
+                  <span style="font-size: 1em;">This shift was disabled by organizers.<br> You do not need to attend.</span>
                 </div>
                   <div v-if="teamManuals[slot.team]" style="margin-top: 0.5em;">
-                    <RouterLink :to="teamManuals[slot.team]" style="color: orange; text-decoration: underline;">
-                      📖 {{ {
+                    <RouterLink :to="teamManuals[slot.team]" style="color: orange; text-decoration: underline; display: flex; align-items: center; gap: 0.4em;">
+                      <img src="/src/assets/images/icons/task.png" alt="Manual Icon" style="height: 1.2em; margin-right: 0.2em; vertical-align: middle;" />
+                      {{ {
                         frontgate: 'Front Gate Team Manual',
                         foodteam: 'Food Team Manual',
                         setupcrew: 'Setup Crew Manual',
@@ -750,6 +757,13 @@ import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
 import radio_icon from '@/assets/images/icons/radio.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
+import foodteam_icon from '@/assets/images/icons/food.png'
+import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
+import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
+import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
+import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
+import task_icon from '@/assets/images/icons/task.png'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -789,6 +803,16 @@ export default {
         cleanupcrew: '/reunioncleanupcrew',
         arcadeattendant: '/reunionarcadeattendant'
       }
+
+    // Map team keys to their icon paths
+    const teamIcons = {
+      frontgate: frontgate_icon,
+      foodteam: foodteam_icon,
+      setupcrew: setupcrew_icon,
+      stagecrew: stagecrew_icon,
+      cleanupcrew: cleanupcrew_icon,
+      arcadeattendant: arcadeattendant_icon,
+    }
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -1117,8 +1141,10 @@ export default {
       currentAct,
       radio_icon,
       REUNION_FESTIVAL,
-      mergedClaimedSlots
-        ,teamManuals
+      mergedClaimedSlots,
+      teamManuals,
+      teamIcons,
+      task_icon
     }
   }
 }
