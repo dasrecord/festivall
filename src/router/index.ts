@@ -386,22 +386,6 @@ const routes = [
     component: ReunionVolunteerSignupView,
     props: { teamKey: 'multi' }
   },
-  // Legacy redirects from old team-specific routes to consolidated signup
-  { path: '/reunion-frontgate-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-foodteam-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-foodteam-a-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-foodteam-b-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-stagecrew-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-stagecrew-a-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-stagecrew-b-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-stagecrew-c-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-setupcrew-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-setupcrew-a-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-setupcrew-b-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-setupcrew-c-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  { path: '/reunion-cleanupcrew-signup', redirect: { name: 'reunion-volunteer-signup' } },
-  // Legacy redirect from old instructions page
-  { path: '/reunion-volunteer-instructions', redirect: { name: 'reunion-volunteer-welcome' } },
   {
     path: '/stayconnected',
     name: 'stayconnected',

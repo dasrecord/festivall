@@ -413,6 +413,18 @@
                 <div v-if="slot.active === false" style="color: #b0b0b0; font-size: 0.92em; margin-top: 0.2em;">
                   <span style="font-size: 1em;">This shift was disabled by organizers. You do not need to attend.</span>
                 </div>
+                  <div v-if="teamManuals[slot.team]" style="margin-top: 0.5em;">
+                    <RouterLink :to="teamManuals[slot.team]" style="color: orange; text-decoration: underline;">
+                      📖 {{ {
+                        frontgate: 'Front Gate Team Manual',
+                        foodteam: 'Food Team Manual',
+                        setupcrew: 'Setup Crew Manual',
+                        stagecrew: 'Stage Crew Manual',
+                        cleanupcrew: 'Cleanup Crew Manual',
+                        arcadeattendant: 'Arcade Attendant Manual'
+                      }[slot.team] || 'Team Manual' }}
+                    </RouterLink>
+                  </div>
               </div>
             </div>
             <br />
@@ -768,6 +780,16 @@ export default {
     const showFMRadioModal = ref(false)
     const showVolunteerShiftsModal = ref(false)
 
+      // Efficient team manual links map
+      const teamManuals = {
+        frontgate: '/reunionfrontgate',
+        foodteam: '/reunionfoodteam',
+        setupcrew: '/reunionsetupcrew',
+        stagecrew: '/reunionstagecrew',
+        cleanupcrew: '/reunioncleanupcrew',
+        arcadeattendant: '/reunionarcadeattendant'
+      }
+
     const calculateReferralEarnings = async (id_code) => {
       try {
         const referralQuery = query(
@@ -1096,6 +1118,7 @@ export default {
       radio_icon,
       REUNION_FESTIVAL,
       mergedClaimedSlots
+        ,teamManuals
     }
   }
 }
