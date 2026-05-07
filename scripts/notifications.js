@@ -243,7 +243,7 @@ export const sendVolunteerCoordinator = async (message) => {
 
   try {
     const response = await axios.post(
-      'https://relayproxy.vercel.app/volunteer_coordinator',
+      'https://relayproxy.vercel.app/reunion_volunteer',
       payload,
       { headers }
     );
