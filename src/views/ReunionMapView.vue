@@ -147,11 +147,17 @@ onMounted(() => {
   listenToVolunteerShifts()
 })
 <script setup>
-// Accept user id_code as a prop (from ticket click-through)
+// Accept user id_code as a prop (from ticket click-through or URL)
 import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
 import { defineProps } from 'vue'
+import { useRoute } from 'vue-router'
 const props = defineProps({
   id_code: { type: String, required: false }
+})
+const route = useRoute()
+// Use prop if provided, else fallback to query or params
+const effectiveIdCode = computed(() => {
+  return props.id_code || route.query.id_code || route.params.id_code || ''
 })
 
 // Modal refs for legacy overlays (needed for template)
@@ -430,9 +436,18 @@ function onObjectLoad() {
   }
 }
 // Handler for clicking SVG icons
+// Track which washroom is being reported
+const washroomLocation = ref('')
 function handleSvgIconClick(iconId, event) {
-  // If washroom icon clicked, open supply report modal
+  // If washroom icon clicked, open supply report modal with location
   if (iconId.includes('washroom') || iconId.includes('washrooms')) {
+    // Customize this mapping as needed
+    let label = ''
+    if (iconId === 'washroom1_icon') label = 'Washroom 1'
+    else if (iconId === 'washroom2_icon') label = 'Washroom 2'
+    else if (iconId === 'washrooms_area_icon') label = 'Main Washrooms'
+    else label = iconId
+    washroomLocation.value = label
     openWashroomSupplyModal()
   } else {
     // Default: show alert for other icons (customize as needed)
@@ -457,21 +472,23 @@ async function submitWashroomSupplyAlert() {
   washroomSupplyError.value = ''
   try {
     const col = collection(reunion_db, 'alerts_2026')
-    const userId = props.id_code || 'ANONYMOUS'
+    const userId = effectiveIdCode.value || 'ANONYMOUS'
     const userName = 'User ' + userId.slice(-5)
     const supply = washroomSupplyType.value
-    const message = `Low ${supply.replace('_', ' ')} reported.`
+    const location = washroomLocation.value || 'Unknown Washroom'
+    const message = `Low ${supply.replace('_', ' ')} reported at ${location}.`
     await addDoc(col, {
       type: 'washroom',
       status: 'low',
       supply,
+      location,
       message,
       created_at: new Date().toISOString(),
       userId,
       userName
     })
     // Send Slack notification
-    sendVolunteerCoordinator(`🚻 *Washroom Alert*: Low ${supply.replace('_', ' ')} reported by ${userName}`)
+    sendVolunteerCoordinator(`🚻 *Washroom Alert*: Low ${supply.replace('_', ' ')} at *${location}* reported by ${userName}`)
     showWashroomSupplyModal.value = false
   } catch (e) {
     console.error('Washroom alert Firestore error:', e)
@@ -761,6 +778,7 @@ onMounted(() => {
     <div v-if="showWashroomSupplyModal" class="bio-card">
       <button class="bio-close" @click="showWashroomSupplyModal = false">✕</button>
       <h3>Report Low Washroom Supplies</h3>
+      <p v-if="washroomLocation">Reporting for: <strong>{{ washroomLocation }}</strong></p>
       <p>Select the supply that is low:</p>
       <label><input type="radio" value="toilet_paper" v-model="washroomSupplyType" /> Toilet Paper</label><br />
       <label><input type="radio" value="hand_sanitizer" v-model="washroomSupplyType" /> Hand Sanitizer</label><br />
