@@ -311,10 +311,9 @@ export default {
           created_at: new Date()
         }
 
-        await setDoc(
+        await updateDoc(
           doc(this.db, 'participants_2026', this.participant.id_code),
-          { volunteer: { claimed_slots: arrayUnion(claimSummary) } },
-          { mergeFields: ['volunteer.claimed_slots'] }
+          { 'volunteer.claimed_slots': arrayUnion(claimSummary) }
         )
 
         // Also record in central collection (optional audit trail)
