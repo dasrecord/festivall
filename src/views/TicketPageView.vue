@@ -398,21 +398,33 @@
                 style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
               >
                 <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 600;' : 'color: #4caf50; font-weight: bold;'">
-                  <img
-                    v-if="slot.team && teamIcons && Object.prototype.hasOwnProperty.call(teamIcons, slot.team.toLowerCase()) && teamIcons[slot.team.toLowerCase()]"
-                    :src="teamIcons[slot.team.toLowerCase()]"
-                    :alt="slot.team + ' icon'"
-                    style="height: 1.2em; margin-right: 0.3em; vertical-align: middle;"
-                  />
-                  {{ {
-                    frontgate: 'Front Gate',
-                    foodteam: 'Food Team',
-                    setupcrew: 'Setup Crew',
-                    stagecrew: 'Stage Crew',
-                    cleanupcrew: 'Cleanup Crew',
-                    arcadeattendant: 'Arcade Attendant'
-                  }[slot.team && slot.team.toLowerCase()] || slot.team }}
-                  <span v-if="slot.active === false" class="inactive-badge">inactive</span>
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                        v-if="slot.team && teamIcons && Object.prototype.hasOwnProperty.call(teamIcons, slot.team.toLowerCase()) && teamIcons[slot.team.toLowerCase()]"
+                        :src="teamIcons[slot.team.toLowerCase()]"
+                        :alt="slot.team + ' icon'"
+                        style="max-width: 54px; max-height: 54px; object-fit: contain; margin-right: 1em; display: block;"
+                      />
+                      <span>
+                        {{ {
+                          frontgate: 'Front Gate',
+                          foodteam: 'Food Team',
+                          setupcrew: 'Setup Crew',
+                          stagecrew: 'Stage Crew',
+                          cleanupcrew: 'Cleanup Crew',
+                          arcadeattendant: 'Arcade Attendant'
+                        }[slot.team && slot.team.toLowerCase()] || slot.team }}
+                        <span v-if="slot.active === false" class="inactive-badge">inactive</span>
+                      </span>
+                    </div>
+                    <div v-if="teamManuals[slot.team]" style="display: flex; flex-direction: column; align-items: center; margin-left: 1em;">
+                      <RouterLink :to="teamManuals[slot.team]" style="text-decoration: none;">
+                        <img :src="task_icon" alt="Task Icon" style="max-width: 38px; max-height: 38px; object-fit: contain; margin-bottom: 0.1em; display: block;" />
+                        <span style="font-size: 0.85em; color: #fff;">Tasks</span>
+                      </RouterLink>
+                    </div>
+                  </div>
                 </div>
                 <div :style="slot.active === false ? 'color: #aaa;' : ''">{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
                 <div v-if="slot.title" :style="slot.active === false ? 'color: #bbb; font-size: 0.85rem;' : 'font-size: 0.85rem; color: #ccc;'">{{ slot.title }}</div>
@@ -420,17 +432,7 @@
                   <span style="font-size: 1em;">This shift was disabled by organizers.<br> You do not need to attend.</span>
                 </div>
                   <div v-if="teamManuals[slot.team]" style="margin-top: 0.5em;">
-                    <RouterLink :to="teamManuals[slot.team]" style="color: orange; text-decoration: underline; display: flex; align-items: center; gap: 0.4em;">
-                      <img src="/src/assets/images/icons/task.png" alt="Manual Icon" style="height: 1.2em; margin-right: 0.2em; vertical-align: middle;" />
-                      {{ {
-                        frontgate: 'Front Gate Team Manual',
-                        foodteam: 'Food Team Manual',
-                        setupcrew: 'Setup Crew Manual',
-                        stagecrew: 'Stage Crew Manual',
-                        cleanupcrew: 'Cleanup Crew Manual',
-                        arcadeattendant: 'Arcade Attendant Manual'
-                      }[slot.team] || 'Team Manual' }}
-                    </RouterLink>
+                    <!-- Manual link now shown as icon on the right, so this is removed. -->
                   </div>
               </div>
             </div>
