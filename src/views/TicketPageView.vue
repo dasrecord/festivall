@@ -327,7 +327,7 @@
             💰
             <strong style="text-decoration: underline; color: orange"
               >Referral Instructions:</strong
-            >
+            ><br />
             You can share your Festivall ID_CODE or your referral link with your friends and
             family.<br />
             🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br />
