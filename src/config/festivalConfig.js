@@ -13,7 +13,30 @@ export const REUNION_FESTIVAL = {
   mondayDate: new Date('2026-09-07T12:00:00-06:00'),
   lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
-
+  
+  // Meals Config — programmatically generated for Lunch and Supper on main festival days
+  get meals() {
+    // Festival runs Friday (4th) to Sunday (6th)
+    const days = [
+      { label: 'Friday', date: '2026-09-04' },
+      { label: 'Saturday', date: '2026-09-05' },
+      { label: 'Sunday', date: '2026-09-06' }
+    ];
+    const meals = [];
+    days.forEach(day => {
+      meals.push({
+        label: `${day.label} Lunch`,
+        time: `${day.date}T12:00:00-06:00`,
+        menu: ['Placeholder Lunch 1', 'Placeholder Lunch 2']
+      });
+      meals.push({
+        label: `${day.label} Supper`,
+        time: `${day.date}T18:00:00-06:00`,
+        menu: ['Placeholder Supper 1', 'Placeholder Supper 2']
+      });
+    });
+    return meals;
+  },
   // Volunteer team reveal phases — controls which teams appear in the application form
   volunteerPhases: {
     phase1End: new Date('2026-06-15T23:59:59Z'),  // Phase 1: Setup Crew only
