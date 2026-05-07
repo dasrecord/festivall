@@ -30,4 +30,50 @@ export const REUNION_FESTIVAL = {
     phase2: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant'],
     phase3: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew'],
   },
+
+  // Volunteer shift parameters for each team (minimalist structure)
+  volunteerShiftParams: {
+    setupcrew: {
+      label: 'Setup Crew',
+      shift: ['10:00', '18:00'],
+      days: [[8, 24, 9, 4]], // [startMonth, startDay, endMonth, endDay]
+      duration: 8
+    },
+    frontgate: {
+      label: 'Front Gate',
+      shift: ['10:00', '24:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 2,
+      repeat: true
+    },
+    foodteam: {
+      label: 'Food Team',
+      shifts: [
+        ['11:00', '15:00'],
+        ['17:00', '21:00']
+      ],
+      days: [[9, 4, 9, 6]],
+      duration: 4
+    },
+    stagecrew: {
+      label: 'Stage Crew',
+      shift: ['08:00', '24:00'],
+      overnight: ['00:00', '04:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 4
+    },
+    cleanupcrew: {
+      label: 'Cleanup Crew',
+      shift: ['10:00', '18:00'],
+      day: [9, 7],
+      duration: 8
+    },
+    arcadeattendant: {
+      label: 'Arcade Attendant',
+      shift: ['12:00', '24:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 4,
+      repeat: true
+    }
+  },
 }

@@ -55,7 +55,7 @@
           </div>
 
           <div class="gen-section">
-            <h4 class="gen-section-title">Shift Concurrency</h4>
+            <h4 class="gen-section-title">Select Shift Concurrency</h4>
             <div class="capacity-grid">
               <div class="capacity-item">
                 <label>Setup Crew</label>
@@ -95,35 +95,17 @@
           </button>
         </div>
         <small class="hint">
-          <strong>Current Paramters:</strong><br />
+          <strong>Current Parameters:</strong><br />
           <ul>
-            <li>
-              <strong>Setup Crew:</strong> 8-hour shifts from 10:00 AM to 6:00 PM, every day from
-              <strong>August 24</strong> to <strong>September 4</strong>.
-            </li>
-            <li>
-              <strong>Front Gate:</strong> 2-hour shifts from 10:00 AM to 12:00 AM (midnight), on
-              <strong>September 4</strong> to <strong>September 6</strong>.
-            </li>
-            <li>
-              <strong>Food Team:</strong> Two 4-hour shifts daily:
-              <strong>11:00 AM to 3:00 PM</strong> (Lunch) and
-              <strong>5:00 PM to 9:00 PM</strong> (Supper), on <strong>September 4</strong> to
-              <strong>September 6</strong>.
-            </li>
-            <li>
-              <strong>Stage Crew:</strong> 4-hour blocks from
-              <strong>8:00 AM to 12:00 AM</strong> (midnight), plus an overnight shift from
-              <strong>12:00 AM to 4:00 AM</strong> (next day), on <strong>September 4</strong> to
-              <strong>September 6</strong>.
-            </li>
-            <li>
-              <strong>Cleanup Crew:</strong> A single 8-hour shift from
-              <strong>10:00 AM to 6:00 PM</strong>, on <strong>September 7</strong>.
-            </li>
-            <li>
-              <strong>Arcade Attendant:</strong> 4-hour shifts from <strong>12:00 PM to 12:00 AM</strong>
-              (3 shifts/day), on <strong>September 4</strong> to <strong>September 6</strong>.
+            <li v-for="(params, key) in REUNION_FESTIVAL.volunteerShiftParams" :key="key">
+              <strong>{{ params.label }}:</strong>
+              <span v-if="params.shift">{{ params.shift[0] }}–{{ params.shift[1] }}</span>
+              <span v-if="params.shifts">{{ params.shifts.map(s => s[0] + '–' + s[1]).join(', ') }}</span>
+              <span v-if="params.overnight">, overnight {{ params.overnight[0] }}–{{ params.overnight[1] }}</span>
+              <span v-if="params.duration">, {{ params.duration }}h</span>
+              <span v-if="params.days">, {{ params.days.map(d => `(${d[0]}/${d[1]}–${d[2]}/${d[3]})`).join(', ') }}</span>
+              <span v-if="params.day">, ({{ params.day[0] }}/{{ params.day[1] }})</span>
+              <span v-if="params.repeat">, repeat</span>
             </li>
           </ul>
         </small>
@@ -214,6 +196,7 @@ export default {
     return {
       db: reunion_db,
       reunion_emblem,
+      REUNION_FESTIVAL,
       teamLabels: {
         frontgate: 'Front Gate',
         foodteam: 'Food Team',
@@ -439,123 +422,96 @@ export default {
             claimed: []
           })
 
-        // Setup Crew A/B/C mentioned; rule says setupcrew overall 8h 10-18 daily Aug 24-Sep 4
-        const setupDates = this.dateRange(new Date(year, 7, 24), new Date(year, 8, 4)) // Aug=7, Sep=8
-        for (const date of setupDates) {
-          await add({
-            team: 'setupcrew',
-            date,
-            start: '10:00',
-            end: '18:00',
-            capacity: this.gen.capacity.setup,
-            notes: 'Setup (8h)'
-          })
-        }
+        // Iterate over all teams in config
+        for (const [team, params] of Object.entries(this.REUNION_FESTIVAL.volunteerShiftParams)) {
+          // Determine capacity field (camelCase to match gen)
+          const capKey = Object.keys(this.gen.capacity).find(k => team.includes(k)) || team
+          const capacity = this.gen.capacity[capKey] || 1
 
-        // Front Gate 2h shifts 10:00-24:00 on Sep 4-6
-        const fgDates = this.dateRange(new Date(year, 8, 4), new Date(year, 8, 6))
-        for (const date of fgDates) {
-          let t = '10:00'
-          while (t !== '00:00') {
-            const end = this.timeAdd(t, 120)
-            await add({
-              team: 'frontgate',
-              date,
-              start: t,
-              end: end === '00:00' ? '24:00' : end,
-              capacity: this.gen.capacity.frontgate,
-              notes: 'Front Gate (2h)'
-            })
-            t = end
-            if (t === '00:00') break
-            if (t === '24:00') {
-              t = '00:00'
+          // Handle multi-day ranges
+          let daysArr = []
+          if (params.days) {
+            for (const d of params.days) {
+              // d: [startMonth, startDay, endMonth, endDay]
+              const start = new Date(year, d[0] - 1, d[1])
+              const end = new Date(year, d[2] - 1, d[3])
+              daysArr.push(...this.dateRange(start, end))
+            }
+          } else if (params.day) {
+            // Single day: [month, day]
+            daysArr.push(this.toDateStr(year, params.day[0], params.day[1]))
+          }
+
+          // Handle shifts
+          if (params.shifts) {
+            // Multiple shifts per day
+            for (const date of daysArr) {
+              for (const s of params.shifts) {
+                await add({
+                  team,
+                  date,
+                  start: s[0],
+                  end: s[1],
+                  capacity,
+                  notes: `${params.label} (${params.duration}h)`
+                })
+              }
+            }
+          } else if (params.shift && params.repeat) {
+            // Repeating shift blocks (e.g., 2h, 4h, etc.)
+            for (const date of daysArr) {
+              let t = params.shift[0]
+              const endTime = params.shift[1]
+              const durationMin = (params.duration || 2) * 60
+              while (t !== '00:00') {
+                let end = this.timeAdd(t, durationMin)
+                if (end === '00:00' || end === endTime) end = endTime
+                await add({
+                  team,
+                  date,
+                  start: t,
+                  end,
+                  capacity,
+                  notes: `${params.label} (${params.duration}h)`
+                })
+                if (end === endTime) break
+                t = end
+                if (t === '24:00') t = '00:00'
+              }
+            }
+          } else if (params.shift) {
+            // Single shift per day
+            for (const date of daysArr) {
+              await add({
+                team,
+                date,
+                start: params.shift[0],
+                end: params.shift[1],
+                capacity,
+                notes: `${params.label} (${params.duration}h)`
+              })
             }
           }
-        }
-
-        // Food Team: 11-15 and 17-21 on Sep 4-6
-        const foodDates = fgDates
-        for (const date of foodDates) {
-          await add({
-            team: 'foodteam',
-            date,
-            start: '11:00',
-            end: '15:00',
-            capacity: this.gen.capacity.food,
-            notes: 'Food Team (Lunch)'
-          })
-          await add({
-            team: 'foodteam',
-            date,
-            start: '17:00',
-            end: '21:00',
-            capacity: this.gen.capacity.food,
-            notes: 'Food Team (Supper)'
-          })
-        }
-
-        // Stage Crew: 4h blocks from 08:00-24:00, plus 00:00-04:00 (next day) on Sep 4-6
-        const stageDates = fgDates
-        for (const date of stageDates) {
-          // 08-24 blocks
-          let t = '08:00'
-          while (t !== '00:00') {
-            const end = this.timeAdd(t, 240)
-            if (end === '00:00') break // stop at midnight (will handle post-midnight next)
-            await add({
-              team: 'stagecrew',
-              date,
-              start: t,
-              end,
-              capacity: this.gen.capacity.stage,
-              notes: 'Stage Crew (4h)'
-            })
-            t = end
-            if (t === '24:00') {
-              t = '00:00'
+          // Handle overnight (e.g., stagecrew)
+          if (params.overnight && params.days) {
+            for (const d of params.days) {
+              const start = new Date(year, d[0] - 1, d[1])
+              const end = new Date(year, d[2] - 1, d[3])
+              const days = this.dateRange(start, end)
+              for (const date of days) {
+                // overnight goes to next day
+                const [Y, M, D] = date.split('-').map(Number)
+                const nextDate = this.toDateStr(Y, M, D + 1)
+                await add({
+                  team,
+                  date: nextDate,
+                  start: params.overnight[0],
+                  end: params.overnight[1],
+                  capacity,
+                  notes: `${params.label} (overnight ${params.duration}h)`
+                })
+              }
             }
-          }
-          // 00-04 next-day block
-          const [Y, M, D] = date.split('-').map(Number)
-          const nextDate = this.dateRange(new Date(Y, M - 1, D + 1), new Date(Y, M - 1, D + 1))[0]
-          await add({
-            team: 'stagecrew',
-            date: nextDate,
-            start: '00:00',
-            end: '04:00',
-            capacity: this.gen.capacity.stage,
-            notes: 'Stage Crew (overnight 4h)'
-          })
-        }
-
-        // Cleanup Crew: single 8h shift on Sep 7 from 10:00-18:00
-        const cleanupDate = this.toDateStr(year, 9, 7)
-        await add({
-          team: 'cleanupcrew',
-          date: cleanupDate,
-          start: '10:00',
-          end: '18:00',
-          capacity: this.gen.capacity.cleanup,
-          notes: 'Cleanup (8h)'
-        })
-
-        // Arcade Attendant: 4h shifts 12:00-24:00 on Sep 4-6
-        const arcadeDates = fgDates
-        for (const date of arcadeDates) {
-          let t = '12:00'
-          while (t !== '00:00') {
-            const end = this.timeAdd(t, 240)
-            await add({
-              team: 'arcadeattendant',
-              date,
-              start: t,
-              end: end === '00:00' ? '24:00' : end,
-              capacity: this.gen.capacity.arcade,
-              notes: 'Arcade Attendant (4h)'
-            })
-            t = end
-            if (t === '00:00') break
           }
         }
 
