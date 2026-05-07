@@ -707,12 +707,9 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink :to="new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '/reunionlineup' : '#'">
+        <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-<<<<<<< HEAD
-            {{ new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '2026 Lineup · Look & Listen!' : 'Lineup · Coming Soon!' }}
-=======
             2026 Lineup<br />Look & Listen!<br />
           </p>
         </RouterLink>
@@ -720,7 +717,6 @@
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px; " alt="Coming Soon Icon" />
             2026 Lineup<br />TBA
->>>>>>> origin/self_checkin_improvements
           </p>
         </RouterLink>
 
