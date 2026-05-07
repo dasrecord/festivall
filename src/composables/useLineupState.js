@@ -23,6 +23,7 @@ function persistStarred(set) {
 // ── Module-level singletons (shared across all imports) ───────────────────────
 const starredActIds = ref(loadStarred())
 const currentAct = ref(null)
+const upcomingAct = ref(null)
 
 // ── Star helpers ──────────────────────────────────────────────────────────────
 function toggleStar(eventId) {
@@ -42,11 +43,24 @@ function isStarred(eventId) {
 
 // ── Now-playing logic ─────────────────────────────────────────────────────────
 /**
- * Scans all events and determines which act is currently live.
- * Slot end = next event's first settime, or +90 min for the last act of the day.
+ * Scans all events and determines which act is currently live,
+ * and which act is next up.
  *
  * @param {Array} allEvents - full events array from Firestore
  */
+function makeActObj(event, start) {
+  return {
+    act_name: event.act_name || '',
+    workshop_title: event.workshop_title || '',
+    genre: event.genre || '',
+    act_description: event.act_description || '',
+    social_url: event.social_url || '',
+    mix_track_url: event.mix_track_url || '',
+    settime: start,
+    id: event.id
+  }
+}
+
 function updateCurrentAct(allEvents) {
   const now = Date.now()
 
@@ -65,21 +79,15 @@ function updateCurrentAct(allEvents) {
     if (start > now) break // too early for this slot
     const end = i + 1 < slots.length ? slots[i + 1].start : start + 90 * 60 * 1000
     if (now < end) {
-      live = {
-        act_name: event.act_name || '',
-        workshop_title: event.workshop_title || '',
-        genre: event.genre || '',
-        act_description: event.act_description || '',
-        social_url: event.social_url || '',
-        mix_track_url: event.mix_track_url || '',
-        settime: start,
-        id: event.id
-      }
+      live = makeActObj(event, start)
       break
     }
   }
 
+  const nextSlot = slots.find((s) => s.start > now)
+
   currentAct.value = live
+  upcomingAct.value = nextSlot ? makeActObj(nextSlot.event, nextSlot.start) : null
 }
 
 // ── Composable export ─────────────────────────────────────────────────────────
@@ -87,6 +95,7 @@ export function useLineupState() {
   return {
     starredActIds,
     currentAct,
+    upcomingAct,
     toggleStar,
     isStarred,
     updateCurrentAct

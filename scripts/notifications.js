@@ -180,3 +180,39 @@ export const sendReunionSales = async (message) => {
     console.error('There was a problem with the axios operation:', error);
   }
 }
+
+export const sendVolunteerCoordinator = async (message) => {
+  if (!message) {
+    alert('Message is required.');
+    return;
+  }
+
+  const payload = {
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: message
+        }
+      }
+    ]
+  };
+
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+
+  console.log('Sending payload:', JSON.stringify(payload));
+
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/volunteer_coordinator',
+      payload,
+      { headers }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+  }
+}
