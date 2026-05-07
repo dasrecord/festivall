@@ -386,18 +386,18 @@
           />
           <h2>My Volunteer Shifts</h2>
 
-          <div v-if="order.volunteer_claimed_slots && order.volunteer_claimed_slots.length > 0" class="redemption-section">
+          <div v-if="mergedClaimedSlots && mergedClaimedSlots.length > 0" class="redemption-section">
             <h3>
               🗓️ <strong style="text-decoration: underline; color: orange">Your Claimed Shifts:</strong>
             </h3>
             <div class="history-list">
               <div
-                v-for="(slot, index) in order.volunteer_claimed_slots"
+                v-for="(slot, index) in mergedClaimedSlots"
                 :key="index"
-                class="history-item"
+                :class="['history-item', slot.active === false ? 'inactive-shift' : '']"
                 style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
               >
-                <div style="font-weight: bold; color: #4caf50;">
+                <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 600;' : 'color: #4caf50; font-weight: bold;'">
                   {{ {
                     frontgate: '🚪 Front Gate',
                     foodteam: '🍽️ Food Team',
@@ -406,9 +406,13 @@
                     cleanupcrew: '🧹 Cleanup Crew',
                     arcadeattendant: '🕹️ Arcade Attendant'
                   }[slot.team] || slot.team }}
+                  <span v-if="slot.active === false" class="inactive-badge">inactive</span>
                 </div>
-                <div>{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
-                <div v-if="slot.title" style="font-size: 0.85rem; color: #ccc;">{{ slot.title }}</div>
+                <div :style="slot.active === false ? 'color: #aaa;' : ''">{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
+                <div v-if="slot.title" :style="slot.active === false ? 'color: #bbb; font-size: 0.85rem;' : 'font-size: 0.85rem; color: #ccc;'">{{ slot.title }}</div>
+                <div v-if="slot.active === false" style="color: #b0b0b0; font-size: 0.92em; margin-top: 0.2em;">
+                  <span style="font-size: 1em;">This shift was disabled by organizers. You do not need to attend.</span>
+                </div>
               </div>
             </div>
             <br />
@@ -713,6 +717,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
 import frog_image from '@/assets/images/frog.png'
@@ -748,6 +753,8 @@ export default {
     const router = useRouter()
     const { currentAct } = useLineupState()
     const order = ref(null)
+      // Holds the merged slots with up-to-date active status
+      const mergedClaimedSlots = ref([])
     const qrCanvas = ref(null)
     const referralEarnings = ref(0)
     const referralQrCanvas = ref(null)
@@ -787,6 +794,50 @@ export default {
     }
 
     const loadOrder = async (id_code) => {
+          // Helper: fetch all claimed slot_ids and merge in current slot data
+          const mergeClaimedSlotsWithStatus = async (claimedSlots) => {
+            if (!Array.isArray(claimedSlots) || claimedSlots.length === 0) return []
+            // Get all slot_ids
+            const slotIds = claimedSlots.map(s => s.slot_id).filter(Boolean)
+            if (slotIds.length === 0) return claimedSlots
+            // Query all slots in one go
+            let slotDocs = []
+            try {
+              // Firestore 'in' query supports up to 10 items; fallback to individual fetch if needed
+              if (slotIds.length <= 10) {
+                const slotsQuery = query(collection(reunion_db, 'volunteer_slots_2026'), where('__name__', 'in', slotIds))
+                const snap = await getDocs(slotsQuery)
+                slotDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+              } else {
+                // Too many for 'in' query, fetch individually
+                slotDocs = []
+                for (const slot_id of slotIds) {
+                  try {
+                    const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                    if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
+                  } catch {}
+                }
+              }
+            } catch (e) {
+              // fallback: fetch individually if 'in' query fails
+              slotDocs = []
+              for (const slot_id of slotIds) {
+                try {
+                  const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                  if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
+                } catch {}
+              }
+            }
+            // Map by id for fast lookup
+            const slotMap = Object.fromEntries(slotDocs.map(s => [s.id, s]))
+            // Merge active status into claimed slots
+            return claimedSlots.map(s => {
+              const slot = slotMap[s.slot_id]
+              return slot ? { ...s, active: slot.active !== false } : { ...s }
+            })
+          }
+
+          // ...existing code...
       try {
         if (!id_code) {
           throw new Error('ID code is undefined')
@@ -882,6 +933,9 @@ export default {
             // Volunteer shift data
             volunteer_claimed_slots: p.volunteer?.claimed_slots || []
           }
+
+          // Merge claimed slots with up-to-date status and set mergedClaimedSlots
+          mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
 
           await nextTick()
           generateQRCode(order.value.id_code_long, qrCanvas.value)
@@ -1040,7 +1094,8 @@ export default {
       quiz_icon,
       currentAct,
       radio_icon,
-      REUNION_FESTIVAL
+      REUNION_FESTIVAL,
+      mergedClaimedSlots
     }
   }
 }
