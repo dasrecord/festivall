@@ -395,7 +395,18 @@ export default {
     },
     removeClaim(idx) {
       if (!this.form.id) return
+      const removed = this.form.claimed[idx]
       this.form.claimed.splice(idx, 1)
+      // Also remove from participant's claimed_slots
+      if (removed && removed.id_code) {
+        const participantRef = doc(this.db, 'participants_2026', removed.id_code)
+        // Remove the slot with this slot id from claimed_slots
+        updateDoc(participantRef, {
+          'volunteer.claimed_slots': (window.firebase && window.firebase.firestore && window.firebase.firestore.FieldValue && window.firebase.firestore.FieldValue.arrayRemove)
+            ? window.firebase.firestore.FieldValue.arrayRemove({ slot_id: this.form.id })
+            : [] // fallback: do nothing if FieldValue is not available
+        }).catch(e => console.warn('Failed to update participant claimed_slots', e))
+      }
     },
     async toggleActive(s) {
       await updateDoc(doc(this.db, 'volunteer_slots_2026', s.id), {
