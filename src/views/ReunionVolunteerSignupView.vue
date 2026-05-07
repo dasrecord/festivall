@@ -35,6 +35,7 @@
               <option value="setupcrew">Setup Crew</option>
               <option value="stagecrew">Stage Crew</option>
               <option value="cleanupcrew">Cleanup Crew</option>
+              <option value="arcadeattendant">Arcade Attendant</option>
             </select>
             <button class="refresh" @click="refreshSlots" :disabled="loadingSlots">
               {{ loadingSlots ? 'Loading...' : 'Refresh' }}
@@ -129,7 +130,8 @@ export default {
         foodteam: 'Food Team',
         setupcrew: 'Setup Crew',
         stagecrew: 'Stage Crew',
-        cleanupcrew: 'Cleanup Crew'
+        cleanupcrew: 'Cleanup Crew',
+        arcadeattendant: 'Arcade Attendant'
       }
     }
   },
@@ -309,17 +311,10 @@ export default {
           created_at: new Date()
         }
 
-        await updateDoc(doc(this.db, 'participants_2026', this.participant.id_code), {
-          'volunteer.claimed_slots': arrayUnion(claimSummary)
-        }).catch(async () => {
-          await setDoc(
-            doc(this.db, 'participants_2026', this.participant.id_code),
-            {
-              volunteer: { claimed_slots: [claimSummary] }
-            },
-            { merge: true }
-          )
-        })
+        await updateDoc(
+          doc(this.db, 'participants_2026', this.participant.id_code),
+          { 'volunteer.claimed_slots': arrayUnion(claimSummary) }
+        )
 
         // Also record in central collection (optional audit trail)
         await addDoc(collection(this.db, 'volunteer_signups_2026'), {

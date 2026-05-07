@@ -5,7 +5,7 @@ export type TaskDef = {
   id: string
   title: string
   description: string
-  department: 'front_gate' | 'setup_crew' | 'food_team' | 'stage_crew' | 'cleanup_crew'
+  department: 'front_gate' | 'setup_crew' | 'food_team' | 'stage_crew' | 'cleanup_crew' | 'arcade_attendant'
   priority: 'low' | 'medium' | 'high'
   // Optional type for special handling (e.g., Front Gate)
   // standard (default) | personal (per-user completion) | one-time (team task)
@@ -294,12 +294,88 @@ const CLEANUP_CREW: TaskDef[] = [
   }
 ]
 
+const ARCADE_ATTENDANT: TaskDef[] = [
+  {
+    id: 'arcade_001',
+    title: 'Generator & Trailer Power-On (Start of Day)',
+    description: 'Start the generator, verify stable power supply to the trailer, check all outlets are operational before powering any systems',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_002',
+    title: 'Arcade System Boot-Up',
+    description: 'Power on all arcade cabinets and systems in sequence, verify displays and controls are responsive, report any faults',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_003',
+    title: 'Flipbook Station Setup',
+    description: 'Boot flipbook computer, load flipbook software, run a test print, prepare paper cutter and heavy-duty stapler, verify paper stock and staple supply',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_004',
+    title: 'Supply Check',
+    description: 'Verify paper stock, staples, and other consumables are stocked for the session. Restock from supplies as needed',
+    department: 'arcade_attendant',
+    priority: 'medium',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_005',
+    title: 'On-Demand Flipbook Assembly',
+    description: 'When a participant triggers a print job, retrieve pages, trim with paper cutter to size, bind with heavy-duty stapler, and present completed flipbook to participant',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_006',
+    title: 'Arcade Monitoring & Participant Assistance',
+    description: 'Remain present at the arcade trailer during stage hours, assist participants, reset cabinets or restart systems as needed, report persistent faults',
+    department: 'arcade_attendant',
+    priority: 'medium',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_007',
+    title: 'Flipbook Station Breakdown (End of Day)',
+    description: 'Power down the flipbook computer, safely store paper cutter and stapler, secure remaining paper stock and supplies',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_008',
+    title: 'Arcade System Shutdown (End of Day)',
+    description: 'Power down all arcade cabinets and systems in sequence, ensure no systems are left running',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  },
+  {
+    id: 'arcade_009',
+    title: 'Generator & Power Shutdown (End of Day)',
+    description: 'Confirm all trailer systems are off, then safely shut down the generator and secure the trailer',
+    department: 'arcade_attendant',
+    priority: 'high',
+    type: 'personal'
+  }
+]
+
 const TASKS_BY_DEPT: Record<TaskDef['department'], TaskDef[]> = {
   front_gate: FRONT_GATE,
   setup_crew: SETUP_CREW,
   food_team: FOOD_TEAM,
   stage_crew: STAGE_CREW,
-  cleanup_crew: CLEANUP_CREW
+  cleanup_crew: CLEANUP_CREW,
+  arcade_attendant: ARCADE_ATTENDANT
 }
 
 export function getTasksForDepartment(

@@ -627,6 +627,7 @@ export default {
       { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew', collections: ['applications_2025', 'participants_2026'] },
       { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate', collections: ['applications_2025', 'participants_2026'] },
       { property: 'volunteer_type', value: 'Food Team', label: 'Food Team', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'volunteer_type', value: 'Arcade Attendant', label: 'Arcade Attendant', collections: ['participants_2026'] },
 
       // Application data filters
       { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track', collections: ['applications_2025', 'participants_2026'] },

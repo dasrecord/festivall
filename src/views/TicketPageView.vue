@@ -1,32 +1,24 @@
 <template>
   <div class="ticket-page" v-if="order">
-    <img :src="festivall_emblem_black" style="height: 50px; width: 75px" alt="Festivall Emblem" />
-
-    <CountdownTimer
-      v-if="order.ticket_type === 'Weekend Pass'"
-    />
-    <CountdownTimer
-      v-if="order.ticket_type === 'Day Pass'"
-      :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)"
-    />
-    <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
-    <img :src="frog_image" style="height: 100px; width: 100px" alt="Frog" />
-
-    <h2>Your Digital Ticket<br /></h2>
+    <div class="ticket-header">
+      <img :src="festivall_emblem_black" style="height: 38px; width: auto" alt="Festivall Emblem" />
+      <div class="ticket-title">
+        <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
+        <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
+        <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
+      </div>
+      <img :src="frog_image" style="height: 52px; width: 52px" alt="Frog" />
+    </div>
 
     <div class="order-info">
-      <p>
-        <strong>Full Name:</strong> {{ order.fullname }}
-        <strong>Ticket Type:</strong>
-        {{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : `Day Pass` }}
-      </p>
-      <p v-if="order.ticket_type === 'Weekend Pass'">
-        <strong>Valid:</strong> 12:00 PM Friday September 4th - 12:00 PM Monday September 7th, 2026
-      </p>
-
-      <p v-if="order.ticket_type === 'Day Pass'">
-        <strong>Valid: </strong> 12:00 PM {{ order.selected_day }}
-        for 24H
+      <div class="ticket-identity">
+        <span class="ticket-name">{{ order.fullname }}</span>
+        <span class="ticket-badge">{{ order.ticket_type === 'Weekend Pass' ? 'Weekend' : 'Day Pass' }}</span>
+      </div>
+      <p class="ticket-valid">
+        <strong>Valid:</strong>
+        <span v-if="order.ticket_type === 'Weekend Pass'">Sep 4–7, 2026 · 12PM–12PM</span>
+        <span v-else>{{ order.selected_day }} · 24H</span>
       </p>
 
       <div class="quantities">
@@ -69,68 +61,34 @@
         </div>
       </div>
       <div class="status-bar">
-        <p
-          @click="showGateInfoModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showGateInfoModal = true">
           <img :src="status_icon" style="height: auto; width: 32px; margin: 0" alt="Status Icon" />
           <strong>Front Gate Info</strong>
         </p>
-        <p
-          @click="showMealServiceModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
-          <img
-            :src="meals_icon"
-            style="height: auto; width: 32px; margin: 0; filter: invert(1)"
-            alt="Meal Service Icon"
-          />
+        <p class="status-btn" @click="showMealServiceModal = true">
+          <img :src="meals_icon" style="height: auto; width: 32px; margin: 0; filter: invert(1)" alt="Meal Service Icon" />
           <strong>Meal Service Info</strong>
         </p>
-        <p
-          @click="showReferralModal = true"
-          v-if="referralEarnings >= 0"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showReferralModal = true" v-if="referralEarnings >= 0">
           <img :src="bonus_icon" style="height: 32px; width: auto; margin: 0" alt="Bonus Icon" />
-          <strong>Referral Earnings: ${{ referralEarnings }}</strong>
+          <strong>Referral: ${{ referralEarnings }}</strong>
         </p>
-<p
-          @click="showFMRadioModal = true"
-          style="
-            justify-content: center;
-            background-color: black;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-          "
-        >
+        <p class="status-btn" @click="showFMRadioModal = true">
           <img :src="radio_icon" style="height: auto; width: 32px; margin: 0" alt="FM Radio Icon" />
-          <strong>FM Radio Info</strong>
+          <strong>FM Radio</strong>
         </p>
-        
+        <p
+          class="status-btn"
+          v-if="
+            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
+            order.applicant_types.includes('Volunteer') &&
+            order.volunteer_claimed_slots && order.volunteer_claimed_slots.length > 0
+          "
+          @click="showVolunteerShiftsModal = true"
+        >
+          <img :src="my_shifts_icon" style="height: auto; width: 32px; margin: 0" alt="Volunteer Shifts" />
+          <strong>My Shifts ({{ order.volunteer_claimed_slots.length }})</strong>
+        </p>
       </div>
 
       <div v-if="showPaymentModal" class="modal" @click.self="showPaymentModal = false">
@@ -369,7 +327,7 @@
             💰
             <strong style="text-decoration: underline; color: orange"
               >Referral Instructions:</strong
-            >
+            ><br />
             You can share your Festivall ID_CODE or your referral link with your friends and
             family.<br />
             🎫 Remember, you earn $20 for each Weekend Pass and $10 for each Day Pass.<br />
@@ -408,6 +366,91 @@
           </h3>
 
           <button @click="showReferralModal = false">Close</button>
+        </div>
+      </div>
+
+      <!-- Volunteer Shifts Modal -->
+      <div v-if="showVolunteerShiftsModal" class="modal" @click.self="showVolunteerShiftsModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showVolunteerShiftsModal = false"></div>
+          <img
+            class="festivall-emblem"
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="volunteer_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="Volunteer Icon"
+          />
+          <h2>My Volunteer Shifts</h2>
+
+          <div v-if="mergedClaimedSlots && mergedClaimedSlots.length > 0" class="redemption-section">
+            <h3>
+              🗓️ <strong style="text-decoration: underline; color: orange">Your Claimed Shifts:</strong>
+            </h3>
+            <div class="history-list">
+              <div
+                v-for="(slot, index) in mergedClaimedSlots"
+                :key="index"
+                :class="['history-item', slot.active === false ? 'inactive-shift' : '']"
+                style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
+              >
+                <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 400;' : 'color: #4caf50; font-weight: bold;'">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center;">
+                      <img
+                        v-if="slot.team && teamIcons && Object.prototype.hasOwnProperty.call(teamIcons, slot.team.toLowerCase()) && teamIcons[slot.team.toLowerCase()]"
+                        :src="teamIcons[slot.team.toLowerCase()]"
+                        :alt="slot.team + ' icon'"
+                        style="max-width: 54px; max-height: 54px; object-fit: contain; margin-right: 1em; display: block;"
+                      />
+                      <span style="font-size: 1.1em; font-weight: 600;">
+                        {{ {
+                          frontgate: 'Front Gate',
+                          foodteam: 'Food Team',
+                          setupcrew: 'Setup Crew',
+                          stagecrew: 'Stage Crew',
+                          cleanupcrew: 'Cleanup Crew',
+                          arcadeattendant: 'Arcade Attendant'
+                        }[slot.team && slot.team.toLowerCase()] || slot.team }}
+                        <span v-if="slot.active === false" class="inactive-badge">inactive</span>
+                      </span>
+                    </div>
+                    <div v-if="teamManuals[slot.team]" style="display: flex; flex-direction: column; align-items: center; margin-left: 1em;">
+                      <RouterLink :to="teamManuals[slot.team]" style="text-decoration: none;">
+                        <img :src="task_icon" alt="Task Icon" style="max-width: 38px; max-height: 38px; object-fit: contain; margin-bottom: 0.1em; display: block;" />
+                        <span style="font-size: 0.85em; color: #fff;">Tasks</span>
+                      </RouterLink>
+                    </div>
+                  </div>
+                </div>
+                <div :style="slot.active === false ? 'color: #aaa;' : ''">{{ slot.date }} · {{ slot.start }}–{{ slot.end }}</div>
+                <div v-if="slot.title" :style="slot.active === false ? 'color: #bbb; font-size: 0.85rem;' : 'font-size: 0.85rem; color: #ccc;'">{{ slot.title }}</div>
+                <div v-if="slot.active === false" style="color: #b0b0b0; font-size: 0.92em; margin-top: 0.2em;">
+                  <span style="font-size: 1em;">This shift was disabled by organizers.<br> You do not need to attend.</span>
+                </div>
+                  <div v-if="teamManuals[slot.team]" style="margin-top: 0.5em;">
+                    <!-- Manual link now shown as icon on the right, so this is removed. -->
+                  </div>
+              </div>
+            </div>
+            <br />
+          </div>
+          
+          <h3 v-else>
+            📊 <strong style="color: orange">No shifts claimed yet!</strong><br />
+            Head to the Volunteer Hub to sign up for your shift.
+          </h3>
+
+          <h3>
+            📧 Questions? Contact
+            <a href="mailto:reunionvolunteercoordinator@festivall.ca" style="text-decoration: underline; color: orange">
+              reunionvolunteercoordinator@festivall.ca
+            </a>
+          </h3>
+          <button @click="showVolunteerShiftsModal = false">Close</button>
         </div>
       </div>
 
@@ -664,36 +707,17 @@
             Grounds Map
           </p>
         </RouterLink>
-        <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
+        <RouterLink :to="new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '/reunionlineup' : '#'">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2026 Lineup<br />Look & Listen!<br />
-          </p>
-        </RouterLink>
-        <RouterLink v-else to="#">
-          <p>
-            <img :src="lineup_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Final Lineup<br />coming soon!
+            {{ new Date() >= REUNION_FESTIVAL.lineupRevealDate ? '2026 Lineup · Look & Listen!' : 'Lineup · Coming Soon!' }}
           </p>
         </RouterLink>
 
-        <RouterLink
-          v-if="new Date() >= REUNION_FESTIVAL.festivalOpenDate"
-          :to="{
-            name: 'ScavengerHunt',
-            params: { id_code: order.id_code },
-            query: { fullName: order.fullname.split(' ')[0] }
-          }"
-        >
+        <RouterLink :to="new Date() >= REUNION_FESTIVAL.festivalOpenDate ? { name: 'ScavengerHunt', params: { id_code: order.id_code }, query: { fullName: order.fullname.split(' ')[0] } } : '#'">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-            Scavenger Hunt<br />Win some Bitcoin!
-          </p>
-        </RouterLink>
-        <RouterLink v-else to="#">
-          <p>
-            <img :src="quiz_icon" style="height: auto; width: 32px" alt="Coming Soon Icon" />
-            Scavenger Hunt<br />Coming Soon!
+            Scavenger Hunt<br />{{ new Date() >= REUNION_FESTIVAL.festivalOpenDate ? 'Win some Bitcoin!' : 'Coming Soon!' }}
           </p>
         </RouterLink>
       </div>
@@ -714,6 +738,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
 import frog_image from '@/assets/images/frog.png'
@@ -724,7 +749,7 @@ import ticket_icon from '@/assets/images/icons/ticket_black.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
 import payment_icon from '@/assets/images/icons/compensation.png'
 import status_icon from '@/assets/images/icons/front_gate.png'
-
+import my_shifts_icon from '@/assets/images/icons/my_shifts.png'
 import bonus_icon from '@/assets/images/icons/bonus.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import dj_icon from '@/assets/images/icons/dj.png'
@@ -734,6 +759,13 @@ import map_icon from '@/assets/images/icons/grounds_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
 import radio_icon from '@/assets/images/icons/radio.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
+import foodteam_icon from '@/assets/images/icons/food.png'
+import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
+import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
+import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
+import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
+import task_icon from '@/assets/images/icons/task.png'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -749,6 +781,8 @@ export default {
     const router = useRouter()
     const { currentAct } = useLineupState()
     const order = ref(null)
+      // Holds the merged slots with up-to-date active status
+      const mergedClaimedSlots = ref([])
     const qrCanvas = ref(null)
     const referralEarnings = ref(0)
     const referralQrCanvas = ref(null)
@@ -760,6 +794,27 @@ export default {
     const showMealRedemptionHistoryModal = ref(false)
     const showEntranceActivityModal = ref(false)
     const showFMRadioModal = ref(false)
+    const showVolunteerShiftsModal = ref(false)
+
+      // Efficient team manual links map
+      const teamManuals = {
+        frontgate: '/reunionfrontgate',
+        foodteam: '/reunionfoodteam',
+        setupcrew: '/reunionsetupcrew',
+        stagecrew: '/reunionstagecrew',
+        cleanupcrew: '/reunioncleanupcrew',
+        arcadeattendant: '/reunionarcadeattendant'
+      }
+
+    // Map team keys to their icon paths
+    const teamIcons = {
+      frontgate: frontgate_icon,
+      foodteam: foodteam_icon,
+      setupcrew: setupcrew_icon,
+      stagecrew: stagecrew_icon,
+      cleanupcrew: cleanupcrew_icon,
+      arcadeattendant: arcadeattendant_icon,
+    }
 
     const calculateReferralEarnings = async (id_code) => {
       try {
@@ -787,6 +842,50 @@ export default {
     }
 
     const loadOrder = async (id_code) => {
+          // Helper: fetch all claimed slot_ids and merge in current slot data
+          const mergeClaimedSlotsWithStatus = async (claimedSlots) => {
+            if (!Array.isArray(claimedSlots) || claimedSlots.length === 0) return []
+            // Get all slot_ids
+            const slotIds = claimedSlots.map(s => s.slot_id).filter(Boolean)
+            if (slotIds.length === 0) return claimedSlots
+            // Query all slots in one go
+            let slotDocs = []
+            try {
+              // Firestore 'in' query supports up to 10 items; fallback to individual fetch if needed
+              if (slotIds.length <= 10) {
+                const slotsQuery = query(collection(reunion_db, 'volunteer_slots_2026'), where('__name__', 'in', slotIds))
+                const snap = await getDocs(slotsQuery)
+                slotDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+              } else {
+                // Too many for 'in' query, fetch individually
+                slotDocs = []
+                for (const slot_id of slotIds) {
+                  try {
+                    const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                    if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
+                  } catch {}
+                }
+              }
+            } catch (e) {
+              // fallback: fetch individually if 'in' query fails
+              slotDocs = []
+              for (const slot_id of slotIds) {
+                try {
+                  const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                  if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
+                } catch {}
+              }
+            }
+            // Map by id for fast lookup
+            const slotMap = Object.fromEntries(slotDocs.map(s => [s.id, s]))
+            // Merge active status into claimed slots
+            return claimedSlots.map(s => {
+              const slot = slotMap[s.slot_id]
+              return slot ? { ...s, active: slot.active !== false } : { ...s }
+            })
+          }
+
+          // ...existing code...
       try {
         if (!id_code) {
           throw new Error('ID code is undefined')
@@ -878,8 +977,13 @@ export default {
             applicant_types: p.roles?.applicant_types || [],
             payment_type: p.order?.payment_type || '',
             rates: p.application?.data?.rates || '',
-            settimes: p.application?.data?.settimes || []
+            settimes: p.application?.data?.settimes || [],
+            // Volunteer shift data
+            volunteer_claimed_slots: p.volunteer?.claimed_slots || []
           }
+
+          // Merge claimed slots with up-to-date status and set mergedClaimedSlots
+          mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
 
           await nextTick()
           generateQRCode(order.value.id_code_long, qrCanvas.value)
@@ -1021,6 +1125,7 @@ export default {
       showMealRedemptionHistoryModal,
       showEntranceActivityModal,
       showFMRadioModal,
+      showVolunteerShiftsModal,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -1028,6 +1133,7 @@ export default {
       status_icon,
       bonus_icon,
       volunteer_icon,
+      my_shifts_icon,
       workshop_icon,
       dj_icon,
       location_icon,
@@ -1036,7 +1142,11 @@ export default {
       quiz_icon,
       currentAct,
       radio_icon,
-      REUNION_FESTIVAL
+      REUNION_FESTIVAL,
+      mergedClaimedSlots,
+      teamManuals,
+      teamIcons,
+      task_icon
     }
   }
 }
@@ -1074,8 +1184,42 @@ strong {
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* justify-content: center; */
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.ticket-title {
+  flex: 1;
+  text-align: center;
+}
+
+.ticket-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.ticket-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.ticket-badge {
+  background: var(--reunion-frog-green);
+  color: black;
+  font-weight: bold;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.ticket-valid {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0 !important;
+  opacity: 0.85;
 }
 
 h1,
@@ -1091,9 +1235,9 @@ a {
 .order-info {
   border: 1px solid var(--reunion-frog-green);
   border-radius: 10px;
-  /* max-width: 85%; */
   padding: 0.5rem 0.5rem;
   z-index: 2;
+  width: 100%;
 }
 
 .order-info p {
@@ -1106,6 +1250,23 @@ a {
 
 .order-info img {
   margin: 0 0.5rem 0.7rem 0;
+}
+
+.status-bar {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-btn {
+  justify-content: center;
+  background-color: black;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
 }
 
 .quantities {
