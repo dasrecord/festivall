@@ -77,6 +77,9 @@
                   <button @click="router.push('/reunioncleanupcrew')" class="dept-button cleanup">
                     🧹 Cleanup Crew Manual
                   </button>
+                  <button @click="router.push('/reunionarcadeattendant')" class="dept-button arcade">
+                    🕹️ Arcade Attendant Manual
+                  </button>
                 </div>
               </div>
             </div>
@@ -268,6 +271,10 @@ const goBackToTicket = () => {
 }
 .cleanup {
   background: linear-gradient(135deg, #607d8b, #263238);
+  color: white;
+}
+.arcade {
+  background: linear-gradient(135deg, #e91e63, #880e4f);
   color: white;
 }
 

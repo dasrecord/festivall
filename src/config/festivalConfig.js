@@ -14,45 +14,66 @@ export const REUNION_FESTIVAL = {
   lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
 
-  // Meal schedule — update before each festival with real times & menus.
-  // Times are ISO 8601 with -06:00 (Mountain Daylight Time).
-  // Each meal is visible on the map overlay for 1.5 h after its start time.
-  meals: [
-    {
-      time: '2026-09-04T12:30:00-06:00',
-      label: 'Friday Lunch',
-      menu: ['Mixed green salad', 'Grilled sandwiches', 'Lemonade']
-    },
-    {
-      time: '2026-09-04T18:00:00-06:00',
-      label: 'Friday Dinner',
-      menu: ['Roasted chicken', 'Seasonal vegetables', 'Rice pilaf', 'Dessert']
-    },
-    {
-      time: '2026-09-05T12:30:00-06:00',
-      label: 'Saturday Lunch',
-      menu: ['Tacos & toppings bar', 'Nachos', 'Agua fresca']
-    },
-    {
-      time: '2026-09-05T18:00:00-06:00',
-      label: 'Saturday Dinner',
-      menu: ["BBQ ribs & pulled pork", 'Corn on the cob', 'Coleslaw', "Campfire s'mores"]
-    },
+  // Volunteer team reveal phases — controls which teams appear in the application form
+  volunteerPhases: {
+    phase1End: new Date('2026-06-15T23:59:59Z'),  // Phase 1: Setup Crew only
+    phase2End: new Date('2026-07-01T23:59:59Z'),  // Phase 2: Setup + Front Gate + Food Team + Arcade Attendant
+    // Phase 3: All teams visible after phase2End
+  },
 
-    {
-      time: '2026-09-06T12:30:00-06:00',
-      label: 'Sunday Lunch',
-      menu: ['Pasta salad', 'Grilled veggies', 'Garlic bread', 'Lemonade']
+  // Master ordered list of all volunteer teams (display names)
+  orderedVolunteerTeams: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew'],
+
+  // Teams visible per phase
+  volunteerTeamsByPhase: {
+    phase1: ['Setup Crew'],
+    phase2: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant'],
+    phase3: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew'],
+  },
+
+  // Volunteer shift parameters for each team (minimalist structure)
+  volunteerShiftParams: {
+    setupcrew: {
+      label: 'Setup Crew',
+      shift: ['10:00', '18:00'],
+      days: [[8, 24, 9, 4]], // [startMonth, startDay, endMonth, endDay]
+      duration: 8
     },
-    {
-      time: '2026-09-06T18:00:00-06:00',
-      label: 'Sunday Dinner',
-      menu: ['Vegetable stew', 'Crusty bread', 'Cheese board', 'Pie']
+    frontgate: {
+      label: 'Front Gate',
+      shift: ['10:00', '24:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 2,
+      repeat: true
     },
-    {
-      time: '2026-09-07T08:00:00-06:00',
-      label: 'Monday Breakfast',
-      menu: ['Oatmeal & granola', 'Bagels & cream cheese', 'Coffee & tea']
+    foodteam: {
+      label: 'Food Team',
+      shifts: [
+        ['11:00', '15:00'],
+        ['17:00', '21:00']
+      ],
+      days: [[9, 4, 9, 6]],
+      duration: 4
+    },
+    stagecrew: {
+      label: 'Stage Crew',
+      shift: ['08:00', '24:00'],
+      overnight: ['00:00', '04:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 4
+    },
+    cleanupcrew: {
+      label: 'Cleanup Crew',
+      shift: ['10:00', '18:00'],
+      day: [9, 7],
+      duration: 8
+    },
+    arcadeattendant: {
+      label: 'Arcade Attendant',
+      shift: ['12:00', '24:00'],
+      days: [[9, 4, 9, 6]],
+      duration: 4,
+      repeat: true
     }
-  ]
+  },
 }

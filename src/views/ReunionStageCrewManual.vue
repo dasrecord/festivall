@@ -103,21 +103,30 @@
       <h2>Stage Crew Responsibilities</h2>
       <div class="task-overview">
         <div class="task-category">
-          <h3>Audio & Sound</h3>
+          <h3>The Custom Rig</h3>
           <ul>
-            <li>Set up and test sound system equipment</li>
-            <li>Run sound checks with performing artists</li>
-            <li>Monitor audio levels during performances</li>
-            <li>Troubleshoot sound issues as they arise</li>
+            <li>Reunion runs a custom in-house soundsystem built by the team</li>
+            <li>Horn-loaded subwoofer enclosures (fridge-sized cabinets) for deep, powerful low end</li>
+            <li>Horn-loaded compression driver tops for FOH and stage monitors</li>
+            <li>For sound: report to <strong>Brandon → Prasenjit → Arthur</strong></li>
           </ul>
         </div>
         <div class="task-category">
-          <h3>Stage & Lighting</h3>
+          <h3>Projection Mapping</h3>
           <ul>
-            <li>Set up stage platform and barriers</li>
-            <li>Install and test lighting systems</li>
-            <li>Coordinate with artists for equipment needs</li>
-            <li>Manage stage transitions between acts</li>
+            <li>Custom projection mapped visuals are a core part of the festival experience</li>
+            <li>For lights &amp; projection mapping: report to <strong>Prasenjit → Christina</strong></li>
+            <li>Set up and align projectors before doors open</li>
+            <li>Monitor projection during performances, flag any issues immediately</li>
+          </ul>
+        </div>
+        <div class="task-category">
+          <h3>Show Flow</h3>
+          <ul>
+            <li><strong>Setup:</strong> Rig positioning → cabling → amp rack → FOH console</li>
+            <li><strong>Pre-show:</strong> Line check → sound checks with each artist</li>
+            <li><strong>During show:</strong> FOH mix, monitor adjustments, set changeovers</li>
+            <li><strong>Post-festival:</strong> Full rig breakdown and storage per Brandon</li>
           </ul>
         </div>
       </div>
@@ -160,8 +169,9 @@ const initializeTasks = () => {
   return [
     {
       id: 'stage_001',
-      title: 'Sound System Setup',
-      description: 'Set up main PA system, monitors, and mixing console',
+      title: 'Rig Transport & Positioning',
+      description:
+        'Move the custom enclosures (fridge-sized horn-loaded sub cabinets and compression driver tops) to their stage positions. Follow Brandon’s direction on placement',
       department: 'stage_crew',
       priority: 'high',
       assignedTo: null,
@@ -173,8 +183,9 @@ const initializeTasks = () => {
     },
     {
       id: 'stage_002',
-      title: 'Stage Platform Assembly',
-      description: 'Assemble and secure stage platform, barriers, and safety equipment',
+      title: 'Sub Stack Assembly & Cabling',
+      description:
+        'Position and stack the horn-loaded subwoofer enclosures, run speaker cables from amp rack to sub cabinets, verify all connections are secure',
       department: 'stage_crew',
       priority: 'high',
       assignedTo: null,
@@ -186,10 +197,11 @@ const initializeTasks = () => {
     },
     {
       id: 'stage_003',
-      title: 'Lighting Installation',
-      description: 'Install stage lighting, test controls, and program lighting cues',
+      title: 'Tops & Monitor Cabling',
+      description:
+        'Position and cable the horn-loaded compression driver top cabinets (FOH) and stage monitors/wedges. Run cables neatly and verify polarity',
       department: 'stage_crew',
-      priority: 'medium',
+      priority: 'high',
       assignedTo: null,
       assignedToName: null,
       completed: false,
@@ -199,8 +211,9 @@ const initializeTasks = () => {
     },
     {
       id: 'stage_004',
-      title: 'Power & Electrical',
-      description: 'Run power cables, set up electrical distribution, and test all connections',
+      title: 'Amplifier Rack Setup',
+      description:
+        'Set up and cable the amplifier rack, verify gain structure per Arthur’s direction, confirm all amp channels power on without fault',
       department: 'stage_crew',
       priority: 'high',
       assignedTo: null,
@@ -212,21 +225,9 @@ const initializeTasks = () => {
     },
     {
       id: 'stage_005',
-      title: 'Monitor System',
-      description: 'Set up artist monitor system and wedges',
-      department: 'stage_crew',
-      priority: 'medium',
-      assignedTo: null,
-      assignedToName: null,
-      completed: false,
-      completedBy: null,
-      completedByName: null,
-      completedAt: null
-    },
-    {
-      id: 'stage_006',
-      title: 'Sound Check Coordination',
-      description: 'Coordinate and conduct sound checks with all performing artists',
+      title: 'FOH Console & Signal Chain',
+      description:
+        'Set up the front-of-house mixing console, patch all channels, verify signal routing from stage to FOH position. Report to Arthur, then Brandon',
       department: 'stage_crew',
       priority: 'high',
       assignedTo: null,
@@ -237,9 +238,10 @@ const initializeTasks = () => {
       completedAt: null
     },
     {
-      id: 'stage_007',
-      title: 'Equipment Inventory',
-      description: 'Check and organize all audio/visual equipment and spare parts',
+      id: 'stage_006',
+      title: 'Projection Mapping Setup',
+      description:
+        'Set up projectors, align and calibrate the projection mapping system. Report to Prasenjit first, then Christina for visual content and mapping details',
       department: 'stage_crew',
       priority: 'medium',
       assignedTo: null,
@@ -250,11 +252,40 @@ const initializeTasks = () => {
       completedAt: null
     },
     {
-      id: 'stage_008',
-      title: 'Backstage Area Setup',
-      description: 'Prepare artist backstage area and equipment storage',
+      id: 'stage_007',
+      title: 'Line Check & Sound Check',
+      description:
+        'Run a full line check on all stage inputs, then coordinate sound checks with each performing artist. Dial in FOH mix and artist monitors per their needs',
       department: 'stage_crew',
-      priority: 'low',
+      priority: 'high',
+      assignedTo: null,
+      assignedToName: null,
+      completed: false,
+      completedBy: null,
+      completedByName: null,
+      completedAt: null
+    },
+    {
+      id: 'stage_008',
+      title: 'Set Changeover Management',
+      description:
+        'Manage transitions between artists: reset stage inputs, adjust monitor mixes for incoming artist, coordinate with FOH and stage during changeovers',
+      department: 'stage_crew',
+      priority: 'medium',
+      assignedTo: null,
+      assignedToName: null,
+      completed: false,
+      completedBy: null,
+      completedByName: null,
+      completedAt: null
+    },
+    {
+      id: 'stage_009',
+      title: 'Rig Breakdown & Storage',
+      description:
+        'After the final night: carefully break down and store all rig components (subs, tops, amps, cables). Follow Brandon’s direction for storage locations and packing order',
+      department: 'stage_crew',
+      priority: 'high',
       assignedTo: null,
       assignedToName: null,
       completed: false,
@@ -315,7 +346,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'tasks_2026')
+    const statusRef = collection(reunion_db, 'task_status_2026')
     const q = query(statusRef, where('department', '==', 'stage_crew'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
