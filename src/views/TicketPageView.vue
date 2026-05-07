@@ -701,7 +701,7 @@
             Location
           </p>
         </RouterLink>
-        <RouterLink to="/reunionmap">
+        <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
           <p>
             <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
             Grounds Map
