@@ -34,6 +34,23 @@
           <input type="text" v-model="form.notes" />
         </div>
 
+        <!-- Admin: Manage Claims -->
+        <div v-if="form.id" class="admin-claims">
+          <h4>Claimed Participants</h4>
+          <ul v-if="form.claimed && form.claimed.length">
+            <li v-for="(c, idx) in form.claimed" :key="c.id_code || idx">
+              <span>{{ c.fullname || '(no name)' }} <span v-if="c.id_code">({{ c.id_code }})</span></span>
+              <button class="btn danger btn-sm" @click="removeClaim(idx)">Remove</button>
+            </li>
+          </ul>
+          <div v-else>No claims yet.</div>
+          <div class="add-claim-row">
+            <input v-model="adminClaim.id_code" placeholder="ID Code" style="width: 7em; margin-right: 0.5em" />
+            <input v-model="adminClaim.fullname" placeholder="Full Name" style="width: 12em; margin-right: 0.5em" />
+            <button class="btn primary btn-sm" @click="addClaim" :disabled="!adminClaim.id_code || !adminClaim.fullname">Add Claim</button>
+          </div>
+        </div>
+
         <div class="actions">
           <button class="btn primary" :disabled="!canSave" @click="saveSlot">
             {{ form.id ? 'Update' : 'Create' }} Slot
@@ -193,39 +210,44 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 export default {
   name: 'AdminVolunteerSlotsView',
   data() {
-    return {
-      db: reunion_db,
-      reunion_emblem,
-      REUNION_FESTIVAL,
-      teamLabels: {
-        frontgate: 'Front Gate',
-        foodteam: 'Food Team',
-        setupcrew: 'Setup Crew',
-        stagecrew: 'Stage Crew',
-        cleanupcrew: 'Cleanup Crew',
-        arcadeattendant: 'Arcade Attendant'
-      },
-      teamFilter: 'all',
-      groupBy: 'day',
-      statusFilter: 'all', // all | open | partial | full
-      hideInactive: true,
-      slots: [],
-      unsub: null,
-      form: {
-        id: '',
-        team: '',
-        date: '',
-        start: '',
-        end: '',
-        capacity: 1,
-        notes: ''
-      },
-      gen: {
-        year: REUNION_FESTIVAL.year,
-        capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3, arcade: 1 }
-      },
-      generating: false
-    }
+      return {
+        db: reunion_db,
+        reunion_emblem,
+        REUNION_FESTIVAL,
+        teamLabels: {
+          frontgate: 'Front Gate',
+          foodteam: 'Food Team',
+          setupcrew: 'Setup Crew',
+          stagecrew: 'Stage Crew',
+          cleanupcrew: 'Cleanup Crew',
+          arcadeattendant: 'Arcade Attendant'
+        },
+        teamFilter: 'all',
+        groupBy: 'day',
+        statusFilter: 'all', // all | open | partial | full
+        hideInactive: true,
+        slots: [],
+        unsub: null,
+        form: {
+          id: '',
+          team: '',
+          date: '',
+          start: '',
+          end: '',
+          capacity: 1,
+          notes: '',
+          claimed: []
+        },
+        adminClaim: {
+          id_code: '',
+          fullname: ''
+        },
+        gen: {
+          year: REUNION_FESTIVAL.year,
+          capacity: { setup: 3, frontgate: 1, food: 2, stage: 2, cleanup: 3, arcade: 1 }
+        },
+        generating: false
+      }
   },
   computed: {
     canSave() {
@@ -320,15 +342,21 @@ export default {
       this.form = { id: '', team: '', date: '', start: '', end: '', capacity: 1, notes: '' }
     },
     editSlot(s) {
-      this.form = {
-        id: s.id,
-        team: s.team,
-        date: s.date,
-        start: s.start,
-        end: s.end,
-        capacity: s.capacity || 1,
-        notes: s.notes || ''
-      }
+      console.log('Editing slot:', s)
+      this.form.id = s.id
+      this.form.team = s.team
+      this.form.date = s.date
+      this.form.start = s.start
+      this.form.end = s.end
+      this.form.capacity = s.capacity || 1
+      this.form.notes = s.notes || ''
+      this.form.claimed = Array.isArray(s.claimed) ? [...s.claimed] : []
+      this.adminClaim = { id_code: '', fullname: '' }
+      // Scroll form into view for admin clarity
+      this.$nextTick(() => {
+        const formEl = this.$el.querySelector('.form')
+        if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
     },
     async saveSlot() {
       const payload = {
@@ -339,7 +367,8 @@ export default {
         capacity: Number(this.form.capacity) || 1,
         notes: this.form.notes || '',
         active: true,
-        updated_at: serverTimestamp()
+        updated_at: serverTimestamp(),
+        ...(this.form.id ? { claimed: this.form.claimed } : {})
       }
       if (this.form.id) {
         await updateDoc(doc(this.db, 'volunteer_slots_2026', this.form.id), payload)
@@ -351,6 +380,22 @@ export default {
         })
       }
       this.resetForm()
+
+    },
+    addClaim() {
+      if (!this.form.id || !this.adminClaim.id_code || !this.adminClaim.fullname) return
+      // Prevent duplicate claim
+      if (this.form.claimed.some(c => c.id_code === this.adminClaim.id_code)) return
+      this.form.claimed.push({
+        id_code: this.adminClaim.id_code,
+        fullname: this.adminClaim.fullname,
+        claimed_at: new Date().toISOString()
+      })
+      this.adminClaim = { id_code: '', fullname: '' }
+    },
+    removeClaim(idx) {
+      if (!this.form.id) return
+      this.form.claimed.splice(idx, 1)
     },
     async toggleActive(s) {
       await updateDoc(doc(this.db, 'volunteer_slots_2026', s.id), {
