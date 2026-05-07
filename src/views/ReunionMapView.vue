@@ -1,3 +1,151 @@
+import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
+// ── Alert posting/editing/clearing logic ─────────────────────────────────────
+import { addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+const showKitchenModal = ref(false)
+const showWashroomModal = ref(false)
+const showLostFoundModal = ref(false)
+const editingLostFoundId = ref(null)
+const alertInput = ref({ type: '', mode: '', message: '' })
+
+// Open modal helpers
+function openKitchenModal() {
+  alertInput.value = { type: 'kitchen', mode: '', message: '' }
+  showKitchenModal.value = true
+}
+function openWashroomModal() {
+  alertInput.value = { type: 'washroom', status: 'low', message: '' }
+  showWashroomModal.value = true
+}
+function openLostFoundModal(item = null) {
+  if (item) {
+    editingLostFoundId.value = item.id
+    alertInput.value = { ...item, type: 'lostfound' }
+  } else {
+    editingLostFoundId.value = null
+    alertInput.value = { type: 'lostfound', message: '' }
+  }
+  showLostFoundModal.value = true
+}
+
+// Post or edit alert
+async function submitAlert() {
+  const col = collection(reunion_db, 'alerts_2026')
+  if (alertInput.value.type === 'lostfound' && editingLostFoundId.value) {
+    // Edit existing lost & found
+    await updateDoc(doc(col, editingLostFoundId.value), {
+      message: alertInput.value.message,
+      updated_at: new Date().toISOString()
+    })
+  } else {
+    // New alert
+    await addDoc(col, {
+      ...alertInput.value,
+      created_at: new Date().toISOString(),
+      userId: 'CURRENT_USER_ID', // Replace with actual user ID
+      userName: 'CURRENT_USER_NAME' // Replace with actual user name
+    })
+    // Send Slack notification
+    let slackMsg = ''
+    if (alertInput.value.type === 'kitchen') {
+      slackMsg = alertInput.value.mode === 'share'
+        ? `🍳 *Kitchen Alert*: ${alertInput.value.userName} is cooking: ${alertInput.value.message}`
+        : `🍳 *Kitchen Alert*: ${alertInput.value.userName} is missing: ${alertInput.value.message}`
+    } else if (alertInput.value.type === 'washroom') {
+      slackMsg = `🚻 *Washroom Alert*: Supplies low reported by ${alertInput.value.userName}`
+    } else if (alertInput.value.type === 'lostfound') {
+      slackMsg = `🧳 *Lost & Found*: ${alertInput.value.userName} reported: ${alertInput.value.message}`
+    }
+    if (slackMsg) sendVolunteerCoordinator(slackMsg)
+  }
+  showKitchenModal.value = false
+  showWashroomModal.value = false
+  showLostFoundModal.value = false
+  editingLostFoundId.value = null
+}
+
+// Clear/delete alert (volunteer/admin only)
+async function clearAlert(alert) {
+  const col = collection(reunion_db, 'alerts_2026')
+  await deleteDoc(doc(col, alert.id))
+}
+// ── Firestore listeners for overlays ─────────────────────────────────────────
+import { onSnapshot } from 'firebase/firestore'
+
+// Reactive state for overlay data
+const kitchenAlerts = ref([]) // [{...alert}]
+const washroomAlerts = ref([])
+const lostFoundItems = ref([])
+const checkinNames = ref([])
+const volunteerShifts = ref([])
+
+// Listen to alerts_2026 for kitchen, washroom, lost & found
+function listenToAlerts() {
+  const alertsCol = collection(reunion_db, 'alerts_2026')
+  onSnapshot(alertsCol, (snapshot) => {
+    const kitchen = []
+    const washroom = []
+    const lostfound = []
+    snapshot.forEach((doc) => {
+      const data = doc.data()
+      if (data.type === 'kitchen') kitchen.push({ id: doc.id, ...data })
+      else if (data.type === 'washroom') washroom.push({ id: doc.id, ...data })
+      else if (data.type === 'lostfound') lostfound.push({ id: doc.id, ...data })
+    })
+    kitchenAlerts.value = kitchen
+    washroomAlerts.value = washroom
+    lostFoundItems.value = lostfound
+  })
+}
+
+// Listen to participants_2026 for check-in display
+function listenToCheckins() {
+  const participantsCol = collection(reunion_db, 'participants_2026')
+  onSnapshot(participantsCol, (snapshot) => {
+    const checkedIn = []
+    snapshot.forEach((doc) => {
+      const data = doc.data()
+      if (data.checked_in || data.order?.checked_in) {
+        checkedIn.push({
+          id: doc.id,
+          fullname: data.contact?.fullname || data.fullname || '',
+          checked_in: true,
+          checked_in_at: data.checked_in_at || data.order?.checked_in_at || null
+        })
+      }
+    })
+    checkinNames.value = checkedIn
+  })
+}
+
+// Listen to volunteer_slots_2026 for live shifts
+function listenToVolunteerShifts() {
+  const slotsCol = collection(reunion_db, 'volunteer_slots_2026')
+  onSnapshot(slotsCol, (snapshot) => {
+    const now = new Date()
+    const shifts = []
+    snapshot.forEach((doc) => {
+      const data = doc.data()
+      if (data.active !== false && data.claimed && data.date && data.start && data.end) {
+        // Check if now is within shift window
+        const shiftStart = new Date(`${data.date}T${data.start}`)
+        let shiftEnd = new Date(`${data.date}T${data.end}`)
+        // Handle 24:00 as midnight next day
+        if (data.end === '24:00') shiftEnd.setHours(shiftEnd.getHours() + 1)
+        if (now >= shiftStart && now <= shiftEnd) {
+          shifts.push({ id: doc.id, ...data })
+        }
+      }
+    })
+    volunteerShifts.value = shifts
+  })
+}
+
+onMounted(() => {
+  fetchAndUpdateCurrentAct()
+  listenToAlerts()
+  listenToCheckins()
+  listenToVolunteerShifts()
+})
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, query, where } from 'firebase/firestore'
@@ -6,33 +154,118 @@ import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.s
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
-const { currentAct, updateCurrentAct } = useLineupState()
+const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
 
 const mapContainer = ref(null)
 const mapObject = ref(null)
 
-// ── Stage definitions ─────────────────────────────────────────────────────────
-// Add an entry here for every stage_icon layer you add in Illustrator.
+// ── Overlay definitions for map features (with nudge/offsets) ────────────────
+// Add an entry for each feature, matching the SVG layer name and desired offset.
 const STAGE_ICONS = [
   { svgId: 'stage_area', label: 'Main Stage', offsetX: 0, offsetY: +10 }
 ]
 
-// ── Meals icon definition ─────────────────────────────────────────────────────
-// svgId: name this layer 'meals_area' in Illustrator for live positioning.
-// fallbackSvgPos: raw SVG coords used until the layer is named.
 const MEAL_ICONS = [
   {
     svgId: 'meals_area',
-    fallbackSvgPos: { x: 234.3, y: 268.69, w: 16, h: -2},
+    fallbackSvgPos: { x: 234.3, y: 268.69, w: 16, h: -2 },
     offsetX: 10,
     offsetY: 0
   }
 ]
 
+// New overlays for interactive features
+const KITCHEN_ICONS = [
+  {
+    svgId: 'shared_kitchen_area',
+    label: 'Shared Kitchen',
+    offsetX: 0,
+    offsetY: 0
+  }
+]
+
+const WASHROOM_ICONS = [
+  {
+    svgId: 'washrooms_area',
+    label: 'Washrooms',
+    offsetX: 0,
+    offsetY: 0
+  }
+]
+
+const LOSTFOUND_ICONS = [
+  {
+    svgId: 'lostfound_area',
+    label: 'Lost & Found',
+    offsetX: 0,
+    offsetY: 0
+  }
+]
+
+const CHECKIN_ICONS = [
+  {
+    svgId: 'front_gate_area',
+    label: 'Front Gate',
+    offsetX: 0,
+    offsetY: 0
+  }
+]
+
+const VOLUNTEER_SHIFT_ICONS = [
+  // Add one per key location if needed, or dynamically generate
+  // Example:
+  // { svgId: 'kitchen_area', label: 'Kitchen Shifts', offsetX: 0, offsetY: 0 }
+]
+
+// Overlay refs for rendering
 const stageOverlays = ref([]) // [{ label, style }]
 const mealOverlays  = ref([]) // [{ style }]
+const kitchenOverlays = ref([]) // [{ style }]
+const washroomOverlays = ref([]) // [{ style }]
+const lostFoundOverlays = ref([]) // [{ style }]
+const checkinOverlays = ref([]) // [{ style }]
+const volunteerShiftOverlays = ref([]) // [{ style }]
 const bioOpen      = ref(false)
 const mealCardOpen = ref(false)
+const settingsOpen = ref(false)
+const showStageOverlay = ref(true)
+const showMealOverlay  = ref(true)
+
+// ── Ticker text helpers ───────────────────────────────────────────────────────
+// Build doubled strings in JS so there are zero stray whitespace nodes in the
+// DOM — this makes the -50% animation loop land perfectly every time.
+const SEP = '     ' // 5 spaces as separator between the two copies
+
+function makeTickerText(parts) {
+  const text = parts.filter(Boolean).join(' · ') + ' ·'
+  return text + SEP + text
+}
+
+const nowPlayingTicker = computed(() =>
+  currentAct.value
+    ? makeTickerText([currentAct.value.act_name || currentAct.value.workshop_title, currentAct.value.genre])
+    : ''
+)
+
+const upNextTicker = computed(() =>
+  upcomingAct.value
+    ? makeTickerText([
+        upcomingAct.value.act_name || upcomingAct.value.workshop_title,
+        formatSettime(upcomingAct.value.settime),
+        upcomingAct.value.genre
+      ])
+    : ''
+)
+
+const mealTicker = computed(() => {
+  if (!nextMeal.value) return ''
+  const text = nextMeal.value.isNow
+    ? nextMeal.value.label + ' ·'
+    : nextMeal.value.label + ' · ' + formatMealTime(nextMeal.value.time) + ' ·'
+  return text + SEP + text
+})
+
+
 
 // Shared helper: resolve CSS position from an SVG element ID or fallback coords.
 // getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
@@ -75,6 +308,31 @@ function positionOverlays() {
     const style = resolveIconStyle(svgDoc, vb, icon)
     return style ? [{ style }] : []
   })
+
+  kitchenOverlays.value = KITCHEN_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
+
+  washroomOverlays.value = WASHROOM_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
+
+  lostFoundOverlays.value = LOSTFOUND_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
+
+  checkinOverlays.value = CHECKIN_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
+
+  volunteerShiftOverlays.value = VOLUNTEER_SHIFT_ICONS.flatMap((icon) => {
+    const style = resolveIconStyle(svgDoc, vb, icon)
+    return style ? [{ label: icon.label, style }] : []
+  })
 }
 
 // ── Upcoming meal logic ───────────────────────────────────────────────────────
@@ -100,6 +358,14 @@ function formatMealTime(isoString) {
     hour: 'numeric',
     minute: '2-digit',
     timeZone: 'America/Edmonton'  // Mountain Time
+  })
+}
+
+function formatSettime(ms) {
+  return new Date(ms).toLocaleTimeString('en-CA', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/Edmonton'
   })
 }
 
@@ -160,8 +426,8 @@ onMounted(() => {
       Your browser does not support SVG.
     </object>
 
-    <!-- Now-playing overlay — positioned over #stage_area in the SVG -->
-    <template v-if="currentAct">
+    <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
+    <template v-if="showStageOverlay && (currentAct || upcomingAct)">
       <div
         v-for="overlay in stageOverlays"
         :key="overlay.label"
@@ -169,32 +435,45 @@ onMounted(() => {
         :style="overlay.style"
         @click="bioOpen = !bioOpen"
       >
-        <div class="now-badge">▶ NOW PLAYING</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            {{ currentAct.act_name || currentAct.workshop_title }}
-            <template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{ currentAct.act_name || currentAct.workshop_title }}
-            <template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template>
-          </span>
-        </div>
+        <!-- NOW PLAYING row -->
+        <template v-if="currentAct">
+          <div class="now-badge">▶ NOW PLAYING</div>
+          <div class="ticker-wrap">
+            <span class="ticker-text">{{ nowPlayingTicker }}</span>
+          </div>
+        </template>
+        <!-- UP NEXT row -->
+        <template v-if="upcomingAct">
+          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': currentAct }">▷ UP NEXT</div>
+          <div class="ticker-wrap ticker-wrap--upcoming">
+            <span class="ticker-text">{{ upNextTicker }}</span>
+          </div>
+        </template>
       </div>
 
-      <!-- Bio card — shown on tap, dismissed by tapping X or outside -->
+      <!-- Bio card — tap overlay to open, tap X to close -->
       <Transition name="bio">
         <div v-if="bioOpen" class="bio-card">
-          <button class="bio-close" @click="bioOpen = false">✕</button>
-          <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
-          <p v-if="currentAct.genre" class="bio-genre">{{ currentAct.genre }}</p>
-          <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
-          <p v-else class="bio-text bio-empty">No bio available.</p>
+          <button class="bio-close" @click.stop="bioOpen = false">✕</button>
+          <template v-if="currentAct">
+            <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
+            <p class="bio-genre">▶ NOW PLAYING<template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template></p>
+            <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
+            <p v-else class="bio-text bio-empty">No bio available.</p>
+          </template>
+          <template v-if="upcomingAct">
+            <hr v-if="currentAct" class="bio-divider" />
+            <p class="bio-act-name">{{ upcomingAct.act_name || upcomingAct.workshop_title }}</p>
+            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(upcomingAct.settime) }}<template v-if="upcomingAct.genre">&nbsp;· {{ upcomingAct.genre }}</template></p>
+            <p v-if="upcomingAct.act_description" class="bio-text">{{ upcomingAct.act_description }}</p>
+            <p v-else class="bio-text bio-empty">No bio available.</p>
+          </template>
         </div>
       </Transition>
     </template>
 
     <!-- Meals overlay — positioned right of the meals icon, expands rightward -->
-    <template v-if="nextMeal && mealOverlays.length">
+    <template v-if="showMealOverlay && nextMeal && mealOverlays.length">
       <div
         v-for="(overlay, index) in mealOverlays"
         :key="index"
@@ -206,7 +485,7 @@ onMounted(() => {
           {{ nextMeal.isNow ? '🍽 NOW SERVING' : '🍽 NEXT MEAL' }}
         </div>
         <div class="meal-info">
-          {{ nextMeal.label }}<template v-if="!nextMeal.isNow">&nbsp;· {{ formatMealTime(nextMeal.time) }}</template>
+          <span class="meal-ticker-text">{{ mealTicker }}</span>
         </div>
       </div>
 
@@ -224,6 +503,184 @@ onMounted(() => {
         </div>
       </Transition>
     </template>
+
+    <!-- Kitchen overlay -->
+    <template v-if="kitchenOverlays.length">
+      <div
+        v-for="(overlay, index) in kitchenOverlays"
+        :key="overlay.label"
+        class="kitchen-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge kitchen-badge">🍳 SHARED KITCHEN</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="kitchenAlerts.length">
+              <span v-for="alert in kitchenAlerts" :key="alert.id">
+                <span v-if="alert.mode === 'share'">🥘 {{ alert.message }}</span>
+                <span v-else-if="alert.mode === 'missing'">❓Missing: {{ alert.message }}</span>
+                <span v-else>{{ alert.message }}</span>
+                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(alert)">✕</button>
+                &nbsp;·&nbsp;
+              </span>
+            </template>
+            <template v-else>No kitchen alerts</template>
+          </span>
+        </div>
+        <button class="alert-post-btn" @click="openKitchenModal">Post</button>
+      </div>
+    </template>
+
+    <!-- Washroom overlay -->
+    <template v-if="washroomOverlays.length">
+      <div
+        v-for="(overlay, index) in washroomOverlays"
+        :key="overlay.label"
+        class="washroom-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge washroom-badge">🚻 WASHROOMS</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="washroomAlerts.length">
+              <span v-for="alert in washroomAlerts" :key="alert.id">
+                <span v-if="alert.status === 'low'">🧻 Supplies Low!</span>
+                <span v-else>{{ alert.message }}</span>
+                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(alert)">✕</button>
+                &nbsp;·&nbsp;
+              </span>
+            </template>
+            <template v-else>All good!</template>
+          </span>
+        </div>
+        <button class="alert-post-btn" @click="openWashroomModal">Report Low</button>
+      </div>
+    </template>
+
+    <!-- Lost & Found overlay -->
+    <template v-if="lostFoundOverlays.length">
+      <div
+        v-for="(overlay, index) in lostFoundOverlays"
+        :key="overlay.label"
+        class="lostfound-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge lostfound-badge">🧳 LOST & FOUND</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="lostFoundItems.length">
+              <span v-for="item in lostFoundItems" :key="item.id">
+                {{ item.message }}
+                <button class="alert-edit-btn" v-if="item.userId === 'CURRENT_USER_ID'" @click.stop="openLostFoundModal(item)">✎</button>
+                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(item)">✕</button>
+                &nbsp;·&nbsp;
+              </span>
+            </template>
+            <template v-else>No items reported</template>
+          </span>
+        </div>
+        <button class="alert-post-btn" @click="openLostFoundModal()">Report Item</button>
+      </div>
+    </template>
+    <!-- Kitchen Alert Modal -->
+    <Transition name="bio">
+      <div v-if="showKitchenModal" class="bio-card">
+        <button class="bio-close" @click="showKitchenModal = false">✕</button>
+        <h3>Post Kitchen Alert</h3>
+        <label>
+          <input type="radio" value="share" v-model="alertInput.mode" /> Cooking to Share
+        </label>
+        <label>
+          <input type="radio" value="missing" v-model="alertInput.mode" /> Missing Ingredient
+        </label>
+        <input v-model="alertInput.message" placeholder="What are you cooking or missing?" />
+        <button @click="submitAlert">Post</button>
+      </div>
+    </Transition>
+
+    <!-- Washroom Alert Modal -->
+    <Transition name="bio">
+      <div v-if="showWashroomModal" class="bio-card">
+        <button class="bio-close" @click="showWashroomModal = false">✕</button>
+        <h3>Report Low Supplies</h3>
+        <p>Let volunteers know if supplies are running low.</p>
+        <button @click="submitAlert">Report</button>
+      </div>
+    </Transition>
+
+    <!-- Lost & Found Modal -->
+    <Transition name="bio">
+      <div v-if="showLostFoundModal" class="bio-card">
+        <button class="bio-close" @click="showLostFoundModal = false">✕</button>
+        <h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost & Found Item</h3>
+        <input v-model="alertInput.message" placeholder="Describe the item and location..." />
+        <button @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
+      </div>
+    </Transition>
+
+    <!-- Check-in overlay -->
+    <template v-if="checkinOverlays.length">
+      <div
+        v-for="(overlay, index) in checkinOverlays"
+        :key="overlay.label"
+        class="checkin-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge checkin-badge">✅ CHECKED IN</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="checkinNames.length">
+              <span v-for="person in checkinNames" :key="person.id">
+                {{ person.fullname }}
+                &nbsp;·&nbsp;
+              </span>
+            </template>
+            <template v-else>No one checked in</template>
+          </span>
+        </div>
+      </div>
+    </template>
+
+    <!-- Volunteer shift overlay -->
+    <template v-if="volunteerShiftOverlays.length">
+      <div
+        v-for="(overlay, index) in volunteerShiftOverlays"
+        :key="overlay.label"
+        class="volunteer-shift-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge volunteer-shift-badge">🙋 ON SHIFT</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="volunteerShifts.length">
+              <span v-for="shift in volunteerShifts" :key="shift.id">
+                <span v-for="person in shift.claimed" :key="person.id_code">
+                  {{ person.fullname || person.id_code }} ({{ shift.team }})
+                  &nbsp;·&nbsp;
+                </span>
+              </span>
+            </template>
+            <template v-else>No one on shift</template>
+          </span>
+        </div>
+      </div>
+    </template>
+
+    <!-- Settings toggle -->
+    <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
+    <Transition name="bio">
+      <div v-if="settingsOpen" class="settings-panel">
+        <p class="settings-title">Map Overlays</p>
+        <label class="settings-row">
+          <span>Stage Info</span>
+          <input type="checkbox" v-model="showStageOverlay" />
+        </label>
+        <label class="settings-row">
+          <span>Meals</span>
+          <input type="checkbox" v-model="showMealOverlay" />
+        </label>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -265,6 +722,18 @@ onMounted(() => {
   white-space: nowrap;
 }
 
+.now-badge--upcoming {
+  background: #0a5a8a;
+}
+
+.now-badge--sep {
+  margin-top: 3px;
+}
+
+.ticker-wrap--upcoming {
+  background: rgba(10, 90, 138, 0.88);
+}
+
 .ticker-wrap {
   background: rgba(67, 7, 137, 0.88);
   color: #fff;
@@ -282,12 +751,13 @@ onMounted(() => {
    -50% lands exactly on the second copy, creating a gapless loop */
 .ticker-text {
   display: inline-block;
+  will-change: transform;
   animation: ticker-scroll 12s linear infinite;
 }
 
 @keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 /* ── Bio card ────────────────────────────────────────────────────────────────── */
@@ -335,11 +805,21 @@ onMounted(() => {
   text-transform: uppercase;
 }
 
+.bio-genre--upcoming {
+  color: #6ab8e8;
+}
+
 .bio-text {
   font-size: 0.88rem;
   line-height: 1.55;
   margin: 0;
   color: rgba(255,255,255,0.88);
+}
+
+.bio-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin: 0.85rem 0;
 }
 
 .bio-empty { font-style: italic; color: rgba(255,255,255,0.4); }
@@ -382,8 +862,16 @@ onMounted(() => {
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 0 0 3px 3px;
-  padding: 4px 6px;
+  overflow: hidden;
+  width: 110px;
   white-space: nowrap;
+  padding: 4px 0;
+}
+
+.meal-ticker-text {
+  display: inline-block;
+  will-change: transform;
+  animation: ticker-scroll 12s linear infinite;
 }
 
 .meal-menu-list {
@@ -392,5 +880,70 @@ onMounted(() => {
   font-size: 0.88rem;
   color: rgba(255,255,255,0.88);
   line-height: 1.7;
+}
+
+/* ── Settings toggle ─────────────────────────────────────────────────────────── */
+.settings-toggle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30, 5, 60, 0.72);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, color 0.15s;
+}
+
+.settings-toggle:hover,
+.settings-toggle--active {
+  background: rgba(67, 7, 137, 0.92);
+  color: #fff;
+}
+
+.settings-panel {
+  position: absolute;
+  top: 3rem;
+  right: 0.5rem;
+  background: rgba(30, 5, 60, 0.96);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  min-width: 155px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 20;
+}
+
+.settings-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9a0f0;
+  margin: 0 0 0.55rem;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+.settings-row + .settings-row {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 0.2rem;
+  padding-top: 0.45rem;
 }
 </style>
