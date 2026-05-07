@@ -397,7 +397,7 @@
                 :class="['history-item', slot.active === false ? 'inactive-shift' : '']"
                 style="border-left: 3px solid #4caf50; padding-left: 0.75rem; margin-bottom: 0.75rem;"
               >
-                <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 600;' : 'color: #4caf50; font-weight: bold;'">
+                <div class="shift-title-row" :style="slot.active === false ? 'color: #888; font-weight: 400;' : 'color: #4caf50; font-weight: bold;'">
                   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                     <div style="display: flex; align-items: center;">
                       <img
@@ -406,7 +406,7 @@
                         :alt="slot.team + ' icon'"
                         style="max-width: 54px; max-height: 54px; object-fit: contain; margin-right: 1em; display: block;"
                       />
-                      <span>
+                      <span style="font-size: 1.1em; font-weight: 600;">
                         {{ {
                           frontgate: 'Front Gate',
                           foodteam: 'Food Team',
@@ -438,7 +438,7 @@
             </div>
             <br />
           </div>
-
+          
           <h3 v-else>
             📊 <strong style="color: orange">No shifts claimed yet!</strong><br />
             Head to the Volunteer Hub to sign up for your shift.
