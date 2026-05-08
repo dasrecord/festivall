@@ -1,13 +1,40 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { defineProps } from 'vue'
+import { useRoute } from 'vue-router'
+import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot } from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
 import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
-// ── Alert posting/editing/clearing logic ─────────────────────────────────────
-import { addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
+import { useLineupState } from '@/composables/useLineupState'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+
+// Accept user id_code as a prop (from ticket click-through or URL)
+const props = defineProps({
+  id_code: { type: String, required: false }
+})
+const route = useRoute()
+const effectiveIdCode = computed(() => {
+  return props.id_code || route.query.id_code || route.params.id_code || ''
+})
+
+const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
+
+const mapContainer = ref(null)
+const mapObject = ref(null)
+
 const showKitchenModal = ref(false)
 const showWashroomModal = ref(false)
 const showLostFoundModal = ref(false)
 const editingLostFoundId = ref(null)
 const alertInput = ref({ type: '', mode: '', message: '' })
 
-// Open modal helpers
+const kitchenAlerts = ref([])
+const washroomAlerts = ref([])
+const lostFoundItems = ref([])
+const checkinNames = ref([])
+const volunteerShifts = ref([])
+
 function openKitchenModal() {
   alertInput.value = { type: 'kitchen', mode: '', message: '' }
   showKitchenModal.value = true
@@ -27,24 +54,20 @@ function openLostFoundModal(item = null) {
   showLostFoundModal.value = true
 }
 
-// Post or edit alert
 async function submitAlert() {
   const col = collection(reunion_db, 'alerts_2026')
   if (alertInput.value.type === 'lostfound' && editingLostFoundId.value) {
-    // Edit existing lost & found
     await updateDoc(doc(col, editingLostFoundId.value), {
       message: alertInput.value.message,
       updated_at: new Date().toISOString()
     })
   } else {
-    // New alert
     await addDoc(col, {
       ...alertInput.value,
       created_at: new Date().toISOString(),
-      userId: 'CURRENT_USER_ID', // Replace with actual user ID
-      userName: 'CURRENT_USER_NAME' // Replace with actual user name
+      userId: 'CURRENT_USER_ID',
+      userName: 'CURRENT_USER_NAME'
     })
-    // Send Slack notification
     let slackMsg = ''
     if (alertInput.value.type === 'kitchen') {
       slackMsg = alertInput.value.mode === 'share'
@@ -63,22 +86,11 @@ async function submitAlert() {
   editingLostFoundId.value = null
 }
 
-// Clear/delete alert (volunteer/admin only)
 async function clearAlert(alert) {
   const col = collection(reunion_db, 'alerts_2026')
   await deleteDoc(doc(col, alert.id))
 }
-// ── Firestore listeners for overlays ─────────────────────────────────────────
-import { onSnapshot } from 'firebase/firestore'
 
-// Reactive state for overlay data
-const kitchenAlerts = ref([]) // [{...alert}]
-const washroomAlerts = ref([])
-const lostFoundItems = ref([])
-const checkinNames = ref([])
-const volunteerShifts = ref([])
-
-// Listen to alerts_2026 for kitchen, washroom, lost & found
 function listenToAlerts() {
   const alertsCol = collection(reunion_db, 'alerts_2026')
   onSnapshot(alertsCol, (snapshot) => {
@@ -97,7 +109,6 @@ function listenToAlerts() {
   })
 }
 
-// Listen to participants_2026 for check-in display
 function listenToCheckins() {
   const participantsCol = collection(reunion_db, 'participants_2026')
   onSnapshot(participantsCol, (snapshot) => {
@@ -117,7 +128,6 @@ function listenToCheckins() {
   })
 }
 
-// Listen to volunteer_slots_2026 for live shifts
 function listenToVolunteerShifts() {
   const slotsCol = collection(reunion_db, 'volunteer_slots_2026')
   onSnapshot(slotsCol, (snapshot) => {
@@ -126,10 +136,8 @@ function listenToVolunteerShifts() {
     snapshot.forEach((doc) => {
       const data = doc.data()
       if (data.active !== false && data.claimed && data.date && data.start && data.end) {
-        // Check if now is within shift window
         const shiftStart = new Date(`${data.date}T${data.start}`)
         let shiftEnd = new Date(`${data.date}T${data.end}`)
-        // Handle 24:00 as midnight next day
         if (data.end === '24:00') shiftEnd.setHours(shiftEnd.getHours() + 1)
         if (now >= shiftStart && now <= shiftEnd) {
           shifts.push({ id: doc.id, ...data })
@@ -139,42 +147,6 @@ function listenToVolunteerShifts() {
     volunteerShifts.value = shifts
   })
 }
-
-onMounted(() => {
-  fetchAndUpdateCurrentAct()
-  listenToAlerts()
-  listenToCheckins()
-  listenToVolunteerShifts()
-})
-<script setup>
-// Accept user id_code as a prop (from ticket click-through or URL)
-import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
-import { defineProps } from 'vue'
-import { useRoute } from 'vue-router'
-const props = defineProps({
-  id_code: { type: String, required: false }
-})
-const route = useRoute()
-// Use prop if provided, else fallback to query or params
-const effectiveIdCode = computed(() => {
-  return props.id_code || route.query.id_code || route.params.id_code || ''
-})
-
-// Modal refs for legacy overlays (needed for template)
-const showKitchenModal = ref(false)
-const showWashroomModal = ref(false)
-const showLostFoundModal = ref(false)
-import { ref, computed, onMounted } from 'vue'
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
-import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
-import { useLineupState } from '@/composables/useLineupState'
-import { REUNION_FESTIVAL } from '@/config/festivalConfig'
-
-const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
-
-const mapContainer = ref(null)
-const mapObject = ref(null)
 
 // ── Overlay definitions for map features (with nudge/offsets) ────────────────
 // Add an entry for each feature, matching the SVG layer name and desired offset.
@@ -438,7 +410,7 @@ function onObjectLoad() {
 // Handler for clicking SVG icons
 // Track which washroom is being reported
 const washroomLocation = ref('')
-function handleSvgIconClick(iconId, event) {
+function handleSvgIconClick(iconId) {
   // If washroom-related icon clicked, open supply report modal with location
   if (
     iconId.includes('washroom') ||
@@ -507,6 +479,9 @@ async function submitWashroomSupplyAlert() {
 
 onMounted(() => {
   fetchAndUpdateCurrentAct()
+  listenToAlerts()
+  listenToCheckins()
+  listenToVolunteerShifts()
 })
 </script>
 
@@ -604,7 +579,7 @@ onMounted(() => {
     <!-- Kitchen overlay -->
     <template v-if="kitchenOverlays.length">
       <div
-        v-for="(overlay, index) in kitchenOverlays"
+        v-for="overlay in kitchenOverlays"
         :key="overlay.label"
         class="kitchen-overlay map-feature-overlay"
         :style="overlay.style"
@@ -631,7 +606,7 @@ onMounted(() => {
     <!-- Washroom overlay -->
     <template v-if="washroomOverlays.length">
       <div
-        v-for="(overlay, index) in washroomOverlays"
+        v-for="overlay in washroomOverlays"
         :key="overlay.label"
         class="washroom-overlay map-feature-overlay"
         :style="overlay.style"
@@ -657,7 +632,7 @@ onMounted(() => {
     <!-- Lost & Found overlay -->
     <template v-if="lostFoundOverlays.length">
       <div
-        v-for="(overlay, index) in lostFoundOverlays"
+        v-for="overlay in lostFoundOverlays"
         :key="overlay.label"
         class="lostfound-overlay map-feature-overlay"
         :style="overlay.style"
@@ -718,7 +693,7 @@ onMounted(() => {
     <!-- Check-in overlay -->
     <template v-if="checkinOverlays.length">
       <div
-        v-for="(overlay, index) in checkinOverlays"
+        v-for="overlay in checkinOverlays"
         :key="overlay.label"
         class="checkin-overlay map-feature-overlay"
         :style="overlay.style"
@@ -741,7 +716,7 @@ onMounted(() => {
     <!-- Volunteer shift overlay -->
     <template v-if="volunteerShiftOverlays.length">
       <div
-        v-for="(overlay, index) in volunteerShiftOverlays"
+        v-for="overlay in volunteerShiftOverlays"
         :key="overlay.label"
         class="volunteer-shift-overlay map-feature-overlay"
         :style="overlay.style"
