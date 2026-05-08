@@ -439,13 +439,20 @@ function onObjectLoad() {
 // Track which washroom is being reported
 const washroomLocation = ref('')
 function handleSvgIconClick(iconId, event) {
-  // If washroom icon clicked, open supply report modal with location
-  if (iconId.includes('washroom') || iconId.includes('washrooms')) {
+  // If washroom-related icon clicked, open supply report modal with location
+  if (
+    iconId.includes('washroom') ||
+    iconId.includes('washrooms') ||
+    iconId.includes('portapotty') ||
+    iconId.includes('outhouse')
+  ) {
     // Customize this mapping as needed
     let label = ''
     if (iconId === 'washroom1_icon') label = 'Washroom 1'
     else if (iconId === 'washroom2_icon') label = 'Washroom 2'
     else if (iconId === 'washrooms_area_icon') label = 'Main Washrooms'
+    else if (iconId === 'portapotty_icon') label = 'Porta Potty'
+    else if (iconId === 'outhouse_icon') label = 'Outhouse'
     else label = iconId
     washroomLocation.value = label
     openWashroomSupplyModal()
