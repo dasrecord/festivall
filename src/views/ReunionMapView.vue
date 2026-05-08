@@ -43,6 +43,9 @@ function openWashroomModal() {
   alertInput.value = { type: 'washroom', status: 'low', message: '' }
   showWashroomModal.value = true
 }
+function closeWashroomModal() {
+  showWashroomModal.value = false
+}
 function openLostFoundModal(item = null) {
   if (item) {
     editingLostFoundId.value = item.id
@@ -159,7 +162,7 @@ const MEAL_ICONS = [
     svgId: 'meals_area',
     fallbackSvgPos: { x: 234.3, y: 268.69, w: 16, h: -2 },
     offsetX: 10,
-    offsetY: 0
+    offsetY: 5
   }
 ]
 
@@ -411,25 +414,28 @@ function onObjectLoad() {
 // Track which washroom is being reported
 const washroomLocation = ref('')
 function handleSvgIconClick(iconId) {
-  // If washroom-related icon clicked, open supply report modal with location
-  if (
+  const isWashroomIcon = (
     iconId.includes('washroom') ||
     iconId.includes('washrooms') ||
     iconId.includes('portapotty') ||
     iconId.includes('outhouse')
-  ) {
-    // Customize this mapping as needed
+  )
+
+  if (isWashroomIcon) {
+    if (showWashroomSupplyModal.value && activeWashroomIconId.value === iconId) {
+      closeWashroomSupplyModal()
+      return
+    }
+
     let label = ''
-    if (iconId === 'washroom1_icon') label = 'Washroom 1'
-    else if (iconId === 'washroom2_icon') label = 'Washroom 2'
-    else if (iconId === 'washrooms_area_icon') label = 'Main Washrooms'
-    else if (iconId === 'portapotty_icon') label = 'Porta Potty'
+    if (iconId === 'portapotty_icon') label = 'Porta Potty'
     else if (iconId === 'outhouse_icon') label = 'Outhouse'
     else label = iconId
+
     washroomLocation.value = label
+    activeWashroomIconId.value = iconId
     openWashroomSupplyModal()
   } else {
-    // Default: show alert for other icons (customize as needed)
     alert(`Clicked icon: ${iconId}`)
   }
 }
@@ -439,11 +445,18 @@ const showWashroomSupplyModal = ref(false)
 const washroomSupplyType = ref('toilet_paper')
 const washroomSupplySubmitting = ref(false)
 const washroomSupplyError = ref('')
+const activeWashroomIconId = ref('')
 
 function openWashroomSupplyModal() {
   washroomSupplyType.value = 'toilet_paper'
   washroomSupplyError.value = ''
   showWashroomSupplyModal.value = true
+}
+
+function closeWashroomSupplyModal() {
+  washroomSupplyError.value = ''
+  showWashroomSupplyModal.value = false
+  activeWashroomIconId.value = ''
 }
 
 async function submitWashroomSupplyAlert() {
@@ -673,10 +686,11 @@ onMounted(() => {
     <!-- Washroom Alert Modal -->
     <Transition name="bio">
       <div v-if="showWashroomModal" class="bio-card">
-        <button class="bio-close" @click="showWashroomModal = false">✕</button>
+        <button class="bio-close" @click.stop="closeWashroomModal">✕</button>
         <h3>Report Low Supplies</h3>
         <p>Let volunteers know if supplies are running low.</p>
-        <button @click="submitAlert">Report</button>
+        <button @click="submitAlert">Submit washroom alert</button>
+        <button type="button" class="alert-cancel-btn" @click.stop="closeWashroomModal">Cancel report</button>
       </div>
     </Transition>
 
@@ -758,7 +772,7 @@ onMounted(() => {
   <!-- Washroom Supply Modal -->
   <Transition name="bio">
     <div v-if="showWashroomSupplyModal" class="bio-card">
-      <button class="bio-close" @click="showWashroomSupplyModal = false">✕</button>
+      <button class="bio-close" @click.stop="closeWashroomSupplyModal">✕</button>
       <h3>Report Low Washroom Supplies</h3>
       <p v-if="washroomLocation">Reporting for: <strong>{{ washroomLocation }}</strong></p>
       <p>Select the supply that is low:</p>
@@ -766,8 +780,9 @@ onMounted(() => {
       <label><input type="radio" value="hand_sanitizer" v-model="washroomSupplyType" /> Hand Sanitizer</label><br />
       <label><input type="radio" value="soap" v-model="washroomSupplyType" /> Soap</label><br />
       <button :disabled="washroomSupplySubmitting" @click="submitWashroomSupplyAlert">
-        {{ washroomSupplySubmitting ? 'Reporting...' : 'Report' }}
+        {{ washroomSupplySubmitting ? 'Reporting...' : 'Report low supply' }}
       </button>
+      <button type="button" class="alert-cancel-btn" @click.stop="closeWashroomSupplyModal">Cancel report</button>
       <p v-if="washroomSupplyError" style="color: #f88;">{{ washroomSupplyError }}</p>
     </div>
   </Transition>
@@ -803,7 +818,7 @@ onMounted(() => {
 .now-badge {
   background: #430789;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
   padding: 2px 5px;
@@ -826,7 +841,7 @@ onMounted(() => {
 .ticker-wrap {
   background: rgba(67, 7, 137, 0.88);
   color: #fff;
-  font-size: 12px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 0 0 4px 4px;
@@ -841,7 +856,7 @@ onMounted(() => {
 .ticker-text {
   display: inline-block;
   will-change: transform;
-  animation: ticker-scroll 12s linear infinite;
+  animation: ticker-scroll 5s linear infinite;
 }
 
 @keyframes ticker-scroll {
@@ -855,7 +870,11 @@ onMounted(() => {
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
-  width: min(90vw, 420px);
+  width: min(95vw, 420px);
+  max-width: 95vw;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  box-sizing: border-box;
   background: rgba(30, 5, 60, 0.96);
   color: #fff;
   border-radius: 12px;
@@ -863,6 +882,15 @@ onMounted(() => {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   z-index: 100;
   pointer-events: all;
+  touch-action: manipulation;
+}
+
+.bio-card input,
+.bio-card button,
+.bio-card label,
+.bio-card textarea,
+.bio-card select {
+  font-size: 16px;
 }
 
 .bio-close {
@@ -932,7 +960,7 @@ onMounted(() => {
 .meal-badge {
   background: #1a6b2f;
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
   padding: 2px 5px;
@@ -947,7 +975,7 @@ onMounted(() => {
 .meal-info {
   background: rgba(26, 107, 47, 0.88);
   color: #fff;
-  font-size: 12px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 0 0 3px 3px;
