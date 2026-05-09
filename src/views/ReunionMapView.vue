@@ -1,4 +1,24 @@
 <script setup>
+// Claim Shift Modal State and Handlers
+const showClaimShiftModal = ref(false)
+const claimShiftTeam = ref('')
+function openClaimShiftModal(team) {
+  claimShiftTeam.value = team
+  showClaimShiftModal.value = true
+}
+function closeClaimShiftModal() {
+  showClaimShiftModal.value = false
+  claimShiftTeam.value = ''
+}
+// Log volunteer shift Firestore ID for debugging
+function logVolunteerShiftId(id) {
+  console.log('Volunteer shift Firestore ID:', id)
+}
+
+// Safe alert for template usage
+function showAlert(msg) {
+  if (typeof window !== 'undefined' && window.alert) window.alert(msg)
+}
 import { ref, computed, onMounted } from 'vue'
 import { defineProps } from 'vue'
 import { useRoute } from 'vue-router'
@@ -131,23 +151,51 @@ function listenToCheckins() {
   })
 }
 
+// Store both current and next shifts per team
+const volunteerShiftsCurrent = ref([])
+const volunteerShiftsNext = ref([])
+
 function listenToVolunteerShifts() {
   const slotsCol = collection(reunion_db, 'volunteer_slots_2026')
   onSnapshot(slotsCol, (snapshot) => {
     const now = new Date()
-    const shifts = []
+    const allShifts = []
     snapshot.forEach((doc) => {
       const data = doc.data()
-      if (data.active !== false && data.claimed && data.date && data.start && data.end) {
-        const shiftStart = new Date(`${data.date}T${data.start}`)
-        let shiftEnd = new Date(`${data.date}T${data.end}`)
-        if (data.end === '24:00') shiftEnd.setHours(shiftEnd.getHours() + 1)
-        if (now >= shiftStart && now <= shiftEnd) {
-          shifts.push({ id: doc.id, ...data })
+      if (data.active !== false && data.date && data.start && data.end) {
+        // Include all shifts, even if claimed is empty or missing
+        allShifts.push({ id: doc.id, ...data, claimed: Array.isArray(data.claimed) ? data.claimed : [] })
+      }
+    })
+    // Group by team for current and next
+    const byTeam = {}
+    allShifts.forEach(shift => {
+      const team = shift.team || 'other'
+      if (!byTeam[team]) byTeam[team] = []
+      byTeam[team].push(shift)
+    })
+    // Find current and next for each team
+    const current = []
+    const next = []
+    Object.entries(byTeam).forEach(([team, shifts]) => {
+      shifts.sort((a, b) => new Date(`${a.date}T${a.start}`) - new Date(`${b.date}T${b.start}`))
+      let foundCurrent = false
+      let foundNext = false
+      for (const shift of shifts) {
+        const shiftStart = new Date(`${shift.date}T${shift.start}`)
+        let shiftEnd = new Date(`${shift.date}T${shift.end}`)
+        if (shift.end === '24:00') shiftEnd.setHours(shiftEnd.getHours() + 1)
+        if (!foundCurrent && shift.claimed && shift.claimed.length > 0 && now >= shiftStart && now <= shiftEnd) {
+          current.push(shift)
+          foundCurrent = true
+        } else if (!foundNext && shiftStart > now) {
+          next.push(shift)
+          foundNext = true
         }
       }
     })
-    volunteerShifts.value = shifts
+    volunteerShiftsCurrent.value = current
+    volunteerShiftsNext.value = next
   })
 }
 
@@ -203,10 +251,15 @@ const CHECKIN_ICONS = [
   }
 ]
 
+// Only show overlays for official teams, mapping to SVG icon by name
 const VOLUNTEER_SHIFT_ICONS = [
-  // Add one per key location if needed, or dynamically generate
-  // Example:
-  // { svgId: 'kitchen_area', label: 'Kitchen Shifts', offsetX: 0, offsetY: 0 }
+
+  { svgId: 'trailer_A_icon', label: 'Cleanup Crew', offsetX: 0, offsetY: 0 },
+  { svgId: 'trailer_B_icon', label: 'Setup Crew', offsetX: 0, offsetY: 24 },
+  { svgId: 'front_gate_icon', label: 'Front Gate', offsetX: 0, offsetY: 24 },
+  { svgId: 'shared_kitchen_icon', label: 'Food Team', offsetX: 0, offsetY: 0 },
+  { svgId: 'arcade_icon', label: 'Arcade Attendant', offsetX: 0, offsetY: 0 },
+  { svgId: 'stage_area_icon', label: 'Stage Crew', offsetX: 0, offsetY: 0 },
 ]
 
 // Overlay refs for rendering
@@ -435,9 +488,16 @@ function handleSvgIconClick(iconId) {
     washroomLocation.value = label
     activeWashroomIconId.value = iconId
     openWashroomSupplyModal()
-  } else {
-    alert(`Clicked icon: ${iconId}`)
+    return
   }
+
+  // Handle shared kitchen icon click
+  if (iconId === 'shared_kitchen_area' || iconId.includes('kitchen')) {
+    openKitchenModal()
+    return
+  }
+
+  alert(`Clicked icon: ${iconId}`)
 }
 
 // Modal state for washroom supply report
@@ -510,6 +570,14 @@ onMounted(() => {
     >
       Your browser does not support SVG.
     </object>
+
+    <!-- DEBUG: Test overlay button absolutely positioned above SVG -->
+    <button
+      style="position: absolute; top: 20px; left: 20px; z-index: 9999; background: #f00; color: #fff; padding: 8px; pointer-events: auto;"
+      @click="showAlert('Test overlay button is clickable!')"
+    >
+      DEBUG: Test Overlay Button
+    </button>
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
     <template v-if="showStageOverlay && (currentAct || upcomingAct)">
@@ -736,12 +804,19 @@ onMounted(() => {
         :style="overlay.style"
       >
         <div class="now-badge volunteer-shift-badge">🙋 ON SHIFT</div>
+        <div style="color: #fff; font-size: 11px; font-weight: bold; margin-bottom: 2px; background: #222; padding: 2px 6px; border-radius: 4px;">[Team: {{ overlay.label }}]</div>
         <div class="ticker-wrap">
           <span class="ticker-text">
-            <template v-if="volunteerShifts.length">
-              <span v-for="shift in volunteerShifts" :key="shift.id">
+            <template v-if="volunteerShiftsCurrent.length">
+              <span v-for="shift in volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().includes(overlay.label.toLowerCase().replace(/\s/g, '')) )" :key="shift.id">
                 <span v-for="person in shift.claimed" :key="person.id_code">
-                  {{ person.fullname || person.id_code }} ({{ shift.team }})
+                  <button
+                    @click="logVolunteerShiftId(shift.id)"
+                    style="background: none; border: none; color: inherit; font: inherit; padding: 0; margin: 0; cursor: pointer; pointer-events: auto; text-align: left;"
+                    tabindex="0"
+                  >
+                    {{ person.fullname || person.id_code }}
+                  </button>
                   &nbsp;·&nbsp;
                 </span>
               </span>
@@ -749,8 +824,57 @@ onMounted(() => {
             <template v-else>No one on shift</template>
           </span>
         </div>
+        <div class="now-badge volunteer-shift-badge" style="background: #0a5a8a; margin-top: 4px;">⏭️ NEXT SHIFT</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="volunteerShiftsNext.length">
+              <span v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().includes(overlay.label.toLowerCase().replace(/\s/g, '')) )" :key="shift.id">
+                <template v-if="shift.claimed && shift.claimed.length > 0">
+                  <span v-for="person in shift.claimed" :key="person.id_code">
+                    <span style="color: #fff;">
+                      {{ person.fullname || person.id_code }}
+                    </span>
+                    &nbsp;·&nbsp;
+                  </span>
+                  <span style="color: #aaa; font-size: 10px;">({{ shift.date }} {{ shift.start }})</span>
+                  <br />
+                </template>
+                <template v-else>
+                  <span style="color: #ffb347; cursor: pointer; text-decoration: underline;" @click="openClaimShiftModal(overlay.label)">
+                    Needs to be filled ({{ shift.date }} {{ shift.start }})
+                  </span>
+                  <br />
+                </template>
+              </span>
+            </template>
+            <template v-else>
+              <span style="color: #ffb347;">No upcoming shift</span>
+            </template>
+          </span>
+        </div>
       </div>
     </template>
+
+    <!-- Claim Shift Modal (moved outside overlay loop for reactivity) -->
+    <Transition name="bio">
+      <div v-if="showClaimShiftModal" class="bio-card">
+        <button class="bio-close" @click="closeClaimShiftModal">✕</button>
+        <h3>Claim a Shift</h3>
+        <p>
+          No one is signed up for the next <strong>{{ claimShiftTeam }}</strong> shift.<br>
+          Would you like to volunteer?
+        </p>
+        <a
+          href="/reunion-volunteer-signup" 
+          target="_blank"
+          class="alert-post-btn"
+          style="display:inline-block;margin-top:10px;"
+        >
+          Go to Volunteer Signup
+        </a>
+        <button type="button" class="alert-cancel-btn" @click="closeClaimShiftModal" style="margin-left:10px;">Cancel</button>
+      </div>
+    </Transition>
 
     <!-- Settings toggle -->
     <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
@@ -789,10 +913,30 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 .map-container {
   position: relative;
   width: 100vw;
   background-color: white;
+}
+
+/* Ensure overlays are absolutely positioned over the SVG map */
+.map-feature-overlay {
+  position: absolute;
+  pointer-events: all;
+  z-index: 1000;
+}
+
+/* Volunteer shift overlay styling (inherits from map-feature-overlay) */
+.volunteer-shift-overlay {
+  /* Optionally adjust alignment for volunteer overlays */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* If you want to nudge overlays, use transform or offsetX/Y in JS */
+  pointer-events: auto;
+  z-index: 1001;
+  border: 2px dashed #f00; /* DEBUG: Add visible border to confirm overlay position */
 }
 
 .festival-map {
@@ -800,6 +944,7 @@ onMounted(() => {
   height: auto;
   display: block;
   border: none;
+  pointer-events: none; /* Prevent SVG from blocking overlay clicks */
 }
 
 /* ── Stage overlay ─────────────────────────────────────────────────────────── */
@@ -857,6 +1002,7 @@ onMounted(() => {
   display: inline-block;
   will-change: transform;
   animation: ticker-scroll 5s linear infinite;
+  pointer-events: auto;
 }
 
 @keyframes ticker-scroll {
