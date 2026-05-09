@@ -1,4 +1,83 @@
 <script setup>
+// --- Claim Shift Logic ---
+import { runTransaction, arrayUnion } from 'firebase/firestore'
+const claimShiftStatus = ref('')
+const claimShiftLoading = ref(false)
+
+async function claimNextShiftForTeam() {
+  claimShiftStatus.value = ''
+  claimShiftLoading.value = true
+  try {
+    // Find the next unclaimed shift for the selected team
+    const nextShift = volunteerShiftsNext.value.find(s =>
+      s.team && s.team.toLowerCase().replace(/\s/g, '') === claimShiftTeam.value.toLowerCase().replace(/\s/g, '')
+    )
+    if (!nextShift) throw new Error('No upcoming shift found for this team.')
+
+    // Lookup participant info
+    const idCode = effectiveIdCode.value?.toLowerCase().trim()
+    if (!idCode) throw new Error('No ID code found. Please access the map with your ticket link or login.')
+    const q = query(collection(reunion_db, 'participants_2026'), where('id_code', '==', idCode))
+    const querySnapshot = await getDocs(q)
+    if (querySnapshot.empty) throw new Error('Participant not found for your ID code.')
+    const p = querySnapshot.docs[0].data()
+    const participant = {
+      id_code: p.id_code,
+      fullname: p.contact?.fullname || p.fullname || '(no name)'
+    }
+
+    // Firestore transaction to claim the slot
+    const slotRef = doc(reunion_db, 'volunteer_slots_2026', nextShift.id)
+    await runTransaction(reunion_db, async (tx) => {
+      const snap = await tx.get(slotRef)
+      if (!snap.exists()) throw new Error('Slot no longer exists.')
+      const s = snap.data()
+      const capacity = s.capacity || 1
+      const claimed = s.claimed || []
+      if (claimed.some((c) => c.id_code === participant.id_code)) throw new Error('You already claimed this slot.')
+      if (claimed.length >= capacity) throw new Error('This slot is full.')
+      const newClaim = {
+        id_code: participant.id_code,
+        fullname: participant.fullname,
+        claimed_at: new Date()
+      }
+      tx.update(slotRef, { claimed: [...claimed, newClaim] })
+    })
+
+    // Mirror on participant document
+    const claimSummary = {
+      slot_id: nextShift.id,
+      team: nextShift.team,
+      date: nextShift.date,
+      start: nextShift.start,
+      end: nextShift.end,
+      title: nextShift.title || '',
+      created_at: new Date()
+    }
+    await updateDoc(
+      doc(reunion_db, 'participants_2026', participant.id_code),
+      { 'volunteer.claimed_slots': arrayUnion(claimSummary) }
+    )
+
+    // Audit trail
+    await addDoc(collection(reunion_db, 'volunteer_signups_2026'), {
+      id_code: participant.id_code,
+      fullname: participant.fullname,
+      team: nextShift.team,
+      slot_id: nextShift.id,
+      date: nextShift.date,
+      start: nextShift.start,
+      end: nextShift.end,
+      created_at: new Date()
+    })
+
+    claimShiftStatus.value = 'success'
+  } catch (e) {
+    claimShiftStatus.value = e?.message || 'Sorry, claim failed. Please try again.'
+  } finally {
+    claimShiftLoading.value = false
+  }
+}
 // Claim Shift Modal State and Handlers
 const showClaimShiftModal = ref(false)
 const claimShiftTeam = ref('')
@@ -12,7 +91,7 @@ function closeClaimShiftModal() {
 }
 // Log volunteer shift Firestore ID for debugging
 function logVolunteerShiftId(id) {
-  console.log('Volunteer shift Firestore ID:', id)
+  // No-op: debug logging removed
 }
 
 // Safe alert for template usage
@@ -571,13 +650,6 @@ onMounted(() => {
       Your browser does not support SVG.
     </object>
 
-    <!-- DEBUG: Test overlay button absolutely positioned above SVG -->
-    <button
-      style="position: absolute; top: 20px; left: 20px; z-index: 9999; background: #f00; color: #fff; padding: 8px; pointer-events: auto;"
-      @click="showAlert('Test overlay button is clickable!')"
-    >
-      DEBUG: Test Overlay Button
-    </button>
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
     <template v-if="showStageOverlay && (currentAct || upcomingAct)">
@@ -804,7 +876,6 @@ onMounted(() => {
         :style="overlay.style"
       >
         <div class="now-badge volunteer-shift-badge">🙋 ON SHIFT</div>
-        <div style="color: #fff; font-size: 11px; font-weight: bold; margin-bottom: 2px; background: #222; padding: 2px 6px; border-radius: 4px;">[Team: {{ overlay.label }}]</div>
         <div class="ticker-wrap">
           <span class="ticker-text">
             <template v-if="volunteerShiftsCurrent.length">
@@ -864,15 +935,17 @@ onMounted(() => {
           No one is signed up for the next <strong>{{ claimShiftTeam }}</strong> shift.<br>
           Would you like to volunteer?
         </p>
-        <a
-          href="/reunion-volunteer-signup" 
-          target="_blank"
+        <button
           class="alert-post-btn"
+          :disabled="claimShiftLoading"
           style="display:inline-block;margin-top:10px;"
+          @click="claimNextShiftForTeam"
         >
-          Go to Volunteer Signup
-        </a>
+          {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+        </button>
         <button type="button" class="alert-cancel-btn" @click="closeClaimShiftModal" style="margin-left:10px;">Cancel</button>
+        <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" style="color:#f88;margin-top:8px;">{{ claimShiftStatus }}</div>
+        <div v-if="claimShiftStatus === 'success'" style="color:#2a4;margin-top:8px;">Shift claimed! Thank you.</div>
       </div>
     </Transition>
 
@@ -936,7 +1009,7 @@ onMounted(() => {
   /* If you want to nudge overlays, use transform or offsetX/Y in JS */
   pointer-events: auto;
   z-index: 1001;
-  border: 2px dashed #f00; /* DEBUG: Add visible border to confirm overlay position */
+  /* border removed: no debug border for overlays */
 }
 
 .festival-map {
