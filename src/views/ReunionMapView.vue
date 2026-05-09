@@ -121,6 +121,14 @@ const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
 
 const mapContainer = ref(null)
 const mapObject = ref(null)
+// Debug: capture SVG and container info
+// svgDebugInfo.value = {
+//   viewBox: `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
+//   svgWidth: svgEl.width.baseVal?.value || svgEl.clientWidth || svgEl.getAttribute('width') || 'auto',
+//   svgHeight: svgEl.height.baseVal?.value || svgEl.clientHeight || svgEl.getAttribute('height') || 'auto',
+//   containerWidth: mapContainer.value?.clientWidth || 'n/a',
+//   containerHeight: mapContainer.value?.clientHeight || 'n/a',
+// }
 
 const showKitchenModal = ref(false)
 const showWashroomModal = ref(false)
@@ -333,12 +341,13 @@ const CHECKIN_ICONS = [
 // Only show overlays for official teams, mapping to SVG icon by name
 const VOLUNTEER_SHIFT_ICONS = [
 
-  { svgId: 'trailer_A_icon', label: 'Cleanup Crew', offsetX: 0, offsetY: 0 },
-  { svgId: 'trailer_B_icon', label: 'Setup Crew', offsetX: 0, offsetY: 24 },
+  { svgId: 'trailer_A_icon', label: 'Cleanup Crew', offsetX: 0, offsetY: -50 },
+  { svgId: 'trailer_C_icon', label: 'Setup Crew', offsetX: 0, offsetY: -50 },
   { svgId: 'front_gate_icon', label: 'Front Gate', offsetX: 0, offsetY: 24 },
   { svgId: 'shared_kitchen_icon', label: 'Food Team', offsetX: 0, offsetY: 0 },
-  { svgId: 'arcade_icon', label: 'Arcade Attendant', offsetX: 0, offsetY: 0 },
-  { svgId: 'stage_area_icon', label: 'Stage Crew', offsetX: 0, offsetY: 0 },
+  { svgId: 'arcade_icon', label: 'Arcade Attendant', offsetX: -45, offsetY: -10 },
+  { svgId: 'stage_area_icon', label: 'Stage Crew', offsetX: -90, offsetY: 0 },
+
 ]
 
 // Overlay refs for rendering
@@ -397,10 +406,15 @@ function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offs
   let x, y, w, h
   const el = svgDoc.getElementById(svgId)
   if (el) {
-    const transform = el.getAttribute('transform') || ''
-    const m = transform.match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
-    x = m ? parseFloat(m[1]) : 0
-    y = m ? parseFloat(m[2]) : 0
+    // Prefer x/y attributes if present, else fallback to transform
+    x = parseFloat(el.getAttribute('x'))
+    y = parseFloat(el.getAttribute('y'))
+    if (isNaN(x) || isNaN(y)) {
+      const transform = el.getAttribute('transform') || ''
+      const m = transform.match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
+      x = m ? parseFloat(m[1]) : 0
+      y = m ? parseFloat(m[2]) : 0
+    }
     w = parseFloat(el.getAttribute('width') || 0)
     h = parseFloat(el.getAttribute('height') || 0)
   } else if (fallbackSvgPos) {
@@ -408,6 +422,8 @@ function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offs
   } else {
     return null
   }
+  // Debug: log the coordinates and dimensions used for each overlay
+  // ...existing code...
   return {
     left: `${((x + w / 2 + offsetX) / vb.width)  * 100}%`,
     top:  `${((y + h / 2 + offsetY) / vb.height) * 100}%`
@@ -422,6 +438,15 @@ function positionOverlays() {
   if (!svgEl) return
   const vb = svgEl.viewBox.baseVal
   if (!vb || !vb.width || !vb.height) return
+
+  // Debug: capture SVG and container info
+  // svgDebugInfo.value = {
+  //   viewBox: `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
+  //   svgWidth: svgEl.width.baseVal?.value || svgEl.clientWidth || svgEl.getAttribute('width') || 'auto',
+  //   svgHeight: svgEl.height.baseVal?.value || svgEl.clientHeight || svgEl.getAttribute('height') || 'auto',
+  //   containerWidth: mapContainer.value?.clientWidth || 'n/a',
+  //   containerHeight: mapContainer.value?.clientHeight || 'n/a',
+  // }
 
   stageOverlays.value = STAGE_ICONS.flatMap((icon) => {
     const style = resolveIconStyle(svgDoc, vb, icon)
@@ -874,8 +899,11 @@ onMounted(() => {
         :key="overlay.label"
         class="volunteer-shift-overlay map-feature-overlay"
         :style="overlay.style"
+        style="position: absolute;"
       >
-        <div class="now-badge volunteer-shift-badge">🙋 ON SHIFT</div>
+        <div class="now-badge volunteer-shift-badge">{{ overlay.label }}</div>
+        <!-- Debug: Show computed coordinates -->
+        <!-- ...existing code... -->
         <div class="ticker-wrap">
           <span class="ticker-text">
             <template v-if="volunteerShiftsCurrent.length">
