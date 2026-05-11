@@ -570,6 +570,34 @@ function onObjectLoad() {
         handleSvgIconClick(el.id, event)
       })
     })
+
+    // Forward wheel + mouse events from the inner SVG document so pan/zoom works
+    // when the cursor is over the map (object creates its own browsing context)
+    svgDoc.addEventListener('wheel', (e) => {
+      e.preventDefault()
+      const objRect = mapObject.value.getBoundingClientRect()
+      onWheel({ deltaY: e.deltaY, clientX: e.clientX + objRect.left, clientY: e.clientY + objRect.top })
+    }, { passive: false })
+
+    svgDoc.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return
+      const objRect = mapObject.value.getBoundingClientRect()
+      isDragging.value = true
+      dragLast.value = { x: e.clientX + objRect.left, y: e.clientY + objRect.top }
+    })
+    svgDoc.addEventListener('mousemove', (e) => {
+      if (!isDragging.value) return
+      const objRect = mapObject.value.getBoundingClientRect()
+      const absX = e.clientX + objRect.left
+      const absY = e.clientY + objRect.top
+      const dx = absX - dragLast.value.x
+      const dy = absY - dragLast.value.y
+      dragLast.value = { x: absX, y: absY }
+      const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
+      mapTranslateX.value = tx
+      mapTranslateY.value = ty
+    })
+    svgDoc.addEventListener('mouseup', () => { isDragging.value = false })
   }
 }
 // Handler for clicking SVG icons
@@ -670,6 +698,134 @@ async function submitWashroomSupplyAlert() {
   }
 }
 
+
+// ── Pan & zoom ────────────────────────────────────────────────────────────────
+const mapScale = ref(1)
+const mapTranslateX = ref(0)
+const mapTranslateY = ref(0)
+const isDragging = ref(false)
+const dragLast = ref({ x: 0, y: 0 })
+const MIN_SCALE = 1
+const MAX_SCALE = 5
+
+const zoomStyle = computed(() => ({
+  transform: `translate(${mapTranslateX.value}px, ${mapTranslateY.value}px) scale(${mapScale.value})`,
+  transformOrigin: '0 0',
+  willChange: 'transform',
+  cursor: isDragging.value ? 'grabbing' : (mapScale.value > 1 ? 'grab' : 'default'),
+}))
+
+function clampTranslate(tx, ty, scale) {
+  if (!mapContainer.value) return { tx, ty }
+  const cw = mapContainer.value.clientWidth
+  const ch = mapContainer.value.clientHeight
+  return {
+    tx: Math.max(cw * (1 - scale), Math.min(0, tx)),
+    ty: Math.max(ch * (1 - scale), Math.min(0, ty)),
+  }
+}
+
+function onWheel(e) {
+  const factor = e.deltaY < 0 ? 1.1 : 0.9
+  const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, mapScale.value * factor))
+  if (!mapContainer.value) return
+  const rect = mapContainer.value.getBoundingClientRect()
+  const cx = e.clientX - rect.left
+  const cy = e.clientY - rect.top
+  const mx = (cx - mapTranslateX.value) / mapScale.value
+  const my = (cy - mapTranslateY.value) / mapScale.value
+  const { tx, ty } = clampTranslate(cx - mx * newScale, cy - my * newScale, newScale)
+  mapScale.value = newScale
+  mapTranslateX.value = tx
+  mapTranslateY.value = ty
+}
+
+function onMouseDown(e) {
+  if (e.button !== 0) return
+  isDragging.value = true
+  dragLast.value = { x: e.clientX, y: e.clientY }
+}
+function onMouseMove(e) {
+  if (!isDragging.value) return
+  const dx = e.clientX - dragLast.value.x
+  const dy = e.clientY - dragLast.value.y
+  dragLast.value = { x: e.clientX, y: e.clientY }
+  const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
+  mapTranslateX.value = tx
+  mapTranslateY.value = ty
+}
+function onMouseUp() { isDragging.value = false }
+
+const pinchStartDist = ref(0)
+const pinchStartScale = ref(1)
+const pinchStartTx = ref(0)
+const pinchStartTy = ref(0)
+const pinchStartMidX = ref(0)
+const pinchStartMidY = ref(0)
+
+function getTouchDist(t) {
+  const dx = t[0].clientX - t[1].clientX
+  const dy = t[0].clientY - t[1].clientY
+  return Math.sqrt(dx * dx + dy * dy)
+}
+function onTouchStart(e) {
+  if (e.touches.length === 2) {
+    pinchStartDist.value = getTouchDist(e.touches)
+    pinchStartScale.value = mapScale.value
+    pinchStartTx.value = mapTranslateX.value
+    pinchStartTy.value = mapTranslateY.value
+    if (!mapContainer.value) return
+    const rect = mapContainer.value.getBoundingClientRect()
+    pinchStartMidX.value = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left
+    pinchStartMidY.value = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
+  } else if (e.touches.length === 1) {
+    dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+}
+function onTouchMove(e) {
+  if (e.touches.length === 2 && pinchStartDist.value > 0) {
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchStartScale.value * (getTouchDist(e.touches) / pinchStartDist.value)))
+    const mx = (pinchStartMidX.value - pinchStartTx.value) / pinchStartScale.value
+    const my = (pinchStartMidY.value - pinchStartTy.value) / pinchStartScale.value
+    if (!mapContainer.value) return
+    const rect = mapContainer.value.getBoundingClientRect()
+    const curMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left
+    const curMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
+    const { tx, ty } = clampTranslate(curMidX - mx * newScale, curMidY - my * newScale, newScale)
+    mapScale.value = newScale
+    mapTranslateX.value = tx
+    mapTranslateY.value = ty
+  } else if (e.touches.length === 1) {
+    const dx = e.touches[0].clientX - dragLast.value.x
+    const dy = e.touches[0].clientY - dragLast.value.y
+    dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
+    mapTranslateX.value = tx
+    mapTranslateY.value = ty
+  }
+}
+function onTouchEnd(e) {
+  if (e.touches.length < 2) pinchStartDist.value = 0
+  if (e.touches.length === 1) dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+}
+
+function zoomToCenter(factor) {
+  const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, mapScale.value * factor))
+  if (!mapContainer.value) { mapScale.value = newScale; return }
+  const cw = mapContainer.value.clientWidth
+  const ch = mapContainer.value.clientHeight
+  const cx = cw / 2
+  const cy = ch / 2
+  const mx = (cx - mapTranslateX.value) / mapScale.value
+  const my = (cy - mapTranslateY.value) / mapScale.value
+  const { tx, ty } = clampTranslate(cx - mx * newScale, cy - my * newScale, newScale)
+  mapScale.value = newScale
+  mapTranslateX.value = tx
+  mapTranslateY.value = ty
+}
+function zoomIn() { zoomToCenter(1.4) }
+function zoomOut() { zoomToCenter(1 / 1.4) }
+
 onMounted(() => {
   fetchAndUpdateCurrentAct()
   listenToAlerts()
@@ -679,7 +835,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="mapContainer" class="map-container">
+  <div class="map-backdrop">
+  <div ref="mapContainer" class="map-container"
+       @wheel.prevent="onWheel"
+       @mousedown="onMouseDown"
+       @mousemove="onMouseMove"
+       @mouseup="onMouseUp"
+       @mouseleave="onMouseUp"
+       @touchstart.passive="onTouchStart"
+       @touchmove.prevent="onTouchMove"
+       @touchend="onTouchEnd">
+    <!-- map-zoom-wrapper: transform applied here so overlays move with the map -->
+    <div class="map-zoom-wrapper" :style="zoomStyle">
+
     <!-- <object> keeps the SVG in its own document so page CSS can't bleed in -->
     <object
       ref="mapObject"
@@ -690,7 +858,6 @@ onMounted(() => {
     >
       Your browser does not support SVG.
     </object>
-
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
     <template v-if="showStageOverlay && (currentAct || upcomingAct)">
@@ -718,6 +885,7 @@ onMounted(() => {
       </div>
 
       <!-- Bio card — tap overlay to open, tap X to close -->
+      <Teleport to="body">
       <Transition name="bio">
         <div v-if="bioOpen" class="bio-card">
           <button class="bio-close" @click.stop="bioOpen = false">✕</button>
@@ -736,6 +904,7 @@ onMounted(() => {
           </template>
         </div>
       </Transition>
+      </Teleport>
     </template>
 
     <!-- Meals overlay — positioned right of the meals icon, expands rightward -->
@@ -756,6 +925,7 @@ onMounted(() => {
       </div>
 
       <!-- Meal menu card -->
+      <Teleport to="body">
       <Transition name="bio">
         <div v-if="mealCardOpen" class="bio-card">
           <button class="bio-close" @click="mealCardOpen = false">✕</button>
@@ -768,6 +938,7 @@ onMounted(() => {
           </ul>
         </div>
       </Transition>
+      </Teleport>
     </template>
 
     <!-- Kitchen overlay -->
@@ -848,6 +1019,31 @@ onMounted(() => {
         <button class="alert-post-btn" @click="openLostFoundModal()">Report Item</button>
       </div>
     </template>
+    <!-- Check-in overlay -->
+    <template v-if="checkinOverlays.length">
+      <div
+        v-for="overlay in checkinOverlays"
+        :key="overlay.label"
+        class="checkin-overlay map-feature-overlay"
+        :style="overlay.style"
+      >
+        <div class="now-badge checkin-badge">✅ CHECKED IN</div>
+        <div class="ticker-wrap">
+          <span class="ticker-text">
+            <template v-if="checkinNames.length">
+              <span v-for="person in checkinNames" :key="person.id">
+                {{ person.fullname }}
+                &nbsp;·&nbsp;
+              </span>
+            </template>
+            <template v-else>No one checked in</template>
+          </span>
+        </div>
+      </div>
+    </template>
+
+    </div><!-- /.map-zoom-wrapper -->
+
     <!-- Kitchen Alert Modal -->
     <Transition name="bio">
       <div v-if="showKitchenModal" class="bio-card">
@@ -890,28 +1086,6 @@ onMounted(() => {
       </div>
     </Transition>
 
-    <!-- Check-in overlay -->
-    <template v-if="checkinOverlays.length">
-      <div
-        v-for="overlay in checkinOverlays"
-        :key="overlay.label"
-        class="checkin-overlay map-feature-overlay"
-        :style="overlay.style"
-      >
-        <div class="now-badge checkin-badge">✅ CHECKED IN</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            <template v-if="checkinNames.length">
-              <span v-for="person in checkinNames" :key="person.id">
-                {{ person.fullname }}
-                &nbsp;·&nbsp;
-              </span>
-            </template>
-            <template v-else>No one checked in</template>
-          </span>
-        </div>
-      </div>
-    </template>
 
     <!-- Shift Info Modal — opens when a volunteer team icon is tapped on the map -->
     <Transition name="bio">
@@ -965,6 +1139,12 @@ onMounted(() => {
       </div>
     </Transition>
 
+    <!-- Zoom buttons -->
+    <div class="zoom-controls">
+      <button class="zoom-btn" @click="zoomIn" :disabled="mapScale >= 5" title="Zoom in">+</button>
+      <button class="zoom-btn" @click="zoomOut" :disabled="mapScale <= 1" title="Zoom out">−</button>
+    </div>
+
     <!-- Settings toggle -->
     <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
     <Transition name="bio">
@@ -1003,14 +1183,19 @@ onMounted(() => {
       <p v-if="washroomSupplyError" class="modal-error">{{ washroomSupplyError }}</p>
     </div>
   </Transition>
+  </div><!-- /.map-backdrop -->
 </template>
 
 <style scoped>
 
+.map-backdrop {
+  width: 100vw;
+  background-color: #000;
+}
+
 .map-container {
   position: relative;
-  width: 100vw;
-  background-color: white;
+  width: 100%;
   --overlay-font-size: 8px;
 }
 
@@ -1039,6 +1224,26 @@ onMounted(() => {
   display: block;
   border: none;
   pointer-events: auto; /* Allow SVG icons to be clickable */
+}
+
+/* Desktop: map fills viewport height; container shrink-wraps the map so
+   overlay % positions stay accurate; backdrop provides the full-screen black bg */
+@media (min-width: 768px) {
+  .map-backdrop {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-container {
+    height: 100vh;
+    width: auto;
+    flex-shrink: 0;
+  }
+  .festival-map {
+    width: auto;
+    height: 100vh;
+  }
 }
 
 /* ── Stage overlay ─────────────────────────────────────────────────────────── */
@@ -1245,7 +1450,46 @@ onMounted(() => {
   line-height: 1.7;
 }
 
-/* ── Settings toggle ─────────────────────────────────────────────────────────── */
+/* ── Zoom controls ───────────────────────────────────────────────────────────── */
+.zoom-controls {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 20;
+}
+
+.zoom-btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 8px;
+  border: none;
+  background: rgba(30, 5, 60, 0.80);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.zoom-btn:hover:not(:disabled) {
+  background: rgba(67, 7, 137, 0.92);
+  color: #fff;
+}
+
+.zoom-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Settings toggle ───────────────────────────────────────────────────────────── */
 .settings-toggle {
   position: absolute;
   top: 0.5rem;
@@ -1402,5 +1646,19 @@ onMounted(() => {
 .modal-btn.modal-btn--ghost:hover { background: rgba(255,255,255,0.14) !important; color: #fff !important; }
 
 .modal-error { color: #f88; font-size: 0.85rem; margin-top: 0.5rem; }
+
+/* ── Pan & zoom ─────────────────────────────────────────────────────────────── */
+.map-container {
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.map-zoom-wrapper {
+  position: relative;
+  width: 100%;
+  transform-origin: 0 0;
+}
 
 </style>
