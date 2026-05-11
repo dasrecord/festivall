@@ -100,3 +100,11 @@ export const REUNION_FESTIVAL = {
     }
   },
 }
+
+// Budget targets per category — update each year once planning is confirmed
+export const BUDGET_TARGETS = {
+  infrastructure: 500,
+  marketing: 0,
+  food: 0,
+  miscellaneous: 0,
+}

@@ -137,10 +137,13 @@
           title="Infrastructure"
           category="infrastructure"
           :items="itemsByCategory('infrastructure')"
+          :receipts="receiptsByCategory('infrastructure')"
+          :target="BUDGET_TARGETS.infrastructure"
           :is-admin="isAdmin"
           :saving="saving"
           @add="addItem"
           @remove="removeItem"
+          @remove-receipt="removeReceipt"
         />
 
         <!-- Marketing -->
@@ -148,10 +151,27 @@
           title="Marketing"
           category="marketing"
           :items="itemsByCategory('marketing')"
+          :receipts="receiptsByCategory('marketing')"
+          :target="BUDGET_TARGETS.marketing"
           :is-admin="isAdmin"
           :saving="saving"
           @add="addItem"
           @remove="removeItem"
+          @remove-receipt="removeReceipt"
+        />
+
+        <!-- Food -->
+        <ManualCategoryCard
+          title="Food"
+          category="food"
+          :items="itemsByCategory('food')"
+          :receipts="receiptsByCategory('food')"
+          :target="BUDGET_TARGETS.food"
+          :is-admin="isAdmin"
+          :saving="saving"
+          @add="addItem"
+          @remove="removeItem"
+          @remove-receipt="removeReceipt"
         />
 
         <!-- Miscellaneous -->
@@ -159,10 +179,13 @@
           title="Miscellaneous"
           category="miscellaneous"
           :items="itemsByCategory('miscellaneous')"
+          :receipts="receiptsByCategory('miscellaneous')"
+          :target="BUDGET_TARGETS.miscellaneous"
           :is-admin="isAdmin"
           :saving="saving"
           @add="addItem"
           @remove="removeItem"
+          @remove-receipt="removeReceipt"
         />
 
       </div>
@@ -183,6 +206,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore'
 import ManualCategoryCard from '@/components/ManualCategoryCard.vue'
+import { BUDGET_TARGETS } from '@/config/festivalConfig'
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 const isAdmin = ref(false)
@@ -201,7 +225,9 @@ const loading = ref(true)
 const saving = ref(false)
 const participants = ref([])
 const budgetItems = ref([])
+const receiptItems = ref([])
 let unsubscribeBudget = null
+let unsubscribeReceipts = null
 
 // ── Participant derived data ──────────────────────────────────────────────────
 // Expected vs Actual Revenue
@@ -236,7 +262,8 @@ const expectedExpenses = computed(() =>
   expectedArtistTotal.value +
   expectedStaffTotal.value +
   expectedMealCost.value +
-  manualTotal.value
+  manualTotal.value +
+  receiptTotal.value
 )
 
 const expectedNet = computed(() => expectedRevenue.value - expectedExpenses.value)
@@ -355,12 +382,20 @@ const manualTotal = computed(() =>
   budgetItems.value.reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
 
+// ── Receipt items ─────────────────────────────────────────────────────────────
+const receiptsByCategory = (cat) => receiptItems.value.filter((r) => r.category === cat)
+
+const receiptTotal = computed(() =>
+  receiptItems.value.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+)
+
 const totalExpenses = computed(
   () =>
     artistMonetaryTotal.value +
     staffMonetaryTotal.value +
     mealTicketCost.value +
-    manualTotal.value
+    manualTotal.value +
+    receiptTotal.value
 )
 
 const net = computed(() => totalRevenue.value - totalExpenses.value)
@@ -400,6 +435,15 @@ const removeItem = async (id) => {
   }
 }
 
+const removeReceipt = async (id) => {
+  if (!isAdmin.value) return
+  try {
+    await deleteDoc(doc(reunion_db, 'receipts_2026', id))
+  } catch (e) {
+    console.error('Error deleting receipt:', e)
+  }
+}
+
 // ── Data loading ──────────────────────────────────────────────────────────────
 const loadParticipants = async () => {
   const snap = await getDocs(collection(reunion_db, 'participants_2026'))
@@ -412,15 +456,23 @@ const subscribeBudget = () => {
   })
 }
 
+const subscribeReceipts = () => {
+  unsubscribeReceipts = onSnapshot(collection(reunion_db, 'receipts_2026'), (snap) => {
+    receiptItems.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  })
+}
+
 onMounted(async () => {
   checkAuth()
   await loadParticipants()
   subscribeBudget()
+  subscribeReceipts()
   loading.value = false
 })
 
 onUnmounted(() => {
   if (unsubscribeBudget) unsubscribeBudget()
+  if (unsubscribeReceipts) unsubscribeReceipts()
   if (authCheckHandler) window.removeEventListener('storage', authCheckHandler)
 })
 </script>

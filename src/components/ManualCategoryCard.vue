@@ -2,7 +2,12 @@
   <div class="budget-card">
     <div class="card-header">
       <span class="card-title">{{ title }}</span>
-      <span class="card-badge red">{{ fmtCAD(subtotal) }}</span>
+      <div class="card-header-right">
+        <span v-if="target > 0" class="target-label" :class="grandTotal > target ? 'over-budget' : 'under-budget'">
+          {{ fmtCAD(grandTotal) }} / {{ fmtCAD(target) }}
+        </span>
+        <span class="card-badge red">{{ fmtCAD(grandTotal) }}</span>
+      </div>
     </div>
 
     <div
@@ -23,9 +28,38 @@
     <div v-if="!items.length" class="empty-row">No entries yet</div>
 
     <div class="subtotal-row">
-      <span class="subtotal-label">Subtotal</span>
+      <span class="subtotal-label">{{ receipts.length ? 'Planned' : 'Subtotal' }}</span>
       <span class="subtotal-amount red">{{ fmtCAD(subtotal) }}</span>
     </div>
+
+    <!-- Field Receipts sub-section -->
+    <template v-if="receipts.length > 0">
+      <div class="section-sep"></div>
+      <div class="section-label">Field Receipts</div>
+      <div v-for="r in receipts" :key="r.id" class="line-item">
+        <span class="line-name">{{ r.volunteer_name }}</span>
+        <span class="line-meta">{{ r.description }}</span>
+        <a
+          v-if="r.receipt_image_url || r.receipt_url"
+          :href="r.receipt_image_url || r.receipt_url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="receipt-link"
+          title="View receipt"
+        >&#128206;</a>
+        <span class="line-amount amber">{{ fmtCAD(r.amount) }}</span>
+        <button
+          v-if="isAdmin"
+          class="del-btn"
+          @click="$emit('remove-receipt', r.id)"
+          title="Remove receipt"
+        >×</button>
+      </div>
+      <div class="subtotal-row">
+        <span class="subtotal-label">Receipts</span>
+        <span class="subtotal-amount amber">{{ fmtCAD(receiptSubtotal) }}</span>
+      </div>
+    </template>
 
     <div v-if="isAdmin" class="add-form">
       <input
@@ -61,11 +95,13 @@ const props = defineProps({
   title: { type: String, required: true },
   category: { type: String, required: true },
   items: { type: Array, default: () => [] },
+  receipts: { type: Array, default: () => [] },
+  target: { type: Number, default: 0 },
   isAdmin: { type: Boolean, default: false },
   saving: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['add', 'remove'])
+const emit = defineEmits(['add', 'remove', 'remove-receipt'])
 
 const newLabel = ref('')
 const newAmount = ref('')
@@ -73,6 +109,12 @@ const newAmount = ref('')
 const subtotal = computed(() =>
   props.items.reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
+
+const receiptSubtotal = computed(() =>
+  props.receipts.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+)
+
+const grandTotal = computed(() => subtotal.value + receiptSubtotal.value)
 
 const fmtCAD = (n) =>
   new Intl.NumberFormat('en-CA', {
@@ -237,5 +279,53 @@ const submit = () => {
   color: #ff6b6b;
 }
 
-.red { color: #ef5350; }
+.red    { color: #ef5350; }
+.amber  { color: #ffa726; }
+
+.card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.target-label {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.target-label.under-budget { color: #4caf50; }
+.target-label.over-budget  { color: #ef5350; }
+
+.section-sep {
+  height: 1px;
+  background-color: #333;
+  margin: 0.4rem 0;
+}
+
+.section-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #666;
+  margin: 0.35rem 0 0.2rem;
+}
+
+.line-meta {
+  font-size: 10px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+.receipt-link {
+  font-size: 11px;
+  text-decoration: none;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.receipt-link:hover { opacity: 1; }
 </style>
