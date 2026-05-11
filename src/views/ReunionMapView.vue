@@ -2,7 +2,8 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, runTransaction, arrayUnion } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
+import { reunion_db, festivall_auth } from '@/firebase'
 import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
 import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
 import { useLineupState } from '@/composables/useLineupState'
@@ -15,7 +16,7 @@ import iconArcade from '@/assets/images/icons/arcade.png'
 import iconSoundTech from '@/assets/images/icons/soundtech.png'
 import iconKitchen from '@/assets/images/icons/kitchen.png'
 import iconWashroom from '@/assets/images/icons/washroom.png'
-import iconLostFound from '@/assets/images/icons/location.png'
+import iconLostFound from '@/assets/images/icons/lost_and_found.png'
 import iconMeals from '@/assets/images/icons/meals.png'
 import iconPotableWater from '@/assets/images/icons/potable_water.png'
 import iconShowers from '@/assets/images/icons/showers.png'
@@ -135,12 +136,31 @@ const effectiveIdCode = computed(() => {
 
 const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
 
-// Admin/volunteer role flag — wire up to auth when ready
+// True when one of the 4 admin accounts is signed in via Firebase email auth
 const isVolunteerOrAdmin = ref(false)
+onAuthStateChanged(festivall_auth, (user) => {
+  isVolunteerOrAdmin.value = !!user
+})
 
 const mapContainer = ref(null)
 const mapSvgContainer = ref(null)
 const inlineSvgContent = ref('')
+const participantFullname = ref('')
+
+async function fetchParticipantFullname() {
+  const idCode = effectiveIdCode.value?.toLowerCase().trim()
+  if (!idCode) return
+  try {
+    const q = query(collection(reunion_db, 'participants_2026'), where('id_code', '==', idCode))
+    const snap = await getDocs(q)
+    if (!snap.empty) {
+      const p = snap.docs[0].data()
+      participantFullname.value = p.contact?.fullname || p.fullname || ''
+    }
+  } catch (e) {
+    console.warn('Could not fetch participant name:', e)
+  }
+}
 // Debug: capture SVG and container info
 // svgDebugInfo.value = {
 //   viewBox: `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
@@ -154,6 +174,70 @@ const showKitchenModal = ref(false)
 const showLostFoundModal = ref(false)
 const editingLostFoundId = ref(null)
 const alertInput = ref({ type: '', mode: '', message: '' })
+
+// ── Lost & Found — map long-press / double-click to place pin ────────────────
+const lostFoundPendingPos = ref(null) // { pctX, pctY } — set before modal opens
+const longPressTimer = ref(null)
+const longPressStartXY = ref(null)
+const longPressMoved = ref(false)
+const selectedLostFoundItem = ref(null)
+const showLostFoundDetailCard = ref(false)
+
+function clientToMapPct(clientX, clientY) {
+  if (!mapContainer.value || !mapSvgContainer.value) return null
+  const rect = mapContainer.value.getBoundingClientRect()
+  const mx = (clientX - rect.left - mapTranslateX.value) / mapScale.value
+  const my = (clientY - rect.top  - mapTranslateY.value) / mapScale.value
+  const w = mapSvgContainer.value.clientWidth
+  const h = mapSvgContainer.value.clientHeight
+  if (!w || !h) return null
+  return {
+    pctX: Math.min(1, Math.max(0, mx / w)),
+    pctY: Math.min(1, Math.max(0, my / h))
+  }
+}
+
+function triggerLostFoundAt(clientX, clientY) {
+  const pos = clientToMapPct(clientX, clientY)
+  if (!pos) return
+  lostFoundPendingPos.value = pos
+  showLostFoundDetailCard.value = false
+  openLostFoundModal()
+}
+
+function startLongPress(clientX, clientY) {
+  longPressStartXY.value = { x: clientX, y: clientY }
+  longPressMoved.value = false
+  clearTimeout(longPressTimer.value)
+  longPressTimer.value = setTimeout(() => {
+    if (!longPressMoved.value) {
+      triggerLostFoundAt(longPressStartXY.value.x, longPressStartXY.value.y)
+    }
+  }, 600)
+}
+
+function cancelLongPress() {
+  clearTimeout(longPressTimer.value)
+}
+
+function checkLongPressMoved(clientX, clientY) {
+  if (!longPressStartXY.value) return
+  const dx = clientX - longPressStartXY.value.x
+  const dy = clientY - longPressStartXY.value.y
+  if (Math.sqrt(dx * dx + dy * dy) > 8) {
+    longPressMoved.value = true
+    cancelLongPress()
+  }
+}
+
+function onMapDblClick(e) {
+  triggerLostFoundAt(e.clientX, e.clientY)
+}
+
+function openLostFoundDetail(item) {
+  selectedLostFoundItem.value = item
+  showLostFoundDetailCard.value = true
+}
 
 const kitchenAlerts = ref([])
 const washroomAlerts = ref([])
@@ -184,13 +268,18 @@ async function submitAlert() {
     })
   } else {
     const userId = effectiveIdCode.value || 'ANONYMOUS'
-    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
-    await addDoc(col, {
+    const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
+    const docData = {
       ...alertInput.value,
       created_at: new Date().toISOString(),
       userId,
       userName
-    })
+    }
+    // Attach map pin position for lost & found items
+    if (alertInput.value.type === 'lostfound' && lostFoundPendingPos.value) {
+      docData.pos = lostFoundPendingPos.value
+    }
+    await addDoc(col, docData)
     let slackMsg = ''
     if (alertInput.value.type === 'kitchen') {
       slackMsg = alertInput.value.mode === 'share'
@@ -207,11 +296,26 @@ async function submitAlert() {
   showWashroomModal.value = false
   showLostFoundModal.value = false
   editingLostFoundId.value = null
+  lostFoundPendingPos.value = null
 }
 
 async function clearAlert(alert) {
   const col = collection(reunion_db, 'alerts_2026')
   await deleteDoc(doc(col, alert.id))
+}
+
+async function claimLostFoundItem(item) {
+  const col = collection(reunion_db, 'alerts_2026')
+  const userId = effectiveIdCode.value || 'ANONYMOUS'
+  const claimedByName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
+  await updateDoc(doc(col, item.id), {
+    claimed: true,
+    claimedBy: userId,
+    claimedByName,
+    claimed_at: new Date().toISOString()
+  })
+  showLostFoundDetailCard.value = false
+  sendVolunteerCoordinator(`✅ *Lost & Found claimed*: "${item.message}" claimed by ${claimedByName}`)
 }
 
 function listenToAlerts() {
@@ -353,6 +457,7 @@ const WASHROOM_ICONS = [
 const LOSTFOUND_ICONS = [
   {
     svgId: 'lostfound_area',
+    fallbackSvgPos: { x: 0, y: 100, w: 16, h: 16 }, // near front gate — update when SVG adds lostfound_area
     label: 'Lost & Found',
     offsetX: 0,
     offsetY: 0
@@ -391,6 +496,8 @@ const mealCardOpen = ref(false)
 const settingsOpen = ref(false)
 const showStageOverlay = ref(true)
 const showMealOverlay  = ref(true)
+const showCheckinOverlay = ref(true)
+const showLostFoundOverlay = ref(true)
 
 // Festival active window — Sept 4–7, 2026
 const isFestivalActive = computed(() => {
@@ -884,6 +991,7 @@ function onMouseDown(e) {
   if (e.button !== 0) return
   isDragging.value = true
   dragLast.value = { x: e.clientX, y: e.clientY }
+  startLongPress(e.clientX, e.clientY)
 }
 function onMouseMove(e) {
   if (!isDragging.value) return
@@ -893,8 +1001,9 @@ function onMouseMove(e) {
   const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
   mapTranslateX.value = tx
   mapTranslateY.value = ty
+  checkLongPressMoved(e.clientX, e.clientY)
 }
-function onMouseUp() { isDragging.value = false }
+function onMouseUp() { isDragging.value = false; cancelLongPress() }
 
 const pinchStartDist = ref(0)
 const pinchStartScale = ref(1)
@@ -910,6 +1019,7 @@ function getTouchDist(t) {
 }
 function onTouchStart(e) {
   if (e.touches.length === 2) {
+    cancelLongPress()
     pinchStartDist.value = getTouchDist(e.touches)
     pinchStartScale.value = mapScale.value
     pinchStartTx.value = mapTranslateX.value
@@ -920,6 +1030,7 @@ function onTouchStart(e) {
     pinchStartMidY.value = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top
   } else if (e.touches.length === 1) {
     dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    startLongPress(e.touches[0].clientX, e.touches[0].clientY)
   }
 }
 function onTouchMove(e) {
@@ -942,11 +1053,13 @@ function onTouchMove(e) {
     const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
     mapTranslateX.value = tx
     mapTranslateY.value = ty
+    checkLongPressMoved(e.touches[0].clientX, e.touches[0].clientY)
   }
 }
 function onTouchEnd(e) {
   if (e.touches.length < 2) pinchStartDist.value = 0
   if (e.touches.length === 1) dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  cancelLongPress()
 }
 
 function zoomToCenter(factor) {
@@ -968,6 +1081,7 @@ function zoomOut() { zoomToCenter(1 / 1.4) }
 
 onMounted(async () => {
   fetchAndUpdateCurrentAct()
+  fetchParticipantFullname()
   listenToAlerts()
   listenToCheckins()
   listenToVolunteerShifts()
@@ -989,6 +1103,7 @@ onMounted(async () => {
        @mousemove="onMouseMove"
        @mouseup="onMouseUp"
        @mouseleave="onMouseUp"
+       @dblclick="onMapDblClick"
        @touchstart.passive="onTouchStart"
        @touchmove.prevent="onTouchMove"
        @touchend="onTouchEnd">
@@ -1134,7 +1249,7 @@ onMounted(async () => {
     </template>
 
     <!-- Lost & Found overlay -->
-    <template v-if="lostFoundOverlays.length">
+    <template v-if="showLostFoundOverlay && lostFoundOverlays.length">
       <div
         v-for="overlay in lostFoundOverlays"
         :key="overlay.label"
@@ -1147,19 +1262,29 @@ onMounted(async () => {
             <template v-if="lostFoundItems.length">
               <span v-for="item in lostFoundItems" :key="item.id">
                 {{ item.message }}
-                <button class="alert-edit-btn" v-if="effectiveIdCode && item.userId === effectiveIdCode" @click.stop="openLostFoundModal(item)">✎</button>
-                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(item)">✕</button>
                 &nbsp;·&nbsp;
               </span>
             </template>
             <template v-else>No items reported</template>
           </span>
         </div>
-        <button class="alert-post-btn" @click="openLostFoundModal()">Report Item</button>
+        <p class="lostfound-hint">Long-press map to pin an item</p>
       </div>
     </template>
+
+    <!-- Lost & Found map pins — one per reported item that has a saved position -->
+    <template v-for="item in lostFoundItems" :key="'lfpin-' + item.id">
+      <div
+        v-if="item.pos"
+        class="lostfound-pin"
+        :class="{ 'lostfound-pin--claimed': item.claimed }"
+        :style="{ left: (item.pos.pctX * 100) + '%', top: (item.pos.pctY * 100) + '%' }"
+        @click.stop="openLostFoundDetail(item)"
+        :title="item.claimed ? '✅ Claimed: ' + item.message : item.message"
+      >{{ item.claimed ? '✅' : '🧳' }}</div>
+    </template>
     <!-- Check-in overlay -->
-    <template v-if="checkinOverlays.length">
+    <template v-if="showCheckinOverlay && checkinOverlays.length">
       <div
         v-for="overlay in checkinOverlays"
         :key="overlay.label"
@@ -1199,15 +1324,49 @@ onMounted(async () => {
       </div>
     </Transition>
 
-    <!-- Lost & Found Modal -->
+    <!-- Lost & Found Report / Edit Modal -->
     <Transition name="bio">
       <div v-if="showLostFoundModal" class="bio-card">
-        <button class="bio-close" @click.stop="showLostFoundModal = false">✕</button>
-        <div class="modal-title-row"><img :src="iconLostFound" alt="" class="modal-icon" /><h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost & Found Item</h3></div>
-        <input class="modal-input" v-model="alertInput.message" placeholder="Describe the item and location..." />
+        <button class="bio-close" @click.stop="showLostFoundModal = false; lostFoundPendingPos = null">✕</button>
+        <div class="modal-title-row"><img :src="iconLostFound" alt="" class="modal-icon" /><h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost &amp; Found Item</h3></div>
+        <p v-if="!editingLostFoundId" class="bio-text" style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin:0 0 0.5rem;">📍 Pin placed at your selected map location</p>
+        <textarea class="modal-input" v-model="alertInput.message" placeholder="Describe the item — colour, size, where you found/lost it..." rows="3" style="resize:none;"></textarea>
         <div class="modal-actions">
-          <button class="modal-btn modal-btn--ghost" type="button" @click.stop="showLostFoundModal = false">Cancel</button>
-          <button class="modal-btn modal-btn--primary" @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
+          <button class="modal-btn modal-btn--ghost" type="button" @click.stop="showLostFoundModal = false; lostFoundPendingPos = null">Cancel</button>
+          <button class="modal-btn modal-btn--primary" :disabled="!alertInput.message?.trim()" @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Lost & Found Detail Card — opens when a pin is tapped -->
+    <Transition name="bio">
+      <div v-if="showLostFoundDetailCard && selectedLostFoundItem" class="bio-card">
+        <button class="bio-close" @click.stop="showLostFoundDetailCard = false">✕</button>
+        <div class="modal-title-row"><img :src="iconLostFound" alt="" class="modal-icon" /><h3>Lost &amp; Found</h3></div>
+        <p class="bio-text">{{ selectedLostFoundItem.message }}</p>
+        <p class="bio-text" style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:0.4rem;">Reported by {{ selectedLostFoundItem.userName || 'anonymous' }}</p>
+        <!-- Claimed status -->
+        <p v-if="selectedLostFoundItem.claimed" class="bio-text" style="font-size:0.82rem;color:#7ddb7d;margin-top:0.35rem;">✅ Claimed by {{ selectedLostFoundItem.claimedByName || 'someone' }}</p>
+        <div class="modal-actions">
+          <!-- Owner: edit -->
+          <button
+            v-if="effectiveIdCode && selectedLostFoundItem.userId === effectiveIdCode"
+            class="modal-btn modal-btn--ghost"
+            @click.stop="showLostFoundDetailCard = false; openLostFoundModal(selectedLostFoundItem)"
+          >✎ Edit</button>
+          <!-- Any other user (not owner, not claimed): claim it -->
+          <button
+            v-if="effectiveIdCode && selectedLostFoundItem.userId !== effectiveIdCode && !selectedLostFoundItem.claimed"
+            class="modal-btn modal-btn--primary"
+            @click.stop="claimLostFoundItem(selectedLostFoundItem)"
+          >This is mine!</button>
+          <!-- Admin: delete -->
+          <button
+            v-if="isVolunteerOrAdmin"
+            class="modal-btn modal-btn--ghost"
+            style="color:#f88"
+            @click.stop="clearAlert(selectedLostFoundItem); showLostFoundDetailCard = false"
+          >✕ Delete</button>
         </div>
       </div>
     </Transition>
@@ -1322,6 +1481,14 @@ onMounted(async () => {
         <label class="settings-row">
           <span>Meals</span>
           <input type="checkbox" v-model="showMealOverlay" />
+        </label>
+        <label class="settings-row">
+          <span>Recently Arrived</span>
+          <input type="checkbox" v-model="showCheckinOverlay" />
+        </label>
+        <label class="settings-row">
+          <span>Lost &amp; Found</span>
+          <input type="checkbox" v-model="showLostFoundOverlay" />
         </label>
       </div>
     </Transition>
@@ -1927,6 +2094,34 @@ onMounted(async () => {
 .modal-btn.modal-btn--ghost:hover { background: rgba(255,255,255,0.14) !important; color: #fff !important; }
 
 .modal-error { color: #f88; font-size: 0.85rem; margin-top: 0.5rem; }
+
+/* ── Lost & Found pins ──────────────────────────────────────────────────────── */
+.lostfound-pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 15;
+  pointer-events: all;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.65));
+  transition: transform 0.12s;
+  user-select: none;
+}
+.lostfound-pin:hover {
+  transform: translate(-50%, -110%) scale(1.2);
+}
+.lostfound-pin--claimed {
+  opacity: 0.55;
+}
+.lostfound-hint {
+  font-size: 7px;
+  color: rgba(255,255,255,0.52);
+  text-align: center;
+  margin: 3px 0 0;
+  font-style: italic;
+  white-space: nowrap;
+}
 
 /* ── Pan & zoom ─────────────────────────────────────────────────────────────── */
 .map-container {
