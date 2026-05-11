@@ -95,7 +95,7 @@ async function sendTicketEmail(email, fullname, id_code) {
 }
 
 async function sendSlackNotification(fullname, id_code) {
-  await postRelay('/reunion_slack', {
+  await postRelay('/reunion_sales', {
     text: `:mailbox_with_mail: e-Transfer received — ticket auto-delivered to *${fullname}*.\n:ticket: \`${id_code}\``
   })
 }
