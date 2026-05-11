@@ -391,13 +391,6 @@ const mealCardOpen = ref(false)
 const settingsOpen = ref(false)
 const showStageOverlay = ref(true)
 const showMealOverlay  = ref(true)
-const forceStageOverlay = ref(false)
-
-// Dev-only mock acts for testing stage overlay positioning
-const DEV_MOCK_CURRENT = { act_name: 'Test Artist', workshop_title: '', genre: 'Live Music', act_description: 'Mock act for testing stage overlay positioning.' }
-const DEV_MOCK_UPCOMING = { act_name: 'Next Test Artist', workshop_title: '', genre: 'Jazz', act_description: '', settime: Date.now() + 45 * 60 * 1000 }
-const effectiveCurrentAct = computed(() => forceStageOverlay.value ? DEV_MOCK_CURRENT : currentAct.value)
-const effectiveUpcomingAct = computed(() => forceStageOverlay.value ? DEV_MOCK_UPCOMING : upcomingAct.value)
 
 // Festival active window — Sept 4–7, 2026
 const isFestivalActive = computed(() => {
@@ -441,17 +434,17 @@ function makeTickerText(parts) {
 }
 
 const nowPlayingTicker = computed(() =>
-  effectiveCurrentAct.value
-    ? makeTickerText([effectiveCurrentAct.value.act_name || effectiveCurrentAct.value.workshop_title, effectiveCurrentAct.value.genre])
+  currentAct.value
+    ? makeTickerText([currentAct.value.act_name || currentAct.value.workshop_title, currentAct.value.genre])
     : ''
 )
 
 const upNextTicker = computed(() =>
-  effectiveUpcomingAct.value
+  upcomingAct.value
     ? makeTickerText([
-        effectiveUpcomingAct.value.act_name || effectiveUpcomingAct.value.workshop_title,
-        formatSettime(effectiveUpcomingAct.value.settime),
-        effectiveUpcomingAct.value.genre
+        upcomingAct.value.act_name || upcomingAct.value.workshop_title,
+        formatSettime(upcomingAct.value.settime),
+        upcomingAct.value.genre
       ])
     : ''
 )
@@ -1006,7 +999,7 @@ onMounted(async () => {
     <div ref="mapSvgContainer" class="festival-map" v-html="inlineSvgContent"></div>
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
-    <template v-if="showStageOverlay && (effectiveCurrentAct || effectiveUpcomingAct)">
+    <template v-if="showStageOverlay && (currentAct || upcomingAct)">
       <div
         v-for="overlay in stageOverlays"
         :key="overlay.label"
@@ -1015,15 +1008,15 @@ onMounted(async () => {
         @click="bioOpen = !bioOpen"
       >
         <!-- NOW PLAYING row -->
-        <template v-if="effectiveCurrentAct">
+        <template v-if="currentAct">
           <div class="now-badge">▶ NOW PLAYING</div>
           <div class="ticker-wrap">
             <span class="ticker-text">{{ nowPlayingTicker }}</span>
           </div>
         </template>
         <!-- UP NEXT row -->
-        <template v-if="effectiveUpcomingAct">
-          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': effectiveCurrentAct }">▷ UP NEXT</div>
+        <template v-if="upcomingAct">
+          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': currentAct }">▷ UP NEXT</div>
           <div class="ticker-wrap ticker-wrap--upcoming">
             <span class="ticker-text">{{ upNextTicker }}</span>
           </div>
@@ -1035,17 +1028,17 @@ onMounted(async () => {
       <Transition name="bio">
         <div v-if="bioOpen" class="bio-card">
           <button class="bio-close" @click.stop="bioOpen = false">✕</button>
-          <template v-if="effectiveCurrentAct">
-            <p class="bio-act-name">{{ effectiveCurrentAct.act_name || effectiveCurrentAct.workshop_title }}</p>
-            <p class="bio-genre">▶ NOW PLAYING<template v-if="effectiveCurrentAct.genre">&nbsp;· {{ effectiveCurrentAct.genre }}</template></p>
-            <p v-if="effectiveCurrentAct.act_description" class="bio-text">{{ effectiveCurrentAct.act_description }}</p>
+          <template v-if="currentAct">
+            <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
+            <p class="bio-genre">▶ NOW PLAYING<template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template></p>
+            <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
             <p v-else class="bio-text bio-empty">No bio available.</p>
           </template>
-          <template v-if="effectiveUpcomingAct">
-            <hr v-if="effectiveCurrentAct" class="bio-divider" />
-            <p class="bio-act-name">{{ effectiveUpcomingAct.act_name || effectiveUpcomingAct.workshop_title }}</p>
-            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(effectiveUpcomingAct.settime) }}<template v-if="effectiveUpcomingAct.genre">&nbsp;· {{ effectiveUpcomingAct.genre }}</template></p>
-            <p v-if="effectiveUpcomingAct.act_description" class="bio-text">{{ effectiveUpcomingAct.act_description }}</p>
+          <template v-if="upcomingAct">
+            <hr v-if="currentAct" class="bio-divider" />
+            <p class="bio-act-name">{{ upcomingAct.act_name || upcomingAct.workshop_title }}</p>
+            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(upcomingAct.settime) }}<template v-if="upcomingAct.genre">&nbsp;· {{ upcomingAct.genre }}</template></p>
+            <p v-if="upcomingAct.act_description" class="bio-text">{{ upcomingAct.act_description }}</p>
             <p v-else class="bio-text bio-empty">No bio available.</p>
           </template>
         </div>
@@ -1329,10 +1322,6 @@ onMounted(async () => {
         <label class="settings-row">
           <span>Meals</span>
           <input type="checkbox" v-model="showMealOverlay" />
-        </label>
-        <label class="settings-row">
-          <span>Force Stage Overlay</span>
-          <input type="checkbox" v-model="forceStageOverlay" />
         </label>
       </div>
     </Transition>
