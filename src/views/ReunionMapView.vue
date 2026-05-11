@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, runTransaction, arrayUnion } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
@@ -128,7 +128,8 @@ const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
 const isVolunteerOrAdmin = ref(false)
 
 const mapContainer = ref(null)
-const mapObject = ref(null)
+const mapSvgContainer = ref(null)
+const inlineSvgContent = ref('')
 // Debug: capture SVG and container info
 // svgDebugInfo.value = {
 //   viewBox: `${vb.x} ${vb.y} ${vb.width} ${vb.height}`,
@@ -407,9 +408,9 @@ const mealTicker = computed(() => {
 
 // Shared helper: resolve CSS position from an SVG element ID or fallback coords.
 // getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
-function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offsetY = 0 }) {
+function resolveIconStyle(vb, { svgId, fallbackSvgPos, offsetX = 0, offsetY = 0 }) {
   let x, y, w, h
-  const el = svgDoc.getElementById(svgId)
+  const el = document.getElementById(svgId)
   if (el) {
     // Prefer x/y attributes if present, else fallback to transform
     x = parseFloat(el.getAttribute('x'))
@@ -434,10 +435,7 @@ function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offs
 }
 
 function positionOverlays() {
-  const svgDoc = mapObject.value?.contentDocument
-  if (!svgDoc) return
-
-  const svgEl = svgDoc.querySelector('svg')
+  const svgEl = mapSvgContainer.value?.querySelector('svg')
   if (!svgEl) return
   const vb = svgEl.viewBox.baseVal
   if (!vb || !vb.width || !vb.height) return
@@ -452,37 +450,37 @@ function positionOverlays() {
   // }
 
   stageOverlays.value = STAGE_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 
   mealOverlays.value = MEAL_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ style }] : []
   })
 
   kitchenOverlays.value = KITCHEN_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 
   washroomOverlays.value = WASHROOM_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 
   lostFoundOverlays.value = LOSTFOUND_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 
   checkinOverlays.value = CHECKIN_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 
   volunteerShiftOverlays.value = VOLUNTEER_SHIFT_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(svgDoc, vb, icon)
+    const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
   })
 }
@@ -556,49 +554,17 @@ async function fetchAndUpdateCurrentAct() {
   }
 }
 
-function onObjectLoad() {
+function setupSvgListeners() {
   positionOverlays()
-  // Make all *_icon elements clickable, including outhouse/portapotty
-  const svgDoc = mapObject.value?.contentDocument
-  if (svgDoc) {
-    // Add click listeners for all icons, including outhouse/portapotty
-    const iconElements = svgDoc.querySelectorAll('[id$="_icon"], #outhouse_icon, #portapotty_icon')
-    iconElements.forEach((el) => {
-      el.style.cursor = 'pointer'
-      el.style.pointerEvents = 'auto'
-      el.addEventListener('click', (event) => {
-        handleSvgIconClick(el.id, event)
-      })
+  // Attach click listeners to all icon elements in the inline SVG
+  const iconElements = document.querySelectorAll('[id$="_icon"], #outhouse_icon, #portapotty_icon')
+  iconElements.forEach((el) => {
+    el.style.cursor = 'pointer'
+    el.style.pointerEvents = 'auto'
+    el.addEventListener('click', (event) => {
+      handleSvgIconClick(el.id, event)
     })
-
-    // Forward wheel + mouse events from the inner SVG document so pan/zoom works
-    // when the cursor is over the map (object creates its own browsing context)
-    svgDoc.addEventListener('wheel', (e) => {
-      e.preventDefault()
-      const objRect = mapObject.value.getBoundingClientRect()
-      onWheel({ deltaY: e.deltaY, clientX: e.clientX + objRect.left, clientY: e.clientY + objRect.top })
-    }, { passive: false })
-
-    svgDoc.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return
-      const objRect = mapObject.value.getBoundingClientRect()
-      isDragging.value = true
-      dragLast.value = { x: e.clientX + objRect.left, y: e.clientY + objRect.top }
-    })
-    svgDoc.addEventListener('mousemove', (e) => {
-      if (!isDragging.value) return
-      const objRect = mapObject.value.getBoundingClientRect()
-      const absX = e.clientX + objRect.left
-      const absY = e.clientY + objRect.top
-      const dx = absX - dragLast.value.x
-      const dy = absY - dragLast.value.y
-      dragLast.value = { x: absX, y: absY }
-      const { tx, ty } = clampTranslate(mapTranslateX.value + dx, mapTranslateY.value + dy, mapScale.value)
-      mapTranslateX.value = tx
-      mapTranslateY.value = ty
-    })
-    svgDoc.addEventListener('mouseup', () => { isDragging.value = false })
-  }
+  })
 }
 // Handler for clicking SVG icons
 // Track which washroom is being reported
@@ -711,7 +677,6 @@ const MAX_SCALE = 5
 const zoomStyle = computed(() => ({
   transform: `translate(${mapTranslateX.value}px, ${mapTranslateY.value}px) scale(${mapScale.value})`,
   transformOrigin: '0 0',
-  willChange: 'transform',
   cursor: isDragging.value ? 'grabbing' : (mapScale.value > 1 ? 'grab' : 'default'),
 }))
 
@@ -826,11 +791,17 @@ function zoomToCenter(factor) {
 function zoomIn() { zoomToCenter(1.4) }
 function zoomOut() { zoomToCenter(1 / 1.4) }
 
-onMounted(() => {
+onMounted(async () => {
   fetchAndUpdateCurrentAct()
   listenToAlerts()
   listenToCheckins()
   listenToVolunteerShifts()
+  // Inline the SVG so CSS transforms stay vector-crisp (no rasterization)
+  const res = await fetch(reunionMapUrl)
+  const svgText = await res.text()
+  inlineSvgContent.value = svgText
+  await nextTick()
+  setupSvgListeners()
 })
 </script>
 
@@ -848,16 +819,8 @@ onMounted(() => {
     <!-- map-zoom-wrapper: transform applied here so overlays move with the map -->
     <div class="map-zoom-wrapper" :style="zoomStyle">
 
-    <!-- <object> keeps the SVG in its own document so page CSS can't bleed in -->
-    <object
-      ref="mapObject"
-      :data="reunionMapUrl"
-      type="image/svg+xml"
-      class="festival-map"
-      @load="onObjectLoad"
-    >
-      Your browser does not support SVG.
-    </object>
+    <!-- Inline SVG for crisp vector rendering at any zoom level -->
+    <div ref="mapSvgContainer" class="festival-map" v-html="inlineSvgContent"></div>
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
     <template v-if="showStageOverlay && (currentAct || upcomingAct)">
@@ -1226,6 +1189,21 @@ onMounted(() => {
   pointer-events: auto; /* Allow SVG icons to be clickable */
 }
 
+/* Injected SVG (via v-html) bypasses scoped — :deep targets it */
+.festival-map :deep(svg) {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Cancel the global `svg { fill/stroke: white }` rule — the map SVG has its own fills */
+.festival-map :deep(svg),
+.festival-map :deep(svg *) {
+  fill: unset;
+  stroke: unset;
+  stroke-width: unset;
+}
+
 /* Desktop: map fills viewport height; container shrink-wraps the map so
    overlay % positions stay accurate; backdrop provides the full-screen black bg */
 @media (min-width: 768px) {
@@ -1241,6 +1219,10 @@ onMounted(() => {
     flex-shrink: 0;
   }
   .festival-map {
+    width: auto;
+    height: 100vh;
+  }
+  .festival-map :deep(svg) {
     width: auto;
     height: 100vh;
   }
@@ -1659,6 +1641,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   transform-origin: 0 0;
+  /* no will-change: transform — that rasterizes the layer and causes pixelation */
 }
 
 </style>
