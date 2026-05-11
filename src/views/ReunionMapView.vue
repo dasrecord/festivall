@@ -1,6 +1,24 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot, runTransaction, arrayUnion } from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
+import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
+import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
+import { useLineupState } from '@/composables/useLineupState'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+import iconCleanupCrew from '@/assets/images/icons/cleanup_crew.png'
+import iconSetupCrew from '@/assets/images/icons/setup_crew.png'
+import iconFrontGate from '@/assets/images/icons/front_gate.png'
+import iconFoodTeam from '@/assets/images/icons/food.png'
+import iconArcade from '@/assets/images/icons/arcade.png'
+import iconStageCrew from '@/assets/images/icons/stage_crew.png'
+import iconKitchen from '@/assets/images/icons/kitchen.png'
+import iconWashroom from '@/assets/images/icons/washroom.png'
+import iconLostFound from '@/assets/images/icons/location.png'
+import iconMeals from '@/assets/images/icons/meals.png'
+
 // --- Claim Shift Logic ---
-import { runTransaction, arrayUnion } from 'firebase/firestore'
 const claimShiftStatus = ref('')
 const claimShiftLoading = ref(false)
 
@@ -10,7 +28,7 @@ async function claimNextShiftForTeam() {
   try {
     // Find the next unclaimed shift for the selected team
     const nextShift = volunteerShiftsNext.value.find(s =>
-      s.team && s.team.toLowerCase().replace(/\s/g, '') === claimShiftTeam.value.toLowerCase().replace(/\s/g, '')
+      s.team && s.team.toLowerCase().replace(/\s/g, '') === selectedShiftTeam.value.toLowerCase().replace(/\s/g, '')
     )
     if (!nextShift) throw new Error('No upcoming shift found for this team.')
 
@@ -78,35 +96,22 @@ async function claimNextShiftForTeam() {
     claimShiftLoading.value = false
   }
 }
-// Claim Shift Modal State and Handlers
-const showClaimShiftModal = ref(false)
-const claimShiftTeam = ref('')
-function openClaimShiftModal(team) {
-  claimShiftTeam.value = team
-  showClaimShiftModal.value = true
+// Shift Info Modal State and Handlers
+const showShiftInfoModal = ref(false)
+const selectedShiftTeam = ref('')
+const selectedShiftIcon = ref('')
+function openShiftInfoModal(team, icon = '') {
+  selectedShiftTeam.value = team
+  selectedShiftIcon.value = icon
+  showShiftInfoModal.value = true
+  claimShiftStatus.value = ''
 }
-function closeClaimShiftModal() {
-  showClaimShiftModal.value = false
-  claimShiftTeam.value = ''
+function closeShiftInfoModal() {
+  showShiftInfoModal.value = false
+  selectedShiftTeam.value = ''
+  selectedShiftIcon.value = ''
+  claimShiftStatus.value = ''
 }
-// Log volunteer shift Firestore ID for debugging
-function logVolunteerShiftId(id) {
-  // No-op: debug logging removed
-}
-
-// Safe alert for template usage
-function showAlert(msg) {
-  if (typeof window !== 'undefined' && window.alert) window.alert(msg)
-}
-import { ref, computed, onMounted } from 'vue'
-import { defineProps } from 'vue'
-import { useRoute } from 'vue-router'
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, onSnapshot } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
-import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
-import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
-import { useLineupState } from '@/composables/useLineupState'
-import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 // Accept user id_code as a prop (from ticket click-through or URL)
 const props = defineProps({
@@ -118,6 +123,9 @@ const effectiveIdCode = computed(() => {
 })
 
 const { currentAct, upcomingAct, updateCurrentAct } = useLineupState()
+
+// Admin/volunteer role flag — wire up to auth when ready
+const isVolunteerOrAdmin = ref(false)
 
 const mapContainer = ref(null)
 const mapObject = ref(null)
@@ -140,7 +148,6 @@ const kitchenAlerts = ref([])
 const washroomAlerts = ref([])
 const lostFoundItems = ref([])
 const checkinNames = ref([])
-const volunteerShifts = ref([])
 
 function openKitchenModal() {
   alertInput.value = { type: 'kitchen', mode: '', message: '' }
@@ -264,7 +271,7 @@ function listenToVolunteerShifts() {
     // Find current and next for each team
     const current = []
     const next = []
-    Object.entries(byTeam).forEach(([team, shifts]) => {
+    Object.entries(byTeam).forEach(([, shifts]) => {
       shifts.sort((a, b) => new Date(`${a.date}T${a.start}`) - new Date(`${b.date}T${b.start}`))
       let foundCurrent = false
       let foundNext = false
@@ -340,14 +347,12 @@ const CHECKIN_ICONS = [
 
 // Only show overlays for official teams, mapping to SVG icon by name
 const VOLUNTEER_SHIFT_ICONS = [
-
-  { svgId: 'trailer_A_icon', label: 'Cleanup Crew', offsetX: 0, offsetY: -50 },
-  { svgId: 'trailer_C_icon', label: 'Setup Crew', offsetX: 0, offsetY: -50 },
-  { svgId: 'front_gate_icon', label: 'Front Gate', offsetX: -50, offsetY: 12 },
-  { svgId: 'shared_kitchen_icon', label: 'Food Team', offsetX: 0, offsetY: 0 },
-  { svgId: 'arcade_icon', label: 'Arcade Attendant', offsetX: -45, offsetY: -10 },
-  { svgId: 'stage_area_icon', label: 'Stage Crew', offsetX: -90, offsetY: 0 },
-
+  { svgId: 'cleanup_crew_icon', label: 'Cleanup Crew', icon: iconCleanupCrew, offsetX: 0, offsetY: -50 },
+  { svgId: 'setup_crew_icon', label: 'Setup Crew', icon: iconSetupCrew, offsetX: 0, offsetY: -50 },
+  { svgId: 'front_gate_icon', label: 'Front Gate', icon: iconFrontGate, offsetX: -50, offsetY: 12 },
+  { svgId: 'meals_area_icon', label: 'Food Team', icon: iconFoodTeam, offsetX: 0, offsetY: 0 },
+  { svgId: 'arcade_icon', label: 'Arcade Attendant', icon: iconArcade, offsetX: -45, offsetY: -10 },
+  { svgId: 'front_of_house_icon', label: 'Stage Crew', icon: iconStageCrew, offsetX: -90, offsetY: 0 },
 ]
 
 // Overlay refs for rendering
@@ -363,8 +368,6 @@ const mealCardOpen = ref(false)
 const settingsOpen = ref(false)
 const showStageOverlay = ref(true)
 const showMealOverlay  = ref(true)
-// Overlay toggle for volunteer shifts
-const showVolunteerShifts = ref(true)
 
 // ── Ticker text helpers ───────────────────────────────────────────────────────
 // Build doubled strings in JS so there are zero stray whitespace nodes in the
@@ -424,8 +427,6 @@ function resolveIconStyle(svgDoc, vb, { svgId, fallbackSvgPos, offsetX = 0, offs
   } else {
     return null
   }
-  // Debug: log the coordinates and dimensions used for each overlay
-  // ...existing code...
   return {
     left: `${((x + w / 2 + offsetX) / vb.width)  * 100}%`,
     top:  `${((y + h / 2 + offsetY) / vb.height) * 100}%`
@@ -575,6 +576,13 @@ function onObjectLoad() {
 // Track which washroom is being reported
 const washroomLocation = ref('')
 function handleSvgIconClick(iconId) {
+  // Check for volunteer team icons first
+  const volunteerIcon = VOLUNTEER_SHIFT_ICONS.find(v => v.svgId === iconId)
+  if (volunteerIcon) {
+    openShiftInfoModal(volunteerIcon.label, volunteerIcon.icon)
+    return
+  }
+
   const isWashroomIcon = (
     iconId.includes('washroom') ||
     iconId.includes('washrooms') ||
@@ -599,13 +607,17 @@ function handleSvgIconClick(iconId) {
     return
   }
 
+  // Stage area icon → open Now Playing / Up Next bio card
+  if (iconId === 'stage_area_icon') {
+    bioOpen.value = true
+    return
+  }
+
   // Handle shared kitchen icon click
   if (iconId === 'shared_kitchen_area' || iconId.includes('kitchen')) {
     openKitchenModal()
     return
   }
-
-  alert(`Clicked icon: ${iconId}`)
 }
 
 // Modal state for washroom supply report
@@ -747,7 +759,7 @@ onMounted(() => {
       <Transition name="bio">
         <div v-if="mealCardOpen" class="bio-card">
           <button class="bio-close" @click="mealCardOpen = false">✕</button>
-          <p class="bio-act-name">{{ nextMeal.isNow ? '🍽 Now Serving' : '🍽 Next Meal' }}</p>
+          <div class="modal-title-row"><img :src="iconMeals" alt="" class="modal-icon" /><p class="bio-act-name" style="margin:0;">{{ nextMeal.isNow ? 'Now Serving' : 'Next Meal' }}</p></div>
           <p class="bio-genre">
             {{ nextMeal.label }}<template v-if="!nextMeal.isNow">&nbsp;· {{ formatMealTime(nextMeal.time) }}</template>
           </p>
@@ -840,15 +852,15 @@ onMounted(() => {
     <Transition name="bio">
       <div v-if="showKitchenModal" class="bio-card">
         <button class="bio-close" @click.stop="showKitchenModal = false">✕</button>
-        <h3>Post Kitchen Alert</h3>
-        <label>
-          <input type="radio" value="share" v-model="alertInput.mode" /> Cooking to Share
-        </label>
-        <label>
-          <input type="radio" value="missing" v-model="alertInput.mode" /> Missing Ingredient
-        </label>
-        <input v-model="alertInput.message" placeholder="What are you cooking or missing?" />
-        <button @click="submitAlert">Post</button>
+        <div class="modal-title-row"><img :src="iconKitchen" alt="" class="modal-icon" /><h3>Post Kitchen Alert</h3></div>
+        <div class="modal-radio-group">
+          <label class="modal-radio-label"><input type="radio" value="share" v-model="alertInput.mode" /> Cooking to Share</label>
+          <label class="modal-radio-label"><input type="radio" value="missing" v-model="alertInput.mode" /> Missing Ingredient</label>
+        </div>
+        <input class="modal-input" v-model="alertInput.message" placeholder="What are you cooking or missing?" />
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn--primary" @click="submitAlert">Post</button>
+        </div>
       </div>
     </Transition>
 
@@ -856,10 +868,12 @@ onMounted(() => {
     <Transition name="bio">
       <div v-if="showWashroomModal" class="bio-card">
         <button class="bio-close" @click.stop="closeWashroomModal">✕</button>
-        <h3>Report Low Supplies</h3>
-        <p>Let volunteers know if supplies are running low.</p>
-        <button @click="submitAlert">Submit washroom alert</button>
-        <button type="button" class="alert-cancel-btn" @click.stop="closeWashroomModal">Cancel report</button>
+        <div class="modal-title-row"><img :src="iconWashroom" alt="" class="modal-icon" /><h3>Report Low Supplies</h3></div>
+        <p class="bio-text" style="margin-bottom:0.75rem;">Let volunteers know if supplies are running low.</p>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn--ghost" type="button" @click.stop="closeWashroomModal">Cancel</button>
+          <button class="modal-btn modal-btn--primary" @click="submitAlert">Submit alert</button>
+        </div>
       </div>
     </Transition>
 
@@ -867,9 +881,12 @@ onMounted(() => {
     <Transition name="bio">
       <div v-if="showLostFoundModal" class="bio-card">
         <button class="bio-close" @click.stop="showLostFoundModal = false">✕</button>
-        <h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost & Found Item</h3>
-        <input v-model="alertInput.message" placeholder="Describe the item and location..." />
-        <button @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
+        <div class="modal-title-row"><img :src="iconLostFound" alt="" class="modal-icon" /><h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost & Found Item</h3></div>
+        <input class="modal-input" v-model="alertInput.message" placeholder="Describe the item and location..." />
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn--ghost" type="button" @click.stop="showLostFoundModal = false">Cancel</button>
+          <button class="modal-btn modal-btn--primary" @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
+        </div>
       </div>
     </Transition>
 
@@ -896,88 +913,55 @@ onMounted(() => {
       </div>
     </template>
 
-    <!-- Volunteer shift overlay -->
-    <template v-if="showVolunteerShifts && volunteerShiftOverlays.length">
-      <div
-        v-for="overlay in volunteerShiftOverlays"
-        :key="overlay.label"
-        class="volunteer-shift-overlay map-feature-overlay"
-        :style="overlay.style"
-        style="position: absolute;"
-      >
-        <div class="now-badge volunteer-shift-badge">{{ overlay.label }}</div>
-        <!-- Debug: Show computed coordinates -->
-        <!-- ...existing code... -->
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            <template v-if="volunteerShiftsCurrent.length">
-              <span v-for="shift in volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().includes(overlay.label.toLowerCase().replace(/\s/g, '')) )" :key="shift.id">
-                <span v-for="person in shift.claimed" :key="person.id_code">
-                  <button
-                    @click="logVolunteerShiftId(shift.id)"
-                    style="background: none; border: none; color: inherit; font: inherit; padding: 0; margin: 0; cursor: pointer; pointer-events: auto; text-align: left;"
-                    tabindex="0"
-                  >
-                    {{ person.fullname || person.id_code }}
-                  </button>
-                  &nbsp;·&nbsp;
-                </span>
-              </span>
-            </template>
-            <template v-else>No one on shift</template>
-          </span>
+    <!-- Shift Info Modal — opens when a volunteer team icon is tapped on the map -->
+    <Transition name="bio">
+      <div v-if="showShiftInfoModal" class="bio-card">
+        <button class="bio-close" @click.stop="closeShiftInfoModal">✕</button>
+        <div class="modal-title-row">
+          <img v-if="selectedShiftIcon" :src="selectedShiftIcon" alt="" class="modal-icon" />
+          <h3 style="margin:0;">{{ selectedShiftTeam }}</h3>
         </div>
-        <div class="now-badge volunteer-shift-badge" style="background: #0a5a8a; margin-top: 4px;">⏭️ NEXT SHIFT</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            <template v-if="volunteerShiftsNext.length">
-              <span v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().includes(overlay.label.toLowerCase().replace(/\s/g, '')) )" :key="shift.id">
-                <template v-if="shift.claimed && shift.claimed.length > 0">
-                  <span v-for="person in shift.claimed" :key="person.id_code">
-                    <span style="color: #fff;">
-                      {{ person.fullname || person.id_code }}
-                    </span>
-                    &nbsp;·&nbsp;
-                  </span>
-                  <span style="color: #aaa; font-size: 10px;">({{ shift.date }} {{ shift.start }})</span>
-                  <br />
-                </template>
-                <template v-else>
-                  <span style="color: #ffb347; cursor: pointer; text-decoration: underline;" @click="openClaimShiftModal(overlay.label)">
-                    Needs to be filled ({{ shift.date }} {{ shift.start }})
-                  </span>
-                  <br />
-                </template>
-              </span>
+
+        <p class="bio-genre" style="margin-top:0.75rem;">▶ ON SHIFT NOW</p>
+        <template v-if="volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
+          <div v-for="shift in volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
+            <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
+            <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0.2rem 0;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
+          </div>
+        </template>
+        <template v-else>
+          <div class="shift-row">
+            <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
+            <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
+              {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+            </button>
+          </div>
+          <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
+          <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
+        </template>
+
+        <hr class="bio-divider" />
+
+        <p class="bio-genre bio-genre--upcoming" style="margin-top:0.6rem;">▷ NEXT SHIFT</p>
+        <template v-if="volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
+          <div v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
+            <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0 0 0.4rem;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
+            <template v-if="shift.claimed && shift.claimed.length > 0">
+              <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
             </template>
             <template v-else>
-              <span style="color: #ffb347;">No upcoming shift</span>
+              <div class="shift-row">
+                <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
+                <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
+                  {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+                </button>
+              </div>
+              <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
+              <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
             </template>
-          </span>
-        </div>
-      </div>
-    </template>
-
-    <!-- Claim Shift Modal (moved outside overlay loop for reactivity) -->
-    <Transition name="bio">
-      <div v-if="showClaimShiftModal" class="bio-card">
-        <button class="bio-close" @click.stop="closeClaimShiftModal">✕</button>
-        <h3>Claim a Shift</h3>
-        <p>
-          No one is signed up for the next <strong>{{ claimShiftTeam }}</strong> shift.<br>
-          Would you like to volunteer?
-        </p>
-        <button
-          class="alert-post-btn"
-          :disabled="claimShiftLoading"
-          style="display:inline-block;margin-top:10px;"
-          @click="claimNextShiftForTeam"
-        >
-          {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
-        </button>
-        <button type="button" class="alert-cancel-btn" @click="closeClaimShiftModal" style="margin-left:10px;">Cancel</button>
-        <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" style="color:#f88;margin-top:8px;">{{ claimShiftStatus }}</div>
-        <div v-if="claimShiftStatus === 'success'" style="color:#2a4;margin-top:8px;">Shift claimed! Thank you.</div>
+          </div>
+        </template>
+        <p v-else class="bio-text bio-empty">No upcoming shifts scheduled.</p>
       </div>
     </Transition>
 
@@ -994,10 +978,6 @@ onMounted(() => {
           <span>Meals</span>
           <input type="checkbox" v-model="showMealOverlay" />
         </label>
-        <label class="settings-row">
-          <span>Volunteer Shifts</span>
-          <input type="checkbox" v-model="showVolunteerShifts" />
-        </label>
       </div>
     </Transition>
   </div>
@@ -1006,17 +986,21 @@ onMounted(() => {
   <Transition name="bio">
     <div v-if="showWashroomSupplyModal" class="bio-card">
       <button class="bio-close" @click.stop="closeWashroomSupplyModal">✕</button>
-      <h3>Report Low Washroom Supplies</h3>
-      <p v-if="washroomLocation">Reporting for: <strong>{{ washroomLocation }}</strong></p>
-      <p>Select the supply that is low:</p>
-      <label><input type="radio" value="toilet_paper" v-model="washroomSupplyType" /> Toilet Paper</label><br />
-      <label><input type="radio" value="hand_sanitizer" v-model="washroomSupplyType" /> Hand Sanitizer</label><br />
-      <label><input type="radio" value="soap" v-model="washroomSupplyType" /> Soap</label><br />
-      <button :disabled="washroomSupplySubmitting" @click="submitWashroomSupplyAlert">
-        {{ washroomSupplySubmitting ? 'Reporting...' : 'Report low supply' }}
-      </button>
-      <button type="button" class="alert-cancel-btn" @click.stop="closeWashroomSupplyModal">Cancel report</button>
-      <p v-if="washroomSupplyError" style="color: #f88;">{{ washroomSupplyError }}</p>
+      <div class="modal-title-row"><img :src="iconWashroom" alt="" class="modal-icon" /><h3>Report Low Washroom Supplies</h3></div>
+      <p v-if="washroomLocation" class="bio-text" style="margin-bottom:0.5rem;">Reporting for: <strong>{{ washroomLocation }}</strong></p>
+      <p class="bio-text" style="margin-bottom:0.5rem;">Select the supply that is low:</p>
+      <div class="modal-radio-group">
+        <label class="modal-radio-label"><input type="radio" value="toilet_paper" v-model="washroomSupplyType" /> Toilet Paper</label>
+        <label class="modal-radio-label"><input type="radio" value="hand_sanitizer" v-model="washroomSupplyType" /> Hand Sanitizer</label>
+        <label class="modal-radio-label"><input type="radio" value="soap" v-model="washroomSupplyType" /> Soap</label>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn--ghost" type="button" @click.stop="closeWashroomSupplyModal">Cancel</button>
+        <button class="modal-btn modal-btn--primary" :disabled="washroomSupplySubmitting" @click="submitWashroomSupplyAlert">
+          {{ washroomSupplySubmitting ? 'Reporting...' : 'Report low supply' }}
+        </button>
+      </div>
+      <p v-if="washroomSupplyError" class="modal-error">{{ washroomSupplyError }}</p>
     </div>
   </Transition>
 </template>
@@ -1325,4 +1309,98 @@ onMounted(() => {
   margin-top: 0.2rem;
   padding-top: 0.45rem;
 }
+
+/* ── Modal title row (icon + heading) ────────────────────────────────────────── */
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.modal-title-row h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.modal-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+/* ── Modal shared interactive elements ──────────────────────────────────────── */
+.modal-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.8rem;
+  margin: 0.6rem 0 0.85rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.modal-input:focus { border-color: rgba(201,160,240,0.6); }
+.modal-input::placeholder { color: rgba(255,255,255,0.35); }
+
+.modal-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0.85rem;
+}
+.modal-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.88);
+  cursor: pointer;
+}
+.modal-radio-label input[type="radio"] {
+  accent-color: #c9a0f0;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.modal-actions {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+.modal-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 7px;
+  padding: 0.45rem 1rem;
+  font-size: 0.88rem !important;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.modal-btn.modal-btn--primary { background: #430789 !important; color: #fff !important; }
+.modal-btn.modal-btn--primary:hover:not(:disabled) { background: #6012b8 !important; }
+.modal-btn.modal-btn--primary:disabled { opacity: 0.5; cursor: default; }
+.modal-btn.modal-btn--ghost { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.6) !important; }
+.modal-btn.modal-btn--ghost:hover { background: rgba(255,255,255,0.14) !important; color: #fff !important; }
+
+.modal-error { color: #f88; font-size: 0.85rem; margin-top: 0.5rem; }
+
 </style>
