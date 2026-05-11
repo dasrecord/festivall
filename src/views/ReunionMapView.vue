@@ -343,7 +343,7 @@ const VOLUNTEER_SHIFT_ICONS = [
 
   { svgId: 'trailer_A_icon', label: 'Cleanup Crew', offsetX: 0, offsetY: -50 },
   { svgId: 'trailer_C_icon', label: 'Setup Crew', offsetX: 0, offsetY: -50 },
-  { svgId: 'front_gate_icon', label: 'Front Gate', offsetX: 0, offsetY: 24 },
+  { svgId: 'front_gate_icon', label: 'Front Gate', offsetX: -50, offsetY: 12 },
   { svgId: 'shared_kitchen_icon', label: 'Food Team', offsetX: 0, offsetY: 0 },
   { svgId: 'arcade_icon', label: 'Arcade Attendant', offsetX: -45, offsetY: -10 },
   { svgId: 'stage_area_icon', label: 'Stage Crew', offsetX: -90, offsetY: 0 },
@@ -363,6 +363,8 @@ const mealCardOpen = ref(false)
 const settingsOpen = ref(false)
 const showStageOverlay = ref(true)
 const showMealOverlay  = ref(true)
+// Overlay toggle for volunteer shifts
+const showVolunteerShifts = ref(true)
 
 // ── Ticker text helpers ───────────────────────────────────────────────────────
 // Build doubled strings in JS so there are zero stray whitespace nodes in the
@@ -555,12 +557,14 @@ async function fetchAndUpdateCurrentAct() {
 
 function onObjectLoad() {
   positionOverlays()
-  // Make all *_icon elements clickable
+  // Make all *_icon elements clickable, including outhouse/portapotty
   const svgDoc = mapObject.value?.contentDocument
   if (svgDoc) {
-    const iconElements = svgDoc.querySelectorAll('[id$="_icon"]')
+    // Add click listeners for all icons, including outhouse/portapotty
+    const iconElements = svgDoc.querySelectorAll('[id$="_icon"], #outhouse_icon, #portapotty_icon')
     iconElements.forEach((el) => {
       el.style.cursor = 'pointer'
+      el.style.pointerEvents = 'auto'
       el.addEventListener('click', (event) => {
         handleSvgIconClick(el.id, event)
       })
@@ -835,7 +839,7 @@ onMounted(() => {
     <!-- Kitchen Alert Modal -->
     <Transition name="bio">
       <div v-if="showKitchenModal" class="bio-card">
-        <button class="bio-close" @click="showKitchenModal = false">✕</button>
+        <button class="bio-close" @click.stop="showKitchenModal = false">✕</button>
         <h3>Post Kitchen Alert</h3>
         <label>
           <input type="radio" value="share" v-model="alertInput.mode" /> Cooking to Share
@@ -862,7 +866,7 @@ onMounted(() => {
     <!-- Lost & Found Modal -->
     <Transition name="bio">
       <div v-if="showLostFoundModal" class="bio-card">
-        <button class="bio-close" @click="showLostFoundModal = false">✕</button>
+        <button class="bio-close" @click.stop="showLostFoundModal = false">✕</button>
         <h3>{{ editingLostFoundId ? 'Edit' : 'Report' }} Lost & Found Item</h3>
         <input v-model="alertInput.message" placeholder="Describe the item and location..." />
         <button @click="submitAlert">{{ editingLostFoundId ? 'Save' : 'Report' }}</button>
@@ -893,7 +897,7 @@ onMounted(() => {
     </template>
 
     <!-- Volunteer shift overlay -->
-    <template v-if="volunteerShiftOverlays.length">
+    <template v-if="showVolunteerShifts && volunteerShiftOverlays.length">
       <div
         v-for="overlay in volunteerShiftOverlays"
         :key="overlay.label"
@@ -957,7 +961,7 @@ onMounted(() => {
     <!-- Claim Shift Modal (moved outside overlay loop for reactivity) -->
     <Transition name="bio">
       <div v-if="showClaimShiftModal" class="bio-card">
-        <button class="bio-close" @click="closeClaimShiftModal">✕</button>
+        <button class="bio-close" @click.stop="closeClaimShiftModal">✕</button>
         <h3>Claim a Shift</h3>
         <p>
           No one is signed up for the next <strong>{{ claimShiftTeam }}</strong> shift.<br>
@@ -990,6 +994,10 @@ onMounted(() => {
           <span>Meals</span>
           <input type="checkbox" v-model="showMealOverlay" />
         </label>
+        <label class="settings-row">
+          <span>Volunteer Shifts</span>
+          <input type="checkbox" v-model="showVolunteerShifts" />
+        </label>
       </div>
     </Transition>
   </div>
@@ -1019,13 +1027,14 @@ onMounted(() => {
   position: relative;
   width: 100vw;
   background-color: white;
+  --overlay-font-size: 8px;
 }
 
 /* Ensure overlays are absolutely positioned over the SVG map */
 .map-feature-overlay {
   position: absolute;
   pointer-events: all;
-  z-index: 1000;
+  z-index: 10;
 }
 
 /* Volunteer shift overlay styling (inherits from map-feature-overlay) */
@@ -1036,7 +1045,7 @@ onMounted(() => {
   align-items: center;
   /* If you want to nudge overlays, use transform or offsetX/Y in JS */
   pointer-events: auto;
-  z-index: 1001;
+  z-index: 10;
   /* border removed: no debug border for overlays */
 }
 
@@ -1045,7 +1054,7 @@ onMounted(() => {
   height: auto;
   display: block;
   border: none;
-  pointer-events: none; /* Prevent SVG from blocking overlay clicks */
+  pointer-events: auto; /* Allow SVG icons to be clickable */
 }
 
 /* ── Stage overlay ─────────────────────────────────────────────────────────── */
@@ -1064,7 +1073,7 @@ onMounted(() => {
 .now-badge {
   background: #430789;
   color: #fff;
-  font-size: 11px;
+  font-size: var(--overlay-font-size);
   font-weight: 800;
   letter-spacing: 0.12em;
   padding: 2px 5px;
@@ -1087,7 +1096,7 @@ onMounted(() => {
 .ticker-wrap {
   background: rgba(67, 7, 137, 0.88);
   color: #fff;
-  font-size: 8px;
+  font-size: var(--overlay-font-size);
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 0 0 4px 4px;
@@ -1102,8 +1111,15 @@ onMounted(() => {
 .ticker-text {
   display: inline-block;
   will-change: transform;
-  animation: ticker-scroll 5s linear infinite;
   pointer-events: auto;
+}
+
+/* Only ticker overlays (now playing, up next, next meal) should scroll */
+.stage-overlay .ticker-text {
+  animation: ticker-scroll 5s linear infinite;
+}
+.meal-overlay .meal-ticker-text {
+  animation: ticker-scroll 12s linear infinite;
 }
 
 @keyframes ticker-scroll {
@@ -1127,7 +1143,7 @@ onMounted(() => {
   border-radius: 12px;
   padding: 1.2rem 1.4rem 1rem;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  z-index: 100;
+  z-index: 10000;
   pointer-events: all;
   touch-action: manipulation;
 }
@@ -1207,7 +1223,7 @@ onMounted(() => {
 .meal-badge {
   background: #1a6b2f;
   color: #fff;
-  font-size: 10px;
+  font-size: var(--overlay-font-size);
   font-weight: 800;
   letter-spacing: 0.1em;
   padding: 2px 5px;
@@ -1235,7 +1251,6 @@ onMounted(() => {
 .meal-ticker-text {
   display: inline-block;
   will-change: transform;
-  animation: ticker-scroll 12s linear infinite;
 }
 
 .meal-menu-list {
