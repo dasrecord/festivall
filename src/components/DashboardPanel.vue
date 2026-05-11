@@ -64,13 +64,18 @@
         </RouterLink>
 
         <RouterLink to="/dashboard/budget" class="scanner-link">
-          <img :src="budget_icon" alt="Budget" class="action-icon" style="width: 24px" />
+          <img :src="budget_icon" alt="Budget" class="action-icon" style="width: 30px" />
           Budget Manager
         </RouterLink>
 
         <RouterLink to="/reunionmap" class="scanner-link">
           <img :src="map_icon" alt="Grounds Map" class="action-icon" style="width: 32px" />
           Grounds Map
+        </RouterLink>
+
+        <RouterLink to="/reunionreceipttracker" class="scanner-link">
+          <img :src="receipt_icon" alt="Receipt Tracker" class="action-icon" style="width: 30px" />
+          Receipt Tracker
         </RouterLink>
       </div>
     </div>
@@ -139,7 +144,21 @@
       </div>
 
       <div class="applicants">
-        <div v-for="applicant in paginatedApplicants" :key="applicant.id" class="applicant">
+        <div
+          v-for="applicant in paginatedApplicants"
+          :key="applicant.id"
+          class="applicant"
+          :class="{ collapsed: !expandedCards.has(applicant.id_code || applicant.id) }"
+        >
+          <!-- Mobile-only collapse header -->
+          <div class="card-header" @click="toggleCard(applicant.id_code || applicant.id)">
+            <div class="card-header-info">
+              <strong>{{ applicant.act_name || applicant.fullname || applicant.email?.split('@')[0] }}</strong>
+              <span v-if="applicant.id_code" class="id_code">&nbsp;#{{ applicant.id_code }}</span>
+              <span v-if="applicant.applicant_types?.length" class="card-types"> · {{ applicant.applicant_types.join(', ') }}</span>
+            </div>
+            <span class="card-toggle-btn">{{ expandedCards.has(applicant.id_code || applicant.id) ? '▲' : '▼' }}</span>
+          </div>
           <!-- Detail page link icon -->
           <div
             class="detail-link-icon"
@@ -550,7 +569,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
@@ -577,6 +596,7 @@ import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 import task_icon from '@/assets/images/icons/task.png'
 import budget_icon from '@/assets/images/icons/budget.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
+import receipt_icon from '@/assets/images/icons/receipt.png'
 
 export default {
   name: 'DashboardPanel',
@@ -584,6 +604,12 @@ export default {
     const applicants = ref([])
     const filteredApplicants = ref([])
     const currentCollection = ref('participants_2026')
+
+    const expandedCards = reactive(new Set())
+    const toggleCard = (id) => {
+      if (expandedCards.has(id)) expandedCards.delete(id)
+      else expandedCards.add(id)
+    }
 
     // Add loading and error states
     const loading = ref(false)
@@ -1638,6 +1664,7 @@ export default {
       task_icon,
       budget_icon,
       map_icon,
+      receipt_icon,
       sendEmail,
       compensation_icon,
       updateCompensation,
@@ -1671,7 +1698,9 @@ export default {
       exportMealRedemptionData,
       exportEntranceActivityData,
       incrementMealTickets,
-      decrementMealTickets
+      decrementMealTickets,
+      expandedCards,
+      toggleCard
     }
   }
 }
@@ -1836,6 +1865,11 @@ button.active-filter:hover {
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
   align-items: center;
+}
+
+/* Card header — hidden on desktop, shown on mobile */
+.card-header {
+  display: none;
 }
 
 .applicant:hover {
@@ -2063,28 +2097,143 @@ a {
 @media (max-width: 768px) {
   .banner {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .logo {
+    width: 60px;
+  }
+
+  h1 {
+    font-size: 1.1rem;
+    margin: 0;
   }
 
   .scanner-links {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
     width: 100%;
+  }
+
+  .scanner-link {
+    padding: 0.35rem 0.25rem;
+    font-size: 0.62rem;
+    border-radius: 8px;
+    gap: 0.2rem;
+    height: 64px;
+    justify-content: center;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .scanner-links .action-icon {
+    width: 22px !important;
+    transform: none !important;
+  }
+
+  .controls,
+  .filters {
+    margin-bottom: 0.25rem;
+  }
+
+  .buttons {
+    gap: 0.4rem;
+  }
+
+  button {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .export-buttons {
+    gap: 0.4rem;
+  }
+
+  .export-buttons button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
 
   .applicants {
     grid-template-columns: 1fr;
-    padding: 0.5rem;
+    padding: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .applicant {
+    max-width: 100%;
+    height: auto;
+    min-height: unset;
+    overflow-y: hidden;
+  }
+
+  .applicant.collapsed {
+    max-height: none;
+    overflow-y: hidden;
+  }
+
+  .applicant.collapsed .detail-link-icon,
+  .applicant.collapsed .applicant-content,
+  .applicant.collapsed .ticket-content,
+  .applicant.collapsed .actions {
+    display: none;
+  }
+
+  .applicant:not(.collapsed) {
+    max-height: 330px;
+    overflow-y: auto;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    background-color: #555;
+    user-select: none;
+    gap: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .card-header-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem;
+    text-align: left;
+    font-size: 0.82rem;
+  }
+
+  .card-types {
+    color: #aaa;
+    font-size: 0.72rem;
+  }
+
+  .card-toggle-btn {
+    font-size: 0.7rem;
+    color: var(--festivall-baby-blue);
+    flex-shrink: 0;
   }
 
   .pagination {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
   }
 
   .search-input {
     max-width: 100%;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  img {
+    margin: 0.2rem;
   }
 }
 
