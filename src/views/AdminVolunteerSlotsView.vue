@@ -197,6 +197,7 @@ import { reunion_db } from '@/firebase'
 import {
   collection,
   addDoc,
+  setDoc,
   updateDoc,
   doc,
   deleteDoc,
@@ -469,8 +470,24 @@ export default {
       this.generating = true
       try {
         const year = this.gen.year
+        const TEAM_SLUGS = {
+          setupcrew: 'setup-crew',
+          frontgate: 'front-gate',
+          foodteam: 'food-team',
+          stagecrew: 'stage-crew',
+          cleanupcrew: 'cleanup-crew',
+          arcadeattendant: 'arcade-attendant'
+        }
+        const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+        const slotId = (slot) => {
+          const [, m, d] = slot.date.split('-')
+          const mon = MONTHS[parseInt(m) - 1]
+          const time = slot.start.replace(':', 'h')
+          const slug = TEAM_SLUGS[slot.team] || slot.team
+          return `${slug}_${mon}${d}_${time}`
+        }
         const add = async (slot) =>
-          addDoc(collection(this.db, 'volunteer_slots_2026'), {
+          setDoc(doc(this.db, 'volunteer_slots_2026', slotId(slot)), {
             ...slot,
             active: true,
             created_at: serverTimestamp(),

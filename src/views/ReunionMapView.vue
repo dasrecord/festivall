@@ -12,11 +12,22 @@ import iconSetupCrew from '@/assets/images/icons/setup_crew.png'
 import iconFrontGate from '@/assets/images/icons/front_gate.png'
 import iconFoodTeam from '@/assets/images/icons/food.png'
 import iconArcade from '@/assets/images/icons/arcade.png'
-import iconStageCrew from '@/assets/images/icons/stage_crew.png'
+import iconSoundTech from '@/assets/images/icons/soundtech.png'
 import iconKitchen from '@/assets/images/icons/kitchen.png'
 import iconWashroom from '@/assets/images/icons/washroom.png'
 import iconLostFound from '@/assets/images/icons/location.png'
 import iconMeals from '@/assets/images/icons/meals.png'
+import iconPotableWater from '@/assets/images/icons/potable_water.png'
+import iconShowers from '@/assets/images/icons/showers.png'
+import iconFlame from '@/assets/images/icons/flame.png'
+import iconLand from '@/assets/images/icons/land.png'
+import iconPlayground from '@/assets/images/icons/playground.png'
+import iconPool from '@/assets/images/icons/pool.png'
+import iconQuiet from '@/assets/images/icons/quiet.png'
+import iconTarget from '@/assets/images/icons/target.png'
+import iconCampsiteParking from '@/assets/images/icons/campsite_parking.png'
+import iconTent from '@/assets/images/icons/tent.png'
+import iconArtist from '@/assets/images/icons/artist.png'
 
 // --- Claim Shift Logic ---
 const claimShiftStatus = ref('')
@@ -140,7 +151,6 @@ const inlineSvgContent = ref('')
 // }
 
 const showKitchenModal = ref(false)
-const showWashroomModal = ref(false)
 const showLostFoundModal = ref(false)
 const editingLostFoundId = ref(null)
 const alertInput = ref({ type: '', mode: '', message: '' })
@@ -153,13 +163,6 @@ const checkinNames = ref([])
 function openKitchenModal() {
   alertInput.value = { type: 'kitchen', mode: '', message: '' }
   showKitchenModal.value = true
-}
-function openWashroomModal() {
-  alertInput.value = { type: 'washroom', status: 'low', message: '' }
-  showWashroomModal.value = true
-}
-function closeWashroomModal() {
-  showWashroomModal.value = false
 }
 function openLostFoundModal(item = null) {
   if (item) {
@@ -180,21 +183,23 @@ async function submitAlert() {
       updated_at: new Date().toISOString()
     })
   } else {
+    const userId = effectiveIdCode.value || 'ANONYMOUS'
+    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
     await addDoc(col, {
       ...alertInput.value,
       created_at: new Date().toISOString(),
-      userId: 'CURRENT_USER_ID',
-      userName: 'CURRENT_USER_NAME'
+      userId,
+      userName
     })
     let slackMsg = ''
     if (alertInput.value.type === 'kitchen') {
       slackMsg = alertInput.value.mode === 'share'
-        ? `🍳 *Kitchen Alert*: ${alertInput.value.userName} is cooking: ${alertInput.value.message}`
-        : `🍳 *Kitchen Alert*: ${alertInput.value.userName} is missing: ${alertInput.value.message}`
+        ? `🍳 *Kitchen Alert*: ${userName} is cooking: ${alertInput.value.message}`
+        : `🍳 *Kitchen Alert*: ${userName} is missing: ${alertInput.value.message}`
     } else if (alertInput.value.type === 'washroom') {
-      slackMsg = `🚻 *Washroom Alert*: Supplies low reported by ${alertInput.value.userName}`
+      slackMsg = `🚻 *Washroom Alert*: Supplies low reported by ${userName}`
     } else if (alertInput.value.type === 'lostfound') {
-      slackMsg = `🧳 *Lost & Found*: ${alertInput.value.userName} reported: ${alertInput.value.message}`
+      slackMsg = `🧳 *Lost & Found*: ${userName} reported: ${alertInput.value.message}`
     }
     if (slackMsg) sendVolunteerCoordinator(slackMsg)
   }
@@ -215,15 +220,32 @@ function listenToAlerts() {
     const kitchen = []
     const washroom = []
     const lostfound = []
+    const water = []
+    const firewood = []
     snapshot.forEach((doc) => {
       const data = doc.data()
       if (data.type === 'kitchen') kitchen.push({ id: doc.id, ...data })
       else if (data.type === 'washroom') washroom.push({ id: doc.id, ...data })
       else if (data.type === 'lostfound') lostfound.push({ id: doc.id, ...data })
+      else if (data.type === 'water_station') water.push({ id: doc.id, ...data })
+      else if (data.type === 'firewood') firewood.push({ id: doc.id, ...data })
     })
     kitchenAlerts.value = kitchen
     washroomAlerts.value = washroom
     lostFoundItems.value = lostfound
+    waterStationAlerts.value = water
+    firewoodAlerts.value = firewood
+  })
+}
+
+const CHECKIN_DECAY_MS = 10 * 60 * 1000
+const allCheckinData = ref([])
+
+function pruneCheckins() {
+  const cutoff = Date.now() - CHECKIN_DECAY_MS
+  checkinNames.value = allCheckinData.value.filter(p => {
+    if (!p.last_activity) return false
+    return new Date(p.last_activity).getTime() > cutoff
   })
 }
 
@@ -231,18 +253,18 @@ function listenToCheckins() {
   const participantsCol = collection(reunion_db, 'participants_2026')
   onSnapshot(participantsCol, (snapshot) => {
     const checkedIn = []
-    snapshot.forEach((doc) => {
-      const data = doc.data()
-      if (data.checked_in || data.order?.checked_in) {
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data()
+      if (data.order?.checked_in) {
         checkedIn.push({
-          id: doc.id,
+          id: docSnap.id,
           fullname: data.contact?.fullname || data.fullname || '',
-          checked_in: true,
-          checked_in_at: data.checked_in_at || data.order?.checked_in_at || null
+          last_activity: data.order?.last_entrance_activity || null
         })
       }
     })
-    checkinNames.value = checkedIn
+    allCheckinData.value = checkedIn
+    pruneCheckins()
   })
 }
 
@@ -339,10 +361,10 @@ const LOSTFOUND_ICONS = [
 
 const CHECKIN_ICONS = [
   {
-    svgId: 'front_gate_area',
+    svgId: 'front_gate_icon',
     label: 'Front Gate',
-    offsetX: 0,
-    offsetY: 0
+    offsetX: -75,
+    offsetY: 25
   }
 ]
 
@@ -353,7 +375,7 @@ const VOLUNTEER_SHIFT_ICONS = [
   { svgId: 'front_gate_icon', label: 'Front Gate', icon: iconFrontGate, offsetX: -50, offsetY: 12 },
   { svgId: 'meals_area_icon', label: 'Food Team', icon: iconFoodTeam, offsetX: 0, offsetY: 0 },
   { svgId: 'arcade_icon', label: 'Arcade Attendant', icon: iconArcade, offsetX: -45, offsetY: -10 },
-  { svgId: 'front_of_house_icon', label: 'Stage Crew', icon: iconStageCrew, offsetX: -90, offsetY: 0 },
+  { svgId: 'front_of_house_icon', label: 'Stage Crew', icon: iconSoundTech, offsetX: -90, offsetY: 0 },
 ]
 
 // Overlay refs for rendering
@@ -369,6 +391,44 @@ const mealCardOpen = ref(false)
 const settingsOpen = ref(false)
 const showStageOverlay = ref(true)
 const showMealOverlay  = ref(true)
+const forceStageOverlay = ref(false)
+
+// Dev-only mock acts for testing stage overlay positioning
+const DEV_MOCK_CURRENT = { act_name: 'Test Artist', workshop_title: '', genre: 'Live Music', act_description: 'Mock act for testing stage overlay positioning.' }
+const DEV_MOCK_UPCOMING = { act_name: 'Next Test Artist', workshop_title: '', genre: 'Jazz', act_description: '', settime: Date.now() + 45 * 60 * 1000 }
+const effectiveCurrentAct = computed(() => forceStageOverlay.value ? DEV_MOCK_CURRENT : currentAct.value)
+const effectiveUpcomingAct = computed(() => forceStageOverlay.value ? DEV_MOCK_UPCOMING : upcomingAct.value)
+
+// Festival active window — Sept 4–7, 2026
+const isFestivalActive = computed(() => {
+  const now = new Date()
+  const festEnd = new Date('2026-09-07T23:59:59')
+  return now >= REUNION_FESTIVAL.startDate && now <= festEnd
+})
+const festivalEnded = computed(() => new Date() > new Date('2026-09-07T23:59:59'))
+
+// Teams currently open for sign-up based on volunteer phase dates
+const currentPhaseTeams = computed(() => {
+  const now = new Date()
+  const { phase1End, phase2End } = REUNION_FESTIVAL.volunteerPhases
+  if (now <= phase1End) return REUNION_FESTIVAL.volunteerTeamsByPhase.phase1
+  if (now <= phase2End) return REUNION_FESTIVAL.volunteerTeamsByPhase.phase2
+  return REUNION_FESTIVAL.volunteerTeamsByPhase.phase3
+})
+
+// Date when a given team's sign-ups open (null = already open in phase 1)
+function teamPhaseOpenDate(teamLabel) {
+  const { phase1End, phase2End } = REUNION_FESTIVAL.volunteerPhases
+  const p2 = REUNION_FESTIVAL.volunteerTeamsByPhase.phase2
+  const p1 = REUNION_FESTIVAL.volunteerTeamsByPhase.phase1
+  if (p1.includes(teamLabel)) return null
+  if (p2.includes(teamLabel)) return new Date(phase1End.getTime() + 86400000) // day after phase1End
+  return new Date(phase2End.getTime() + 86400000) // day after phase2End
+}
+function formatPhaseDate(d) {
+  if (!d) return ''
+  return d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' })
+}
 
 // ── Ticker text helpers ───────────────────────────────────────────────────────
 // Build doubled strings in JS so there are zero stray whitespace nodes in the
@@ -381,17 +441,17 @@ function makeTickerText(parts) {
 }
 
 const nowPlayingTicker = computed(() =>
-  currentAct.value
-    ? makeTickerText([currentAct.value.act_name || currentAct.value.workshop_title, currentAct.value.genre])
+  effectiveCurrentAct.value
+    ? makeTickerText([effectiveCurrentAct.value.act_name || effectiveCurrentAct.value.workshop_title, effectiveCurrentAct.value.genre])
     : ''
 )
 
 const upNextTicker = computed(() =>
-  upcomingAct.value
+  effectiveUpcomingAct.value
     ? makeTickerText([
-        upcomingAct.value.act_name || upcomingAct.value.workshop_title,
-        formatSettime(upcomingAct.value.settime),
-        upcomingAct.value.genre
+        effectiveUpcomingAct.value.act_name || effectiveUpcomingAct.value.workshop_title,
+        formatSettime(effectiveUpcomingAct.value.settime),
+        effectiveUpcomingAct.value.genre
       ])
     : ''
 )
@@ -479,10 +539,12 @@ function positionOverlays() {
     return style ? [{ label: icon.label, style }] : []
   })
 
-  volunteerShiftOverlays.value = VOLUNTEER_SHIFT_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(vb, icon)
-    return style ? [{ label: icon.label, style }] : []
-  })
+  volunteerShiftOverlays.value = VOLUNTEER_SHIFT_ICONS
+    .filter(icon => currentPhaseTeams.value.includes(icon.label))
+    .flatMap((icon) => {
+      const style = resolveIconStyle(vb, icon)
+      return style ? [{ label: icon.label, style }] : []
+    })
 }
 
 // ── Upcoming meal logic ───────────────────────────────────────────────────────
@@ -612,6 +674,41 @@ function handleSvgIconClick(iconId) {
     openKitchenModal()
     return
   }
+
+  // Water station
+  if (iconId === 'water_station_icon') {
+    openWaterStationModal()
+    return
+  }
+
+  // Showers
+  if (iconId === 'showers_icon') {
+    showShowersModal.value = true
+    return
+  }
+
+  // Fire pit
+  if (iconId === 'firepit_icon') {
+    openFirepitModal()
+    return
+  }
+
+  // Generic info icons — supports exact IDs and prefix-matched serially-numbered IDs (e.g. camper1_icon, tent3_icon)
+  const INFO_ICON_PREFIXES = [
+    { prefix: 'garden',               info: { icon: iconLand,            title: 'Garden',               description: 'Community garden. Have a look around — please don\'t pick anything without asking first!' } },
+    { prefix: 'playground',           info: { icon: iconPlayground,      title: 'Playground',            description: 'Kids\' play area. Parental supervision recommended.' } },
+    { prefix: 'wading_pool',          info: { icon: iconPool,            title: 'Wading Pool',           description: 'All ages welcome. No solo swimming — a buddy must be present at all times.' } },
+    { prefix: 'quiet_camping',        info: { icon: iconQuiet,           title: 'Quiet Camping',         description: 'Quiet hours after 11pm. Please keep noise to a minimum in this zone.' } },
+    { prefix: 'cote_corral',          info: { icon: iconTarget,          title: 'Cote Corral',           description: 'Nerf gun battle arena! Grab a blaster and join the chaos. Check the schedule for organized rounds. Closed when no volunteers are present.' } },
+    { prefix: 'tent',                 info: { icon: iconTent,            title: 'Tent Camping',          description: 'General camping area. Set up anywhere that isn\'t reserved. No fires in the camping zone.' } },
+    { prefix: 'camper',               info: { icon: iconCampsiteParking, title: 'Camper Parking',        description: 'Designated RV/camper area. See the setup crew for your assigned spot.' } },
+    { prefix: 'artist_loading_zone',  info: { icon: iconArtist,          title: 'Artist Loading Zone',   description: 'Artist access only. Please keep this area clear for performers and their gear.' } },
+  ]
+  const infoMatch = INFO_ICON_PREFIXES.find(({ prefix }) => iconId === `${prefix}_icon` || iconId.startsWith(`${prefix}_icon`) || new RegExp(`^${prefix}\\d+_icon$`).test(iconId))
+  if (infoMatch) {
+    openInfoModal(infoMatch.info)
+    return
+  }
 }
 
 // Modal state for washroom supply report
@@ -633,13 +730,98 @@ function closeWashroomSupplyModal() {
   activeWashroomIconId.value = ''
 }
 
+// ── Generic info modal ────────────────────────────────────────────────────────
+const showInfoModal = ref(false)
+const infoModalContent = ref({ title: '', icon: '', description: '' })
+function openInfoModal(content) {
+  infoModalContent.value = content
+  showInfoModal.value = true
+}
+
+// ── Water station alert modal ─────────────────────────────────────────────────
+const waterStationAlerts = ref([])
+const showWaterStationModal = ref(false)
+const waterStationSubmitting = ref(false)
+const waterStationError = ref('')
+function openWaterStationModal() {
+  waterStationError.value = ''
+  showWaterStationModal.value = true
+}
+function closeWaterStationModal() {
+  waterStationError.value = ''
+  showWaterStationModal.value = false
+}
+async function submitWaterStationAlert() {
+  waterStationSubmitting.value = true
+  waterStationError.value = ''
+  try {
+    const userId = effectiveIdCode.value || 'ANONYMOUS'
+    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
+    await addDoc(collection(reunion_db, 'alerts_2026'), {
+      type: 'water_station',
+      status: 'low',
+      location: 'Water Station',
+      message: 'Water station running low.',
+      created_at: new Date().toISOString(),
+      userId,
+      userName
+    })
+    sendVolunteerCoordinator(`💧 *Water Station Alert*: Running low — reported by ${userName}`)
+    showWaterStationModal.value = false
+  } catch (e) {
+    waterStationError.value = 'Failed to submit: ' + (e?.message || e)
+  } finally {
+    waterStationSubmitting.value = false
+  }
+}
+
+// ── Showers instructions modal ────────────────────────────────────────────────
+const showShowersModal = ref(false)
+
+// ── Firepit firewood alert modal ──────────────────────────────────────────────
+const firewoodAlerts = ref([])
+const showFirepitModal = ref(false)
+const firewoodSubmitting = ref(false)
+const firewoodError = ref('')
+function openFirepitModal() {
+  firewoodError.value = ''
+  showFirepitModal.value = true
+}
+function closeFirepitModal() {
+  firewoodError.value = ''
+  showFirepitModal.value = false
+}
+async function submitFirewoodAlert() {
+  firewoodSubmitting.value = true
+  firewoodError.value = ''
+  try {
+    const userId = effectiveIdCode.value || 'ANONYMOUS'
+    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
+    await addDoc(collection(reunion_db, 'alerts_2026'), {
+      type: 'firewood',
+      status: 'needed',
+      location: 'Fire Pit',
+      message: 'More firewood needed at the fire pit.',
+      created_at: new Date().toISOString(),
+      userId,
+      userName
+    })
+    sendVolunteerCoordinator(`🔥 *Firewood Alert*: More firewood needed at fire pit — reported by ${userName}`)
+    showFirepitModal.value = false
+  } catch (e) {
+    firewoodError.value = 'Failed to submit: ' + (e?.message || e)
+  } finally {
+    firewoodSubmitting.value = false
+  }
+}
+
 async function submitWashroomSupplyAlert() {
   washroomSupplySubmitting.value = true
   washroomSupplyError.value = ''
   try {
     const col = collection(reunion_db, 'alerts_2026')
     const userId = effectiveIdCode.value || 'ANONYMOUS'
-    const userName = 'User ' + userId.slice(-5)
+    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
     const supply = washroomSupplyType.value
     const location = washroomLocation.value || 'Unknown Washroom'
     const message = `Low ${supply.replace('_', ' ')} reported at ${location}.`
@@ -796,6 +978,7 @@ onMounted(async () => {
   listenToAlerts()
   listenToCheckins()
   listenToVolunteerShifts()
+  setInterval(pruneCheckins, 30_000)
   // Inline the SVG so CSS transforms stay vector-crisp (no rasterization)
   const res = await fetch(reunionMapUrl)
   const svgText = await res.text()
@@ -823,7 +1006,7 @@ onMounted(async () => {
     <div ref="mapSvgContainer" class="festival-map" v-html="inlineSvgContent"></div>
 
     <!-- Now-playing / Up-next overlay — positioned over #stage_area in the SVG -->
-    <template v-if="showStageOverlay && (currentAct || upcomingAct)">
+    <template v-if="showStageOverlay && (effectiveCurrentAct || effectiveUpcomingAct)">
       <div
         v-for="overlay in stageOverlays"
         :key="overlay.label"
@@ -832,15 +1015,15 @@ onMounted(async () => {
         @click="bioOpen = !bioOpen"
       >
         <!-- NOW PLAYING row -->
-        <template v-if="currentAct">
+        <template v-if="effectiveCurrentAct">
           <div class="now-badge">▶ NOW PLAYING</div>
           <div class="ticker-wrap">
             <span class="ticker-text">{{ nowPlayingTicker }}</span>
           </div>
         </template>
         <!-- UP NEXT row -->
-        <template v-if="upcomingAct">
-          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': currentAct }">▷ UP NEXT</div>
+        <template v-if="effectiveUpcomingAct">
+          <div class="now-badge now-badge--upcoming" :class="{ 'now-badge--sep': effectiveCurrentAct }">▷ UP NEXT</div>
           <div class="ticker-wrap ticker-wrap--upcoming">
             <span class="ticker-text">{{ upNextTicker }}</span>
           </div>
@@ -852,17 +1035,17 @@ onMounted(async () => {
       <Transition name="bio">
         <div v-if="bioOpen" class="bio-card">
           <button class="bio-close" @click.stop="bioOpen = false">✕</button>
-          <template v-if="currentAct">
-            <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
-            <p class="bio-genre">▶ NOW PLAYING<template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template></p>
-            <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
+          <template v-if="effectiveCurrentAct">
+            <p class="bio-act-name">{{ effectiveCurrentAct.act_name || effectiveCurrentAct.workshop_title }}</p>
+            <p class="bio-genre">▶ NOW PLAYING<template v-if="effectiveCurrentAct.genre">&nbsp;· {{ effectiveCurrentAct.genre }}</template></p>
+            <p v-if="effectiveCurrentAct.act_description" class="bio-text">{{ effectiveCurrentAct.act_description }}</p>
             <p v-else class="bio-text bio-empty">No bio available.</p>
           </template>
-          <template v-if="upcomingAct">
-            <hr v-if="currentAct" class="bio-divider" />
-            <p class="bio-act-name">{{ upcomingAct.act_name || upcomingAct.workshop_title }}</p>
-            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(upcomingAct.settime) }}<template v-if="upcomingAct.genre">&nbsp;· {{ upcomingAct.genre }}</template></p>
-            <p v-if="upcomingAct.act_description" class="bio-text">{{ upcomingAct.act_description }}</p>
+          <template v-if="effectiveUpcomingAct">
+            <hr v-if="effectiveCurrentAct" class="bio-divider" />
+            <p class="bio-act-name">{{ effectiveUpcomingAct.act_name || effectiveUpcomingAct.workshop_title }}</p>
+            <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(effectiveUpcomingAct.settime) }}<template v-if="effectiveUpcomingAct.genre">&nbsp;· {{ effectiveUpcomingAct.genre }}</template></p>
+            <p v-if="effectiveUpcomingAct.act_description" class="bio-text">{{ effectiveUpcomingAct.act_description }}</p>
             <p v-else class="bio-text bio-empty">No bio available.</p>
           </template>
         </div>
@@ -953,7 +1136,7 @@ onMounted(async () => {
             <template v-else>All good!</template>
           </span>
         </div>
-        <button class="alert-post-btn" @click="openWashroomModal">Report Low</button>
+        <button class="alert-post-btn" @click="openWashroomSupplyModal">Report Low</button>
       </div>
     </template>
 
@@ -971,7 +1154,7 @@ onMounted(async () => {
             <template v-if="lostFoundItems.length">
               <span v-for="item in lostFoundItems" :key="item.id">
                 {{ item.message }}
-                <button class="alert-edit-btn" v-if="item.userId === 'CURRENT_USER_ID'" @click.stop="openLostFoundModal(item)">✎</button>
+                <button class="alert-edit-btn" v-if="effectiveIdCode && item.userId === effectiveIdCode" @click.stop="openLostFoundModal(item)">✎</button>
                 <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(item)">✕</button>
                 &nbsp;·&nbsp;
               </span>
@@ -990,7 +1173,7 @@ onMounted(async () => {
         class="checkin-overlay map-feature-overlay"
         :style="overlay.style"
       >
-        <div class="now-badge checkin-badge">✅ CHECKED IN</div>
+        <div class="now-badge checkin-badge">✅ RECENTLY ARRIVED</div>
         <div class="ticker-wrap">
           <span class="ticker-text">
             <template v-if="checkinNames.length">
@@ -999,7 +1182,7 @@ onMounted(async () => {
                 &nbsp;·&nbsp;
               </span>
             </template>
-            <template v-else>No one checked in</template>
+            <template v-else>No recent arrivals</template>
           </span>
         </div>
       </div>
@@ -1019,19 +1202,6 @@ onMounted(async () => {
         <input class="modal-input" v-model="alertInput.message" placeholder="What are you cooking or missing?" />
         <div class="modal-actions">
           <button class="modal-btn modal-btn--primary" @click="submitAlert">Post</button>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- Washroom Alert Modal -->
-    <Transition name="bio">
-      <div v-if="showWashroomModal" class="bio-card">
-        <button class="bio-close" @click.stop="closeWashroomModal">✕</button>
-        <div class="modal-title-row"><img :src="iconWashroom" alt="" class="modal-icon" /><h3>Report Low Supplies</h3></div>
-        <p class="bio-text" style="margin-bottom:0.75rem;">Let volunteers know if supplies are running low.</p>
-        <div class="modal-actions">
-          <button class="modal-btn modal-btn--ghost" type="button" @click.stop="closeWashroomModal">Cancel</button>
-          <button class="modal-btn modal-btn--primary" @click="submitAlert">Submit alert</button>
         </div>
       </div>
     </Transition>
@@ -1059,46 +1229,85 @@ onMounted(async () => {
           <h3 style="margin:0;">{{ selectedShiftTeam }}</h3>
         </div>
 
-        <p class="bio-genre" style="margin-top:0.75rem;">▶ ON SHIFT NOW</p>
-        <template v-if="volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
-          <div v-for="shift in volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
-            <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
-            <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0.2rem 0;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
-          </div>
-        </template>
-        <template v-else>
-          <div class="shift-row">
-            <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
-            <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
-              {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
-            </button>
-          </div>
-          <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
-          <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
+        <!-- ── Festival ended ── -->
+        <template v-if="festivalEnded">
+          <p class="bio-text" style="color:rgba(255,255,255,0.5);margin:0.75rem 0 0;">Festival has ended · Thank you for volunteering! 🙏</p>
         </template>
 
-        <hr class="bio-divider" />
-
-        <p class="bio-genre bio-genre--upcoming" style="margin-top:0.6rem;">▷ NEXT SHIFT</p>
-        <template v-if="volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
-          <div v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
-            <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0 0 0.4rem;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
-            <template v-if="shift.claimed && shift.claimed.length > 0">
+        <!-- ── Festival active: show live shift status ── -->
+        <template v-else-if="isFestivalActive">
+          <p class="bio-genre" style="margin-top:0.75rem;">▶ ON SHIFT NOW</p>
+          <template v-if="volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
+            <div v-for="shift in volunteerShiftsCurrent.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
               <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
-            </template>
-            <template v-else>
-              <div class="shift-row">
-                <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
-                <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
-                  {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
-                </button>
-              </div>
-              <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
-              <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
-            </template>
-          </div>
+              <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0.2rem 0;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
+            </div>
+          </template>
+          <template v-else>
+            <div class="shift-row">
+              <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
+              <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
+                {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+              </button>
+            </div>
+            <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
+            <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
+          </template>
+
+          <hr class="bio-divider" />
+
+          <p class="bio-genre bio-genre--upcoming" style="margin-top:0.6rem;">▷ NEXT SHIFT</p>
+          <template v-if="volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
+            <div v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
+              <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0 0 0.4rem;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
+              <template v-if="shift.claimed && shift.claimed.length > 0">
+                <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
+              </template>
+              <template v-else>
+                <div class="shift-row">
+                  <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
+                  <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
+                    {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+                  </button>
+                </div>
+                <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
+                <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
+              </template>
+            </div>
+          </template>
+          <p v-else class="bio-text bio-empty">No upcoming shifts scheduled.</p>
         </template>
-        <p v-else class="bio-text bio-empty">No upcoming shifts scheduled.</p>
+
+        <!-- ── Pre-festival: team sign-ups are open for this phase ── -->
+        <template v-else-if="currentPhaseTeams.includes(selectedShiftTeam)">
+          <p class="bio-genre bio-genre--upcoming" style="margin-top:0.75rem;">▷ CLAIM A SHIFT</p>
+          <template v-if="volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,'')).length">
+            <div v-for="shift in volunteerShiftsNext.filter(s => s.team && s.team.toLowerCase().replace(/\s/g,'') === selectedShiftTeam.toLowerCase().replace(/\s/g,''))" :key="shift.id">
+              <p class="bio-text" style="color:rgba(255,255,255,0.4);font-size:0.78rem;margin:0 0 0.4rem;">{{ shift.date }} · {{ shift.start }}–{{ shift.end }}</p>
+              <template v-if="shift.claimed && shift.claimed.length > 0">
+                <p v-for="person in shift.claimed" :key="person.id_code" class="bio-text" style="margin:0.2rem 0;">{{ person.fullname || person.id_code }}</p>
+              </template>
+              <template v-else>
+                <div class="shift-row">
+                  <p class="bio-text" style="color:#ffb347;margin:0;">This shift needs to be filled.</p>
+                  <button class="claim-btn" :disabled="claimShiftLoading" @click="claimNextShiftForTeam">
+                    {{ claimShiftLoading ? 'Claiming...' : 'Claim this shift' }}
+                  </button>
+                </div>
+                <div v-if="claimShiftStatus && claimShiftStatus !== 'success'" class="modal-error" style="margin-top:4px;">{{ claimShiftStatus }}</div>
+                <div v-if="claimShiftStatus === 'success'" style="color:#4c8;font-size:0.85rem;margin-top:4px;">Shift claimed! Thank you.</div>
+              </template>
+            </div>
+          </template>
+          <p v-else class="bio-text bio-empty">No shifts scheduled yet.</p>
+        </template>
+
+        <!-- ── Pre-festival: team not yet open for sign-ups ── -->
+        <template v-else>
+          <p class="bio-text" style="color:rgba(255,255,255,0.5);margin:0.75rem 0 0;">
+            Sign-ups for <strong>{{ selectedShiftTeam }}</strong> open on {{ formatPhaseDate(teamPhaseOpenDate(selectedShiftTeam)) }}.
+          </p>
+        </template>
       </div>
     </Transition>
 
@@ -1120,6 +1329,10 @@ onMounted(async () => {
         <label class="settings-row">
           <span>Meals</span>
           <input type="checkbox" v-model="showMealOverlay" />
+        </label>
+        <label class="settings-row">
+          <span>Force Stage Overlay</span>
+          <input type="checkbox" v-model="forceStageOverlay" />
         </label>
       </div>
     </Transition>
@@ -1146,10 +1359,107 @@ onMounted(async () => {
       <p v-if="washroomSupplyError" class="modal-error">{{ washroomSupplyError }}</p>
     </div>
   </Transition>
+
+  <!-- Water Station Alert Modal -->
+  <Transition name="bio">
+    <div v-if="showWaterStationModal" class="bio-card">
+      <button class="bio-close" @click.stop="closeWaterStationModal">✕</button>
+      <div class="modal-title-row"><img :src="iconPotableWater" alt="" class="modal-icon" /><h3>Water Station</h3></div>
+      <template v-if="waterStationAlerts.length">
+        <p class="bio-genre" style="margin-top:0.5rem;">Active alerts:</p>
+        <div v-for="alert in waterStationAlerts" :key="alert.id" class="shift-row" style="margin-bottom:0.3rem;">
+          <p class="bio-text" style="color:#ffb347;margin:0;">⚠ {{ alert.message }}</p>
+          <button v-if="isVolunteerOrAdmin" class="alert-clear-btn" @click.stop="clearAlert(alert)">✕</button>
+        </div>
+      </template>
+      <template v-else>
+        <p class="bio-text" style="margin-top:0.5rem;">No active water alerts. Is it running low?</p>
+      </template>
+      <div class="modal-actions" style="margin-top:1rem;">
+        <button class="modal-btn modal-btn--ghost" type="button" @click.stop="closeWaterStationModal">Cancel</button>
+        <button class="modal-btn modal-btn--primary" :disabled="waterStationSubmitting" @click="submitWaterStationAlert">
+          {{ waterStationSubmitting ? 'Reporting...' : '💧 Report running low' }}
+        </button>
+      </div>
+      <p v-if="waterStationError" class="modal-error">{{ waterStationError }}</p>
+    </div>
+  </Transition>
+
+  <!-- Showers Instructions Modal -->
+  <Transition name="bio">
+    <div v-if="showShowersModal" class="bio-card">
+      <button class="bio-close" @click.stop="showShowersModal = false">✕</button>
+      <div class="modal-title-row"><img :src="iconShowers" alt="" class="modal-icon" /><h3>Heated Shower Station</h3></div>
+      <ol class="shower-steps">
+        <li>Turn the <strong>propane valve</strong> on the tank counter-clockwise to open.</li>
+        <li>Press the <strong>igniter button</strong> on the water heater until it lights — you'll hear a click and see a flame indicator.</li>
+        <li>Wait <strong>~30 seconds</strong> for the water to heat up, then adjust the temperature knob.</li>
+        <li>Turn on the shower tap and enjoy!</li>
+        <li>When finished, turn the <strong>propane valve back off</strong>.</li>
+      </ol>
+      <p class="bio-text" style="color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:0.75rem;">If the heater won't light after 3 tries, find a volunteer.</p>
+    </div>
+  </Transition>
+
+  <!-- Firepit Firewood Alert Modal -->
+  <Transition name="bio">
+    <div v-if="showFirepitModal" class="bio-card">
+      <button class="bio-close" @click.stop="closeFirepitModal">✕</button>
+      <div class="modal-title-row"><img :src="iconFlame" alt="" class="modal-icon" /><h3>Fire Pit</h3></div>
+      <template v-if="firewoodAlerts.length">
+        <p class="bio-genre" style="margin-top:0.5rem;">Active alerts:</p>
+        <div v-for="alert in firewoodAlerts" :key="alert.id" class="shift-row" style="margin-bottom:0.3rem;">
+          <p class="bio-text" style="color:#ffb347;margin:0;">⚠ {{ alert.message }}</p>
+          <button v-if="isVolunteerOrAdmin" class="alert-clear-btn" @click.stop="clearAlert(alert)">✕</button>
+        </div>
+      </template>
+      <template v-else>
+        <p class="bio-text" style="margin-top:0.5rem;">Running low on firewood? Let volunteers know.</p>
+      </template>
+      <p class="bio-text" style="color:rgba(255,255,255,0.45);font-size:0.8rem;margin-top:0.3rem;">Community fire pit — open after dusk. Keep flammable items back and don't leave fires unattended.</p>
+      <div class="modal-actions" style="margin-top:1rem;">
+        <button class="modal-btn modal-btn--ghost" type="button" @click.stop="closeFirepitModal">Cancel</button>
+        <button class="modal-btn modal-btn--primary" :disabled="firewoodSubmitting" @click="submitFirewoodAlert">
+          {{ firewoodSubmitting ? 'Reporting...' : '🪵 Request more firewood' }}
+        </button>
+      </div>
+      <p v-if="firewoodError" class="modal-error">{{ firewoodError }}</p>
+    </div>
+  </Transition>
+
+  <!-- Generic Info Modal -->
+  <Transition name="bio">
+    <div v-if="showInfoModal" class="bio-card">
+      <button class="bio-close" @click.stop="showInfoModal = false">✕</button>
+      <div class="modal-title-row">
+        <img v-if="infoModalContent.icon" :src="infoModalContent.icon" alt="" class="modal-icon" />
+        <h3 style="margin:0;">{{ infoModalContent.title }}</h3>
+      </div>
+      <p class="bio-text" style="margin-top:0.75rem;">{{ infoModalContent.description }}</p>
+    </div>
+  </Transition>
+
   </div><!-- /.map-backdrop -->
 </template>
 
 <style scoped>
+
+.modal-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-right: 0.4rem;
+}
+
+.shower-steps {
+  margin: 0.75rem 0 0;
+  padding-left: 1.4rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.shower-steps li {
+  margin-bottom: 0.45rem;
+}
 
 .map-backdrop {
   width: 100vw;
