@@ -58,6 +58,7 @@ import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 import BudgetView from '@/views/BudgetView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
+import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
 
 
 const routes = [
@@ -430,8 +431,7 @@ const routes = [
   {
     path: '/reunionreceipttracker',
     name: 'reunionreceipttracker',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/dOYM3jhk' }
+    component: ReceiptTrackerView
   },
   {
     path: '/reuniontrailer',
