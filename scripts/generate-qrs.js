@@ -4,6 +4,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+// ── Configuration ──────────────────────────────────────────
+const FORMAT = 'svg' // 'png' or 'svg'
+// ───────────────────────────────────────────────────────────
+
 // Function to extract routes from router.ts
 async function getRoutes() {
     try {
@@ -65,7 +69,7 @@ async function generateAllQRCodes() {
     
     for (const route of routes) {
         const fullUrl = `${baseUrl}${route}`;
-        const fileName = `${route.replace(/\//g, '-').slice(1) || 'home'}.png`;
+        const fileName = `${route.replace(/\//g, '-').slice(1) || 'home'}.${FORMAT}`;
         await generateQR(fullUrl, path.join(outputDir, fileName));
     }
 }
