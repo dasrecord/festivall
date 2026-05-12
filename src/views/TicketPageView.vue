@@ -538,7 +538,7 @@
               >Additional Information:</strong
             >
             <br />
-            🕐 The Front Gate will close at 2:00 AM each night.<br />
+            🕐 The Front Gate will close at {{ REUNION_FESTIVAL.gateCloseTime }} each night.<br />
             Please try to arrive before then.<br />
             🚫 With respected to substances, we have a<br />
             <strong> No Open Use Policy.<br /> </strong>
@@ -557,7 +557,7 @@
               >Additional Information:</strong
             >
             <br />
-            🕐 The Front Gate will close at 2 AM on each night.<br />
+            🕐 The Front Gate will close at {{ REUNION_FESTIVAL.gateCloseTime }} on each night.<br />
             Please try to check out before then.<br />
             🎒 If you are leaving the grounds, please make sure to take all of your belongings with
             you.<br />

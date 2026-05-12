@@ -129,7 +129,7 @@
       <div class="export-buttons">
         <button @click="exportContactsCSV">Export Phone Numbers</button>
         <button @click="exportEmailsCSV">Export Emails</button>
-        <button @click="exportLineupNames">Export Lineup Names</button>
+        <button @click="exportPosterText">Export Poster Text</button>
         <button @click="exportMealRedemptionData">Export Meal Service Data</button>
         <button @click="exportEntranceActivityData">Export Entrance Activity Data</button>
         <!-- <button @click="generateLineup">Download .ics</button> -->
@@ -1083,7 +1083,7 @@ export default {
       URL.revokeObjectURL(url)
     }
 
-    const exportLineupNames = () => {
+    const exportPosterText = () => {
       const actNames = searchedApplicants.value
         .map((a) => a.act_name)
         .filter(Boolean)
@@ -1092,19 +1092,50 @@ export default {
         .map((a) => a.workshop_title)
         .filter(Boolean)
 
-      const lines = [...actNames, ...workshopTitles]
+      const amenityLabels = [
+        'In house ticketing system',
+        'Self check-in kiosk',
+        'Customize schedule',
+        'Detailed grounds map',
+        'Text notifications',
+        'Custom sound system',
+        'Festival FM radio broadcast',
+        'Projection mapped visuals',
+        'Self-serve meal kiosk',
+        'Shared kitchen available',
+        'Potable water on site',
+        'Bitcoin and Lightning accepted',
+        'Scavenger hunt',
+        'Interactive photo booth',
+        'Live workshops',
+        'Art installations',
+        'Retro video game arcade',
+        'Nerf gun battle arena',
+        'Campsite parking',
+        'Warm showers available',
+        'Wading pool to cool off',
+        "Children's playground",
+        'Quiet family camping area',
+        'Leave pets at home',
+      ]
 
-      if (lines.length === 0) {
+      if (actNames.length === 0 && workshopTitles.length === 0) {
         alert('No act names or workshop titles in current view.')
         return
       }
 
-      const content = lines.join('\n')
+      const dot = ' \u00B7'
+      const actLine = actNames.map((n) => n + dot).join(' ')
+      const workshopLine = workshopTitles.map((n) => n + dot).join(' ')
+      const amenityLine = amenityLabels.map((n) => n + dot).join(' ')
+
+      const parts = [actLine, workshopLine, amenityLine].filter(Boolean)
+      const content = parts.join('\n')
       const blob = new Blob([content], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `lineup_names_${new Date().toISOString().split('T')[0]}.txt`
+      link.download = `poster_text_${new Date().toISOString().split('T')[0]}.txt`
       link.click()
       URL.revokeObjectURL(url)
     }
@@ -1675,7 +1706,7 @@ export default {
       generateLineup,
       exportContactsCSV,
       exportEmailsCSV,
-      exportLineupNames,
+      exportPosterText,
       generateContract,
       remindContract,
       remindPayment,

@@ -232,6 +232,7 @@ import {
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import footer from '@/assets/images/poster_footer_v1.png'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 // Reactive data
 const userIdCode = ref('')
@@ -349,7 +350,7 @@ const initializeTasks = () => {
     {
       id: 'frontgate_008',
       title: 'Gate Closure (Last Shift Only)',
-      description: 'Close front gate, secure equipment, final cash count, breakdown tent/booth',
+      description: `Close front gate at ${REUNION_FESTIVAL.gateCloseTime}, secure equipment, final cash count, breakdown tent/booth`,
       department: 'front_gate',
       priority: 'high',
       type: 'one-time', // Can be claimed/completed by team
