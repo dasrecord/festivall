@@ -13,6 +13,7 @@ export const REUNION_FESTIVAL = {
   mondayDate: new Date('2026-09-07T12:00:00-06:00'),
   lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
+  gateCloseTime: '2:00 AM',                            // Nightly Front Gate closing time
   
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
   get meals() {
