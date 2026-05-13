@@ -12,6 +12,7 @@ import axios from 'axios'
 import { reunion_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
 
@@ -173,26 +174,26 @@ const calculateMealTickets = () => {
 }
 
 const calculateTotalPrice = () => {
+  const { weekendPass, dayPass, mealPackage, cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
   let ticketPrice = 0
   if (form.value.ticket_type === 'Weekend Pass') {
-    ticketPrice = 200
+    ticketPrice = weekendPass
   } else if (form.value.ticket_type === 'Day Pass') {
-    ticketPrice = 100
+    ticketPrice = dayPass
   }
 
   // Calculate total fiat price
-  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * 20
+  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * mealPackage
 
   if (form.value.payment_type === 'bitcoin') {
     totalPrice *= 0.75 // Apply 25% discount
     form.value.total_price = (totalPrice / btcRate.value).toFixed(8) // Store Bitcoin price
   } else if (form.value.payment_type === 'cash') {
-    // Add cash admin fee: $30 per Weekend Pass, $15 per Day Pass
     const surchargePer =
       form.value.ticket_type === 'Weekend Pass'
-        ? 30
+        ? cashSurchargeWeekend
         : form.value.ticket_type === 'Day Pass'
-          ? 15
+          ? cashSurchargeDayPass
           : 0
     totalPrice += surchargePer * form.value.ticket_quantity
     form.value.total_price = totalPrice // Store fiat price with surcharge
@@ -207,11 +208,12 @@ const generatePaymentInstructions = () => {
   } else if (form.value.payment_type === 'bitcoin') {
     paymentInstructions.value = `Pay with BTC Pay Server:\n https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=DhbYQPomEo8H3t79Kh4HsZYMnHdrHAskctcdekY2E9Jb&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
   } else if (form.value.payment_type === 'cash') {
+    const { cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
     const feeNote =
       form.value.ticket_type === 'Weekend Pass'
-        ? '$30 per Weekend Pass'
+        ? `$${cashSurchargeWeekend} per Weekend Pass`
         : form.value.ticket_type === 'Day Pass'
-          ? '$15 per Day Pass'
+          ? `$${cashSurchargeDayPass} per Day Pass`
           : '$0'
     paymentInstructions.value = `Please bring $${form.value.total_price} CAD in cash to the front gate.\nAn admin fee (${feeNote}) is included in your total.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nID Code: ${form.value.id_code}`
   }
@@ -245,7 +247,7 @@ const emailPaymentInstructions = async () => {
       'https://relayproxy.vercel.app/email',
       {
         value1: form.value.email,
-        value2: 'Payment Instructions - Reunion 2026',
+        value2: `Payment Instructions - Reunion ${REUNION_FESTIVAL.year}`,
         value3: emailInstructions
       },
       {
@@ -263,23 +265,24 @@ const addOrder = async () => {
   try {
     const nowIso = new Date().toISOString()
     // Compute fiat total (discount applied for bitcoin)
+    const { weekendPass, dayPass, mealPackage, cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
     let ticketPrice = 0
-    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 200
-    else if (form.value.ticket_type === 'Day Pass') ticketPrice = 100
+    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = weekendPass
+    else if (form.value.ticket_type === 'Day Pass') ticketPrice = dayPass
     let fiatTotal =
-      ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
+      ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * mealPackage
     if (form.value.payment_type === 'bitcoin') fiatTotal = fiatTotal * 0.75
     else if (form.value.payment_type === 'cash') {
       const surchargePer =
         form.value.ticket_type === 'Weekend Pass'
-          ? 20
+          ? cashSurchargeWeekend
           : form.value.ticket_type === 'Day Pass'
-            ? 10
+            ? cashSurchargeDayPass
             : 0
       fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
     }
 
-    const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
+    const participantsDocRef = doc(reunion_db, REUNION_FESTIVAL.participantsCollection, form.value.id_code)
 
     // Build order object conditionally to avoid undefined values
     const orderData = {
@@ -341,7 +344,7 @@ const addOrder = async () => {
       },
       { merge: true }
     )
-    console.log('Wrote order to participants_2026')
+    console.log(`Wrote order to ${REUNION_FESTIVAL.participantsCollection}`)
   } catch (error) {
     console.error('Error writing document:', error)
   }
@@ -494,19 +497,20 @@ const submitForm = async () => {
     if (form.value.payment_type === 'bitcoin') {
       displayPrice = `:bitcoin: ${form.value.total_price} BTC`
     } else {
-      // For cash/etransfer, use the fiatTotal calculated in addOrder
+      // For cash/etransfer, compute fiat total from config pricing
+      const { weekendPass: wp, dayPass: dp, mealPackage: mp, cashSurchargeWeekend: csw, cashSurchargeDayPass: csd } = REUNION_FESTIVAL.pricing
       let ticketPrice = 0
-      if (form.value.ticket_type === 'Weekend Pass') ticketPrice = 140
-      else if (form.value.ticket_type === 'Day Pass') ticketPrice = 80
+      if (form.value.ticket_type === 'Weekend Pass') ticketPrice = wp
+      else if (form.value.ticket_type === 'Day Pass') ticketPrice = dp
       let fiatTotal =
-        ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * 20
+        ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * mp
 
       if (form.value.payment_type === 'cash') {
         const surchargePer =
           form.value.ticket_type === 'Weekend Pass'
-            ? 20
+            ? csw
             : form.value.ticket_type === 'Day Pass'
-              ? 10
+              ? csd
               : 0
         fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
       }
@@ -589,7 +593,7 @@ const submitForm = async () => {
 const trackTicketSelection = (ticketType) => {
   logEvent(reunion_analytics, 'add_to_cart', {
     currency: 'CAD',
-    value: ticketType === 'Weekend Pass' ? 140 : 80,
+    value: ticketType === 'Weekend Pass' ? REUNION_FESTIVAL.pricing.weekendPass : REUNION_FESTIVAL.pricing.dayPass,
     items: [
       {
         item_id: ticketType.toLowerCase().replace(' ', '_'),
@@ -624,14 +628,14 @@ const trackMealSelection = (mealPackages) => {
   if (mealPackages > 0) {
     logEvent(reunion_analytics, 'add_to_cart', {
       currency: 'CAD',
-      value: mealPackages * 20,
+      value: mealPackages * REUNION_FESTIVAL.pricing.mealPackage,
       items: [
         {
           item_id: 'meal_package',
           item_name: 'Meal Package',
           item_category: 'food',
           quantity: mealPackages,
-          price: 20
+          price: REUNION_FESTIVAL.pricing.mealPackage
         }
       ]
     })
@@ -714,7 +718,7 @@ onMounted(() => {
         />
         <img :src="frog_image" alt="frog" class="frog-image" />
       </div>
-      <h1>Want to buy tickets for Reunion 2026?</h1>
+      <h1>Want to buy tickets for Reunion {{ REUNION_FESTIVAL.year }}?</h1>
       <h2>
         If you know an Artist's or Volunteer's
         <span class="highlight">Festivall ID_CODE</span><br />
@@ -737,8 +741,8 @@ onMounted(() => {
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> WEEKEND PASS</span><br />
-              $200 CAD/PERSON/WEEKEND<br />
-              <span style="font-size: 14px">($230 at the gate)</span><br />
+              ${{ REUNION_FESTIVAL.pricing.weekendPass }} CAD/PERSON/WEEKEND<br />
+              <span style="font-size: 14px">(${{ REUNION_FESTIVAL.pricing.weekendPass + REUNION_FESTIVAL.pricing.cashSurchargeWeekend }} at the gate)</span><br />
             </h2>
             <h3>
               (Valid from 12:00PM Friday September 4th, 2026 - 12:00PM Monday September 7th, 2026)
@@ -748,8 +752,8 @@ onMounted(() => {
             <img :src="ticket_image" alt="meal ticket" class="icon" />
             <h2>
               <span class="highlight"> DAY PASS</span><br />
-              $100 CAD/PERSON/DAY<br />
-              <span style="font-size: 14px">($120 at the gate)</span><br />
+              ${{ REUNION_FESTIVAL.pricing.dayPass }} CAD/PERSON/DAY<br />
+              <span style="font-size: 14px">(${{ REUNION_FESTIVAL.pricing.dayPass + REUNION_FESTIVAL.pricing.cashSurchargeDayPass }} at the gate)</span><br />
             </h2>
             <h3>(Valid from 12:00PM - 12:00PM the following day)</h3>
           </div>
@@ -798,8 +802,8 @@ onMounted(() => {
       >
         <h3 style="margin: 0 0 8px 0; font-size: 18px">💰 Save Money - Buy Online Now!</h3>
         <p style="margin: 0; font-size: 14px">
-          Day Pass: <strong>$100 online</strong> vs <strong>$120 at the gate</strong> • Weekend
-          Pass: <strong>$200 online</strong> vs <strong>$230 at the gate</strong> • Plus
+          Day Pass: <strong>${{ REUNION_FESTIVAL.pricing.dayPass }} online</strong> vs <strong>${{ REUNION_FESTIVAL.pricing.dayPass + REUNION_FESTIVAL.pricing.cashSurchargeDayPass }} at the gate</strong> • Weekend
+          Pass: <strong>${{ REUNION_FESTIVAL.pricing.weekendPass }} online</strong> vs <strong>${{ REUNION_FESTIVAL.pricing.weekendPass + REUNION_FESTIVAL.pricing.cashSurchargeWeekend }} at the gate</strong> • Plus
           <strong>25% off with Bitcoin!</strong>
         </p>
       </div>
@@ -871,8 +875,8 @@ onMounted(() => {
             required
           >
             <option value="" disabled>What kind of tickets would you like?</option>
-            <option value="Weekend Pass">Weekend Pass - $200 CAD</option>
-            <option value="Day Pass">Day Pass - $100 CAD</option>
+            <option value="Weekend Pass">Weekend Pass - ${{ REUNION_FESTIVAL.pricing.weekendPass }} CAD</option>
+            <option value="Day Pass">Day Pass - ${{ REUNION_FESTIVAL.pricing.dayPass }} CAD</option>
           </select>
         </div>
         <div class="form-section">
@@ -890,9 +894,11 @@ onMounted(() => {
           <label for="day_selection">Select Day:</label>
           <select id="day_selection" v-model="form.selected_day" required>
             <option value="" disabled>Select a day</option>
-            <option value="Friday, September 4th, 2026">Friday, September 4th, 2026</option>
-            <option value="Saturday, September 5th, 2026">Saturday, September 5th, 2026</option>
-            <option value="Sunday, September 6th, 2026">Sunday, September 6th, 2026</option>
+            <option
+              v-for="opt in REUNION_FESTIVAL.dayPassOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</option>
           </select>
         </div>
         <div class="form-section">
