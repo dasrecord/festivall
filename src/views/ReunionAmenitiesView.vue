@@ -46,12 +46,12 @@ export default {
         // Arrival & tech
         { icon: ticket_scanner, label: 'In house ticketing system' },
         { icon: front_gate, label: 'Self check-in kiosk' },
-        { icon: lineup, label: 'Customize schedule' },
-        { icon: grounds_map, label: 'Detailed grounds map' },
+        { icon: lineup, label: 'Customizable schedule' },
+        { icon: grounds_map, label: 'Detailed interactive grounds map' },
         { icon: sms, label: 'Text notifications' },
         // Music & vibes
         { icon: speakers, label: 'Custom sound system' },
-        { icon: radio, label: 'Festival FM radio broadcast' },
+        { icon: radio, label: 'FM radio broadcast' },
         { icon: projector, label: 'Projection mapped visuals' },
         // Food
         { icon: meals, label: 'Self-serve meal kiosk' },
@@ -60,7 +60,7 @@ export default {
         { icon: bitcoin, label: 'Bitcoin and Lightning accepted' },
         // Activities
         { icon: quiz, label: 'Scavenger hunt' },
-        { icon: photography, label: 'Interactive photo booth' },
+        { icon: photography, label: 'Interactive flipbook generator' },
         { icon: workshop, label: 'Live workshops' },
         { icon: art_installation, label: 'Art installations' },
         { icon: arcade, label: 'Retro video game arcade' },
