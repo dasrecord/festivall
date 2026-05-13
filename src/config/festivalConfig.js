@@ -77,12 +77,14 @@ export const REUNION_FESTIVAL = {
   volunteerShiftParams: {
     setupcrew: {
       label: 'Setup Crew',
+      minimumLabel: 'Minimum One 8-Hour Shift PreShow',
       shift: ['10:00', '18:00'],
       days: [[8, 24, 9, 4]], // [startMonth, startDay, endMonth, endDay]
       duration: 8
     },
     frontgate: {
       label: 'Front Gate',
+      minimumLabel: 'Minimum Three 2-Hour Shifts Per Weekend',
       shift: ['10:00', '24:00'],
       days: [[9, 4, 9, 6]],
       duration: 2,
@@ -90,6 +92,7 @@ export const REUNION_FESTIVAL = {
     },
     foodteam: {
       label: 'Food Team',
+      minimumLabel: 'Minimum Two 4-Hour Shifts Per Weekend',
       shifts: [
         ['11:00', '15:00'],
         ['17:00', '21:00']
@@ -99,6 +102,7 @@ export const REUNION_FESTIVAL = {
     },
     stagecrew: {
       label: 'Stage Crew',
+      minimumLabel: 'Minimum Two 4-Hour Shifts Per Weekend',
       shift: ['08:00', '24:00'],
       overnight: ['00:00', '04:00'],
       days: [[9, 4, 9, 6]],
@@ -106,12 +110,14 @@ export const REUNION_FESTIVAL = {
     },
     cleanupcrew: {
       label: 'Cleanup Crew',
+      minimumLabel: 'Minimum One 8-Hour Shift PostShow',
       shift: ['10:00', '18:00'],
       day: [9, 7],
       duration: 8
     },
     arcadeattendant: {
       label: 'Arcade Attendant',
+      minimumLabel: 'Minimum Two 4-Hour Shifts Per Weekend',
       shift: ['12:00', '24:00'],
       days: [[9, 4, 9, 6]],
       duration: 4,

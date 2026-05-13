@@ -71,7 +71,7 @@
           <img :src="front_gate_icon" alt="Front Gate Icon" />
           <li>
             <strong>Front Gate:</strong><br />
-            <p class="minimum">[Minimum Three 2-Hour Shifts Per Weekend]</p>
+            <p class="minimum">[{{ vsp.frontgate.minimumLabel }}]</p>
             <p>
               Front Gate Volunteers are responsible for welcoming attendees and securing admission
               using our in-house ticketing system. They are the first point of contact for attendees
@@ -84,16 +84,16 @@
           <img :src="food_team_icon" alt="Food Team Icon" />
           <li>
             <strong>Food Team:</strong><br />
-            <p class="minimum">[Minimum Two 4-Hour Shifts Per Weekend]</p>
+            <p class="minimum">[{{ vsp.foodteam.minimumLabel }}]</p>
             <p>
               Food Team Volunteers are responsible for assisting with food preparation, serving, and
               cleanup. They help ensure that attendees have access to food and refreshments during
               the event and maintain cleanliness and hygiene in the food service area. Shifts are
               structured as 1 hour of preparation, 2 hours of service, and 1 hour of cleanup.
             </p>
-            DAYS: FRI,SAT,SUN<br />
-            LUNCH: 11am-3pm<br />
-            SUPPER: 5pm-9pm<br />
+            DAYS: {{ festivalDayLabels }}<br />
+            LUNCH: {{ foodShifts[0] }}<br />
+            SUPPER: {{ foodShifts[1] }}<br />
             <p>Team Lead: Angela</p>
           </li>
         </ul>
@@ -101,7 +101,7 @@
           <img :src="setup_crew_icon" alt="Setup Crew Icon" />
           <li>
             <h1><strong>Setup Crew:</strong><br /></h1>
-            <p class="minimum">[Minimum One 8-Hour Shift PreShow]</p>
+            <p class="minimum">[{{ vsp.setupcrew.minimumLabel }}]</p>
             <p>
               Setup Crew Volunteers are responsible for setting up equipment, decorations, and other
               items needed for the event. They help create a welcoming and festive atmosphere for
@@ -115,7 +115,7 @@
           <img :src="cleanup_crew_icon" alt="Cleanup Crew Icon" />
           <li>
             <strong>Cleanup Crew:</strong><br />
-            <p class="minimum">[Minimum One 8-Hour Shift PostShow]</p>
+            <p class="minimum">[{{ vsp.cleanupcrew.minimumLabel }}]</p>
             <p>
               Cleanup Crew Volunteers are responsible for clearing and cleaning the event space
               after the event. They help pack up equipment, decorations, and other items, and ensure
@@ -129,7 +129,7 @@
           <img :src="stage_crew_icon" alt="Stage Crew Icon" />
           <li>
             <strong>Stage Crew:</strong><br />
-            <p class="minimum">[Minimum Two 4-Hour Shifts Per Weekend]</p>
+            <p class="minimum">[{{ vsp.stagecrew.minimumLabel }}]</p>
             <p>
               Stage Crew Volunteers are responsible for assisting with stage setup, sound equipment,
               lighting, and other technical aspects of the event. They help ensure that performers
@@ -137,6 +137,19 @@
               presentations.
             </p>
             <p>Team Lead: Arthur</p>
+          </li>
+        </ul>
+        <ul class="crew">
+          <img :src="arcade_attendant_icon" alt="Arcade Attendant Icon" />
+          <li>
+            <strong>Arcade Attendant:</strong><br />
+            <p class="minimum">[{{ vsp.arcadeattendant.minimumLabel }}]</p>
+            <p>
+              Arcade Attendants are responsible for operating and monitoring the festival's retro
+              arcade station, assisting attendees with games, ensuring equipment is running smoothly,
+              and maintaining a fun and welcoming atmosphere at the arcade area.
+            </p>
+            <p>Team Lead: Prasenjit</p>
           </li>
         </ul>
       </ul>
@@ -160,6 +173,24 @@ import stage_crew_icon from '../assets/images/icons/stage_crew.png'
 import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.png'
 import food_team_icon from '../assets/images/icons/meals.png'
 import front_gate_icon from '../assets/images/icons/front_gate.png'
+import arcade_attendant_icon from '../assets/images/icons/arcade.png'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+
+const vsp = REUNION_FESTIVAL.volunteerShiftParams
+
+const fmtTime = (t) => {
+  const [h, m] = t.split(':').map(Number)
+  if (h === 0) return '12am'
+  if (h === 12) return '12pm'
+  return h > 12 ? `${h - 12}pm` : `${h}am`
+}
+
+const foodShifts = vsp.foodteam.shifts.map(([s, e]) => `${fmtTime(s)}-${fmtTime(e)}`)
+const festivalDayLabels = [
+  REUNION_FESTIVAL.fridayDate,
+  REUNION_FESTIVAL.saturdayDate,
+  REUNION_FESTIVAL.sundayDate,
+].map(d => d.toLocaleDateString('en-CA', { weekday: 'short', timeZone: 'America/Regina' })).join(', ')
 </script>
 
 <style scoped>
