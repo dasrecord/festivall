@@ -17,7 +17,8 @@
     "generate-invoice": "node ./scripts/generate-invoice.js",
     "clean-phones-orders-live": "node ./scripts/clean_database_phone_numbers.js orders_2025 reunion --live",
     "clean-phones-apps-live": "node ./scripts/clean_database_phone_numbers.js applications_2025 reunion --live",
-    "reunion-analytics": "node ./scripts/reunion-analytics.js"
+    "reunion-analytics": "node ./scripts/reunion-analytics.js",
+    "check-etransfer": "node ./scripts/check-etransfer.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
@@ -26,6 +27,7 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.13.2",
     "ical.js": "^2.1.0",
+    "imapflow": "^1.3.3",
     "jspdf": "^3.0.0",
     "puppeteer": "^24.4.0",
     "qrcode": "^1.5.4",
