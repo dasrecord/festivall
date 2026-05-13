@@ -14,29 +14,45 @@ export const REUNION_FESTIVAL = {
   lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
   gateCloseTime: '2:00 AM',                            // Nightly Front Gate closing time
-  
+
+  // Ticket pricing — update here each year
+  pricing: {
+    weekendPass: 200,
+    dayPass: 100,
+    mealPackage: 30,
+    cashSurchargeWeekend: 30,   // admin fee per Weekend Pass for cash payment
+    cashSurchargeDayPass: 15,   // admin fee per Day Pass for cash payment
+  },
+
+  // Day Pass selectable days — derived from fridayDate/saturdayDate/sundayDate
+  get dayPassOptions() {
+    const fmt = (date) => date.toLocaleDateString('en-CA', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Regina'
+    }).replace(/(\w+), (\w+) (\d+), (\d+)/, (_, wd, mo, d, yr) => {
+      const suffix = d === '1' || d === '21' || d === '31' ? 'st' : d === '2' || d === '22' ? 'nd' : d === '3' || d === '23' ? 'rd' : 'th'
+      return `${wd}, ${mo} ${d}${suffix}, ${yr}`
+    })
+    return [this.fridayDate, this.saturdayDate, this.sundayDate].map(d => ({ value: fmt(d), label: fmt(d) }))
+  },
+
+  // Firestore collection names
+  get participantsCollection() { return `participants_${this.year}` },
+
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
   get meals() {
-    // Festival runs Friday (4th) to Sunday (6th)
     const days = [
-      { label: 'Friday', date: '2026-09-04' },
-      { label: 'Saturday', date: '2026-09-05' },
-      { label: 'Sunday', date: '2026-09-06' }
-    ];
-    const meals = [];
-    days.forEach(day => {
-      meals.push({
-        label: `${day.label} Lunch`,
-        time: `${day.date}T12:00:00-06:00`,
-        menu: ['Placeholder Lunch 1', 'Placeholder Lunch 2']
-      });
-      meals.push({
-        label: `${day.label} Supper`,
-        time: `${day.date}T18:00:00-06:00`,
-        menu: ['Placeholder Supper 1', 'Placeholder Supper 2']
-      });
-    });
-    return meals;
+      { label: 'Friday',   date: this.fridayDate },
+      { label: 'Saturday', date: this.saturdayDate },
+      { label: 'Sunday',   date: this.sundayDate },
+    ]
+    const toDateStr = (d) => d.toISOString().slice(0, 10) // 'YYYY-MM-DD'
+    const meals = []
+    days.forEach(({ label, date }) => {
+      const ds = toDateStr(date)
+      meals.push({ label: `${label} Lunch`,   time: `${ds}T12:00:00-06:00`, menu: ['Placeholder Lunch 1',  'Placeholder Lunch 2']  })
+      meals.push({ label: `${label} Supper`,  time: `${ds}T18:00:00-06:00`, menu: ['Placeholder Supper 1', 'Placeholder Supper 2'] })
+    })
+    return meals
   },
   // Volunteer team reveal phases — controls which teams appear in the application form
   volunteerPhases: {
