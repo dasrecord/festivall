@@ -37,6 +37,7 @@ export const REUNION_FESTIVAL = {
 
   // Firestore collection names
   get participantsCollection() { return `participants_${this.year}` },
+  priorYearCollection: 'orders_2025', // 2025 used 'orders_2025' naming; update each year
 
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
   get meals() {
@@ -56,6 +57,7 @@ export const REUNION_FESTIVAL = {
   },
   // Volunteer team reveal phases — controls which teams appear in the application form
   volunteerPhases: {
+    phase1Start: new Date('2026-08-24T12:00:00-06:00'), // Setup Crew begins
     phase1End: new Date('2026-06-15T23:59:59Z'),  // Phase 1: Setup Crew only
     phase2End: new Date('2026-07-01T23:59:59Z'),  // Phase 2: Setup + Front Gate + Food Team + Arcade Attendant
     // Phase 3: All teams visible after phase2End
