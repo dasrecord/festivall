@@ -78,6 +78,9 @@
               and play a crucial role in ensuring a positive experience for everyone.
             </p>
             <p>Team Lead: Prasenjit</p>
+            DATES: {{ gateDates }}<br />
+            ACTIVE HOURS: {{ gateShift }}<br />
+            SIGNUP: {{ signupOpen.frontgate }}<br />
           </li>
         </ul>
         <ul class="crew">
@@ -94,6 +97,7 @@
             DAYS: {{ festivalDayLabels }}<br />
             LUNCH: {{ foodShifts[0] }}<br />
             SUPPER: {{ foodShifts[1] }}<br />
+            SIGNUP: {{ signupOpen.foodteam }}<br />
             <p>Team Lead: Angela</p>
           </li>
         </ul>
@@ -109,6 +113,9 @@
               planned.
             </p>
             <p>Team Lead: Brandon</p>
+            DATES: {{ setupDates }}<br />
+            ACTIVE HOURS: {{ setupShift }}<br />
+            SIGNUP: {{ signupOpen.setupcrew }}<br />
           </li>
         </ul>
         <ul class="crew">
@@ -123,6 +130,9 @@
               wrapping up the event smoothly and efficiently.
             </p>
             <p>Team Lead: Chris</p>
+            DATE: {{ cleanupDay }}<br />
+            ACTIVE HOURS: {{ cleanupShift }}<br />
+            SIGNUP: {{ signupOpen.cleanupcrew }}<br />
           </li>
         </ul>
         <ul class="crew">
@@ -137,6 +147,10 @@
               presentations.
             </p>
             <p>Team Lead: Arthur</p>
+            DATES: {{ stageDates }}<br />
+            ACTIVE HOURS: {{ stageShift }}<br />
+            OVERNIGHT: {{ stageOver }}<br />
+            SIGNUP: {{ signupOpen.stagecrew }}<br />
           </li>
         </ul>
         <ul class="crew">
@@ -146,10 +160,13 @@
             <p class="minimum">[{{ vsp.arcadeattendant.minimumLabel }}]</p>
             <p>
               Arcade Attendants are responsible for operating and monitoring the festival's retro
-              arcade station, assisting attendees with games, ensuring equipment is running smoothly,
+              arcade station, assisting attendees with the flipbook station, ensuring equipment is running smoothly,
               and maintaining a fun and welcoming atmosphere at the arcade area.
             </p>
             <p>Team Lead: Prasenjit</p>
+            DATES: {{ arcadeDates }}<br />
+            ACTIVE HOURS: {{ arcadeShift }}<br />
+            SIGNUP: {{ signupOpen.arcadeattendant }}<br />
           </li>
         </ul>
       </ul>
@@ -178,19 +195,52 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const vsp = REUNION_FESTIVAL.volunteerShiftParams
 
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
 const fmtTime = (t) => {
-  const [h, m] = t.split(':').map(Number)
-  if (h === 0) return '12am'
+  const [h] = t.split(':').map(Number)
+  if (h === 0 || h === 24) return '12am'
   if (h === 12) return '12pm'
   return h > 12 ? `${h - 12}pm` : `${h}am`
 }
 
-const foodShifts = vsp.foodteam.shifts.map(([s, e]) => `${fmtTime(s)}-${fmtTime(e)}`)
+const fmtDateRange = ([sm, sd, em, ed]) =>
+  sm === em
+    ? `${monthNames[sm - 1]} ${sd} – ${ed}`
+    : `${monthNames[sm - 1]} ${sd} – ${monthNames[em - 1]} ${ed}`
+
+const fmtShift = ([s, e]) => `${fmtTime(s)} – ${fmtTime(e)}`
+
+const foodShifts = vsp.foodteam.shifts.map(fmtShift)
 const festivalDayLabels = [
   REUNION_FESTIVAL.fridayDate,
   REUNION_FESTIVAL.saturdayDate,
   REUNION_FESTIVAL.sundayDate,
 ].map(d => d.toLocaleDateString('en-CA', { weekday: 'short', timeZone: 'America/Regina' })).join(', ')
+
+const setupDates   = vsp.setupcrew.days.map(fmtDateRange).join(', ')
+const setupShift   = fmtShift(vsp.setupcrew.shift)
+const gateDates    = vsp.frontgate.days.map(fmtDateRange).join(', ')
+const gateShift    = fmtShift(vsp.frontgate.shift)
+const stageDates   = vsp.stagecrew.days.map(fmtDateRange).join(', ')
+const stageShift   = fmtShift(vsp.stagecrew.shift)
+const stageOver    = fmtShift(vsp.stagecrew.overnight)
+const cleanupDay   = `${monthNames[vsp.cleanupcrew.day[0] - 1]} ${vsp.cleanupcrew.day[1]}`
+const cleanupShift = fmtShift(vsp.cleanupcrew.shift)
+const arcadeDates  = vsp.arcadeattendant.days.map(fmtDateRange).join(', ')
+const arcadeShift  = fmtShift(vsp.arcadeattendant.shift)
+
+const { phase1End, phase2End } = REUNION_FESTIVAL.volunteerPhases
+const fmtPhaseDate = (d) => d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', timeZone: 'America/Regina' })
+const now = new Date()
+const signupOpen = {
+  setupcrew:       now >= new Date(0)   ? 'Now Open'                         : 'Now Open',
+  frontgate:       now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  foodteam:        now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  arcadeattendant: now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  stagecrew:       now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
+  cleanupcrew:     now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
+}
 </script>
 
 <style scoped>
