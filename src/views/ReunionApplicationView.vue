@@ -79,6 +79,20 @@ const availableVolunteerTeams = computed(() => {
   return REUNION_FESTIVAL.volunteerTeamsByPhase[`phase${currentPhase.value}`]
 })
 
+const volunteerDates = computed(() => {
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec']
+  const dates = []
+  const cur = new Date(REUNION_FESTIVAL.volunteerPhases.phase1Start)
+  cur.setHours(12, 0, 0, 0)
+  const end = new Date(REUNION_FESTIVAL.mondayDate)
+  end.setHours(12, 0, 0, 0)
+  while (cur <= end) {
+    dates.push(`${monthNames[cur.getMonth()]} ${cur.getDate()}`)
+    cur.setDate(cur.getDate() + 1)
+  }
+  return dates
+})
+
 // Watch for section visibility changes and track engagement
 watch(
   () => form.value.applicant_types,
@@ -122,8 +136,8 @@ const fetchApplicantData = async (id_code) => {
   form.value.id_code = normalizedIdCode
 
   try {
-    // Autofill from prior-year orders_2025 only (returning applicants)
-    const oRef = doc(reunion_db, 'orders_2025', normalizedIdCode)
+    // Autofill from prior-year collection only (returning applicants)
+    const oRef = doc(reunion_db, REUNION_FESTIVAL.priorYearCollection, normalizedIdCode)
     const oSnap = await getDoc(oRef)
     if (oSnap.exists()) {
       const o = oSnap.data()
@@ -168,7 +182,7 @@ const fetchApplicantData = async (id_code) => {
       }
       form.value.formatted_phone = formatPhoneNumber(form.value.phone)
     } else {
-      console.log('No such document in orders_2025!')
+      console.log(`No such document in ${REUNION_FESTIVAL.priorYearCollection}!`)
     }
   } catch (error) {
     console.error('Error fetching document:', error)
@@ -213,7 +227,7 @@ const addApplicant = async () => {
   try {
     const nowIso = new Date().toISOString()
     const compensation = calculateCompensation()
-    const participantsDocRef = doc(reunion_db, 'participants_2026', form.value.id_code)
+    const participantsDocRef = doc(reunion_db, REUNION_FESTIVAL.participantsCollection, form.value.id_code)
     await setDoc(
       participantsDocRef,
       {
@@ -305,7 +319,7 @@ const addApplicant = async () => {
       { merge: true }
     )
 
-    console.log('Document successfully written to participants_2026')
+    console.log(`Document successfully written to ${REUNION_FESTIVAL.participantsCollection}`)
   } catch (error) {
     console.error('Error writing document:', error)
   }
@@ -417,7 +431,7 @@ const submitForm = async () => {
       if (form.value.email) {
         await sendEmail(
           form.value.email,
-          `Reunion 2025`,
+          `Reunion ${REUNION_FESTIVAL.year}`,
           `Thank you, ${form.value.fullname}.\nYour application has been submitted successfully!\nSelected applicants will be contacted by our team directly.`
         )
       }
@@ -568,7 +582,7 @@ onMounted(() => {
           @click="$router.push('/reunion')"
         />
         <img :src="frog_image" alt="frog" class="frog-image" />
-        <h1>Interested in performing at Reunion 2026?</h1>
+        <h1>Interested in performing at Reunion {{ REUNION_FESTIVAL.year }}?</h1>
         <h3>
           Please fill out the form below.<br />
           If you have a
@@ -936,13 +950,13 @@ onMounted(() => {
           VOLUNTEER SECTION
           <small v-if="currentPhase === 1" style="display: block; color: white; margin-top: 4px"
             >We’re prioritizing Setup Crew first. More teams unlock after
-            {{ new Date(VOLUNTEER_PHASES.phase1End).toLocaleDateString() }}.</small
+            {{ new Date(REUNION_FESTIVAL.volunteerPhases.phase1End).toLocaleDateString() }}.</small
           >
           <small
             v-else-if="currentPhase === 2"
             style="display: block; color: white; margin-top: 4px"
             >Front Gate and Food Team are now open. Remaining teams unlock after
-            {{ new Date(VOLUNTEER_PHASES.phase2End).toLocaleDateString() }}.</small
+            {{ new Date(REUNION_FESTIVAL.volunteerPhases.phase2End).toLocaleDateString() }}.</small
           >
           <div class="form-section">
             <label for="volunteer_type">Volunteer Type:</label>
@@ -956,79 +970,9 @@ onMounted(() => {
           <div class="form-section">
             <label for="volunteer_availability">Availability:</label>
             <div class="checkboxes">
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 24" />
-                Aug 24
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 25" />
-                Aug 25
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 26" />
-                Aug 26
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 27" />
-                Aug 27
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 28" />
-                Aug 28
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 29" />
-                Aug 29
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 30" />
-                Aug 30
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Aug 31" />
-                Aug 31
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 1" />
-                Sept 1
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 2" />
-                Sept 2
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 3" />
-                Sept 3
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 4" />
-                Sept 4
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 5" />
-                Sept 5
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 6" />
-                Sept 6
-              </span>
-
-              <span class="checkbox-label">
-                <input type="checkbox" v-model="form.volunteer_availability" value="Sept 7" />
-                Sept 7
+              <span v-for="d in volunteerDates" :key="d" class="checkbox-label">
+                <input type="checkbox" v-model="form.volunteer_availability" :value="d" />
+                {{ d }}
               </span>
             </div>
           </div>
