@@ -1738,7 +1738,7 @@ onMounted(async () => {
   letter-spacing: 0.04em;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
-  width: 110px;
+  width: 90px;
   white-space: nowrap;
   padding: 4px 0;
 }
@@ -1880,7 +1880,7 @@ onMounted(async () => {
   letter-spacing: 0.04em;
   border-radius: 0 0 3px 3px;
   overflow: hidden;
-  width: 110px;
+  width: 80px;
   white-space: nowrap;
   padding: 4px 0;
 }
