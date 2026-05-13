@@ -1,7 +1,30 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { ref, watch } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
+import PosterSplash from './components/PosterSplash.vue'
+
+const POSTER_ROUTES = ['/reunion', '/reunionapplication', '/reuniontickets']
+const STORAGE_KEY = 'posterSplashShown_2026'
+
+const route = useRoute()
+const showPoster = ref(false)
+
+watch(
+  () => route.path,
+  (path) => {
+    if (POSTER_ROUTES.includes(path) && !sessionStorage.getItem(STORAGE_KEY)) {
+      showPoster.value = true
+    }
+  },
+  { immediate: true }
+)
+
+const onPosterDismissed = () => {
+  showPoster.value = false
+  sessionStorage.setItem(STORAGE_KEY, '1')
+}
 
 useHead({
   title: 'FESTIVALL',
@@ -48,6 +71,7 @@ useHead({
     </div>
   </header>
 
+  <PosterSplash v-if="showPoster" @dismissed="onPosterDismissed" />
   <RouterView />
 </template>
 
