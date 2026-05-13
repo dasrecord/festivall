@@ -572,6 +572,7 @@
 import { ref, computed, reactive, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
 import contract_icon from '@/assets/images/icons/contract.png'
 import { useRouter } from 'vue-router'
@@ -1095,11 +1096,11 @@ export default {
       const amenityLabels = [
         'In house ticketing system',
         'Self check-in kiosk',
-        'Customize schedule',
-        'Detailed grounds map',
+        'Customizable schedule',
+        'Detailed interactivegrounds map',
         'Text notifications',
         'Custom sound system',
-        'Festival FM radio broadcast',
+        'FM radio broadcast',
         'Projection mapped visuals',
         'Self-serve meal kiosk',
         'Shared kitchen available',
@@ -1125,11 +1126,20 @@ export default {
       }
 
       const dot = ' \u00B7'
+      const { weekendPass, dayPass, mealPackage } = REUNION_FESTIVAL.pricing
+      const pricingLabels = [
+        `Weekend Pass $${weekendPass}` + dot,
+        `Day Pass $${dayPass}` + dot,
+        `Meal Package $${mealPackage}` + dot,
+        'Last Minute Gate Fee Applies' + dot,
+        'Children 12 & Under Free' + dot,
+      ]
       const actLine = actNames.map((n) => n + dot).join(' ')
       const workshopLine = workshopTitles.map((n) => n + dot).join(' ')
       const amenityLine = amenityLabels.map((n) => n + dot).join(' ')
+      const pricingLine = pricingLabels.join(' ')
 
-      const parts = [actLine, workshopLine, amenityLine].filter(Boolean)
+      const parts = [actLine, workshopLine, amenityLine, pricingLine].filter(Boolean)
       const content = parts.join('\n')
       const blob = new Blob([content], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
