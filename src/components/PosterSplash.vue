@@ -7,7 +7,7 @@ import posterImage from '@/assets/images/reunion_2026_poster_v1.svg'
 const emit = defineEmits<{ dismissed: [] }>()
 
 const visible = ref(true)
-const secondsLeft = ref(5)
+const secondsLeft = ref(30)
 let countdown: ReturnType<typeof setInterval> | null = null
 
 const dismiss = () => {
@@ -31,48 +31,44 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Transition name="poster-fade">
-    <div v-if="visible" class="poster-splash" @click="dismiss">
-      <img :src="posterImage" alt="Reunion Festival Poster" class="poster-image" />
-      <div class="poster-hint">
-        <span class="countdown">{{ secondsLeft }}</span>
-        <span>Click anywhere to continue</span>
+  <Teleport to="body">
+    <Transition name="poster-fade">
+      <div
+        v-if="visible"
+        data-poster-splash
+        @click="dismiss"
+        :style="{ backgroundImage: `url(${posterImage})` }"
+      >
+        <div class="poster-hint">
+          <span class="countdown">{{ secondsLeft }}</span>
+          <span>Click anywhere to continue</span>
+        </div>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
-<style scoped>
-.poster-splash {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.poster-image {
-  max-width: 100%;
-  max-height: 100%;
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  display: block;
-  pointer-events: none;
-  user-select: none;
+<style>
+[data-poster-splash] {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  background-color: #000 !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  cursor: pointer !important;
 }
 
 .poster-hint {
-  position: absolute;
+  position: fixed;
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 10000;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -84,6 +80,7 @@ onBeforeUnmount(() => {
   background: rgba(0, 0, 0, 0.45);
   padding: 0.4rem 1rem;
   border-radius: 2rem;
+  white-space: nowrap;
 }
 
 .countdown {
@@ -94,7 +91,6 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-/* Fade transition */
 .poster-fade-enter-active,
 .poster-fade-leave-active {
   transition: opacity 0.6s ease;
