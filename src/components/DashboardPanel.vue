@@ -68,6 +68,11 @@
           Budget Manager
         </RouterLink>
 
+        <RouterLink to="/admin/inventory" class="scanner-link">
+          <img :src="inventory_icon" alt="Inventory" class="action-icon" style="width: 28px" />
+          Inventory
+        </RouterLink>
+
         <RouterLink to="/reunionmap" class="scanner-link">
           <img :src="map_icon" alt="Grounds Map" class="action-icon" style="width: 32px" />
           Grounds Map
@@ -565,6 +570,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -596,6 +602,7 @@ import art_installation_icon from '@/assets/images/icons/art_installation.png'
 import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 import task_icon from '@/assets/images/icons/task.png'
 import budget_icon from '@/assets/images/icons/budget.png'
+import inventory_icon from '@/assets/images/icons/inventory.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
 import receipt_icon from '@/assets/images/icons/receipt.png'
 
@@ -1704,6 +1711,7 @@ export default {
       scavenger_hunt_icon,
       task_icon,
       budget_icon,
+      inventory_icon,
       map_icon,
       receipt_icon,
       sendEmail,

@@ -7,6 +7,7 @@ import { reunion_db, festivall_auth } from '@/firebase'
 import { sendVolunteerCoordinator } from '@/../scripts/notifications.js'
 import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.svg?url'
 import { useLineupState } from '@/composables/useLineupState'
+import { useInventory } from '@/composables/useInventory'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import iconCleanupCrew from '@/assets/images/icons/cleanup_crew.png'
 import iconSetupCrew from '@/assets/images/icons/setup_crew.png'
@@ -732,6 +733,12 @@ function setupSvgListeners() {
 // Track which washroom is being reported
 const washroomLocation = ref('')
 function handleSvgIconClick(iconId) {
+  // Check for inventory storage locations first
+  if (locationIds.value.has(iconId)) {
+    openInventoryLocationModal(iconId)
+    return
+  }
+
   // Check for volunteer team icons first
   const volunteerIcon = VOLUNTEER_SHIFT_ICONS.find(v => v.svgId === iconId)
   if (volunteerIcon) {
@@ -841,6 +848,22 @@ function openInfoModal(content) {
 // ── Water station alert modal ─────────────────────────────────────────────────
 const waterStationAlerts = ref([])
 const showWaterStationModal = ref(false)
+
+// --- Inventory Location Modal ---
+const { locationIds, getItemsForLocation, flagNeedsRestock: flagInventoryRestock } = useInventory()
+const showInventoryLocationModal = ref(false)
+const inventoryLocationItems = ref([])
+const inventoryLocationIconId = ref('')
+function openInventoryLocationModal(iconId) {
+  inventoryLocationIconId.value = iconId
+  inventoryLocationItems.value = getItemsForLocation(iconId)
+  showInventoryLocationModal.value = true
+}
+function closeInventoryLocationModal() {
+  showInventoryLocationModal.value = false
+  inventoryLocationItems.value = []
+  inventoryLocationIconId.value = ''
+}
 const waterStationSubmitting = ref(false)
 const waterStationError = ref('')
 function openWaterStationModal() {
@@ -1592,6 +1615,50 @@ onMounted(async () => {
         <h3 style="margin:0;">{{ infoModalContent.title }}</h3>
       </div>
       <p class="bio-text" style="margin-top:0.75rem;">{{ infoModalContent.description }}</p>
+    </div>
+  </Transition>
+
+  <!-- Inventory Storage Location Modal -->
+  <Transition name="bio">
+    <div v-if="showInventoryLocationModal" class="bio-card">
+      <button class="bio-close" @click.stop="closeInventoryLocationModal">✕</button>
+      <div class="modal-title-row">
+        <span style="font-size:1.5rem;">📦</span>
+        <h3 style="margin:0;text-transform:capitalize;">
+          {{ inventoryLocationIconId.replace(/_icon$/, '').replace(/_/g, ' ') }}
+        </h3>
+      </div>
+      <p class="bio-genre" style="margin-top:0.5rem;">Items stored here:</p>
+      <div
+        v-for="item in inventoryLocationItems"
+        :key="item.id"
+        class="shift-row"
+        style="flex-direction:column;align-items:flex-start;margin-bottom:0.5rem;"
+      >
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+          <span class="bio-text" style="font-weight:600;margin:0;">{{ item.name }}</span>
+          <span
+            v-if="item.needs_restock"
+            style="font-size:0.72rem;color:#ffa726;font-weight:600;">⚠️ Needs restock</span>
+        </div>
+        <span v-if="item.sub_location" style="font-size:0.78rem;color:rgba(255,255,255,0.45);">
+          › {{ item.sub_location }}
+        </span>
+        <span v-if="item.notes" style="font-size:0.78rem;color:rgba(255,255,255,0.55);margin-top:0.2rem;">
+          {{ item.notes }}
+        </span>
+        <button
+          v-if="isVolunteerOrAdmin && !item.needs_restock"
+          class="modal-btn modal-btn--ghost"
+          style="margin-top:0.4rem;padding:0.25rem 0.75rem;font-size:0.72rem;"
+          @click.stop="flagInventoryRestock(item.id, true)"
+        >
+          🚩 Flag needs restock
+        </button>
+      </div>
+      <div class="modal-actions" style="margin-top:1rem;">
+        <button class="modal-btn modal-btn--ghost" @click.stop="closeInventoryLocationModal">Close</button>
+      </div>
     </div>
   </Transition>
 

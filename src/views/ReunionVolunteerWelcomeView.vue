@@ -63,22 +63,22 @@
                 <h5>Select your department to access task management:</h5>
                 <div class="department-buttons">
                   <button @click="router.push('/reunionfrontgate')" class="dept-button frontgate">
-                    🚪 Front Gate Manual
+                    <img :src="frontgate_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Front Gate Manual
                   </button>
                   <button @click="router.push('/reunionfoodteam')" class="dept-button foodteam">
-                    🍽️ Food Team Manual
+                    <img :src="foodteam_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Food Team Manual
                   </button>
                   <button @click="router.push('/reunionsetupcrew')" class="dept-button setup">
-                    🔧 Setup Crew Manual
+                    <img :src="setup_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Setup Crew Manual
                   </button>
                   <button @click="router.push('/reunionstagecrew')" class="dept-button stage">
-                    🎵 Stage Crew Manual
+                    <img :src="stage_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Stage Crew Manual
                   </button>
                   <button @click="router.push('/reunioncleanupcrew')" class="dept-button cleanup">
-                    🧹 Cleanup Crew Manual
+                    <img :src="cleanup_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Cleanup Crew Manual
                   </button>
                   <button @click="router.push('/reunionarcadeattendant')" class="dept-button arcade">
-                    🕹️ Arcade Attendant Manual
+                    <img :src="arcade_icon" style="width: 20px; height: auto; margin-right: 6px; vertical-align: middle" /> Arcade Attendant Manual
                   </button>
                 </div>
               </div>
@@ -118,6 +118,12 @@
 import { useRouter } from 'vue-router'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
+import foodteam_icon from '@/assets/images/icons/food.png'
+import setup_icon from '@/assets/images/icons/setup_crew.png'
+import stage_icon from '@/assets/images/icons/stage_crew.png'
+import cleanup_icon from '@/assets/images/icons/cleanup_crew.png'
+import arcade_icon from '@/assets/images/icons/arcade.png'
 
 const router = useRouter()
 
