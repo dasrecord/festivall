@@ -85,49 +85,56 @@ const SETUP_CREW: TaskDef[] = [
     title: 'Vacuum Surfaces',
     description: 'Shop vac + filter to vacuum surfaces (Barn + FOH + seating areas)',
     department: 'setup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'setup_002',
     title: 'Weed Whacking',
     description: 'Use weed whacker/hedge trimmers to clean shrubbage around buildings (ensure door access)',
     department: 'setup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'setup_003',
     title: 'Fridge Check',
     description: 'Ensure all fridges are clean, working, turned on and closed properly',
     department: 'setup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'setup_004',
     title: 'Wading Pool Setup',
     description: 'Take out wading pool, clean it and set up ready for water',
     department: 'setup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'setup_005',
     title: 'Garbage Removal',
     description: 'Remove all garbage from barn + FOH areas',
     department: 'setup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'setup_006',
     title: "Children's Area Prep",
     description: "Clean and prepare children's area (arcade/barn) - set up toys, remove hazards",
     department: 'setup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'setup_007',
     title: 'Kitchen Equipment Prep',
     description: 'Clean ovens/stoves/BBQs to prep for food team',
     department: 'setup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   }
 ]
 
@@ -137,56 +144,64 @@ const STAGE_CREW: TaskDef[] = [
     title: 'Sound System Setup',
     description: 'Set up main PA system, monitors, and mixing console',
     department: 'stage_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'stage_002',
     title: 'Stage Platform Assembly',
     description: 'Assemble and secure stage platform, barriers, and safety equipment',
     department: 'stage_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'stage_003',
     title: 'Lighting Installation',
     description: 'Install stage lighting, test controls, and program lighting cues',
     department: 'stage_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'stage_004',
     title: 'Power & Electrical',
     description: 'Run power cables, set up electrical distribution, and test all connections',
     department: 'stage_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'stage_005',
     title: 'Monitor System',
     description: 'Set up artist monitor system and wedges',
     department: 'stage_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'stage_006',
     title: 'Sound Check Coordination',
     description: 'Coordinate and conduct sound checks with all performing artists',
     department: 'stage_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'stage_007',
     title: 'Equipment Inventory',
     description: 'Check and organize all audio/visual equipment and spare parts',
     department: 'stage_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'stage_008',
     title: 'Backstage Area Setup',
     description: 'Prepare artist backstage area and equipment storage',
     department: 'stage_crew',
-    priority: 'low'
+    priority: 'low',
+    type: 'one-time'
   }
 ]
 
@@ -196,42 +211,48 @@ const FOOD_TEAM: TaskDef[] = [
     title: 'Kitchen Setup & Prep',
     description: 'Set up cooking stations, prep ingredients, and organize kitchen workflow',
     department: 'food_team',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'food_002',
     title: 'Food Safety & Sanitation',
     description: 'Implement food safety protocols, temperature monitoring, and sanitation procedures',
     department: 'food_team',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'food_003',
     title: 'Service Station Setup',
     description: 'Set up food service lines, utensils, plates, and serving equipment',
     department: 'food_team',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'food_004',
     title: 'Inventory Management',
     description: 'Track food inventory, supplies, and coordinate resupply needs',
     department: 'food_team',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'food_005',
     title: 'Volunteer Coordination',
     description: 'Organize food service volunteers and assign serving duties',
     department: 'food_team',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'food_006',
     title: 'Kitchen Cleanup',
     description: 'Maintain ongoing cleanliness and post-service deep cleaning',
     department: 'food_team',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   }
 ]
 
@@ -241,56 +262,64 @@ const CLEANUP_CREW: TaskDef[] = [
     title: 'Tool & Equipment Inventory',
     description: 'Clean, inspect, and return all tools to designated sheds/trailers with inventory checklist',
     department: 'cleanup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'cleanup_002',
     title: 'Decoration Storage Protocol',
     description: 'Clean decorations, sort by category, pack in labeled bins with moisture protection',
     department: 'cleanup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'cleanup_003',
     title: 'Large Item Breakdown',
     description: 'Properly disassemble and store trampolines, wading pools, and other awkward items',
     department: 'cleanup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'cleanup_004',
     title: 'Pest-Proof Storage Prep',
     description: 'Seal storage containers, use rodent deterrents, elevate items off ground',
     department: 'cleanup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'cleanup_005',
     title: 'Storage Area Organization',
     description: 'Create clear zones in sheds/trailers, document locations, create access maps',
     department: 'cleanup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'cleanup_006',
     title: 'Material Condition Assessment',
     description: 'Document damaged items, create replacement/repair list for next year',
     department: 'cleanup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   },
   {
     id: 'cleanup_007',
     title: 'Labeling & Documentation',
     description: 'Create detailed labels, photo inventory, and setup instructions for next year',
     department: 'cleanup_crew',
-    priority: 'high'
+    priority: 'high',
+    type: 'one-time'
   },
   {
     id: 'cleanup_008',
     title: 'Next Year Setup Notes',
     description: 'Document lessons learned, storage improvements, and setup recommendations',
     department: 'cleanup_crew',
-    priority: 'medium'
+    priority: 'medium',
+    type: 'one-time'
   }
 ]
 

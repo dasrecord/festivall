@@ -16,7 +16,7 @@
         <div class="section">
           <h2>📚 All Departments Overview</h2>
           <div class="department-grid">
-            <div class="dept-card" v-for="group in allDepartmentTasks" :key="group.id">
+            <div class="dept-card" :class="`dept--${group.id}`" v-for="group in allDepartmentTasks" :key="group.id">
               <h3>{{ getDepartmentName(group.id) }}</h3>
               <div class="task-grid">
                 <div
@@ -34,7 +34,7 @@
                         <small>{{ formatDate(task.completedAt) }}</small>
                       </span>
                       <span v-else class="status incomplete">⏳ Not completed</span>
-                      <span v-if="task.type" class="task-type">{{ task.type }}</span>
+                      <span v-if="task.type && task.type !== 'standard'" class="task-type">{{ task.type === 'personal' ? '🔁' : task.type === 'one-time' ? '1️⃣' : task.type }}</span>
                     </div>
                   </div>
                   <button
@@ -53,7 +53,7 @@
         <div class="section">
           <h2>🏢 Department-Wide Reset</h2>
           <div class="department-grid">
-            <div class="dept-card" v-for="dept in departments" :key="dept.id">
+            <div class="dept-card" :class="`dept--${dept.id}`" v-for="dept in departments" :key="dept.id">
               <h3>{{ dept.icon }} {{ dept.name }}</h3>
               <p>{{ dept.description }}</p>
               <button
@@ -80,7 +80,7 @@
               </select>
             </div>
 
-            <div v-if="selectedDepartment && departmentTasks.length > 0" class="tasks-list">
+            <div v-if="selectedDepartment && departmentTasks.length > 0" class="tasks-list" :class="`dept--${selectedDepartment}`">
               <h3>{{ getDepartmentName(selectedDepartment) }} Tasks</h3>
               <div class="task-grid">
                 <div
@@ -98,7 +98,7 @@
                         <small>{{ formatDate(task.completedAt) }}</small>
                       </span>
                       <span v-else class="status incomplete">⏳ Not completed</span>
-                      <span v-if="task.type" class="task-type">{{ task.type }}</span>
+                      <span v-if="task.type && task.type !== 'standard'" class="task-type">{{ task.type === 'personal' ? '🔁' : task.type === 'one-time' ? '1️⃣' : task.type }}</span>
                     </div>
                   </div>
                   <button
@@ -647,12 +647,14 @@ onMounted(() => {
 }
 
 .task-type {
-  background-color: #007bff;
+  background-color: #555;
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
 }
+
+
 
 .reset-task-btn {
   background-color: #ffc107;
@@ -760,6 +762,33 @@ onMounted(() => {
     align-items: stretch;
   }
 }
+
+/* Department color accents */
+.dept-card.dept--front_gate { border-top: 3px solid #4caf50; }
+.dept-card.dept--front_gate h3, .dept-card.dept--front_gate .task-info h4 { color: #4caf50; }
+
+.dept-card.dept--setup_crew { border-top: 3px solid #2196f3; }
+.dept-card.dept--setup_crew h3, .dept-card.dept--setup_crew .task-info h4 { color: #2196f3; }
+
+.dept-card.dept--food_team { border-top: 3px solid #ff9800; }
+.dept-card.dept--food_team h3, .dept-card.dept--food_team .task-info h4 { color: #ff9800; }
+
+.dept-card.dept--stage_crew { border-top: 3px solid #9c27b0; }
+.dept-card.dept--stage_crew h3, .dept-card.dept--stage_crew .task-info h4 { color: #9c27b0; }
+
+.dept-card.dept--cleanup_crew { border-top: 3px solid #607d8b; }
+.dept-card.dept--cleanup_crew h3, .dept-card.dept--cleanup_crew .task-info h4 { color: #607d8b; }
+
+.dept-card.dept--arcade_attendant { border-top: 3px solid #e91e63; }
+.dept-card.dept--arcade_attendant h3, .dept-card.dept--arcade_attendant .task-info h4 { color: #e91e63; }
+
+/* tasks-list (individual task reset section) */
+.tasks-list.dept--front_gate h3, .tasks-list.dept--front_gate .task-info h4 { color: #4caf50; }
+.tasks-list.dept--setup_crew h3, .tasks-list.dept--setup_crew .task-info h4 { color: #2196f3; }
+.tasks-list.dept--food_team h3, .tasks-list.dept--food_team .task-info h4 { color: #ff9800; }
+.tasks-list.dept--stage_crew h3, .tasks-list.dept--stage_crew .task-info h4 { color: #9c27b0; }
+.tasks-list.dept--cleanup_crew h3, .tasks-list.dept--cleanup_crew .task-info h4 { color: #607d8b; }
+.tasks-list.dept--arcade_attendant h3, .tasks-list.dept--arcade_attendant .task-info h4 { color: #e91e63; }
 
 /* Stretch to full viewport width on desktop, ignoring outer layout constraints */
 @media (min-width: 1200px) {
