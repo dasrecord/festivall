@@ -40,19 +40,16 @@
           </div>
         </div>
 
-        <div class="section">
+        <div class="section section--dept-reset">
           <h2>🏢 Department-Wide Reset</h2>
-          <div class="department-grid">
-            <div class="dept-card" :class="`dept--${dept.id}`" v-for="dept in departments" :key="dept.id">
-              <h3>{{ dept.icon }} {{ dept.name }}</h3>
-              <p>{{ dept.description }}</p>
+          <div class="dept-reset-list">
+            <div class="dept-reset-row" :class="`dept--${dept.id}`" v-for="dept in departments" :key="dept.id">
+              <span class="dept-reset-label">{{ dept.icon }} {{ dept.name }}</span>
               <button
                 @click="resetDepartment(dept.id, dept.name)"
                 class="reset-dept-btn"
                 :disabled="loading"
-              >
-                Reset All {{ dept.name }} Tasks
-              </button>
+              >Reset All</button>
             </div>
           </div>
         </div>
@@ -632,22 +629,48 @@ onMounted(() => {
   background-color: #dc3545;
   color: white;
   border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
-  margin-top: 1rem;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
 }
 
 .reset-dept-btn:hover:not(:disabled) {
   background-color: #c82333;
-  transform: translateY(-1px);
 }
 
 .reset-dept-btn:disabled {
   background-color: #666;
   cursor: not-allowed;
+}
+
+/* Dept-wide reset list */
+.section--dept-reset {
+  padding: 1.25rem;
+}
+
+.dept-reset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dept-reset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border-left: 3px solid #444;
+  background-color: rgba(255,255,255,0.03);
+  font-size: 0.85rem;
+}
+
+.dept-reset-label {
+  font-weight: 600;
+  color: #ddd;
 }
 
 .search-section {
@@ -849,27 +872,33 @@ onMounted(() => {
 }
 
 /* Department color accents */
-.dept-card.dept--front_gate, .overview-card.dept--front_gate { border-top: 3px solid #4caf50; }
+.dept-card.dept--front_gate, .overview-card.dept--front_gate, .dept-reset-row.dept--front_gate { border-top: 3px solid #4caf50; }
+.dept-reset-row.dept--front_gate { border-top: none; border-left-color: #4caf50; }
 .dept-card.dept--front_gate h3, .dept-card.dept--front_gate .task-info h4,
 .overview-card.dept--front_gate h3 { color: #4caf50; }
 
-.dept-card.dept--setup_crew, .overview-card.dept--setup_crew { border-top: 3px solid #2196f3; }
+.dept-card.dept--setup_crew, .overview-card.dept--setup_crew, .dept-reset-row.dept--setup_crew { border-top: 3px solid #2196f3; }
+.dept-reset-row.dept--setup_crew { border-top: none; border-left-color: #2196f3; }
 .dept-card.dept--setup_crew h3, .dept-card.dept--setup_crew .task-info h4,
 .overview-card.dept--setup_crew h3 { color: #2196f3; }
 
-.dept-card.dept--food_team, .overview-card.dept--food_team { border-top: 3px solid #ff9800; }
+.dept-card.dept--food_team, .overview-card.dept--food_team, .dept-reset-row.dept--food_team { border-top: 3px solid #ff9800; }
+.dept-reset-row.dept--food_team { border-top: none; border-left-color: #ff9800; }
 .dept-card.dept--food_team h3, .dept-card.dept--food_team .task-info h4,
 .overview-card.dept--food_team h3 { color: #ff9800; }
 
-.dept-card.dept--stage_crew, .overview-card.dept--stage_crew { border-top: 3px solid #9c27b0; }
+.dept-card.dept--stage_crew, .overview-card.dept--stage_crew, .dept-reset-row.dept--stage_crew { border-top: 3px solid #9c27b0; }
+.dept-reset-row.dept--stage_crew { border-top: none; border-left-color: #9c27b0; }
 .dept-card.dept--stage_crew h3, .dept-card.dept--stage_crew .task-info h4,
 .overview-card.dept--stage_crew h3 { color: #9c27b0; }
 
-.dept-card.dept--cleanup_crew, .overview-card.dept--cleanup_crew { border-top: 3px solid #607d8b; }
+.dept-card.dept--cleanup_crew, .overview-card.dept--cleanup_crew, .dept-reset-row.dept--cleanup_crew { border-top: 3px solid #607d8b; }
+.dept-reset-row.dept--cleanup_crew { border-top: none; border-left-color: #607d8b; }
 .dept-card.dept--cleanup_crew h3, .dept-card.dept--cleanup_crew .task-info h4,
 .overview-card.dept--cleanup_crew h3 { color: #607d8b; }
 
-.dept-card.dept--arcade_attendant, .overview-card.dept--arcade_attendant { border-top: 3px solid #e91e63; }
+.dept-card.dept--arcade_attendant, .overview-card.dept--arcade_attendant, .dept-reset-row.dept--arcade_attendant { border-top: 3px solid #e91e63; }
+.dept-reset-row.dept--arcade_attendant { border-top: none; border-left-color: #e91e63; }
 .dept-card.dept--arcade_attendant h3, .dept-card.dept--arcade_attendant .task-info h4,
 .overview-card.dept--arcade_attendant h3 { color: #e91e63; }
 
