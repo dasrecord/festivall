@@ -620,7 +620,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: #455a64;
   transform: translateY(-2px);
 }
 
@@ -703,7 +703,7 @@ button:disabled {
 }
 
 .unclaim-btn {
-  background-color: #ff9800;
+  background-color: #666;
 }
 
 .progress-section {

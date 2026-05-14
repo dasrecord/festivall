@@ -619,7 +619,7 @@ button:disabled {
 }
 
 .personal-completed {
-  color: #4caf50;
+  color: var(--reunion-arcade-pink, #e91e63);
   font-weight: bold;
 }
 
