@@ -39,7 +39,7 @@
           text-align: left;
         "
       >
-        <h3 style="color: #e91e63; margin-bottom: 0.75rem">🕹️ Your Role</h3>
+        <h3 style="color: #e91e63; margin-bottom: 0.75rem"><img :src="arcade_icon" style="width: 22px; height: auto; margin-right: 8px; vertical-align: middle" />Your Role</h3>
         <p style="margin-bottom: 0.75rem">
           The Arcade Trailer is operational during all festival stage hours. You are responsible for
           managing the full lifecycle of the trailer: starting the generator, booting arcade systems,
@@ -49,6 +49,24 @@
           <strong>Equipment used:</strong> Generator · Arcade cabinets · Flipbook computer ·
           Paper cutter · Heavy-duty stapler
         </p>
+      </div>
+
+      <!-- Supplies & Equipment Summary -->
+      <div v-if="deptItems.length > 0" class="supplies-summary">
+        <div class="supplies-header">📦 Supplies &amp; Equipment</div>
+        <div
+          v-for="item in deptItems"
+          :key="item.id"
+          class="supplies-row"
+          :class="{ 'needs-restock': item.needs_restock }"
+        >
+          <span class="supplies-name">{{ item.name }}</span>
+          <span class="supplies-location">
+            📍 {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+            <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
+          </span>
+          <span v-if="item.needs_restock" class="supplies-restock">⚠️ Needs restock</span>
+        </div>
       </div>
 
       <div class="task-section">
@@ -66,6 +84,11 @@
             <div class="task-content">
               <h4>{{ task.title }}</h4>
               <p>{{ task.description }}</p>
+              <InventoryTaskItems
+                :items="getItemsForTask(task.id)"
+                :canFlag="true"
+                @flag="flagNeedsRestock"
+              />
               <div class="task-meta">
                 <span v-if="task.completed" class="completed-by">
                   ✓ Completed by: {{ task.completedByName }}
@@ -166,7 +189,12 @@ import {
   writeBatch
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import arcade_icon from '@/assets/images/icons/arcade.png'
 import footer from '@/assets/images/poster_footer_v1.png'
+import { useInventory } from '@/composables/useInventory'
+import InventoryTaskItems from '@/components/InventoryTaskItems.vue'
+
+const { deptItems, getItemsForTask, flagNeedsRestock } = useInventory('arcade_attendant')
 
 const userIdCode = ref('')
 const userName = ref('')
@@ -454,7 +482,7 @@ onUnmounted(() => {
 }
 
 .highlight {
-  color: #e91e63;
+  color: var(--reunion-arcade-pink, #e91e63);
   text-align: center;
   margin-bottom: 1rem;
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
@@ -469,7 +497,7 @@ onUnmounted(() => {
   margin: 1rem 0;
   width: 100%;
   max-width: 800px;
-  border: 1px solid #e91e63;
+  border: 1px solid var(--reunion-arcade-pink, #e91e63);
 }
 
 .form-section {
@@ -484,7 +512,7 @@ label {
   width: 30%;
   text-align: left;
   padding: 10px;
-  background-color: #e91e63;
+  background-color: var(--reunion-arcade-pink, #e91e63);
   color: white;
   border-radius: 15px 0 0 15px;
   font-weight: bold;
@@ -500,7 +528,7 @@ input {
 }
 
 button {
-  background-color: #e91e63;
+  background-color: var(--reunion-arcade-pink, #e91e63);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -508,28 +536,31 @@ button {
   cursor: pointer;
   font-weight: bold;
   margin-top: 1rem;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 button:hover:not(:disabled) {
-  background-color: #c2185b;
+  background-color: var(--reunion-arcade-pink-dark, #880e4f);
+  transform: translateY(-2px);
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .task-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
+  margin: 1rem 0;
 }
 
 .task-item {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(233, 30, 99, 0.3);
+  border-left: 4px solid #e91e63;
   border-radius: 10px;
   padding: 1rem;
   display: flex;
@@ -537,6 +568,12 @@ button:disabled {
   align-items: flex-start;
   gap: 1rem;
   text-align: left;
+  transition: all 0.3s ease;
+}
+
+.task-item:hover {
+  border-color: var(--reunion-arcade-pink, #e91e63);
+  transform: translateY(-2px);
 }
 
 .task-item.completed {
@@ -551,7 +588,7 @@ button:disabled {
 
 .task-content h4 {
   margin: 0 0 0.5rem 0;
-  color: #e91e63;
+  color: var(--reunion-arcade-pink, #e91e63);
 }
 
 .task-content p {
@@ -577,7 +614,7 @@ button:disabled {
 }
 
 .personal-complete-btn {
-  background-color: #e91e63;
+  background-color: var(--reunion-arcade-pink, #e91e63);
   margin-top: 0;
 }
 
@@ -600,7 +637,7 @@ button:disabled {
 }
 
 .progress-fill {
-  background-color: #e91e63;
+  background-color: var(--reunion-arcade-pink, #e91e63);
   height: 100%;
   transition: width 0.3s ease;
 }
@@ -625,7 +662,7 @@ button:disabled {
 }
 
 .task-category h3 {
-  color: #e91e63;
+  color: var(--reunion-arcade-pink, #e91e63);
   margin-bottom: 0.5rem;
 }
 
@@ -639,9 +676,72 @@ button:disabled {
   margin-bottom: 0.3rem;
 }
 
+.footer {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 15px;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 700px;
+}
+
 .footer img {
   width: 100%;
-  max-width: 800px;
-  margin-top: 2rem;
+  max-width: 700px;
+}
+
+.supplies-summary {
+  margin: 0 0 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 200, 80, 0.06);
+  border: 1px solid rgba(255, 200, 80, 0.25);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.supplies-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 200, 80, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.supplies-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.supplies-row:last-child {
+  border-bottom: none;
+}
+
+.supplies-row.needs-restock .supplies-name {
+  opacity: 0.65;
+}
+
+.supplies-name {
+  font-size: 0.88rem;
+  color: #e0e0e0;
+  font-weight: 500;
+  min-width: 140px;
+}
+
+.supplies-location {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: capitalize;
+  flex: 1;
+}
+
+.supplies-restock {
+  font-size: 0.72rem;
+  color: #ffa726;
+  font-weight: 600;
 }
 </style>

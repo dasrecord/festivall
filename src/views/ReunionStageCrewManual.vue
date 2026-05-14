@@ -28,6 +28,46 @@
       <h2>Welcome {{ userName }}!</h2>
       <p>Department: <span class="highlight">Stage Crew</span></p>
 
+      <div
+        class="role-summary"
+        style="
+          margin: 1rem 0 2rem 0;
+          padding: 1.5rem;
+          background-color: rgba(156, 39, 176, 0.1);
+          border: 2px solid #9c27b0;
+          border-radius: 10px;
+          text-align: left;
+        "
+      >
+        <h3 style="color: #9c27b0; margin-bottom: 0.75rem"><img :src="stage_icon" style="width: 22px; height: auto; margin-right: 8px; vertical-align: middle" />Your Role</h3>
+        <p style="margin-bottom: 0.75rem">
+          You manage stage operations for the full duration of the festival. This means coordinating
+          artist soundchecks, handling stage changeovers, managing the PA and monitor systems, and
+          keeping the performance schedule running on time.
+        </p>
+        <p style="margin: 0; font-size: 0.9rem; color: #ccc">
+          <strong>Equipment used:</strong> PA system · Stage monitors · DI boxes · Cable runs
+        </p>
+      </div>
+
+      <!-- Supplies & Equipment Summary -->
+      <div v-if="deptItems.length > 0" class="supplies-summary">
+        <div class="supplies-header">📦 Supplies &amp; Equipment</div>
+        <div
+          v-for="item in deptItems"
+          :key="item.id"
+          class="supplies-row"
+          :class="{ 'needs-restock': item.needs_restock }"
+        >
+          <span class="supplies-name">{{ item.name }}</span>
+          <span class="supplies-location">
+            📍 {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+            <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
+          </span>
+          <span v-if="item.needs_restock" class="supplies-restock">⚠️ Needs restock</span>
+        </div>
+      </div>
+
       <div class="task-section">
         <h3>Stage Crew Tasks</h3>
         <div class="task-grid">
@@ -40,6 +80,11 @@
             <div class="task-content">
               <h4>{{ task.title }}</h4>
               <p>{{ task.description }}</p>
+              <InventoryTaskItems
+                :items="getItemsForTask(task.id)"
+                :canFlag="true"
+                @flag="flagNeedsRestock"
+              />
               <div class="task-meta">
                 <span v-if="task.assignedTo" class="assigned-to">
                   Assigned to: {{ task.assignedToName }}
@@ -153,7 +198,12 @@ import {
   writeBatch
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import stage_icon from '@/assets/images/icons/stage_crew.png'
 import footer from '@/assets/images/poster_footer_v1.png'
+import { useInventory } from '@/composables/useInventory'
+import InventoryTaskItems from '@/components/InventoryTaskItems.vue'
+
+const { deptItems, getItemsForTask, flagNeedsRestock } = useInventory('stage_crew')
 
 // Reactive data
 const userIdCode = ref('')
@@ -532,7 +582,7 @@ onUnmounted(() => {
 }
 
 .highlight {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #9c27b0;
   text-align: center;
   margin-bottom: 1rem;
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
@@ -547,7 +597,7 @@ onUnmounted(() => {
   margin: 1rem 0;
   width: 100%;
   max-width: 800px;
-  border: 1px solid var(--reunion-frog-green, #4caf50);
+  border: 1px solid #9c27b0;
 }
 
 .form-section {
@@ -562,7 +612,7 @@ label {
   width: 30%;
   text-align: left;
   padding: 10px;
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #9c27b0;
   color: white;
   border-radius: 15px 0 0 15px;
   font-weight: bold;
@@ -578,7 +628,7 @@ input {
 }
 
 button {
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #9c27b0;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -610,19 +660,25 @@ button:disabled {
 .task-item {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid #444;
+  border-left: 4px solid #9c27b0;
   border-radius: 10px;
   padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
   transition: all 0.3s ease;
 }
 
 .task-item:hover {
-  border-color: var(--reunion-frog-green, #4caf50);
+  border-color: #9c27b0;
   transform: translateY(-2px);
 }
 
 .task-item.completed {
   background-color: rgba(76, 175, 80, 0.2);
-  border-color: var(--reunion-frog-green, #4caf50);
+  border-color: #9c27b0;
 }
 
 .task-item.assigned {
@@ -631,12 +687,12 @@ button:disabled {
 }
 
 .task-content h4 {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #9c27b0;
   margin-bottom: 0.5rem;
 }
 
 .task-content p {
-  margin-bottom: 1rem;
+  margin: 0 0 0.5rem 0;
   line-height: 1.4;
 }
 
@@ -653,17 +709,17 @@ button:disabled {
 
 .task-actions {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+  min-width: 130px;
 }
 
 .claim-btn {
-  background-color: #2196f3;
+  background-color: #9c27b0;
 }
 
 .complete-btn {
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #9c27b0;
 }
 
 .unclaim-btn {
@@ -686,7 +742,7 @@ button:disabled {
 
 .progress-fill {
   height: 100%;
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #9c27b0;
   transition: width 0.3s ease;
 }
 
@@ -705,7 +761,7 @@ button:disabled {
 }
 
 .task-category h3 {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #9c27b0;
   margin-bottom: 1rem;
 }
 
@@ -719,7 +775,7 @@ button:disabled {
   padding: 0.5rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 5px;
-  border-left: 3px solid var(--reunion-frog-green, #4caf50);
+  border-left: 3px solid #9c27b0;
 }
 
 .footer {
@@ -734,6 +790,61 @@ button:disabled {
 .footer img {
   width: 100%;
   max-width: 700px;
+}
+
+.supplies-summary {
+  margin: 0 0 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 200, 80, 0.06);
+  border: 1px solid rgba(255, 200, 80, 0.25);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.supplies-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 200, 80, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.supplies-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.supplies-row:last-child {
+  border-bottom: none;
+}
+
+.supplies-row.needs-restock .supplies-name {
+  opacity: 0.65;
+}
+
+.supplies-name {
+  font-size: 0.88rem;
+  color: #e0e0e0;
+  font-weight: 500;
+  min-width: 140px;
+}
+
+.supplies-location {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: capitalize;
+  flex: 1;
+}
+
+.supplies-restock {
+  font-size: 0.72rem;
+  color: #ffa726;
+  font-weight: 600;
 }
 
 @media (max-width: 600px) {

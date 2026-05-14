@@ -29,6 +29,28 @@
       <p>Department: <span class="highlight">Front Gate Scanner Operator</span></p>
 
       <div
+        class="role-summary"
+        style="
+          margin: 1rem 0 2rem 0;
+          padding: 1.5rem;
+          background-color: rgba(76, 175, 80, 0.1);
+          border: 2px solid #4caf50;
+          border-radius: 10px;
+          text-align: left;
+        "
+      >
+        <h3 style="color: #4caf50; margin-bottom: 0.75rem"><img :src="frontgate_icon" style="width: 22px; height: auto; margin-right: 8px; vertical-align: middle" />Your Role</h3>
+        <p style="margin-bottom: 0.75rem">
+          You are the first point of contact for every festival attendee. Your job is to scan
+          tickets, verify wristbands, and manage entry flow so the experience starts smoothly from
+          the moment guests arrive.
+        </p>
+        <p style="margin: 0; font-size: 0.9rem; color: #ccc">
+          <strong>Equipment used:</strong> Ticket scanner app · Wristbands · Entrance barriers
+        </p>
+      </div>
+
+      <div
         class="scanner-access"
         style="
           margin: 1rem 0 2rem 0;
@@ -62,6 +84,24 @@
         </a>
       </div>
 
+      <!-- Supplies & Equipment Summary -->
+      <div v-if="deptItems.length > 0" class="supplies-summary">
+        <div class="supplies-header">📦 Supplies &amp; Equipment</div>
+        <div
+          v-for="item in deptItems"
+          :key="item.id"
+          class="supplies-row"
+          :class="{ 'needs-restock': item.needs_restock }"
+        >
+          <span class="supplies-name">{{ item.name }}</span>
+          <span class="supplies-location">
+            📍 {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+            <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
+          </span>
+          <span v-if="item.needs_restock" class="supplies-restock">⚠️ Needs restock</span>
+        </div>
+      </div>
+
       <div class="task-section">
         <h3>Front Gate Tasks</h3>
         <div class="task-grid">
@@ -79,6 +119,11 @@
             <div class="task-content">
               <h4>{{ task.title }}</h4>
               <p>{{ task.description }}</p>
+              <InventoryTaskItems
+                :items="getItemsForTask(task.id)"
+                :canFlag="true"
+                @flag="flagNeedsRestock"
+              />
               <div class="task-meta">
                 <span v-if="task.assignedTo" class="assigned-to">
                   Assigned to: {{ task.assignedToName }}
@@ -231,7 +276,12 @@ import {
   writeBatch
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
 import footer from '@/assets/images/poster_footer_v1.png'
+import { useInventory } from '@/composables/useInventory'
+import InventoryTaskItems from '@/components/InventoryTaskItems.vue'
+
+const { deptItems, getItemsForTask, flagNeedsRestock } = useInventory('front_gate')
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 // Reactive data
@@ -735,6 +785,11 @@ button:disabled {
   border: 1px solid #444;
   border-radius: 10px;
   padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
   transition: all 0.3s ease;
 }
 
@@ -767,7 +822,7 @@ button:disabled {
 }
 
 .task-content p {
-  margin-bottom: 1rem;
+  margin: 0 0 0.5rem 0;
   line-height: 1.4;
 }
 
@@ -784,9 +839,9 @@ button:disabled {
 
 .task-actions {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
+  min-width: 130px;
 }
 
 .claim-btn {
@@ -877,6 +932,61 @@ button:disabled {
 .footer img {
   width: 100%;
   max-width: 700px;
+}
+
+.supplies-summary {
+  margin: 0 0 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 200, 80, 0.06);
+  border: 1px solid rgba(255, 200, 80, 0.25);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.supplies-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 200, 80, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.supplies-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.supplies-row:last-child {
+  border-bottom: none;
+}
+
+.supplies-row.needs-restock .supplies-name {
+  opacity: 0.65;
+}
+
+.supplies-name {
+  font-size: 0.88rem;
+  color: #e0e0e0;
+  font-weight: 500;
+  min-width: 140px;
+}
+
+.supplies-location {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: capitalize;
+  flex: 1;
+}
+
+.supplies-restock {
+  font-size: 0.72rem;
+  color: #ffa726;
+  font-weight: 600;
 }
 
 @media (max-width: 600px) {
