@@ -13,37 +13,27 @@
       </div>
 
       <div class="admin-actions">
-        <div class="section">
+        <div class="section section--overview">
           <h2>📚 All Departments Overview</h2>
-          <div class="department-grid">
-            <div class="dept-card" :class="`dept--${group.id}`" v-for="group in allDepartmentTasks" :key="group.id">
+          <div class="overview-grid">
+            <div class="overview-card" :class="`dept--${group.id}`" v-for="group in allDepartmentTasks" :key="group.id">
               <h3>{{ getDepartmentName(group.id) }}</h3>
-              <div class="task-grid">
+              <div class="overview-task-list">
                 <div
                   v-for="task in group.tasks"
                   :key="task.id"
-                  class="task-card"
+                  class="overview-row"
                   :class="{ completed: task.completed }"
                 >
-                  <div class="task-info">
-                    <h4>{{ task.title }}</h4>
-                    <p>{{ task.description }}</p>
-                    <div class="task-status">
-                      <span v-if="task.completed" class="status completed">
-                        ✅ Completed{{ task.completedByName ? ` by ${task.completedByName}` : '' }}
-                        <small>{{ formatDate(task.completedAt) }}</small>
-                      </span>
-                      <span v-else class="status incomplete">⏳ Not completed</span>
-                      <span v-if="task.type && task.type !== 'standard'" class="task-type">{{ task.type === 'personal' ? '🔁' : task.type === 'one-time' ? '1️⃣' : task.type }}</span>
-                    </div>
-                  </div>
+                  <span class="overview-status">{{ task.completed ? '✅' : '⬜' }}</span>
+                  <span class="overview-title">{{ task.title }}</span>
+                  <span v-if="task.type && task.type !== 'standard'" class="overview-type">{{ task.type === 'personal' ? '🔁' : '1️⃣' }}</span>
                   <button
                     @click="resetTask(task.id, task.title, group.id, task.type)"
-                    class="reset-task-btn"
+                    class="overview-reset-btn"
                     :disabled="loading || !task.completed"
-                  >
-                    Reset Task
-                  </button>
+                    title="Reset task"
+                  >↺</button>
                 </div>
               </div>
             </div>
@@ -538,6 +528,101 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
+/* Overview section — compact */
+.section--overview {
+  padding: 1.25rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.overview-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
+
+.overview-card h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #333;
+}
+
+.overview-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.overview-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.25rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.overview-row.completed {
+  opacity: 0.55;
+}
+
+.overview-status {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+}
+
+.overview-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ddd;
+}
+
+.overview-row.completed .overview-title {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.overview-type {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+}
+
+.overview-reset-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid #555;
+  color: #aaa;
+  border-radius: 3px;
+  padding: 0 0.3rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.overview-reset-btn:hover:not(:disabled) {
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+.overview-reset-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
 .dept-card h3 {
   color: var(--reunion-frog-green, #4caf50);
   margin-bottom: 0.5rem;
@@ -591,7 +676,7 @@ onMounted(() => {
   gap: 1rem;
 }
 
-/* Inside department cards, use slightly smaller min column width to avoid overflow */
+/* Inside department cards (non-overview), use slightly smaller min column width */
 .dept-card .task-grid {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   width: 100%;
@@ -764,23 +849,29 @@ onMounted(() => {
 }
 
 /* Department color accents */
-.dept-card.dept--front_gate { border-top: 3px solid #4caf50; }
-.dept-card.dept--front_gate h3, .dept-card.dept--front_gate .task-info h4 { color: #4caf50; }
+.dept-card.dept--front_gate, .overview-card.dept--front_gate { border-top: 3px solid #4caf50; }
+.dept-card.dept--front_gate h3, .dept-card.dept--front_gate .task-info h4,
+.overview-card.dept--front_gate h3 { color: #4caf50; }
 
-.dept-card.dept--setup_crew { border-top: 3px solid #2196f3; }
-.dept-card.dept--setup_crew h3, .dept-card.dept--setup_crew .task-info h4 { color: #2196f3; }
+.dept-card.dept--setup_crew, .overview-card.dept--setup_crew { border-top: 3px solid #2196f3; }
+.dept-card.dept--setup_crew h3, .dept-card.dept--setup_crew .task-info h4,
+.overview-card.dept--setup_crew h3 { color: #2196f3; }
 
-.dept-card.dept--food_team { border-top: 3px solid #ff9800; }
-.dept-card.dept--food_team h3, .dept-card.dept--food_team .task-info h4 { color: #ff9800; }
+.dept-card.dept--food_team, .overview-card.dept--food_team { border-top: 3px solid #ff9800; }
+.dept-card.dept--food_team h3, .dept-card.dept--food_team .task-info h4,
+.overview-card.dept--food_team h3 { color: #ff9800; }
 
-.dept-card.dept--stage_crew { border-top: 3px solid #9c27b0; }
-.dept-card.dept--stage_crew h3, .dept-card.dept--stage_crew .task-info h4 { color: #9c27b0; }
+.dept-card.dept--stage_crew, .overview-card.dept--stage_crew { border-top: 3px solid #9c27b0; }
+.dept-card.dept--stage_crew h3, .dept-card.dept--stage_crew .task-info h4,
+.overview-card.dept--stage_crew h3 { color: #9c27b0; }
 
-.dept-card.dept--cleanup_crew { border-top: 3px solid #607d8b; }
-.dept-card.dept--cleanup_crew h3, .dept-card.dept--cleanup_crew .task-info h4 { color: #607d8b; }
+.dept-card.dept--cleanup_crew, .overview-card.dept--cleanup_crew { border-top: 3px solid #607d8b; }
+.dept-card.dept--cleanup_crew h3, .dept-card.dept--cleanup_crew .task-info h4,
+.overview-card.dept--cleanup_crew h3 { color: #607d8b; }
 
-.dept-card.dept--arcade_attendant { border-top: 3px solid #e91e63; }
-.dept-card.dept--arcade_attendant h3, .dept-card.dept--arcade_attendant .task-info h4 { color: #e91e63; }
+.dept-card.dept--arcade_attendant, .overview-card.dept--arcade_attendant { border-top: 3px solid #e91e63; }
+.dept-card.dept--arcade_attendant h3, .dept-card.dept--arcade_attendant .task-info h4,
+.overview-card.dept--arcade_attendant h3 { color: #e91e63; }
 
 /* tasks-list (individual task reset section) */
 .tasks-list.dept--front_gate h3, .tasks-list.dept--front_gate .task-info h4 { color: #4caf50; }
