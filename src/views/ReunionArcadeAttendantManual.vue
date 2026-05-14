@@ -655,25 +655,38 @@ button:disabled {
 }
 
 .task-overview {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
   text-align: left;
 }
 
+.task-category {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  border: 1px solid #444;
+}
+
 .task-category h3 {
-  color: var(--reunion-arcade-pink, #e91e63);
-  margin-bottom: 0.5rem;
+  color: #e91e63;
+  margin-bottom: 1rem;
 }
 
 .task-category ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
-  padding-left: 1.5rem;
-  color: #ccc;
 }
 
 .task-category ul li {
-  margin-bottom: 0.3rem;
+  margin: 0.75rem 0;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  border-left: 3px solid #e91e63;
+  color: #ccc;
 }
 
 .footer {
