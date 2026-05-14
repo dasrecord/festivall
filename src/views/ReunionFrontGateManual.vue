@@ -42,7 +42,7 @@
         <h3 style="color: #4caf50; margin-bottom: 0.75rem"><img :src="frontgate_icon" style="width: 22px; height: auto; margin-right: 8px; vertical-align: middle" />Your Role</h3>
         <p style="margin-bottom: 0.75rem">
           You are the first point of contact for every festival attendee. Your job is to scan
-          tickets, verify wristbands, and manage entry flow so the experience starts smoothly from
+          tickets, collect cash payments, and manage entry flow so the experience starts smoothly from
           the moment guests arrive.
         </p>
         <p style="margin: 0; font-size: 0.9rem; color: #ccc">
