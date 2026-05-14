@@ -56,11 +56,11 @@
           margin: 1rem 0 2rem 0;
           padding: 1.5rem;
           background-color: rgba(76, 175, 80, 0.1);
-          border: 2px solid var(--reunion-frog-green, #4caf50);
+          border: 2px solid #4caf50;
           border-radius: 10px;
         "
       >
-        <h3 style="color: var(--reunion-frog-green, #4caf50); margin-bottom: 1rem">
+        <h3 style="color: #4caf50; margin-bottom: 1rem">
           🎫 Access Ticket Scanner
         </h3>
         <p style="margin-bottom: 1rem">
@@ -71,7 +71,7 @@
           target="_blank"
           style="
             display: inline-block;
-            background-color: var(--reunion-frog-green, #4caf50);
+            background-color: #4caf50;
             color: white;
             padding: 12px 24px;
             text-decoration: none;
@@ -235,11 +235,11 @@
           margin-top: 2rem;
           padding: 1.5rem;
           background-color: rgba(76, 175, 80, 0.1);
-          border: 2px solid var(--reunion-frog-green, #4caf50);
+          border: 2px solid #4caf50;
           border-radius: 10px;
         "
       >
-        <h3 style="color: var(--reunion-frog-green, #4caf50); margin-bottom: 1rem">
+        <h3 style="color: #4caf50; margin-bottom: 1rem">
           📋 Shift-Based Tasks
         </h3>
         <p style="margin-bottom: 1rem">
@@ -705,7 +705,7 @@ onUnmounted(() => {
 }
 
 .highlight {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #4caf50;
   text-align: center;
   margin-bottom: 1rem;
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
@@ -720,7 +720,7 @@ onUnmounted(() => {
   margin: 1rem 0;
   width: 100%;
   max-width: 800px;
-  border: 1px solid var(--reunion-frog-green, #4caf50);
+  border: 1px solid #4caf50;
 }
 
 .form-section {
@@ -735,7 +735,7 @@ label {
   width: 30%;
   text-align: left;
   padding: 10px;
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #4caf50;
   color: white;
   border-radius: 15px 0 0 15px;
   font-weight: bold;
@@ -751,7 +751,7 @@ input {
 }
 
 button {
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #4caf50;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -794,13 +794,13 @@ button:disabled {
 }
 
 .task-item:hover {
-  border-color: var(--reunion-frog-green, #4caf50);
+  border-color: #4caf50;
   transform: translateY(-2px);
 }
 
 .task-item.completed {
   background-color: rgba(76, 175, 80, 0.2);
-  border-color: var(--reunion-frog-green, #4caf50);
+  border-color: #4caf50;
 }
 
 .task-item.assigned {
@@ -809,15 +809,15 @@ button:disabled {
 }
 
 .task-item.personal-task {
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid #4caf50;
 }
 
 .task-item.one-time-task {
-  border-left: 4px solid var(--reunion-frog-green, #4caf50);
+  border-left: 4px solid #4caf50;
 }
 
 .task-content h4 {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #4caf50;
   margin-bottom: 0.5rem;
 }
 
@@ -845,24 +845,24 @@ button:disabled {
 }
 
 .claim-btn {
-  background-color: #2196f3;
+  background-color: #4caf50;
 }
 
 .complete-btn {
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #4caf50;
 }
 
 .unclaim-btn {
-  background-color: #ff9800;
+  background-color: #666;
 }
 
 .personal-complete-btn {
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #4caf50;
   font-size: 0.9rem;
 }
 
 .personal-completed {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #4caf50;
   font-weight: bold;
   padding: 12px 24px;
   display: inline-block;
@@ -884,7 +884,7 @@ button:disabled {
 
 .progress-fill {
   height: 100%;
-  background-color: var(--reunion-frog-green, #4caf50);
+  background-color: #4caf50;
   transition: width 0.3s ease;
 }
 
@@ -903,7 +903,7 @@ button:disabled {
 }
 
 .task-category h3 {
-  color: var(--reunion-frog-green, #4caf50);
+  color: #4caf50;
   margin-bottom: 1rem;
 }
 
@@ -917,7 +917,7 @@ button:disabled {
   padding: 0.5rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 5px;
-  border-left: 3px solid var(--reunion-frog-green, #4caf50);
+  border-left: 3px solid #4caf50;
 }
 
 .footer {
