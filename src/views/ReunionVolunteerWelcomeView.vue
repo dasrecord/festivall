@@ -102,7 +102,7 @@
         <h3>Questions?</h3>
         <p>
           Reach out to our Volunteer Coordinator on Slack or check the
-          <router-link to="/reunion-volunteer-instructions">volunteer instructions</router-link>
+          <router-link to="/reunion-volunteer-responsibilities">volunteer responsibilities</router-link>
           again.
         </p>
       </div>
