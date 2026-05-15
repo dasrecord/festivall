@@ -63,6 +63,10 @@
             @click.stop="showAdHocMealModal = true"
             style="font-size:0.7rem;padding:4px 10px;margin:4px;border-radius:20px;border:1px solid var(--reunion-frog-green);background:transparent;color:var(--reunion-frog-green);cursor:pointer;white-space:nowrap;"
           >🍽️ Buy Meals</button>
+          <span
+            v-if="pendingMealPurchases.length > 0"
+            style="font-size:0.65rem;color:orange;margin:2px 0 4px;display:block;"
+          >⏳ {{ pendingMealPurchases.length }} order{{ pendingMealPurchases.length > 1 ? 's' : '' }} pending</span>
         </div>
       </div>
       <div class="status-bar">
@@ -874,6 +878,7 @@ export default {
     const isAdHocSubmitting = ref(false)
     const btcRate = ref(0)
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
+    const pendingMealPurchases = ref([])
 
       // Efficient team manual links map
       const teamManuals = {
@@ -961,34 +966,34 @@ export default {
           value3: instructions.replace(/\n/g, '<br />')
         }, { headers: { 'Content-Type': 'application/json' } })
 
-        // Firestore update
+        // Firestore update — write as PENDING, no increment yet
         const participantRef = doc(reunion_db, 'participants_2026', order.value.id_code)
-        const historyEntry = {
+        const pendingEntry = {
           timestamp: new Date().toISOString(),
           meal_quantity: Number(meal_quantity),
           payment_type,
           fiat_total: payment_type === 'bitcoin'
             ? Number((meal_quantity * REUNION_FESTIVAL.pricing.mealAdHocPrice * 0.75).toFixed(2))
             : Number(meal_quantity * REUNION_FESTIVAL.pricing.mealAdHocPrice),
-          id_code: order.value.id_code
+          id_code: order.value.id_code,
+          status: 'pending'
         }
         await updateDoc(participantRef, {
-          'order.meal_tickets_remaining': increment(Number(meal_quantity)),
-          'order.ad_hoc_meal_orders': arrayUnion(historyEntry)
+          'order.pending_meal_purchases': arrayUnion(pendingEntry)
         })
+
+        // Update local pending state
+        pendingMealPurchases.value = [...pendingMealPurchases.value, pendingEntry]
 
         // Slack
         const displayPrice = payment_type === 'bitcoin'
           ? `:bitcoin: ${total_price} BTC`
           : `:moneybag: $${total_price} CAD`
         await axios.post('https://relayproxy.vercel.app/reunion_sales', {
-          text: `:fork_and_knife: AD HOC MEAL ORDER\n:bust_in_silhouette: ${order.value.fullname}\n:id: ${order.value.id_code}\n:knife_fork_plate: ${meal_quantity} meal ticket(s)\n${displayPrice}\n:credit_card: ${payment_type}`
+          text: `:fork_and_knife: AD HOC MEAL ORDER (PENDING)\n:bust_in_silhouette: ${order.value.fullname}\n:id: ${order.value.id_code}\n:knife_fork_plate: ${meal_quantity} meal ticket(s)\n${displayPrice}\n:credit_card: ${payment_type}\n:hourglass: Awaiting ${payment_type === 'cash' ? 'cash confirmation at Food Station' : 'payment verification'}`
         }, { headers: { 'Content-Type': 'application/json' } })
 
-        // Update local state instantly
-        order.value.meal_tickets_remaining += Number(meal_quantity)
-
-        alert(`Meal order submitted!\nCheck your phone and email for payment instructions.\n${meal_quantity} meal ticket(s) added to your account.`)
+        alert(`Meal order submitted!\nCheck your phone and email for payment instructions.\nYour ${meal_quantity} meal ticket(s) will be added once payment is confirmed.`)
         showAdHocMealModal.value = false
         adHocMealForm.value = { meal_quantity: 1, payment_type: '', total_price: 0 }
       } catch (error) {
@@ -1156,6 +1161,7 @@ export default {
             entrance_activity_history: p.order?.entrance_activity_history || [],
             last_entrance_activity: p.order?.last_entrance_activity || null,
             meal_redemption_history: p.order?.meal_redemption_history || [],
+            pending_meal_purchases: p.order?.pending_meal_purchases || [],
             // Roles & application data
             applicant_types: p.roles?.applicant_types || [],
             payment_type: p.order?.payment_type || '',
@@ -1166,6 +1172,7 @@ export default {
           }
 
           // Merge claimed slots with up-to-date status and set mergedClaimedSlots
+          pendingMealPurchases.value = p.order?.pending_meal_purchases || []
           mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
 
           await nextTick()
@@ -1314,6 +1321,7 @@ export default {
       isAdHocSubmitting,
       btcRate,
       adHocMealForm,
+      pendingMealPurchases,
       calculateAdHocMealPrice,
       submitAdHocMealOrder,
       downloadSettimes,
