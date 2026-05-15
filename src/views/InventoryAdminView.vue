@@ -19,9 +19,6 @@
         <label class="inv-label">Sub-location
           <input class="inv-input" v-model="invForm.sub_location" placeholder="e.g. Bin_1" />
         </label>
-        <label class="inv-label">Task IDs (comma-separated)
-          <input class="inv-input" v-model="invForm.task_ids" placeholder="e.g. task_001, task_002" />
-        </label>
         <label class="inv-label" style="grid-column:1/-1;">Description
           <input class="inv-input" v-model="invForm.description" placeholder="Optional description" />
         </label>
@@ -41,6 +38,15 @@
           <input type="checkbox" v-model="invForm.needs_restock" />
           ⚠️ Needs restock
         </label>
+        <label class="inv-checkbox-label" style="grid-column:1/-1;">
+          <input type="checkbox" v-model="invForm.missing" />
+          ❌ Missing
+        </label>
+        <div v-if="invEditId" class="inv-flag-clear-row" style="grid-column:1/-1;">
+          <span class="inv-flag-clear-label">Clear volunteer flags:</span>
+          <button type="button" class="inv-flag-clear-btn" @click="invClearFlag('needs_restock')">✓ Mark Restocked</button>
+          <button type="button" class="inv-flag-clear-btn" @click="invClearFlag('missing')">✓ Mark Found</button>
+        </div>
       </div>
       <div class="inv-form-actions">
         <button class="inv-cancel-btn" @click="invFormOpen = false">Cancel</button>
@@ -74,6 +80,7 @@
             {{ Array.isArray(item.departments) ? item.departments.join(', ') : '' }}
           </span>
           <span v-if="item.needs_restock" class="line-amount amber" style="font-size:10px;">⚠ restock</span>
+          <span v-if="item.missing" class="line-amount" style="font-size:10px;color:#ef5350;">❌ missing</span>
           <div class="inv-row-actions">
             <button class="inv-edit-btn" @click="invOpenEdit(item)">Edit</button>
             <button class="inv-del-btn" @click="invDelete(item.id)">✕</button>
@@ -104,12 +111,12 @@ const invEditId = ref(null)
 const invSaving = ref(false)
 const invForm = ref({
   name: '', description: '', location: '', sub_location: '',
-  departments: [], task_ids: '', notes: '', needs_restock: false
+  departments: [], notes: '', needs_restock: false, missing: false
 })
 
 function invOpenAdd() {
   invEditId.value = null
-  invForm.value = { name: '', description: '', location: '', sub_location: '', departments: [], task_ids: '', notes: '', needs_restock: false }
+  invForm.value = { name: '', description: '', location: '', sub_location: '', departments: [], notes: '', needs_restock: false, missing: false }
   invFormOpen.value = true
 }
 
@@ -121,11 +128,17 @@ function invOpenEdit(item) {
     location: item.location || '',
     sub_location: item.sub_location || '',
     departments: Array.isArray(item.departments) ? [...item.departments] : [],
-    task_ids: Array.isArray(item.task_ids) ? item.task_ids.join(', ') : (item.task_ids || ''),
     notes: item.notes || '',
-    needs_restock: !!item.needs_restock
+    needs_restock: !!item.needs_restock,
+    missing: !!item.missing
   }
   invFormOpen.value = true
+}
+
+async function invClearFlag(flag) {
+  if (!invEditId.value) return
+  invForm.value[flag] = false
+  await updateItem(invEditId.value, { [flag]: false })
 }
 
 async function invSave() {
@@ -137,9 +150,9 @@ async function invSave() {
       location: invForm.value.location.trim(),
       sub_location: invForm.value.sub_location.trim(),
       departments: [...invForm.value.departments],
-      task_ids: invForm.value.task_ids.split(',').map(s => s.trim()).filter(Boolean),
       notes: invForm.value.notes.trim(),
-      needs_restock: invForm.value.needs_restock
+      needs_restock: invForm.value.needs_restock,
+      missing: invForm.value.missing
     }
     if (invEditId.value) {
       await updateItem(invEditId.value, data)
@@ -429,4 +442,32 @@ async function invDelete(id) {
 .inv-del-btn:hover { border-color: #ef5350; color: #ef5350; }
 
 .amber { color: #ffa726; }
+
+.inv-flag-clear-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.4rem 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin-top: 0.25rem;
+}
+.inv-flag-clear-label {
+  font-size: 0.72rem;
+  color: #777;
+  margin-right: 0.25rem;
+}
+.inv-flag-clear-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.5);
+  padding: 0.15rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.inv-flag-clear-btn:hover {
+  border-color: #66bb6a;
+  color: #66bb6a;
+}
 </style>
