@@ -343,7 +343,6 @@ function listenToAlerts() {
   })
 }
 
-const CHECKIN_DECAY_MS = 10 * 60 * 1000
 const allCheckinData = ref([])
 
 function pruneCheckins() {
@@ -423,6 +422,13 @@ function listenToVolunteerShifts() {
 
 // ── Overlay definitions for map features (with nudge/offsets) ────────────────
 // Add an entry for each feature, matching the SVG layer name and desired offset.
+
+// ── Behaviour constants ───────────────────────────────────────────────────────
+const CHECKIN_DECAY_MS = 10 * 60 * 1000   // how long a check-in stays visible on the map
+const MEAL_WINDOW_MS   = 90 * 60 * 1000   // how long "now serving" stays active (1.5 h)
+const MIN_SCALE = 1   // minimum map zoom level
+const MAX_SCALE = 5   // maximum map zoom level
+
 const STAGE_ICONS = [
   { svgId: 'stage_area_icon', label: 'Main Stage', offsetX: 0, offsetY: +10 }
 ]
@@ -439,11 +445,17 @@ const MEAL_ICONS = [
 // New overlays for interactive features
 const KITCHEN_ICONS = [
   {
-    svgId: 'shared_kitchen_area',
+    svgId: 'shared_kitchen_icon',
     label: 'Shared Kitchen',
     offsetX: 0,
     offsetY: 150
   }
+]
+
+// Badge defs are separate so offsetX/Y can be nudged independently of the ticker overlay.
+// Positive offsetX moves right, positive offsetY moves down (SVG coordinate space).
+const KITCHEN_BADGE_DEFS = [
+  { svgId: 'shared_kitchen_icon', offsetX: 0, offsetY: 20 }
 ]
 
 const WASHROOM_ICONS = [
@@ -453,6 +465,14 @@ const WASHROOM_ICONS = [
     offsetX: 0,
     offsetY: 0
   }
+]
+
+// Each entry maps a location label (stored on the alert) to the SVG icon id,
+// so the badge only appears on the specific washroom that was reported.
+// offsetX/Y can be nudged per-icon.
+const WASHROOM_BADGE_DEFS = [
+  { svgId: 'outhouse_icon',   location: 'Outhouse',   offsetX: 20, offsetY: -10 },
+  { svgId: 'portapotty_icon', location: 'Porta Potty', offsetX: 0, offsetY: 0 },
 ]
 
 const LOSTFOUND_ICONS = [
@@ -474,6 +494,19 @@ const CHECKIN_ICONS = [
   }
 ]
 
+// Generic info popup defs — edit title/description to change what the modal shows.
+// Prefix-matched: 'tent' matches tent_icon, tent1_icon, tent2_icon, etc.
+const INFO_ICON_PREFIXES = [
+  { prefix: 'garden',               info: { icon: iconLand,            title: 'Garden',               description: 'Community garden. Have a look around — please don\'t pick anything without asking first!' } },
+  { prefix: 'playground',           info: { icon: iconPlayground,      title: 'Playground',            description: 'Kids\' play area. Parental supervision recommended.' } },
+  { prefix: 'wading_pool',          info: { icon: iconPool,            title: 'Wading Pool',           description: 'All ages welcome. No solo swimming — a buddy must be present at all times.' } },
+  { prefix: 'quiet_camping',        info: { icon: iconQuiet,           title: 'Quiet Camping',         description: 'Quiet hours after 11pm. Please keep noise to a minimum in this zone.' } },
+  { prefix: 'cote_corral',          info: { icon: iconTarget,          title: 'Cote Corral',           description: 'Nerf gun battle arena! Grab a blaster and join the chaos. Check the schedule for organized rounds. Closed when no volunteers are present.' } },
+  { prefix: 'tent',                 info: { icon: iconTent,            title: 'Tent Camping',          description: 'General camping area. Set up anywhere that isn\'t reserved. No fires in the camping zone.' } },
+  { prefix: 'camper',               info: { icon: iconCampsiteParking, title: 'Camper Parking',        description: 'Designated RV/camper area. See the setup crew for your assigned spot.' } },
+  { prefix: 'artist_loading_zone',  info: { icon: iconArtist,          title: 'Artist Loading Zone',   description: 'Artist access only. Please keep this area clear for performers and their gear.' } },
+]
+
 // Only show overlays for official teams, mapping to SVG icon by name
 const VOLUNTEER_SHIFT_ICONS = [
   { svgId: 'cleanup_crew_icon', label: 'Cleanup Crew', icon: iconCleanupCrew, offsetX: 0, offsetY: -50 },
@@ -489,6 +522,8 @@ const stageOverlays = ref([]) // [{ label, style }]
 const mealOverlays  = ref([]) // [{ style }]
 const kitchenOverlays = ref([]) // [{ style }]
 const washroomOverlays = ref([]) // [{ style }]
+const kitchenBadgeOverlays = ref([]) // small icon-corner badge
+const washroomBadgeOverlays = ref([]) // small icon-corner badge
 const lostFoundOverlays = ref([]) // [{ style }]
 const checkinOverlays = ref([]) // [{ style }]
 const volunteerShiftOverlays = ref([]) // [{ style }]
@@ -569,6 +604,39 @@ const mealTicker = computed(() => {
 
 // Shared helper: resolve CSS position from an SVG element ID or fallback coords.
 // getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
+// Anchors to the top-right corner of an SVG element for notification badges.
+// Uses getBBox() (works for real SVG shapes) before falling back to attributes.
+function resolveIconBadgeStyle(vb, { svgId, fallbackSvgPos }) {
+  let x = 0, y = 0, w = 0, h = 0
+  const el = document.getElementById(svgId)
+  if (el) {
+    try {
+      const bb = el.getBBox()
+      if (bb.width > 0 || bb.height > 0) {
+        x = bb.x; y = bb.y; w = bb.width; h = bb.height
+      } else throw new Error('zero')
+    } catch {
+      x = parseFloat(el.getAttribute('x'))
+      y = parseFloat(el.getAttribute('y'))
+      if (isNaN(x) || isNaN(y)) {
+        const m = (el.getAttribute('transform') || '').match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
+        x = m ? parseFloat(m[1]) : 0
+        y = m ? parseFloat(m[2]) : 0
+      }
+      w = parseFloat(el.getAttribute('width') || 0)
+      h = parseFloat(el.getAttribute('height') || 0)
+    }
+  } else if (fallbackSvgPos) {
+    ;({ x, y, w, h } = fallbackSvgPos)
+  } else {
+    return null
+  }
+  return {
+    left: `${((x + w) / vb.width)  * 100}%`,
+    top:  `${(y          / vb.height) * 100}%`
+  }
+}
+
 function resolveIconStyle(vb, { svgId, fallbackSvgPos, offsetX = 0, offsetY = 0 }) {
   let x, y, w, h
   const el = document.getElementById(svgId)
@@ -630,6 +698,17 @@ function positionOverlays() {
     return style ? [{ label: icon.label, style }] : []
   })
 
+  // Badges — each def has its own offsetX/Y for independent nudging.
+  kitchenBadgeOverlays.value = KITCHEN_BADGE_DEFS.flatMap((def) => {
+    const style = resolveIconStyle(vb, def)
+    return style ? [{ style }] : []
+  })
+
+  washroomBadgeOverlays.value = WASHROOM_BADGE_DEFS.flatMap((def) => {
+    const style = resolveIconStyle(vb, def)
+    return style ? [{ style, svgId: def.svgId, location: def.location }] : []
+  })
+
   lostFoundOverlays.value = LOSTFOUND_ICONS.flatMap((icon) => {
     const style = resolveIconStyle(vb, icon)
     return style ? [{ label: icon.label, style }] : []
@@ -649,7 +728,6 @@ function positionOverlays() {
 }
 
 // ── Upcoming meal logic ───────────────────────────────────────────────────────
-const MEAL_WINDOW_MS = 90 * 60 * 1000  // 1.5 h serving window
 
 const nextMeal = computed(() => {
   const meals = REUNION_FESTIVAL.meals
@@ -777,7 +855,7 @@ function handleSvgIconClick(iconId) {
   }
 
   // Handle shared kitchen icon click
-  if (iconId === 'shared_kitchen_area' || iconId.includes('kitchen')) {
+  if (iconId === 'shared_kitchen_icon' || iconId.includes('kitchen')) {
     openKitchenModal()
     return
   }
@@ -801,16 +879,6 @@ function handleSvgIconClick(iconId) {
   }
 
   // Generic info icons — supports exact IDs and prefix-matched serially-numbered IDs (e.g. camper1_icon, tent3_icon)
-  const INFO_ICON_PREFIXES = [
-    { prefix: 'garden',               info: { icon: iconLand,            title: 'Garden',               description: 'Community garden. Have a look around — please don\'t pick anything without asking first!' } },
-    { prefix: 'playground',           info: { icon: iconPlayground,      title: 'Playground',            description: 'Kids\' play area. Parental supervision recommended.' } },
-    { prefix: 'wading_pool',          info: { icon: iconPool,            title: 'Wading Pool',           description: 'All ages welcome. No solo swimming — a buddy must be present at all times.' } },
-    { prefix: 'quiet_camping',        info: { icon: iconQuiet,           title: 'Quiet Camping',         description: 'Quiet hours after 11pm. Please keep noise to a minimum in this zone.' } },
-    { prefix: 'cote_corral',          info: { icon: iconTarget,          title: 'Cote Corral',           description: 'Nerf gun battle arena! Grab a blaster and join the chaos. Check the schedule for organized rounds. Closed when no volunteers are present.' } },
-    { prefix: 'tent',                 info: { icon: iconTent,            title: 'Tent Camping',          description: 'General camping area. Set up anywhere that isn\'t reserved. No fires in the camping zone.' } },
-    { prefix: 'camper',               info: { icon: iconCampsiteParking, title: 'Camper Parking',        description: 'Designated RV/camper area. See the setup crew for your assigned spot.' } },
-    { prefix: 'artist_loading_zone',  info: { icon: iconArtist,          title: 'Artist Loading Zone',   description: 'Artist access only. Please keep this area clear for performers and their gear.' } },
-  ]
   const infoMatch = INFO_ICON_PREFIXES.find(({ prefix }) => iconId === `${prefix}_icon` || iconId.startsWith(`${prefix}_icon`) || new RegExp(`^${prefix}\\d+_icon$`).test(iconId))
   if (infoMatch) {
     openInfoModal(infoMatch.info)
@@ -879,7 +947,7 @@ async function submitWaterStationAlert() {
   waterStationError.value = ''
   try {
     const userId = effectiveIdCode.value || 'ANONYMOUS'
-    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
+    const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
     await addDoc(collection(reunion_db, 'alerts_2026'), {
       type: 'water_station',
       status: 'low',
@@ -919,7 +987,7 @@ async function submitFirewoodAlert() {
   firewoodError.value = ''
   try {
     const userId = effectiveIdCode.value || 'ANONYMOUS'
-    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
+    const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
     await addDoc(collection(reunion_db, 'alerts_2026'), {
       type: 'firewood',
       status: 'needed',
@@ -944,7 +1012,7 @@ async function submitWashroomSupplyAlert() {
   try {
     const col = collection(reunion_db, 'alerts_2026')
     const userId = effectiveIdCode.value || 'ANONYMOUS'
-    const userName = userId ? `User ${userId.slice(-5)}` : 'Anonymous'
+    const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
     const supply = washroomSupplyType.value
     const location = washroomLocation.value || 'Unknown Washroom'
     const message = `Low ${supply.replace('_', ' ')} reported at ${location}.`
@@ -976,8 +1044,6 @@ const mapTranslateX = ref(0)
 const mapTranslateY = ref(0)
 const isDragging = ref(false)
 const dragLast = ref({ x: 0, y: 0 })
-const MIN_SCALE = 1
-const MAX_SCALE = 5
 
 const zoomStyle = computed(() => ({
   transform: `translate(${mapTranslateX.value}px, ${mapTranslateY.value}px) scale(${mapScale.value})`,
@@ -1268,6 +1334,35 @@ onMounted(async () => {
           </span>
         </div>
         <button class="alert-post-btn" @click="openWashroomSupplyModal">Report Low</button>
+      </div>
+    </template>
+
+    <!-- Kitchen icon badge — appears on the SVG icon when there are active kitchen alerts -->
+    <template v-if="kitchenAlerts.length && kitchenBadgeOverlays.length">
+      <div
+        v-for="(overlay, i) in kitchenBadgeOverlays"
+        :key="'kitchen-badge-' + i"
+        class="icon-alert-badge"
+        :class="kitchenAlerts.some(a => a.mode === 'share') ? 'icon-alert-badge--share' : 'icon-alert-badge--missing'"
+        :style="overlay.style"
+        :title="kitchenAlerts.some(a => a.mode === 'share') ? '🍳 Someone is cooking to share!' : '❓ Missing ingredient request'"
+        @click.stop="openKitchenModal"
+      >
+        {{ kitchenAlerts.some(a => a.mode === 'share') ? '🍳' : '❓' }}
+      </div>
+    </template>
+
+    <!-- Washroom icon badge — only on the specific icon whose location was reported -->
+    <template v-if="washroomAlerts.length && washroomBadgeOverlays.length">
+      <div
+        v-for="(overlay, i) in washroomBadgeOverlays.filter(o => washroomAlerts.some(a => a.location === o.location))"
+        :key="'washroom-badge-' + i"
+        class="icon-alert-badge icon-alert-badge--washroom"
+        :style="overlay.style"
+        :title="'\ud83e\uddfb ' + overlay.location + ' supplies low!'"
+        @click.stop="washroomLocation = overlay.location; activeWashroomIconId = overlay.svgId; openWashroomSupplyModal()"
+      >
+        🧻
       </div>
     </template>
 
@@ -2219,6 +2314,42 @@ onMounted(async () => {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 0.08rem;
+}
+
+/* ── Icon-corner alert badges ───────────────────────────────────────────────── */
+.icon-alert-badge {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  line-height: 1;
+  z-index: 14;
+  cursor: pointer;
+  pointer-events: all;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.65);
+  animation: badge-pulse 2.2s ease-in-out infinite;
+  user-select: none;
+}
+.icon-alert-badge--share {
+  background: #1a6b1a;
+  border: 1.5px solid #4caf50;
+}
+.icon-alert-badge--missing {
+  background: #7a4500;
+  border: 1.5px solid #ffa726;
+}
+.icon-alert-badge--washroom {
+  background: #7a4e00;
+  border: 1.5px solid #ffcc44;
+}
+@keyframes badge-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    box-shadow: 0 1px 4px rgba(0,0,0,0.65); }
+  50%       { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 2px 7px rgba(0,0,0,0.7); }
 }
 
 .lostfound-hint {
