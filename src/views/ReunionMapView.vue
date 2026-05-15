@@ -9,11 +9,15 @@ import reunionMapUrl from '@/assets/images/reunion_map_(awesome_lathusca)_2026.s
 import { useLineupState } from '@/composables/useLineupState'
 import { useInventory } from '@/composables/useInventory'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+import iconGroundsMap from '@/assets/images/icons/grounds_map.png'
+import iconLocation from '@/assets/images/icons/location.png'
+import iconVolunteer from '@/assets/images/icons/volunteer.png'
 import iconCleanupCrew from '@/assets/images/icons/cleanup_crew.png'
 import iconSetupCrew from '@/assets/images/icons/setup_crew.png'
 import iconFrontGate from '@/assets/images/icons/front_gate.png'
 import iconFoodTeam from '@/assets/images/icons/food.png'
 import iconArcade from '@/assets/images/icons/arcade.png'
+import iconStage from '@/assets/images/icons/stage_crew.png'
 import iconSoundTech from '@/assets/images/icons/soundtech.png'
 import iconKitchen from '@/assets/images/icons/kitchen.png'
 import iconWashroom from '@/assets/images/icons/washroom.png'
@@ -1148,6 +1152,73 @@ function zoomToCenter(factor) {
 function zoomIn() { zoomToCenter(1.4) }
 function zoomOut() { zoomToCenter(1 / 1.4) }
 
+// ── Welcome / Onboarding ──────────────────────────────────────────────────────
+const WELCOME_SLIDES = [
+  {
+    icon: iconGroundsMap,
+    title: 'Welcome to the Reunion Map',
+    body: 'This interactive map shows what\'s happening live at the festival. Tap any icon to explore.',
+  },
+  {
+    icon: iconLocation,
+    title: 'Navigate the Map',
+    body: 'Drag to pan · Pinch or scroll to zoom · Use the +/− buttons in the bottom-right corner.',
+  },
+  {
+    icon: iconStage,
+    title: 'Stage Info',
+    body: 'The stage overlay shows who\'s playing now and up next. Tap it to read the full artist bio.',
+  },
+  {
+    icon: iconMeals,
+    title: 'Meals',
+    body: 'The meal ticker shows what\'s being served. Tap it to see the full menu.',
+  },
+  {
+    icon: iconKitchen,
+    title: 'Shared Kitchen',
+    body: 'Tap the kitchen icon to let others know you\'re cooking to share — or to request a missing ingredient.',
+  },
+  {
+    icon: iconLostFound,
+    title: 'Lost & Found',
+    body: 'Long-press (or double-click on desktop) anywhere on the map to drop a pin and report a lost or found item.',
+  },
+  {
+    icon: iconWashroom,
+    title: 'Washrooms, Water & Fire Pit',
+    body: 'Tap those icons to report low supplies, a low water station, or to request more firewood.',
+  },
+  {
+    icon: iconVolunteer,
+    title: 'Volunteer Shifts',
+    body: 'Tap any team icon to see who\'s on shift right now — or claim an open shift yourself.',
+  },
+]
+
+const WELCOME_STORAGE_KEY = 'reunion_welcomed_2026'
+const showWelcomeModal = ref(false)
+const welcomeStep = ref(0)
+
+function openWelcomeModal() {
+  welcomeStep.value = 0
+  showWelcomeModal.value = true
+}
+function closeWelcomeModal() {
+  showWelcomeModal.value = false
+  localStorage.setItem(WELCOME_STORAGE_KEY, '1')
+}
+function welcomeNext() {
+  if (welcomeStep.value < WELCOME_SLIDES.length - 1) {
+    welcomeStep.value++
+  } else {
+    closeWelcomeModal()
+  }
+}
+function welcomePrev() {
+  if (welcomeStep.value > 0) welcomeStep.value--
+}
+
 onMounted(async () => {
   fetchAndUpdateCurrentAct()
   fetchParticipantFullname()
@@ -1161,6 +1232,7 @@ onMounted(async () => {
   inlineSvgContent.value = svgText
   await nextTick()
   setupSvgListeners()
+  if (!localStorage.getItem(WELCOME_STORAGE_KEY)) openWelcomeModal()
 })
 </script>
 
@@ -1337,7 +1409,6 @@ onMounted(async () => {
             <template v-else>No items reported</template>
           </span>
         </div>
-        <p class="lostfound-hint">Long-press map to pin an item</p>
       </div>
     </template>
 
@@ -1591,6 +1662,9 @@ onMounted(async () => {
       <button class="zoom-btn" @click="zoomOut" :disabled="mapScale <= 1" title="Zoom out">−</button>
     </div>
 
+    <!-- Help button — re-opens the welcome tour -->
+    <button class="help-toggle" @click="openWelcomeModal" title="How to use this map">?</button>
+
     <!-- Settings toggle -->
     <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
     <Transition name="bio">
@@ -1755,6 +1829,48 @@ onMounted(async () => {
   </Transition>
 
   </div><!-- /.map-backdrop -->
+
+  <!-- Welcome / onboarding modal -->
+  <Teleport to="body">
+  <Transition name="bio">
+    <div v-if="showWelcomeModal" class="welcome-overlay" @click.self="closeWelcomeModal">
+      <div class="welcome-card">
+        <button class="bio-close" @click="closeWelcomeModal">✕</button>
+
+        <img :src="WELCOME_SLIDES[welcomeStep].icon" class="welcome-icon" alt="" />
+        <h2 class="welcome-title">{{ WELCOME_SLIDES[welcomeStep].title }}</h2>
+        <p class="welcome-body">{{ WELCOME_SLIDES[welcomeStep].body }}</p>
+
+        <!-- Step dots -->
+        <div class="welcome-dots">
+          <span
+            v-for="(_, i) in WELCOME_SLIDES"
+            :key="i"
+            class="welcome-dot"
+            :class="{ 'welcome-dot--active': i === welcomeStep }"
+            @click="welcomeStep = i"
+          ></span>
+        </div>
+
+        <!-- Navigation -->
+        <div class="welcome-actions">
+          <button
+            v-if="welcomeStep > 0"
+            class="modal-btn modal-btn--ghost"
+            @click="welcomePrev"
+          >← Back</button>
+          <span v-else></span>
+
+          <div class="welcome-actions-right">
+            <button class="modal-btn modal-btn--primary" @click="welcomeNext">
+              {{ welcomeStep < WELCOME_SLIDES.length - 1 ? 'Next →' : 'Got it!' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -2393,14 +2509,6 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.lostfound-hint {
-  font-size: 7px;
-  color: rgba(255,255,255,0.52);
-  text-align: center;
-  margin: 3px 0 0;
-  font-style: italic;
-  white-space: nowrap;
-}
 
 /* ── Pan & zoom ─────────────────────────────────────────────────────────────── */
 .map-container {
@@ -2416,5 +2524,116 @@ onMounted(async () => {
   transform-origin: 0 0;
   /* no will-change: transform — that rasterizes the layer and causes pixelation */
 }
+
+/* ── Help (?) button ─────────────────────────────────────────────────────────── */
+.help-toggle {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30, 5, 60, 0.72);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, color 0.15s;
+}
+.help-toggle:hover {
+  background: rgba(67, 7, 137, 0.92);
+  color: #fff;
+}
+
+/* ── Welcome / onboarding modal ──────────────────────────────────────────────── */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.welcome-card {
+  position: relative;
+  background: rgba(30, 5, 60, 0.97);
+  color: #fff;
+  border-radius: 16px;
+  padding: 2rem 1.6rem 1.4rem;
+  width: min(92vw, 380px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+  text-align: center;
+  pointer-events: all;
+}
+
+.welcome-icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+  opacity: 0.92;
+  filter: brightness(0) invert(1);
+}
+
+.welcome-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.55rem;
+  line-height: 1.3;
+}
+
+.welcome-body {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0 0 1.25rem;
+  min-height: 2.8rem;
+}
+
+.welcome-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.welcome-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.welcome-dot--active {
+  background: #c9a0f0;
+  transform: scale(1.3);
+}
+
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.welcome-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+
 
 </style>
