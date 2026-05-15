@@ -55,7 +55,7 @@ const ITEMS = [
   {
     name: 'Extension Cord 1',
     description: 'Heavy-duty outdoor extension cord for front gate power needs',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -65,7 +65,7 @@ const ITEMS = [
   {
     name: 'Power Bar 1',
     description: 'Power bar for front gate devices',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -75,7 +75,7 @@ const ITEMS = [
   {
     name: 'Blue Swivel Chair 1',
     description: 'Blue swivel chair — front gate station',
-    location: 'front_gate_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['front_gate', 'arcade_attendant'],
     needs_restock: false,
@@ -85,7 +85,7 @@ const ITEMS = [
   {
     name: 'Blue Swivel Chair 2',
     description: 'Blue swivel chair — front gate station',
-    location: 'front_gate_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['front_gate', 'arcade_attendant'],
     needs_restock: false,
@@ -95,7 +95,7 @@ const ITEMS = [
   {
     name: 'Cash Box',
     description: 'Lockable cash box for gate transactions',
-    location: 'front_gate_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -105,7 +105,7 @@ const ITEMS = [
   {
     name: 'Kiosk Touchscreen Computer',
     description: 'Touchscreen computer running the front gate kiosk',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -115,7 +115,7 @@ const ITEMS = [
   {
     name: 'Computer Stand',
     description: 'Stand or mount for the front gate kiosk computer',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -125,7 +125,7 @@ const ITEMS = [
   {
     name: 'Mosquito Spray',
     description: 'Insect repellent for gate staff',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -135,7 +135,7 @@ const ITEMS = [
   {
     name: 'Fan',
     description: 'Portable fan for front gate booth comfort',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -145,7 +145,7 @@ const ITEMS = [
   {
     name: 'FM Radio',
     description: 'FM radio for front gate area',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -155,7 +155,7 @@ const ITEMS = [
   {
     name: 'Walkie Talkie 1',
     description: 'Walkie talkie for front gate communication',
-    location: 'front_gate_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['front_gate'],
     needs_restock: false,
@@ -167,7 +167,7 @@ const ITEMS = [
   {
     name: 'Self-Serve Kiosk Computer',
     description: 'Touchscreen computer running the self-serve meal kiosk',
-    location: 'meals_area_icon',
+    location: 'barn_building_icon',
     sub_location: 'Service counter',
     departments: ['food_team'],
     needs_restock: false,
@@ -177,7 +177,7 @@ const ITEMS = [
   {
     name: 'BBQ A',
     description: 'Primary BBQ grill for food service',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -187,7 +187,7 @@ const ITEMS = [
   {
     name: 'BBQ B',
     description: 'Secondary BBQ grill for food service',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -197,8 +197,8 @@ const ITEMS = [
   {
     name: 'Plates',
     description: 'Plates for food service',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Supply shelf',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -207,8 +207,8 @@ const ITEMS = [
   {
     name: 'Bowls',
     description: 'Bowls for food service',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Supply shelf',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -217,8 +217,8 @@ const ITEMS = [
   {
     name: 'Cutlery',
     description: 'Forks, knives, and spoons for food service',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Supply shelf',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -227,8 +227,8 @@ const ITEMS = [
   {
     name: 'Napkins',
     description: 'Paper napkins for food service',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Supply shelf',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -237,8 +237,8 @@ const ITEMS = [
   {
     name: 'Dish Soap',
     description: 'Dish soap for food team cleanup',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Under sink',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -247,8 +247,8 @@ const ITEMS = [
   {
     name: 'Rubber Gloves 1',
     description: 'Rubber gloves for food team use',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Under sink',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -257,7 +257,7 @@ const ITEMS = [
   {
     name: 'Water Dispenser',
     description: 'Water cooler / dispenser for meal service area',
-    location: 'meals_area_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -267,7 +267,7 @@ const ITEMS = [
   {
     name: 'Tongs',
     description: 'BBQ tongs for grilling',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -277,7 +277,7 @@ const ITEMS = [
   {
     name: 'Grill Brush',
     description: 'Wire brush for cleaning BBQ grates',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -287,7 +287,7 @@ const ITEMS = [
   {
     name: 'Iron Griddle Pan 1',
     description: 'Cast iron griddle pan for food prep',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -297,7 +297,7 @@ const ITEMS = [
   {
     name: 'Iron Griddle Pan 2',
     description: 'Cast iron griddle pan for food prep',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
@@ -307,8 +307,8 @@ const ITEMS = [
   {
     name: 'Trash Bags 1',
     description: 'Garbage bags for the food service area',
-    location: 'shared_kitchen_icon',
-    sub_location: 'Supply shelf',
+    location: 'tool_shed_icon',
+    sub_location: '',
     departments: ['food_team'],
     needs_restock: false,
     missing: false,
@@ -329,7 +329,7 @@ const ITEMS = [
   {
     name: 'Weed Whacker',
     description: 'Gas or electric string trimmer for cutting overgrowth',
-    location: 'trailer_C_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -339,7 +339,7 @@ const ITEMS = [
   {
     name: 'Power Washer',
     description: 'Pressure washer for site cleaning',
-    location: 'trailer_C_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -349,7 +349,7 @@ const ITEMS = [
   {
     name: 'Extension Cord 2',
     description: 'Heavy-duty outdoor extension cord for setup tasks',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -359,7 +359,7 @@ const ITEMS = [
   {
     name: 'Extension Cord 3',
     description: 'Heavy-duty outdoor extension cord for setup tasks',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -399,7 +399,7 @@ const ITEMS = [
   {
     name: 'Trash Bags 2',
     description: 'Heavy-duty garbage bags for pre-event site cleanup',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -429,7 +429,7 @@ const ITEMS = [
   {
     name: 'Rake 1',
     description: 'Leaf / ground rake for site preparation',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -439,7 +439,7 @@ const ITEMS = [
   {
     name: 'Rake 2',
     description: 'Leaf / ground rake for site preparation',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -449,7 +449,7 @@ const ITEMS = [
   {
     name: 'Shovel 1',
     description: 'Shovel for site preparation',
-    location: 'trailer_C_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -459,7 +459,7 @@ const ITEMS = [
   {
     name: 'Shovel 2',
     description: 'Shovel for site preparation',
-    location: 'trailer_C_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -481,8 +481,8 @@ const ITEMS = [
   {
     name: 'PA System (Mains / Tops)',
     description: 'Main full-range PA speaker tops',
-    location: 'stage_area_icon',
-    sub_location: 'Stage left + right',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
     missing: false,
@@ -491,8 +491,8 @@ const ITEMS = [
   {
     name: 'Subwoofer Stack',
     description: 'Low-frequency subwoofer cabinets',
-    location: 'stage_area_icon',
-    sub_location: 'Stage front',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
     missing: false,
@@ -501,8 +501,8 @@ const ITEMS = [
   {
     name: 'Stage Monitors',
     description: 'Wedge or side-fill stage monitors for performers',
-    location: 'stage_area_icon',
-    sub_location: 'Stage deck',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
     missing: false,
@@ -511,8 +511,8 @@ const ITEMS = [
   {
     name: 'DI Boxes',
     description: 'Direct input boxes for instrument line signals',
-    location: 'stage_area_icon',
-    sub_location: 'Cable/gear crate',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
     missing: false,
@@ -531,8 +531,8 @@ const ITEMS = [
   {
     name: 'Amplifier Rack',
     description: 'Rack-mounted power amplifier(s) for the PA system',
-    location: 'stage_area_icon',
-    sub_location: 'Stage right rack',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
     missing: false,
@@ -541,7 +541,7 @@ const ITEMS = [
   {
     name: 'FOH Mixing Console',
     description: 'Front-of-house digital mixing desk',
-    location: 'front_of_house_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
@@ -551,7 +551,7 @@ const ITEMS = [
   {
     name: 'Projector',
     description: 'High-lumen projector for projection mapping',
-    location: 'front_of_house_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
@@ -561,7 +561,7 @@ const ITEMS = [
   {
     name: 'Projection Mapping Computer',
     description: 'Laptop running projection mapping software',
-    location: 'front_of_house_icon',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['stage_crew'],
     needs_restock: false,
@@ -571,7 +571,7 @@ const ITEMS = [
   {
     name: 'Power Strips / Stage Extension Cords',
     description: 'Rack-mount or floor power strips for stage and FOH equipment',
-    location: 'stage_area_icon',
+    location: 'trailer_C_icon',
     sub_location: 'Racks',
     departments: ['stage_crew'],
     needs_restock: false,
@@ -594,7 +594,7 @@ const ITEMS = [
     name: 'Tape',
     description: 'Masking / packing tape for sealing and labelling bins',
     location: 'trailer_C_icon',
-    sub_location: 'Supply crate',
+    sub_location: '',
     departments: ['cleanup_crew'],
     needs_restock: false,
     missing: false,
@@ -614,7 +614,7 @@ const ITEMS = [
     name: 'Rubber Gloves 2',
     description: 'Rubber gloves for cleanup crew use',
     location: 'trailer_C_icon',
-    sub_location: 'Supply crate',
+    sub_location: '',
     departments: ['cleanup_crew'],
     needs_restock: false,
     missing: false,
@@ -635,8 +635,8 @@ const ITEMS = [
   {
     name: 'Flipbook Computer',
     description: 'Computer running the flipbook photo booth software',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -645,8 +645,8 @@ const ITEMS = [
   {
     name: 'Webcam',
     description: 'Camera for the flipbook photo capture station',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -655,8 +655,8 @@ const ITEMS = [
   {
     name: 'Webcam / Computer Stand',
     description: 'Stand or mount for the flipbook webcam and/or computer',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -675,8 +675,8 @@ const ITEMS = [
   {
     name: 'Paper',
     description: 'Paper stock for flipbook print jobs',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook supply shelf',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -685,8 +685,8 @@ const ITEMS = [
   {
     name: 'Paper Cutter',
     description: 'Guillotine or rotary cutter for trimming flipbook pages',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -695,8 +695,8 @@ const ITEMS = [
   {
     name: 'Regular Stapler',
     description: 'Standard desktop stapler',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -715,8 +715,8 @@ const ITEMS = [
   {
     name: 'Heavy-Duty Stapler',
     description: 'Long-reach stapler for binding flipbook page sets',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook station',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -725,8 +725,8 @@ const ITEMS = [
   {
     name: 'Heavy-Duty Staples',
     description: 'Staple refills for the heavy-duty stapler',
-    location: 'trailer_A_icon',
-    sub_location: 'Flipbook supply shelf',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -735,8 +735,8 @@ const ITEMS = [
   {
     name: 'Arcade Laptop',
     description: 'Laptop for running arcade games or supporting systems',
-    location: 'trailer_A_icon',
-    sub_location: 'Interior',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -745,8 +745,8 @@ const ITEMS = [
   {
     name: 'Controllers',
     description: 'Game controllers for arcade laptop games',
-    location: 'trailer_A_icon',
-    sub_location: 'Interior',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -755,8 +755,8 @@ const ITEMS = [
   {
     name: 'Blue Swivel Chair 3',
     description: 'Blue swivel chair — arcade trailer',
-    location: 'trailer_A_icon',
-    sub_location: 'Interior',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['arcade_attendant', 'front_gate'],
     needs_restock: false,
     missing: false,
@@ -775,8 +775,8 @@ const ITEMS = [
   {
     name: 'TV',
     description: 'Television screen for arcade display',
-    location: 'trailer_A_icon',
-    sub_location: 'Interior',
+    location: 'barn_building_icon',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,
@@ -786,7 +786,7 @@ const ITEMS = [
     name: 'Standing Arcade Booth',
     description: 'Stand-up arcade cabinet booth',
     location: 'trailer_A_icon',
-    sub_location: 'Interior',
+    sub_location: '',
     departments: ['arcade_attendant'],
     needs_restock: false,
     missing: false,

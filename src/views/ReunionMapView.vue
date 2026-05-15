@@ -431,8 +431,8 @@ const MEAL_ICONS = [
   {
     svgId: 'meals_area',
     fallbackSvgPos: { x: 234.3, y: 268.69, w: 16, h: -2 },
-    offsetX: 10,
-    offsetY: 5
+    offsetX: 15,
+    offsetY: 25
   }
 ]
 
@@ -442,7 +442,7 @@ const KITCHEN_ICONS = [
     svgId: 'shared_kitchen_area',
     label: 'Shared Kitchen',
     offsetX: 0,
-    offsetY: 0
+    offsetY: 150
   }
 ]
 
@@ -856,7 +856,7 @@ const inventoryLocationItems = ref([])
 const inventoryLocationIconId = ref('')
 function openInventoryLocationModal(iconId) {
   inventoryLocationIconId.value = iconId
-  inventoryLocationItems.value = getItemsForLocation(iconId)
+  inventoryLocationItems.value = getItemsForLocation(iconId).slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   showInventoryLocationModal.value = true
 }
 function closeInventoryLocationModal() {
@@ -1632,29 +1632,22 @@ onMounted(async () => {
       <div
         v-for="item in inventoryLocationItems"
         :key="item.id"
-        class="shift-row"
-        style="flex-direction:column;align-items:flex-start;margin-bottom:0.5rem;"
+        class="inv-item-row"
       >
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-          <span class="bio-text" style="font-weight:600;margin:0;">{{ item.name }}</span>
-          <span
-            v-if="item.needs_restock"
-            style="font-size:0.72rem;color:#ffa726;font-weight:600;">⚠️ Needs restock</span>
+        <div class="inv-item-main">
+          <span class="inv-item-name">{{ item.name }}</span>
+          <span v-if="item.needs_restock" class="inv-needs-restock">⚠️ Restock</span>
+          <button
+            v-else-if="isVolunteerOrAdmin"
+            class="inv-flag-btn"
+            title="Flag needs restock"
+            @click.stop="flagInventoryRestock(item.id, true)"
+          >🚩</button>
         </div>
-        <span v-if="item.sub_location" style="font-size:0.78rem;color:rgba(255,255,255,0.45);">
-          › {{ item.sub_location }}
-        </span>
-        <span v-if="item.notes" style="font-size:0.78rem;color:rgba(255,255,255,0.55);margin-top:0.2rem;">
-          {{ item.notes }}
-        </span>
-        <button
-          v-if="isVolunteerOrAdmin && !item.needs_restock"
-          class="modal-btn modal-btn--ghost"
-          style="margin-top:0.4rem;padding:0.25rem 0.75rem;font-size:0.72rem;"
-          @click.stop="flagInventoryRestock(item.id, true)"
-        >
-          🚩 Flag needs restock
-        </button>
+        <div v-if="item.sub_location || item.notes" class="inv-item-sub">
+          <span v-if="item.sub_location">› {{ item.sub_location }}</span>
+          <span v-if="item.notes">{{ item.notes }}</span>
+        </div>
       </div>
       <div class="modal-actions" style="margin-top:1rem;">
         <button class="modal-btn modal-btn--ghost" @click.stop="closeInventoryLocationModal">Close</button>
@@ -2181,6 +2174,53 @@ onMounted(async () => {
 .lostfound-pin--claimed {
   opacity: 0.55;
 }
+/* ── Inventory location modal items ────────────────────────────────────────── */
+.inv-item-row {
+  padding: 0.22rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.inv-item-row:last-child {
+  border-bottom: none;
+}
+.inv-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.inv-item-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+.inv-needs-restock {
+  font-size: 0.7rem;
+  color: #ffa726;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.inv-flag-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.28);
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.inv-flag-btn:hover { color: #ffa726; }
+.inv-item-sub {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.38);
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.08rem;
+}
+
 .lostfound-hint {
   font-size: 7px;
   color: rgba(255,255,255,0.52);
