@@ -497,7 +497,7 @@ const CHECKIN_ICONS = [
   {
     svgId: 'front_gate_icon',
     label: 'Front Gate',
-    offsetX: -75,
+    offsetX: -45,
     offsetY: 25
   }
 ]
