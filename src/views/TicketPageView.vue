@@ -13,7 +13,7 @@
     <div class="order-info">
       <div class="ticket-identity">
         <span class="ticket-name">{{ order.fullname }}</span>
-        <span class="ticket-badge">{{ order.ticket_type === 'Weekend Pass' ? 'Weekend' : 'Day Pass' }}</span>
+        <span class="ticket-badge">{{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : 'Day Pass' }}</span>
       </div>
       <p class="ticket-valid">
         <strong>Valid:</strong>
