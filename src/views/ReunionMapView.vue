@@ -303,6 +303,13 @@ async function submitAlert() {
 async function clearAlert(alert) {
   const col = collection(reunion_db, 'alerts_2026')
   await deleteDoc(doc(col, alert.id))
+  const clearerName = participantFullname.value || (effectiveIdCode.value ? `User ${effectiveIdCode.value.slice(-5)}` : 'admin')
+  let msg = ''
+  if (alert.type === 'kitchen') msg = `✅ *Kitchen alert resolved*: "${alert.message}" cleared by ${clearerName}`
+  else if (alert.type === 'washroom') msg = `✅ *Washroom alert resolved*: Low ${(alert.supply || '').replace(/_/g, ' ')} at ${alert.location} cleared by ${clearerName}`
+  else if (alert.type === 'water_station') msg = `✅ *Water station alert resolved* by ${clearerName}`
+  else if (alert.type === 'firewood') msg = `✅ *Firewood alert resolved* by ${clearerName}`
+  if (msg) sendVolunteerCoordinator(msg)
 }
 
 async function claimLostFoundItem(item) {
@@ -442,29 +449,10 @@ const MEAL_ICONS = [
   }
 ]
 
-// New overlays for interactive features
-const KITCHEN_ICONS = [
-  {
-    svgId: 'shared_kitchen_icon',
-    label: 'Shared Kitchen',
-    offsetX: 0,
-    offsetY: 150
-  }
-]
-
-// Badge defs are separate so offsetX/Y can be nudged independently of the ticker overlay.
+// Badge defs — offsetX/Y can be nudged independently per-icon.
 // Positive offsetX moves right, positive offsetY moves down (SVG coordinate space).
 const KITCHEN_BADGE_DEFS = [
   { svgId: 'shared_kitchen_icon', offsetX: 0, offsetY: 20 }
-]
-
-const WASHROOM_ICONS = [
-  {
-    svgId: 'washrooms_area',
-    label: 'Washrooms',
-    offsetX: 0,
-    offsetY: 0
-  }
 ]
 
 // Each entry maps a location label (stored on the alert) to the SVG icon id,
@@ -520,8 +508,6 @@ const VOLUNTEER_SHIFT_ICONS = [
 // Overlay refs for rendering
 const stageOverlays = ref([]) // [{ label, style }]
 const mealOverlays  = ref([]) // [{ style }]
-const kitchenOverlays = ref([]) // [{ style }]
-const washroomOverlays = ref([]) // [{ style }]
 const kitchenBadgeOverlays = ref([]) // small icon-corner badge
 const washroomBadgeOverlays = ref([]) // small icon-corner badge
 const lostFoundOverlays = ref([]) // [{ style }]
@@ -602,41 +588,6 @@ const mealTicker = computed(() => {
 
 
 
-// Shared helper: resolve CSS position from an SVG element ID or fallback coords.
-// getBBox() returns zeros for <use> referencing <symbol> — parse attributes instead.
-// Anchors to the top-right corner of an SVG element for notification badges.
-// Uses getBBox() (works for real SVG shapes) before falling back to attributes.
-function resolveIconBadgeStyle(vb, { svgId, fallbackSvgPos }) {
-  let x = 0, y = 0, w = 0, h = 0
-  const el = document.getElementById(svgId)
-  if (el) {
-    try {
-      const bb = el.getBBox()
-      if (bb.width > 0 || bb.height > 0) {
-        x = bb.x; y = bb.y; w = bb.width; h = bb.height
-      } else throw new Error('zero')
-    } catch {
-      x = parseFloat(el.getAttribute('x'))
-      y = parseFloat(el.getAttribute('y'))
-      if (isNaN(x) || isNaN(y)) {
-        const m = (el.getAttribute('transform') || '').match(/translate\(\s*([\d.-]+)[\s,]+([\d.-]+)/)
-        x = m ? parseFloat(m[1]) : 0
-        y = m ? parseFloat(m[2]) : 0
-      }
-      w = parseFloat(el.getAttribute('width') || 0)
-      h = parseFloat(el.getAttribute('height') || 0)
-    }
-  } else if (fallbackSvgPos) {
-    ;({ x, y, w, h } = fallbackSvgPos)
-  } else {
-    return null
-  }
-  return {
-    left: `${((x + w) / vb.width)  * 100}%`,
-    top:  `${(y          / vb.height) * 100}%`
-  }
-}
-
 function resolveIconStyle(vb, { svgId, fallbackSvgPos, offsetX = 0, offsetY = 0 }) {
   let x, y, w, h
   const el = document.getElementById(svgId)
@@ -686,16 +637,6 @@ function positionOverlays() {
   mealOverlays.value = MEAL_ICONS.flatMap((icon) => {
     const style = resolveIconStyle(vb, icon)
     return style ? [{ style }] : []
-  })
-
-  kitchenOverlays.value = KITCHEN_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(vb, icon)
-    return style ? [{ label: icon.label, style }] : []
-  })
-
-  washroomOverlays.value = WASHROOM_ICONS.flatMap((icon) => {
-    const style = resolveIconStyle(vb, icon)
-    return style ? [{ label: icon.label, style }] : []
   })
 
   // Badges — each def has its own offsetX/Y for independent nudging.
@@ -892,6 +833,17 @@ const washroomSupplyType = ref('toilet_paper')
 const washroomSupplySubmitting = ref(false)
 const washroomSupplyError = ref('')
 const activeWashroomIconId = ref('')
+
+// Alert detail modals (shown when a badge is tapped)
+const showKitchenAlertsModal = ref(false)
+function openKitchenAlertsModal() { showKitchenAlertsModal.value = true }
+
+const showWashroomAlertsModal = ref(false)
+const washroomAlertsModalLocation = ref('')
+function openWashroomAlertsModal(location) {
+  washroomAlertsModalLocation.value = location
+  showWashroomAlertsModal.value = true
+}
 
 function openWashroomSupplyModal() {
   washroomSupplyType.value = 'toilet_paper'
@@ -1284,59 +1236,6 @@ onMounted(async () => {
       </Teleport>
     </template>
 
-    <!-- Kitchen overlay -->
-    <template v-if="kitchenOverlays.length">
-      <div
-        v-for="overlay in kitchenOverlays"
-        :key="overlay.label"
-        class="kitchen-overlay map-feature-overlay"
-        :style="overlay.style"
-      >
-        <div class="now-badge kitchen-badge">🍳 SHARED KITCHEN</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            <template v-if="kitchenAlerts.length">
-              <span v-for="alert in kitchenAlerts" :key="alert.id">
-                <span v-if="alert.mode === 'share'">🥘 {{ alert.message }}</span>
-                <span v-else-if="alert.mode === 'missing'">❓Missing: {{ alert.message }}</span>
-                <span v-else>{{ alert.message }}</span>
-                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(alert)">✕</button>
-                &nbsp;·&nbsp;
-              </span>
-            </template>
-            <template v-else>No kitchen alerts</template>
-          </span>
-        </div>
-        <button class="alert-post-btn" @click="openKitchenModal">Post</button>
-      </div>
-    </template>
-
-    <!-- Washroom overlay -->
-    <template v-if="washroomOverlays.length">
-      <div
-        v-for="overlay in washroomOverlays"
-        :key="overlay.label"
-        class="washroom-overlay map-feature-overlay"
-        :style="overlay.style"
-      >
-        <div class="now-badge washroom-badge">🚻 WASHROOMS</div>
-        <div class="ticker-wrap">
-          <span class="ticker-text">
-            <template v-if="washroomAlerts.length">
-              <span v-for="alert in washroomAlerts" :key="alert.id">
-                <span v-if="alert.status === 'low'">🧻 Supplies Low!</span>
-                <span v-else>{{ alert.message }}</span>
-                <button class="alert-clear-btn" v-if="isVolunteerOrAdmin" @click.stop="clearAlert(alert)">✕</button>
-                &nbsp;·&nbsp;
-              </span>
-            </template>
-            <template v-else>All good!</template>
-          </span>
-        </div>
-        <button class="alert-post-btn" @click="openWashroomSupplyModal">Report Low</button>
-      </div>
-    </template>
-
     <!-- Kitchen icon badge — appears on the SVG icon when there are active kitchen alerts -->
     <template v-if="kitchenAlerts.length && kitchenBadgeOverlays.length">
       <div
@@ -1346,7 +1245,7 @@ onMounted(async () => {
         :class="kitchenAlerts.some(a => a.mode === 'share') ? 'icon-alert-badge--share' : 'icon-alert-badge--missing'"
         :style="overlay.style"
         :title="kitchenAlerts.some(a => a.mode === 'share') ? '🍳 Someone is cooking to share!' : '❓ Missing ingredient request'"
-        @click.stop="openKitchenModal"
+        @click.stop="openKitchenAlertsModal"
       >
         {{ kitchenAlerts.some(a => a.mode === 'share') ? '🍳' : '❓' }}
       </div>
@@ -1360,7 +1259,7 @@ onMounted(async () => {
         class="icon-alert-badge icon-alert-badge--washroom"
         :style="overlay.style"
         :title="'\ud83e\uddfb ' + overlay.location + ' supplies low!'"
-        @click.stop="washroomLocation = overlay.location; activeWashroomIconId = overlay.svgId; openWashroomSupplyModal()"
+        @click.stop="openWashroomAlertsModal(overlay.location)"
       >
         🧻
       </div>
@@ -1438,6 +1337,59 @@ onMounted(async () => {
         <input class="modal-input" v-model="alertInput.message" placeholder="What are you cooking or missing?" />
         <div class="modal-actions">
           <button class="modal-btn modal-btn--primary" @click="submitAlert">Post</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Kitchen Alerts Detail Modal — shown when kitchen badge is tapped -->
+    <Transition name="bio">
+      <div v-if="showKitchenAlertsModal" class="bio-card">
+        <button class="bio-close" @click.stop="showKitchenAlertsModal = false">✕</button>
+        <div class="modal-title-row"><img :src="iconKitchen" alt="" class="modal-icon" /><h3>Shared Kitchen</h3></div>
+        <div v-if="kitchenAlerts.length">
+          <div v-for="alert in kitchenAlerts" :key="alert.id" class="alert-detail-row">
+            <span class="alert-mode-badge" :class="alert.mode === 'share' ? 'badge--share' : 'badge--missing'">
+              {{ alert.mode === 'share' ? '🍳 Cooking to share' : '❓ Missing ingredient' }}
+            </span>
+            <p class="bio-text" style="margin:0.25rem 0 0;">{{ alert.message }}</p>
+            <p class="bio-text" style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin:0.15rem 0 0;">Reported by {{ alert.userName }}</p>
+            <button
+              v-if="isVolunteerOrAdmin || alert.userId === effectiveIdCode"
+              class="modal-btn modal-btn--ghost"
+              style="color:#f88;margin-top:0.4rem;font-size:0.75rem;"
+              @click.stop="clearAlert(alert)"
+            >✕ Clear</button>
+          </div>
+        </div>
+        <p v-else class="bio-text bio-empty">No active kitchen alerts.</p>
+        <div class="modal-actions" style="margin-top:1rem;">
+          <button class="modal-btn modal-btn--ghost" @click.stop="showKitchenAlertsModal = false; openKitchenModal()">+ Post an alert</button>
+          <button class="modal-btn modal-btn--ghost" @click.stop="showKitchenAlertsModal = false">Close</button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Washroom Alerts Detail Modal — shown when washroom badge is tapped -->
+    <Transition name="bio">
+      <div v-if="showWashroomAlertsModal" class="bio-card">
+        <button class="bio-close" @click.stop="showWashroomAlertsModal = false">✕</button>
+        <div class="modal-title-row"><img :src="iconWashroom" alt="" class="modal-icon" /><h3>{{ washroomAlertsModalLocation }}</h3></div>
+        <template v-if="washroomAlerts.filter(a => a.location === washroomAlertsModalLocation).length">
+          <div v-for="alert in washroomAlerts.filter(a => a.location === washroomAlertsModalLocation)" :key="alert.id" class="alert-detail-row">
+            <span class="alert-mode-badge badge--washroom">🧻 Low {{ alert.supply?.replace(/_/g, ' ') }}</span>
+            <p class="bio-text" style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin:0.15rem 0 0;">Reported by {{ alert.userName }}</p>
+            <button
+              v-if="isVolunteerOrAdmin || alert.userId === effectiveIdCode"
+              class="modal-btn modal-btn--ghost"
+              style="color:#f88;margin-top:0.4rem;font-size:0.75rem;"
+              @click.stop="clearAlert(alert)"
+            >✕ Clear</button>
+          </div>
+        </template>
+        <p v-else class="bio-text bio-empty">No active supply alerts for this location.</p>
+        <div class="modal-actions" style="margin-top:1rem;">
+          <button class="modal-btn modal-btn--ghost" @click.stop="showWashroomAlertsModal = false; washroomLocation = washroomAlertsModalLocation; openWashroomSupplyModal()">+ Report another</button>
+          <button class="modal-btn modal-btn--ghost" @click.stop="showWashroomAlertsModal = false">Close</button>
         </div>
       </div>
     </Transition>
@@ -2351,6 +2303,24 @@ onMounted(async () => {
   0%, 100% { transform: translate(-50%, -50%) scale(1);    box-shadow: 0 1px 4px rgba(0,0,0,0.65); }
   50%       { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 2px 7px rgba(0,0,0,0.7); }
 }
+
+/* Alert detail modal rows */
+.alert-detail-row {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.alert-detail-row:last-child { border-bottom: none; }
+.alert-mode-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.badge--share    { background: #1a6b1a; color: #fff; }
+.badge--missing  { background: #7a4500; color: #fff; }
+.badge--washroom { background: #7a4e00; color: #fff; }
 
 .lostfound-hint {
   font-size: 7px;
