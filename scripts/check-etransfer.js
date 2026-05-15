@@ -19,7 +19,7 @@
 
 import { ImapFlow } from 'imapflow'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -157,12 +157,114 @@ function stripHtml(html) {
 }
 
 // ---------------------------------------------------------------------------
+// Ad hoc meal order helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Parse the dollar amount from an Interac subject line.
+ * e.g. "You've received $30.00 from Jane Doe" → 30.00
+ */
+function extractAmountFromSubject(subject) {
+  const m = subject.match(/\$([\d]+(?:\.[\d]{1,2})?)/)
+  return m ? parseFloat(m[1]) : null
+}
+
+async function sendMealConfirmationEmail(email, fullname, id_code, meal_quantity, fiat_total) {
+  const body =
+    `Hi ${fullname},\n\n` +
+    `Your payment of $${fiat_total} CAD has been received and ${meal_quantity} meal ticket(s) have been added to your account.\n\n` +
+    `You can view your updated ticket at:\nhttps://festivall.ca/reunionticket\n\n` +
+    `Enter your ID code: ${id_code}\n\n` +
+    `See you at Reunion 2026!\n\nThe Reunion Team\n\n` +
+    `**************************************\nPowered by Festivall\n**************************************`
+  await postRelay('/email', {
+    value1: email,
+    value2: 'Reunion 2026 — Meal Tickets Added',
+    value3: body
+  })
+}
+
+async function sendMealFoodSlack(fullname, id_code, meal_quantity, fiat_total) {
+  await postRelay('/reunion_food', {
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `:fork_and_knife: E-TRANSFER MEAL AUTO-APPROVED\n:bust_in_silhouette: ${fullname}\n:id: ${id_code}\n:knife_fork_plate: +${meal_quantity} meal ticket(s)\n:moneybag: $${fiat_total} CAD received\n:white_check_mark: Approved by: auto_etransfer`
+      }
+    }]
+  })
+}
+
+/**
+ * Find and approve a matching pending e-transfer meal purchase.
+ * Returns 'meal_approved' on success, false if no match found.
+ */
+async function processPendingMealOrders(docRef, data, amount, dryRun) {
+  const pending = (data.order?.pending_meal_purchases || []).filter(
+    p => p.payment_type === 'etransfer' && p.status === 'pending'
+  )
+
+  if (pending.length === 0) {
+    console.log(`[meal] No pending e-transfer meal orders found`)
+    return false
+  }
+
+  // Match by amount (within 1 cent), fallback to sole entry
+  let match = amount != null
+    ? pending.find(p => Math.abs(p.fiat_total - amount) < 0.01)
+    : null
+
+  if (!match && pending.length === 1) {
+    console.warn(`[meal] Amount ${amount} didn't match fiat_total ${pending[0].fiat_total} — using sole pending entry as fallback`)
+    match = pending[0]
+  }
+
+  if (!match) {
+    console.warn(`[meal] Amount $${amount} does not match any pending e-transfer entry (found: ${pending.map(p => `$${p.fiat_total}`).join(', ')}) — skipping meal approval`)
+    return false
+  }
+
+  const { id_code, meal_quantity, fiat_total } = match
+  const fullname = data.contact?.fullname || ''
+  const email = data.contact?.email
+
+  console.log(`[meal] Matched pending entry: id_code="${id_code}" qty=${meal_quantity} fiat_total=$${fiat_total}`)
+
+  if (dryRun) {
+    console.log(`[dry-run] Would approve ${meal_quantity} meal ticket(s) for "${fullname}" ($${fiat_total}) — skipping all writes`)
+    return 'meal_approved'
+  }
+
+  const now = new Date().toISOString()
+  const approvedEntry = { ...match, status: 'paid', approved_by: 'auto_etransfer', approved_at: now }
+
+  await updateDoc(docRef, {
+    'order.meal_tickets_remaining': increment(Number(meal_quantity)),
+    'order.pending_meal_purchases': arrayRemove(match),
+    'order.ad_hoc_meal_orders': arrayUnion(approvedEntry)
+  })
+  console.log(`[firebase] Meal order approved: +${meal_quantity} ticket(s) for "${id_code}"`)
+
+  if (email) {
+    await sendMealConfirmationEmail(email, fullname, id_code, meal_quantity, fiat_total)
+    console.log(`[email] Meal confirmation sent to ${email}`)
+  }
+
+  await sendMealFoodSlack(fullname, id_code, meal_quantity, fiat_total)
+  console.log(`[slack] Food team notified`)
+
+  return 'meal_approved'
+}
+
+// ---------------------------------------------------------------------------
 // Core processing
 // ---------------------------------------------------------------------------
 async function processEmail(client, uid, envelope, dryRun = false) {
   const subject = envelope.subject || ''
   const from = envelope.from?.[0]?.address || ''
-  console.log(`\n[email] UID ${uid} | From: ${from} | Subject: ${subject}`)
+  const transferAmount = extractAmountFromSubject(subject)
+  console.log(`\n[email] UID ${uid} | From: ${from} | Subject: ${subject}${transferAmount != null ? ` | Amount: $${transferAmount}` : ''}`)
 
   // Fetch body structure to find HTML/plain part numbers
   const msg = await client.fetchOne(`${uid}`, { bodyStructure: true }, { uid: true })
@@ -223,9 +325,10 @@ async function processEmail(client, uid, envelope, dryRun = false) {
     const data = docSnap.data()
 
     if (data.order?.paid === true) {
-      console.log(`[skip] UID ${uid} — id_code "${candidate}" already paid, skipping`)
-      // Still mark as read/labeled so it doesn't get re-checked
-      return 'already_paid'
+      console.log(`[skip] UID ${uid} — id_code "${candidate}" already paid, checking for pending meal orders`)
+      // Check for pending e-transfer meal orders — auto-approve if found
+      const mealResult = await processPendingMealOrders(docRef, data, transferAmount, dryRun)
+      return mealResult || 'already_paid'
     }
 
     const email = data.contact?.email
@@ -240,6 +343,8 @@ async function processEmail(client, uid, envelope, dryRun = false) {
 
     if (dryRun) {
       console.log(`[dry-run] Would mark paid, send ticket email to ${email}, and notify Slack — skipping all writes`)
+      // Also check for pending meals in dry-run
+      await processPendingMealOrders(docRef, data, transferAmount, dryRun)
       return true
     }
 
@@ -254,6 +359,9 @@ async function processEmail(client, uid, envelope, dryRun = false) {
     // 3. Send Slack notification
     await sendSlackNotification(fullname, candidate)
     console.log(`[slack] Admin notified`)
+
+    // 4. Also check for any pending meal orders (handles both-in-same-run)
+    await processPendingMealOrders(docRef, data, transferAmount, dryRun)
 
     return true // Successfully processed
   }
@@ -338,7 +446,7 @@ async function main() {
           continue
         }
 
-        if (result === true || result === 'already_paid') {
+        if (result === true || result === 'already_paid' || result === 'meal_approved') {
           if (DRY_RUN) {
             console.log(`[dry-run] Would mark read and label ${GMAIL_LABEL} — skipping`)
           } else {
