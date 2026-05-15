@@ -245,7 +245,24 @@ const washroomAlerts = ref([])
 const lostFoundItems = ref([])
 const checkinNames = ref([])
 
+function closeAllModals() {
+  showKitchenModal.value = false
+  showKitchenAlertsModal.value = false
+  showWashroomAlertsModal.value = false
+  showWashroomSupplyModal.value = false
+  showLostFoundModal.value = false
+  showInfoModal.value = false
+  showWaterStationModal.value = false
+  showShowersModal.value = false
+  showFirepitModal.value = false
+  showInventoryLocationModal.value = false
+  bioOpen.value = false
+  mealCardOpen.value = false
+  settingsOpen.value = false
+}
+
 function openKitchenModal() {
+  closeAllModals()
   alertInput.value = { type: 'kitchen', mode: '', message: '' }
   showKitchenModal.value = true
 }
@@ -437,7 +454,10 @@ const MIN_SCALE = 1   // minimum map zoom level
 const MAX_SCALE = 5   // maximum map zoom level
 
 const STAGE_ICONS = [
-  { svgId: 'stage_area_icon', label: 'Main Stage', offsetX: 0, offsetY: +10 }
+  { svgId: 'stage_area_icon', label: 'Main Stage',
+   offsetX: -15, 
+   offsetY: +12
+  }
 ]
 
 const MEAL_ICONS = [
@@ -452,7 +472,7 @@ const MEAL_ICONS = [
 // Badge defs — offsetX/Y can be nudged independently per-icon.
 // Positive offsetX moves right, positive offsetY moves down (SVG coordinate space).
 const KITCHEN_BADGE_DEFS = [
-  { svgId: 'shared_kitchen_icon', offsetX: 0, offsetY: 20 }
+  { svgId: 'shared_kitchen_icon', offsetX: 0, offsetY: 25 }
 ]
 
 // Each entry maps a location label (stored on the alert) to the SVG icon id,
@@ -460,7 +480,7 @@ const KITCHEN_BADGE_DEFS = [
 // offsetX/Y can be nudged per-icon.
 const WASHROOM_BADGE_DEFS = [
   { svgId: 'outhouse_icon',   location: 'Outhouse',   offsetX: 20, offsetY: -10 },
-  { svgId: 'portapotty_icon', location: 'Porta Potty', offsetX: 0, offsetY: 0 },
+  { svgId: 'portapotty_icon', location: 'Porta Potty', offsetX: 20, offsetY: -10 },
 ]
 
 const LOSTFOUND_ICONS = [
@@ -791,6 +811,7 @@ function handleSvgIconClick(iconId) {
 
   // Stage area icon → open Now Playing / Up Next bio card
   if (iconId === 'stage_area_icon') {
+    closeAllModals()
     bioOpen.value = true
     return
   }
@@ -809,6 +830,7 @@ function handleSvgIconClick(iconId) {
 
   // Showers
   if (iconId === 'showers_icon') {
+    closeAllModals()
     showShowersModal.value = true
     return
   }
@@ -836,16 +858,18 @@ const activeWashroomIconId = ref('')
 
 // Alert detail modals (shown when a badge is tapped)
 const showKitchenAlertsModal = ref(false)
-function openKitchenAlertsModal() { showKitchenAlertsModal.value = true }
+function openKitchenAlertsModal() { closeAllModals(); showKitchenAlertsModal.value = true }
 
 const showWashroomAlertsModal = ref(false)
 const washroomAlertsModalLocation = ref('')
 function openWashroomAlertsModal(location) {
+  closeAllModals()
   washroomAlertsModalLocation.value = location
   showWashroomAlertsModal.value = true
 }
 
 function openWashroomSupplyModal() {
+  closeAllModals()
   washroomSupplyType.value = 'toilet_paper'
   washroomSupplyError.value = ''
   showWashroomSupplyModal.value = true
@@ -861,6 +885,7 @@ function closeWashroomSupplyModal() {
 const showInfoModal = ref(false)
 const infoModalContent = ref({ title: '', icon: '', description: '' })
 function openInfoModal(content) {
+  closeAllModals()
   infoModalContent.value = content
   showInfoModal.value = true
 }
@@ -875,6 +900,7 @@ const showInventoryLocationModal = ref(false)
 const inventoryLocationItems = ref([])
 const inventoryLocationIconId = ref('')
 function openInventoryLocationModal(iconId) {
+  closeAllModals()
   inventoryLocationIconId.value = iconId
   inventoryLocationItems.value = getItemsForLocation(iconId).slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   showInventoryLocationModal.value = true
@@ -887,6 +913,7 @@ function closeInventoryLocationModal() {
 const waterStationSubmitting = ref(false)
 const waterStationError = ref('')
 function openWaterStationModal() {
+  closeAllModals()
   waterStationError.value = ''
   showWaterStationModal.value = true
 }
@@ -927,6 +954,7 @@ const showFirepitModal = ref(false)
 const firewoodSubmitting = ref(false)
 const firewoodError = ref('')
 function openFirepitModal() {
+  closeAllModals()
   firewoodError.value = ''
   showFirepitModal.value = true
 }
@@ -1209,7 +1237,7 @@ onMounted(async () => {
         :key="index"
         class="meal-overlay"
         :style="overlay.style"
-        @click="mealCardOpen = !mealCardOpen"
+        @click="mealCardOpen ? (mealCardOpen = false) : (closeAllModals(), mealCardOpen = true)"
       >
         <div class="meal-badge" :class="{ 'meal-badge--now': nextMeal.isNow }">
           {{ nextMeal.isNow ? '🍽 NOW SERVING' : '🍽 NEXT MEAL' }}
@@ -1236,19 +1264,40 @@ onMounted(async () => {
       </Teleport>
     </template>
 
-    <!-- Kitchen icon badge — appears on the SVG icon when there are active kitchen alerts -->
+    <!-- Kitchen icon badges — one dot per type (share / missing), with count when > 1 -->
     <template v-if="kitchenAlerts.length && kitchenBadgeOverlays.length">
-      <div
-        v-for="(overlay, i) in kitchenBadgeOverlays"
-        :key="'kitchen-badge-' + i"
-        class="icon-alert-badge"
-        :class="kitchenAlerts.some(a => a.mode === 'share') ? 'icon-alert-badge--share' : 'icon-alert-badge--missing'"
-        :style="overlay.style"
-        :title="kitchenAlerts.some(a => a.mode === 'share') ? '🍳 Someone is cooking to share!' : '❓ Missing ingredient request'"
-        @click.stop="openKitchenAlertsModal"
-      >
-        {{ kitchenAlerts.some(a => a.mode === 'share') ? '🍳' : '❓' }}
-      </div>
+      <!-- Share dot (green) -->
+      <template v-if="kitchenAlerts.some(a => a.mode === 'share')">
+        <div
+          v-for="(overlay, i) in kitchenBadgeOverlays"
+          :key="'kitchen-share-' + i"
+          class="icon-alert-badge icon-alert-badge--share"
+          :style="{ ...overlay.style, top: `calc(${overlay.style.top} + 9px)` }"
+          title="🍳 Someone is cooking to share!"
+          @click.stop="openKitchenAlertsModal"
+        >
+          🍳
+          <span v-if="kitchenAlerts.filter(a => a.mode === 'share').length > 1" class="badge-count">
+            {{ kitchenAlerts.filter(a => a.mode === 'share').length }}
+          </span>
+        </div>
+      </template>
+      <!-- Missing dot (amber) -->
+      <template v-if="kitchenAlerts.some(a => a.mode === 'missing')">
+        <div
+          v-for="(overlay, i) in kitchenBadgeOverlays"
+          :key="'kitchen-missing-' + i"
+          class="icon-alert-badge icon-alert-badge--missing"
+          :style="{ ...overlay.style, top: `calc(${overlay.style.top} - 9px)` }"
+          title="❓ Missing ingredient request"
+          @click.stop="openKitchenAlertsModal"
+        >
+          ❓
+          <span v-if="kitchenAlerts.filter(a => a.mode === 'missing').length > 1" class="badge-count">
+            {{ kitchenAlerts.filter(a => a.mode === 'missing').length }}
+          </span>
+        </div>
+      </template>
     </template>
 
     <!-- Washroom icon badge — only on the specific icon whose location was reported -->
@@ -1262,6 +1311,9 @@ onMounted(async () => {
         @click.stop="openWashroomAlertsModal(overlay.location)"
       >
         🧻
+        <span v-if="washroomAlerts.filter(a => a.location === overlay.location).length > 1" class="badge-count">
+          {{ washroomAlerts.filter(a => a.location === overlay.location).length }}
+        </span>
       </div>
     </template>
 
@@ -1308,7 +1360,7 @@ onMounted(async () => {
         class="checkin-overlay map-feature-overlay"
         :style="overlay.style"
       >
-        <div class="now-badge checkin-badge">✅ RECENTLY ARRIVED</div>
+        <div class="now-badge checkin-badge">✅ NEW ARRIVALS</div>
         <div class="ticker-wrap">
           <span class="ticker-text">
             <template v-if="checkinNames.length">
@@ -1553,7 +1605,7 @@ onMounted(async () => {
           <input type="checkbox" v-model="showMealOverlay" />
         </label>
         <label class="settings-row">
-          <span>Recently Arrived</span>
+          <span>New Arrivals</span>
           <input type="checkbox" v-model="showCheckinOverlay" />
         </label>
         <label class="settings-row">
@@ -1845,9 +1897,10 @@ onMounted(async () => {
   letter-spacing: 0.04em;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
-  width: 90px;
+  width: 80px;
   white-space: nowrap;
-  padding: 4px 0;
+  padding: 2px 0 0.5px 0;
+  text-align: center;
 }
 
 /* Text is doubled so the scroll loop is seamless — no padding-left so
@@ -1989,7 +2042,7 @@ onMounted(async () => {
   overflow: hidden;
   width: 80px;
   white-space: nowrap;
-  padding: 4px 0;
+  padding: 2px 0 0.5px;
 }
 
 .meal-ticker-text {
@@ -2321,6 +2374,24 @@ onMounted(async () => {
 .badge--share    { background: #1a6b1a; color: #fff; }
 .badge--missing  { background: #7a4500; color: #fff; }
 .badge--washroom { background: #7a4e00; color: #fff; }
+
+/* Count pip on multi-alert badges */
+.badge-count {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 8px;
+  height: 8px;
+  padding: 0 1.5px;
+  background: #fff;
+  color: #111;
+  border-radius: 4px;
+  font-size: 5px;
+  font-weight: 700;
+  line-height: 8px;
+  text-align: center;
+  pointer-events: none;
+}
 
 .lostfound-hint {
   font-size: 7px;
