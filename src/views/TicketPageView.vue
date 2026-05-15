@@ -704,7 +704,7 @@
         <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
           <p>
             <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
-            Grounds Map
+            Interactive Grounds Map
           </p>
         </RouterLink>
         <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
@@ -723,7 +723,7 @@
         <RouterLink :to="new Date() >= REUNION_FESTIVAL.festivalOpenDate ? { name: 'ScavengerHunt', params: { id_code: order.id_code }, query: { fullName: order.fullname.split(' ')[0] } } : '#'">
           <p>
             <img :src="quiz_icon" style="height: auto; width: 32px" alt="Scavenger Hunt Icon" />
-            Scavenger Hunt<br />{{ new Date() >= REUNION_FESTIVAL.festivalOpenDate ? 'Win some Bitcoin!' : 'Coming Soon!' }}
+            Scavenger Hunt<br />{{ new Date() >= REUNION_FESTIVAL.festivalOpenDate ? 'Win some Bitcoin!' : 'Opens: ' + new Date(REUNION_FESTIVAL.festivalOpenDate).toLocaleDateString() }}
           </p>
         </RouterLink>
       </div>
