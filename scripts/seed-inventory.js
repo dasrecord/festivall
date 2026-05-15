@@ -409,7 +409,7 @@ const ITEMS = [
   {
     name: 'Propane Tank 1',
     description: 'Propane tank for BBQ / grill use',
-    location: 'shared_kitchen_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew', 'food_team'],
     needs_restock: false,
@@ -419,7 +419,7 @@ const ITEMS = [
   {
     name: 'Propane Tank 2',
     description: 'Propane tank — spare / backup',
-    location: 'trailer_C_icon',
+    location: 'barn_building_icon',
     sub_location: '',
     departments: ['setup_crew', 'food_team'],
     needs_restock: false,
@@ -429,7 +429,7 @@ const ITEMS = [
   {
     name: 'Rake 1',
     description: 'Leaf / ground rake for site preparation',
-    location: 'barn_building_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
@@ -439,7 +439,7 @@ const ITEMS = [
   {
     name: 'Rake 2',
     description: 'Leaf / ground rake for site preparation',
-    location: 'barn_building_icon',
+    location: 'tool_shed_icon',
     sub_location: '',
     departments: ['setup_crew'],
     needs_restock: false,
