@@ -1261,8 +1261,8 @@ a {
 .status-bar {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0 0.5rem ;
+
 }
 
 .status-btn {
