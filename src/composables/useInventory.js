@@ -41,15 +41,8 @@ export function useInventory(department = null) {
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
-  /** All items for this dept (or all items if no dept arg) */
-  const deptItems = computed(() => items.value)
-
-  /** Items tagged to a specific task ID */
-  function getItemsForTask(taskId) {
-    return items.value.filter(
-      (item) => Array.isArray(item.task_ids) && item.task_ids.includes(taskId)
-    )
-  }
+  /** All items for this dept (or all items if no dept arg), sorted alphabetically */
+  const deptItems = computed(() => [...items.value].sort((a, b) => a.name.localeCompare(b.name)))
 
   /** All distinct SVG location IDs that have at least one item */
   const locationIds = computed(() => new Set(items.value.map((item) => item.location).filter(Boolean)))
@@ -72,6 +65,17 @@ export function useInventory(department = null) {
     }
   }
 
+  async function flagMissing(itemId, value = true) {
+    try {
+      await updateDoc(doc(reunion_db, COLLECTION, itemId), {
+        missing: value,
+        updated_at: serverTimestamp()
+      })
+    } catch (e) {
+      console.error('useInventory: flagMissing failed', e)
+    }
+  }
+
   // ── Admin CRUD (requires Firebase Auth) ───────────────────────────────────
 
   function assertAdmin() {
@@ -86,8 +90,8 @@ export function useInventory(department = null) {
       location: data.location || '',
       sub_location: data.sub_location || '',
       departments: Array.isArray(data.departments) ? data.departments : [],
-      task_ids: Array.isArray(data.task_ids) ? data.task_ids : [],
       needs_restock: data.needs_restock ?? false,
+      missing: data.missing ?? false,
       notes: data.notes || '',
       updated_at: serverTimestamp()
     })
@@ -108,10 +112,10 @@ export function useInventory(department = null) {
 
   return {
     deptItems,
-    getItemsForTask,
     locationIds,
     getItemsForLocation,
     flagNeedsRestock,
+    flagMissing,
     createItem,
     updateItem,
     deleteItem

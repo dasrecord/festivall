@@ -43,266 +43,437 @@ const db = getFirestore(app)
 // ─── Inventory seed data ──────────────────────────────────────────────────────
 //
 // Fields match useInventory schema:
-//   name, description, location, sub_location, departments[], task_ids[],
-//   needs_restock, notes
+//   name, description, location, sub_location, departments[],
+//   needs_restock, missing, notes
 //
-// Locations are kept as slug-style strings matching the map SVG IDs you use
-// elsewhere (front_gate_icon, stage_icon, etc. minus the _icon suffix).
+// location values must match SVG icon IDs from the reunion map (e.g. front_gate_icon).
+// Multi-dept shared physical items use departments[] with multiple entries.
+// Separate physical instances of the same item type are numbered _1, _2, etc.
 
 const ITEMS = [
   // ── FRONT GATE ──────────────────────────────────────────────────────────────
   {
-    name: 'Front Gate Tent / Canopy',
-    description: 'Entry canopy shelter for the gate booth',
-    location: 'front_gate',
-    sub_location: 'Storage shed',
+    name: 'Extension Cord 1',
+    description: 'Heavy-duty outdoor extension cord for front gate power needs',
+    location: 'front_gate_icon',
+    sub_location: '',
     departments: ['front_gate'],
-    task_ids: ['frontgate_001', 'frontgate_008'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Folding Table',
-    description: 'Table for the gate scanning station',
-    location: 'front_gate',
+    name: 'Power Bar 1',
+    description: 'Power bar for front gate devices',
+    location: 'front_gate_icon',
     sub_location: '',
     departments: ['front_gate'],
-    task_ids: ['frontgate_001', 'frontgate_008'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Folding Chairs (×2)',
-    description: 'Seating for gate operators',
-    location: 'front_gate',
+    name: 'Blue Swivel Chair 1',
+    description: 'Blue swivel chair — front gate station',
+    location: 'front_gate_icon',
     sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_001'],
+    departments: ['front_gate', 'arcade_attendant'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Entry Rope & Stanchions',
-    description: 'Queue management barriers at the entrance',
-    location: 'front_gate',
+    name: 'Blue Swivel Chair 2',
+    description: 'Blue swivel chair — front gate station',
+    location: 'front_gate_icon',
     sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_001'],
+    departments: ['front_gate', 'arcade_attendant'],
     needs_restock: false,
+    missing: false,
     notes: ''
-  },
-  {
-    name: 'Entry Signage',
-    description: 'Welcome and directional signs for the gate area',
-    location: 'front_gate',
-    sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_001'],
-    needs_restock: false,
-    notes: ''
-  },
-  {
-    name: 'QR Ticket Scanner (Tablet)',
-    description: 'Primary device running the ticket scanner app',
-    location: 'front_gate',
-    sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_002', 'frontgate_003', 'frontgate_005', 'frontgate_006'],
-    needs_restock: false,
-    notes: 'Confirm device is charged before each shift'
-  },
-  {
-    name: 'Mobile Hotspot Device',
-    description: 'Provides internet connection for the scanner tablet',
-    location: 'front_gate',
-    sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_002'],
-    needs_restock: false,
-    notes: 'Hotspot plan must have sufficient data'
-  },
-  {
-    name: 'Backup Scanner Device',
-    description: 'Secondary phone/tablet in case primary fails',
-    location: 'front_gate',
-    sub_location: '',
-    departments: ['front_gate'],
-    task_ids: ['frontgate_006'],
-    needs_restock: false,
-    notes: 'Keep fully charged at start of every shift'
   },
   {
     name: 'Cash Box',
-    description: 'Lockable box for cash transactions at the gate',
-    location: 'front_gate',
+    description: 'Lockable cash box for gate transactions',
+    location: 'front_gate_icon',
     sub_location: '',
     departments: ['front_gate'],
-    task_ids: ['frontgate_004', 'frontgate_008'],
     needs_restock: false,
+    missing: false,
     notes: 'Count starting cash before opening gate'
   },
   {
-    name: 'Device Charger / Power Bank',
-    description: 'Charging cable and portable battery for scanner devices',
-    location: 'front_gate',
+    name: 'Kiosk Touchscreen Computer',
+    description: 'Touchscreen computer running the front gate kiosk',
+    location: 'front_gate_icon',
     sub_location: '',
     departments: ['front_gate'],
-    task_ids: ['frontgate_006'],
     needs_restock: false,
+    missing: false,
+    notes: 'Confirm device is charged and app is loaded before gate opens'
+  },
+  {
+    name: 'Computer Stand',
+    description: 'Stand or mount for the front gate kiosk computer',
+    location: 'front_gate_icon',
+    sub_location: '',
+    departments: ['front_gate'],
+    needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Guest Wristbands',
-    description: 'Fabric/Tyvek entry wristbands for festival attendees',
-    location: 'front_gate',
+    name: 'Mosquito Spray',
+    description: 'Insect repellent for gate staff',
+    location: 'front_gate_icon',
     sub_location: '',
     departments: ['front_gate'],
-    task_ids: ['frontgate_001'],
     needs_restock: false,
-    notes: 'Flag needs_restock if stock drops below ~50'
+    missing: false,
+    notes: 'Flag needs_restock if running low'
+  },
+  {
+    name: 'Fan',
+    description: 'Portable fan for front gate booth comfort',
+    location: 'front_gate_icon',
+    sub_location: '',
+    departments: ['front_gate'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'FM Radio',
+    description: 'FM radio for front gate area',
+    location: 'front_gate_icon',
+    sub_location: '',
+    departments: ['front_gate'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Walkie Talkie 1',
+    description: 'Walkie talkie for front gate communication',
+    location: 'front_gate_icon',
+    sub_location: '',
+    departments: ['front_gate'],
+    needs_restock: false,
+    missing: false,
+    notes: 'Confirm charged and on correct channel before shift'
   },
 
   // ── FOOD TEAM ───────────────────────────────────────────────────────────────
   {
-    name: 'Self-Serve Kiosk (iPad)',
-    description: 'iPad running the self-serve order kiosk software',
-    location: 'food_tent',
+    name: 'Self-Serve Kiosk Computer',
+    description: 'Touchscreen computer running the self-serve meal kiosk',
+    location: 'meals_area_icon',
     sub_location: 'Service counter',
     departments: ['food_team'],
-    task_ids: ['food_002', 'food_006'],
     needs_restock: false,
+    missing: false,
     notes: 'Confirm kiosk software is loaded before service opens'
   },
   {
-    name: 'Meal Scanner App Device',
-    description: 'Phone or tablet running the meal QR scanner app',
-    location: 'food_tent',
+    name: 'BBQ A',
+    description: 'Primary BBQ grill for food service',
+    location: 'shared_kitchen_icon',
     sub_location: '',
     departments: ['food_team'],
-    task_ids: ['food_004', 'food_005'],
     needs_restock: false,
-    notes: 'Confirm Operator ID is entered at start of shift'
+    missing: false,
+    notes: 'Check propane level before use'
   },
   {
-    name: 'Service Handout Table',
-    description: 'Table for the food handout / pick-up station',
-    location: 'food_tent',
+    name: 'BBQ B',
+    description: 'Secondary BBQ grill for food service',
+    location: 'shared_kitchen_icon',
     sub_location: '',
     departments: ['food_team'],
-    task_ids: ['food_001'],
     needs_restock: false,
-    notes: 'Set up per Angela\'s direction before service opens'
+    missing: false,
+    notes: 'Check propane level before use'
   },
   {
-    name: 'Napkins & Utensil Stock',
-    description: 'Disposable napkins, forks, spoons, and knives for service',
-    location: 'food_tent',
+    name: 'Plates',
+    description: 'Plates for food service',
+    location: 'shared_kitchen_icon',
     sub_location: 'Supply shelf',
     departments: ['food_team'],
-    task_ids: ['food_007'],
     needs_restock: false,
-    notes: 'Restock at mid-shift; flag if running low'
+    missing: false,
+    notes: 'Flag needs_restock if supply is running low'
   },
   {
-    name: 'Trash Bags (Service Area)',
-    description: 'Garbage bags for the food service area bins',
-    location: 'food_tent',
+    name: 'Bowls',
+    description: 'Bowls for food service',
+    location: 'shared_kitchen_icon',
     sub_location: 'Supply shelf',
     departments: ['food_team'],
-    task_ids: ['food_007'],
     needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Cutlery',
+    description: 'Forks, knives, and spoons for food service',
+    location: 'shared_kitchen_icon',
+    sub_location: 'Supply shelf',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: 'Flag needs_restock if running low mid-service'
+  },
+  {
+    name: 'Napkins',
+    description: 'Paper napkins for food service',
+    location: 'shared_kitchen_icon',
+    sub_location: 'Supply shelf',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Dish Soap',
+    description: 'Dish soap for food team cleanup',
+    location: 'shared_kitchen_icon',
+    sub_location: 'Under sink',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Rubber Gloves 1',
+    description: 'Rubber gloves for food team use',
+    location: 'shared_kitchen_icon',
+    sub_location: 'Under sink',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Water Dispenser',
+    description: 'Water cooler / dispenser for meal service area',
+    location: 'meals_area_icon',
+    sub_location: '',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Tongs',
+    description: 'BBQ tongs for grilling',
+    location: 'shared_kitchen_icon',
+    sub_location: '',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Grill Brush',
+    description: 'Wire brush for cleaning BBQ grates',
+    location: 'shared_kitchen_icon',
+    sub_location: '',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Iron Griddle Pan 1',
+    description: 'Cast iron griddle pan for food prep',
+    location: 'shared_kitchen_icon',
+    sub_location: '',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Iron Griddle Pan 2',
+    description: 'Cast iron griddle pan for food prep',
+    location: 'shared_kitchen_icon',
+    sub_location: '',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Trash Bags 1',
+    description: 'Garbage bags for the food service area',
+    location: 'shared_kitchen_icon',
+    sub_location: 'Supply shelf',
+    departments: ['food_team'],
+    needs_restock: false,
+    missing: false,
     notes: ''
   },
 
   // ── SETUP CREW ──────────────────────────────────────────────────────────────
   {
-    name: 'Shop Vac (+ Filter)',
-    description: 'Wet/dry shop vacuum for clearing dust from barn and FOH surfaces',
-    location: 'barn',
-    sub_location: 'Equipment corner',
+    name: 'Shop Vac',
+    description: 'Wet/dry shop vacuum with filter',
+    location: 'trailer_C_icon',
+    sub_location: '',
     departments: ['setup_crew'],
-    task_ids: ['setup_001'],
     needs_restock: false,
+    missing: false,
     notes: 'Check filter is clean before use'
   },
   {
     name: 'Weed Whacker',
     description: 'Gas or electric string trimmer for cutting overgrowth',
-    location: 'shed',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['setup_crew'],
-    task_ids: ['setup_002'],
     needs_restock: false,
+    missing: false,
     notes: 'Check fuel / charge before starting'
   },
   {
-    name: 'Extension Cord (Heavy Duty / Outdoor)',
-    description: 'Outdoor-rated 25–50 ft extension cord',
-    location: 'shed',
+    name: 'Power Washer',
+    description: 'Pressure washer for site cleaning',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['setup_crew'],
-    task_ids: ['setup_002', 'setup_007'],
     needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Extension Cord 2',
+    description: 'Heavy-duty outdoor extension cord for setup tasks',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Extension Cord 3',
+    description: 'Heavy-duty outdoor extension cord for setup tasks',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'Wading Pool',
     description: 'Inflatable or hard-shell wading pool for children\'s area',
-    location: 'shed',
+    location: 'wading_pool_icon',
     sub_location: '',
     departments: ['setup_crew'],
-    task_ids: ['setup_004'],
     needs_restock: false,
+    missing: false,
     notes: 'Clean before filling; inspect for holes'
   },
   {
-    name: 'Garden Hose',
-    description: 'Hose for filling the wading pool and general outdoor use',
-    location: 'barn',
-    sub_location: 'East wall',
-    departments: ['setup_crew'],
-    task_ids: ['setup_004'],
-    needs_restock: false,
-    notes: ''
-  },
-  {
-    name: 'Garbage Bags (Heavy Duty)',
-    description: 'Large contractor-grade bags for pre-event garbage removal',
-    location: 'barn',
-    sub_location: 'Supply shelf',
-    departments: ['setup_crew', 'cleanup_crew'],
-    task_ids: ['setup_005'],
-    needs_restock: false,
-    notes: ''
-  },
-  {
-    name: 'Rolling Trash Bins',
-    description: 'Large outdoor rolling waste bins for barn and FOH areas',
-    location: 'barn',
+    name: 'Garden Hose 1',
+    description: 'Hose for filling the wading pool and outdoor use',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['setup_crew'],
-    task_ids: ['setup_005'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'BBQ / Propane Grill',
-    description: 'Grill used by food team — cleaned and prepped by setup crew',
-    location: 'kitchen',
+    name: 'Garden Hose 2',
+    description: 'Hose for filling the wading pool and outdoor use',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Trash Bags 2',
+    description: 'Heavy-duty garbage bags for pre-event site cleanup',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Propane Tank 1',
+    description: 'Propane tank for BBQ / grill use',
+    location: 'shared_kitchen_icon',
     sub_location: '',
     departments: ['setup_crew', 'food_team'],
-    task_ids: ['setup_007'],
     needs_restock: false,
-    notes: 'Check propane level; refill if under half-tank'
+    missing: false,
+    notes: 'Check fill level; flag needs_restock if under half'
   },
   {
-    name: 'Oven & Grill Cleaning Supplies',
-    description: 'Degreasers, scrubbers, and cleaning cloths for kitchen equipment',
-    location: 'kitchen',
-    sub_location: 'Under sink',
-    departments: ['setup_crew'],
-    task_ids: ['setup_007'],
+    name: 'Propane Tank 2',
+    description: 'Propane tank — spare / backup',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew', 'food_team'],
     needs_restock: false,
+    missing: false,
+    notes: 'Backup tank; keep sealed until needed'
+  },
+  {
+    name: 'Rake 1',
+    description: 'Leaf / ground rake for site preparation',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Rake 2',
+    description: 'Leaf / ground rake for site preparation',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Shovel 1',
+    description: 'Shovel for site preparation',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Shovel 2',
+    description: 'Shovel for site preparation',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Air Compressor',
+    description: 'Portable air compressor for inflatables and pneumatic tools',
+    location: 'trailer_C_icon',
+    sub_location: '',
+    departments: ['setup_crew'],
+    needs_restock: false,
+    missing: false,
     notes: ''
   },
 
@@ -310,240 +481,318 @@ const ITEMS = [
   {
     name: 'PA System (Mains / Tops)',
     description: 'Main full-range PA speaker tops',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Stage left + right',
     departments: ['stage_crew'],
-    task_ids: ['stage_001', 'stage_003', 'stage_007'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'Subwoofer Stack',
     description: 'Low-frequency subwoofer cabinets',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Stage front',
     departments: ['stage_crew'],
-    task_ids: ['stage_001', 'stage_002', 'stage_007'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'Stage Monitors',
     description: 'Wedge or side-fill stage monitors for performers',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Stage deck',
     departments: ['stage_crew'],
-    task_ids: ['stage_003', 'stage_007'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'DI Boxes',
     description: 'Direct input boxes for instrument line signals',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Cable/gear crate',
     departments: ['stage_crew'],
-    task_ids: ['stage_005'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'XLR Cables (Assorted)',
     description: 'Balanced XLR microphone / line cables in various lengths',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Cable crate',
     departments: ['stage_crew'],
-    task_ids: ['stage_002', 'stage_003', 'stage_005', 'stage_007'],
     needs_restock: false,
+    missing: false,
     notes: 'Test for continuity before running cable runs'
   },
   {
     name: 'Amplifier Rack',
     description: 'Rack-mounted power amplifier(s) for the PA system',
-    location: 'stage',
-    sub_location: 'Stage right rack position',
+    location: 'stage_area_icon',
+    sub_location: 'Stage right rack',
     departments: ['stage_crew'],
-    task_ids: ['stage_004'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'FOH Mixing Console',
     description: 'Front-of-house digital mixing desk',
-    location: 'foh',
+    location: 'front_of_house_icon',
     sub_location: '',
     departments: ['stage_crew'],
-    task_ids: ['stage_005', 'stage_007'],
     needs_restock: false,
+    missing: false,
     notes: 'Load show file before line check'
   },
   {
     name: 'Projector',
     description: 'High-lumen projector for projection mapping',
-    location: 'foh',
+    location: 'front_of_house_icon',
     sub_location: '',
     departments: ['stage_crew'],
-    task_ids: ['stage_006'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
     name: 'Projection Mapping Computer',
-    description: 'Laptop running projection mapping software (Resolume / MadMapper)',
-    location: 'foh',
+    description: 'Laptop running projection mapping software',
+    location: 'front_of_house_icon',
     sub_location: '',
     departments: ['stage_crew'],
-    task_ids: ['stage_006'],
     needs_restock: false,
+    missing: false,
     notes: 'Confirm mapping files are loaded and tested before show'
   },
   {
     name: 'Power Strips / Stage Extension Cords',
     description: 'Rack-mount or floor power strips for stage and FOH equipment',
-    location: 'stage',
+    location: 'stage_area_icon',
     sub_location: 'Racks',
     departments: ['stage_crew'],
-    task_ids: ['stage_004', 'stage_005'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
 
   // ── CLEANUP CREW ────────────────────────────────────────────────────────────
   {
-    name: 'Tool Inventory Checklist',
-    description: 'Printed checklist for cataloguing tools being returned to storage',
-    location: 'shed',
+    name: 'Storage Bins',
+    description: 'Sealed labelled plastic bins for sorting and storing items post-event',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['cleanup_crew'],
-    task_ids: ['cleanup_001', 'cleanup_006', 'cleanup_007'],
     needs_restock: false,
-    notes: 'Update and reprint each year'
-  },
-  {
-    name: 'Labelled Storage Bins',
-    description: 'Sealed plastic bins for sorting and storing decorations and supplies',
-    location: 'shed',
-    sub_location: '',
-    departments: ['cleanup_crew'],
-    task_ids: ['cleanup_002', 'cleanup_004', 'cleanup_005'],
-    needs_restock: false,
+    missing: false,
     notes: 'Use pest-proof lids; elevate off ground if possible'
   },
   {
-    name: 'Marker & Label Tape',
-    description: 'Permanent markers and masking / label tape for bin labelling',
-    location: 'shed',
+    name: 'Tape',
+    description: 'Masking / packing tape for sealing and labelling bins',
+    location: 'trailer_C_icon',
     sub_location: 'Supply crate',
     departments: ['cleanup_crew'],
-    task_ids: ['cleanup_002', 'cleanup_007'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Rodent Deterrent Packs',
-    description: 'Moth balls or rodent deterrent pouches for storage areas',
-    location: 'shed',
-    sub_location: '',
+    name: 'Labels',
+    description: 'Adhesive labels for storage bins and equipment',
+    location: 'trailer_C_icon',
+    sub_location: 'Supply crate',
     departments: ['cleanup_crew'],
-    task_ids: ['cleanup_004'],
     needs_restock: false,
-    notes: 'Replace if older than 6 months'
-  },
-  {
-    name: 'Tarps / Weather Covers',
-    description: 'Waterproof tarps for covering stored equipment and large items',
-    location: 'shed',
-    sub_location: '',
-    departments: ['cleanup_crew', 'setup_crew'],
-    task_ids: ['cleanup_001', 'cleanup_003'],
-    needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Camera / Phone (Photo Inventory)',
-    description: 'Device for photographing item conditions before storage',
-    location: 'shed',
+    name: 'Rubber Gloves 2',
+    description: 'Rubber gloves for cleanup crew use',
+    location: 'trailer_C_icon',
+    sub_location: 'Supply crate',
+    departments: ['cleanup_crew'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Trash Bin (Rolling)',
+    description: 'Large outdoor rolling waste bin for post-event cleanup',
+    location: 'trailer_C_icon',
     sub_location: '',
     departments: ['cleanup_crew'],
-    task_ids: ['cleanup_007'],
     needs_restock: false,
-    notes: 'Upload photos to shared folder after session'
+    missing: false,
+    notes: ''
   },
 
-  // ── ARCADE ──────────────────────────────────────────────────────────────────
+  // ── ARCADE ATTENDANT ────────────────────────────────────────────────────────
   {
-    name: 'Generator',
-    description: 'Portable generator providing power to the arcade trailer',
-    location: 'arcade_trailer',
-    sub_location: 'Exterior — generator pad',
+    name: 'Flipbook Computer',
+    description: 'Computer running the flipbook photo booth software',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
     departments: ['arcade_attendant'],
-    task_ids: ['arcade_001', 'arcade_009'],
     needs_restock: false,
-    notes: 'Check fuel level before start-up; keep spare fuel can nearby'
-  },
-  {
-    name: 'Arcade Cabinets',
-    description: 'All arcade gaming units inside the trailer',
-    location: 'arcade_trailer',
-    sub_location: 'Interior',
-    departments: ['arcade_attendant'],
-    task_ids: ['arcade_002', 'arcade_006', 'arcade_008'],
-    needs_restock: false,
-    notes: 'Boot in sequence; report any cabinet faults immediately'
-  },
-  {
-    name: 'Flipbook Computer & Camera Booth',
-    description: 'Computer, camera rig, and booth setup for the flipbook station',
-    location: 'arcade_trailer',
-    sub_location: 'Flipbook corner',
-    departments: ['arcade_attendant'],
-    task_ids: ['arcade_003', 'arcade_005', 'arcade_007'],
-    needs_restock: false,
+    missing: false,
     notes: 'Run a test print at start of day to confirm alignment'
   },
   {
-    name: 'Paper Cutter',
-    description: 'Guillotine or rotary paper cutter for trimming flipbook pages',
-    location: 'arcade_trailer',
-    sub_location: 'Flipbook corner',
+    name: 'Webcam',
+    description: 'Camera for the flipbook photo capture station',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
     departments: ['arcade_attendant'],
-    task_ids: ['arcade_003', 'arcade_005', 'arcade_007'],
     needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Webcam / Computer Stand',
+    description: 'Stand or mount for the flipbook webcam and/or computer',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Printer',
+    description: 'Printer for flipbook photo output',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: 'Check ink / toner before opening'
+  },
+  {
+    name: 'Paper',
+    description: 'Paper stock for flipbook print jobs',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook supply shelf',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: 'Flag needs_restock when fewer than 2 reams remain'
+  },
+  {
+    name: 'Paper Cutter',
+    description: 'Guillotine or rotary cutter for trimming flipbook pages',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
     notes: 'Keep blade guard on when not in use'
+  },
+  {
+    name: 'Regular Stapler',
+    description: 'Standard desktop stapler',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Regular Staples',
+    description: 'Staple refills for the regular stapler',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook supply shelf',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: 'Flag needs_restock if down to last box'
   },
   {
     name: 'Heavy-Duty Stapler',
     description: 'Long-reach stapler for binding flipbook page sets',
-    location: 'arcade_trailer',
-    sub_location: 'Flipbook corner',
+    location: 'trailer_A_icon',
+    sub_location: 'Flipbook station',
     departments: ['arcade_attendant'],
-    task_ids: ['arcade_003', 'arcade_005', 'arcade_007'],
     needs_restock: false,
+    missing: false,
     notes: ''
   },
   {
-    name: 'Flipbook Paper Stock',
-    description: 'Pre-cut or full-sheet paper for flipbook print jobs',
-    location: 'arcade_trailer',
+    name: 'Heavy-Duty Staples',
+    description: 'Staple refills for the heavy-duty stapler',
+    location: 'trailer_A_icon',
     sub_location: 'Flipbook supply shelf',
     departments: ['arcade_attendant'],
-    task_ids: ['arcade_003', 'arcade_004', 'arcade_005', 'arcade_007'],
     needs_restock: false,
-    notes: 'Flag needs_restock when fewer than 2 reams remain'
+    missing: false,
+    notes: 'Flag needs_restock if down to last box'
   },
   {
-    name: 'Staple Refills',
-    description: 'Spare staple cartridges for the heavy-duty stapler',
-    location: 'arcade_trailer',
-    sub_location: 'Flipbook supply shelf',
+    name: 'Arcade Laptop',
+    description: 'Laptop for running arcade games or supporting systems',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
     departments: ['arcade_attendant'],
-    task_ids: ['arcade_004'],
     needs_restock: false,
-    notes: 'Keep at least 2 spare boxes on hand'
+    missing: false,
+    notes: 'Confirm games are loaded and controllers are paired before opening'
+  },
+  {
+    name: 'Controllers',
+    description: 'Game controllers for arcade laptop games',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Blue Swivel Chair 3',
+    description: 'Blue swivel chair — arcade trailer',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
+    departments: ['arcade_attendant', 'front_gate'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Blue Swivel Chair 4',
+    description: 'Blue swivel chair — arcade trailer',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
+    departments: ['arcade_attendant', 'front_gate'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'TV',
+    description: 'Television screen for arcade display',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
+  },
+  {
+    name: 'Standing Arcade Booth',
+    description: 'Stand-up arcade cabinet booth',
+    location: 'trailer_A_icon',
+    sub_location: 'Interior',
+    departments: ['arcade_attendant'],
+    needs_restock: false,
+    missing: false,
+    notes: ''
   }
 ]
-
-// ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
   const colRef = collection(db, 'inventory')
@@ -570,8 +819,7 @@ async function main() {
 
     console.log(
       `  [${String(deptCounts[dept]).padStart(2, '0')}] ` +
-      `${dept.padEnd(20)} ${item.name} ` +
-      `(tasks: ${item.task_ids.join(', ')})`
+      `${dept.padEnd(22)} ${item.name}`
     )
 
     if (WRITE) {

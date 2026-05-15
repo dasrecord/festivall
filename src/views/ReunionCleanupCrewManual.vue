@@ -45,26 +45,34 @@
           structures, collect and sort waste, and return the site to its original condition —
           leaving the space better than you found it.
         </p>
-        <p style="margin: 0; font-size: 0.9rem; color: #ccc">
-          <strong>Equipment used:</strong> Waste bags · Recycling bins · Hand tools · Transport bins
-        </p>
       </div>
 
       <!-- Supplies & Equipment Summary -->
       <div v-if="deptItems.length > 0" class="supplies-summary">
-        <div class="supplies-header">📦 Supplies &amp; Equipment</div>
-        <div
-          v-for="item in deptItems"
-          :key="item.id"
-          class="supplies-row"
-          :class="{ 'needs-restock': item.needs_restock }"
-        >
-          <span class="supplies-name">{{ item.name }}</span>
-          <span class="supplies-location">
-            📍 {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
-            <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
-          </span>
-          <span v-if="item.needs_restock" class="supplies-restock">⚠️ Needs restock</span>
+        <button class="supplies-header" @click="suppliesOpen = !suppliesOpen">
+          📦 Supplies &amp; Equipment
+          <span class="supplies-count">{{ deptItems.length }}</span>
+          <span class="supplies-chevron">{{ suppliesOpen ? '▲' : '▼' }}</span>
+        </button>
+        <div v-show="suppliesOpen">
+          <div
+            v-for="item in deptItems"
+            :key="item.id"
+            class="supplies-row"
+            :class="{ 'needs-restock': item.needs_restock, missing: item.missing }"
+          >
+            <span class="supplies-name">{{ item.name }}</span>
+            <span class="supplies-location">
+              📍 {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+              <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
+            </span>
+            <span v-if="item.needs_restock" class="supplies-restock">⚠️ Needs restock</span>
+            <span v-if="item.missing" class="supplies-missing">❌ Missing</span>
+            <div class="supplies-actions">
+              <button v-if="!item.needs_restock" class="supplies-flag-btn" @click="flagNeedsRestock(item.id)">⚠️ Restock</button>
+              <button v-if="!item.missing" class="supplies-flag-btn" @click="flagMissing(item.id)">❌ Missing</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -80,11 +88,6 @@
             <div class="task-content">
               <h4>{{ task.title }}</h4>
               <p>{{ task.description }}</p>
-              <InventoryTaskItems
-                :items="getItemsForTask(task.id)"
-                :canFlag="true"
-                @flag="flagNeedsRestock"
-              />
               <div class="task-meta">
                 <span v-if="task.assignedTo" class="assigned-to">
                   Assigned to: {{ task.assignedToName }}
@@ -200,9 +203,9 @@ import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import cleanup_icon from '@/assets/images/icons/cleanup_crew.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 import { useInventory } from '@/composables/useInventory'
-import InventoryTaskItems from '@/components/InventoryTaskItems.vue'
 
-const { deptItems, getItemsForTask, flagNeedsRestock } = useInventory('cleanup_crew')
+const { deptItems, flagNeedsRestock, flagMissing } = useInventory('cleanup_crew')
+const suppliesOpen = ref(false)
 
 // Reactive data
 const userIdCode = ref('')
@@ -782,12 +785,35 @@ button:disabled {
 }
 
 .supplies-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: rgba(255, 200, 80, 0.9);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.supplies-count {
+  background: rgba(255, 200, 80, 0.15);
+  color: rgba(255, 200, 80, 0.75);
+  border-radius: 10px;
+  padding: 0 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.supplies-chevron {
+  margin-left: auto;
+  font-size: 0.6rem;
+  opacity: 0.55;
 }
 
 .supplies-row {
@@ -825,6 +851,42 @@ button:disabled {
   font-size: 0.72rem;
   color: #ffa726;
   font-weight: 600;
+}
+
+.supplies-missing {
+  font-size: 0.72rem;
+  color: #ef5350;
+  font-weight: 600;
+}
+
+.supplies-row.missing .supplies-name {
+  opacity: 0.65;
+}
+
+.supplies-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.supplies-flag-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin: 0;
+  font-weight: normal;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.supplies-flag-btn:hover:not(:disabled) {
+  background: none;
+  border-color: rgba(255, 200, 80, 0.6);
+  color: rgba(255, 200, 80, 0.9);
+  transform: none;
 }
 
 @media (max-width: 600px) {
