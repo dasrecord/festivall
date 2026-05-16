@@ -75,7 +75,7 @@
 
               <!-- Step 1: first warning -->
               <div v-else-if="hintState[index] === 'warn1'" class="hint-warn">
-                <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. Using a hint will <strong>deduct 1 point</strong> from your score. Are you sure?</p>
+                <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. This may have an impact on your score and ranking. Are you sure?</p>
                 <div class="hint-warn-actions">
                   <button class="hint-warn-yes" @click="hintState[index] = 'warn2'; $forceUpdate()">Yes, I need it</button>
                   <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Never mind</button>
@@ -414,6 +414,7 @@ export default {
         },
         {
           text: 'What are the missing words?\n52 c in a d without 2 j',
+          subtext: 'Hint: You must be royally flushed to get this one.',
           answer: '',
           type: 'text',
           category: 'Riddle',
@@ -424,9 +425,9 @@ export default {
           },
         },
         {
-          text: 'White to move and checkmate in two moves.',
+          text: 'White to move and checkmate in two moves.\n Only the first move is required for the answer.\nUse standard chess notation.',
           subtext:
-            'Hint: Only the first move is required for the answer. Use standard chess notation.',
+            'Hint: ',
           answer: 'Qb8#',
           type: 'text',
           image: chess_2,
