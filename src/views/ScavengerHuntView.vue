@@ -347,7 +347,7 @@ export default {
         },
         {
           text: 'Your next challenge is to find the Guardian of the Flame and identify his magic item.',
-          answer: '',
+          answer: 'lighter',
           type: 'text',
           category: 'Quest',
           icon: quest
@@ -363,7 +363,7 @@ export default {
         },
         {
           text: 'Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.',
-          subtext: 'Hint: ',
+          subtext: "Hint: Don't forget to count the quadrilaterals of all dimensions. including the clue itself! ",
           answer: '121',
           type: 'text',
           category: 'Quest',
@@ -382,6 +382,7 @@ export default {
         },
         {
           text: 'What is the next number in this sequence:\n1,4,1,5,9,2,6?',
+          subtext: 'Hint: This sequence is infinite and non-repeating. It describes something very fundamental about our universe.',
           answer: '5',
           type: 'text',
           category: 'Sequence',
@@ -404,6 +405,7 @@ export default {
         },
         {
           text: 'What is the only element that is a liquid metal at room temperature?',
+          subtext: 'Hint: It shares its name with a planet.',
           answer: 'mercury',
           type: 'text',
           category: 'Trivia',
@@ -432,8 +434,8 @@ export default {
         {
           text: 'White to move and checkmate in two moves.\n Only the first move is required for the answer.\nUse standard chess notation.',
           subtext:
-            'Hint: ',
-          answer: 'Qb8#',
+            'Hint: Look for a move that puts black in check, even if it seems to lose material at first.\nAre you missing a "+" for check?\nThe eventual plan is Rd8#',
+          answer: 'Qb8+',
           type: 'text',
           image: chess_2,
           category: 'Puzzle',
@@ -466,15 +468,16 @@ export default {
           }
         },
         {
-          text: "Where is our international headliner's original hometown?",
+          text: "What is the hometown of last year's international headliner?",
           answer: 'Preston',
           type: 'text',
-          category: 'Quest',
-          icon: quest
+          category: 'Trivia',
+          icon: trivia
         },
         {
-          text: '?',
-          answer: '',
+          text: "What something the maker doesn't need, the buyer doesn't use, and the user doesn't see?",
+          subtext: 'Hint: This is a classic riddle that has been around for centuries.\nIt describes something that is associated with death, but it is not alive itself.',
+          answer: 'coffin',
           type: 'text',
           category: 'Riddle',
           icon: riddle
