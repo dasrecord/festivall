@@ -333,7 +333,7 @@ export default {
       // ── SENIOR question set (21 scored questions) ────────────────────────
       questionsSenior: [
         {
-          text: 'Welcome, __NAME__.\n This is meant to be HARD.\n 21 brain-bending challenges stand between you and the leaderboard.\n The top 5 scores win Bitcoin.\n Think you\'re up for it?',
+          text: 'Welcome, __NAME__.\n This is meant to be QUITE DIFFICULT.\n 21 brain-bending challenges.\n The top 5 scores win actual Bitcoin\n - the hardest money ever created.\n Think you\'re up for it?',
           type: 'information',
           category: 'Senior\nScavenger Hunt'
         },
