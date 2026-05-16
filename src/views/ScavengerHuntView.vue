@@ -32,8 +32,7 @@
           class="nav-dot"
           :class="{
             current: currentQuestion === index,
-            completed: feedback[index] === 'correct',
-            attempted: answers[index] && feedback[index] !== 'correct',
+            completed: answers[index] && question.type !== 'information',
             information: question.type === 'information'
           }"
           @click="goToQuestion(index)"
@@ -42,7 +41,8 @@
           {{ question.type === 'information' ? '' : getQuestionNumber(index) || '?' }}
         </span>
       </div>
-      <div class="nav-score">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+      <div class="nav-score" v-if="showFeedback">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+      <button class="leaderboard-link-btn nav-leaderboard-btn" @click="openLeaderboard">🏆</button>
     </div>
 
     <!-- Question Slides -->
@@ -59,25 +59,68 @@
       >
         <div class="question">
           <img v-if="question.icon" :src="question.icon" alt="Category Icon" class="category-icon" />
-
+          
           <h1 v-html="formatText(question.category)"></h1>
           <h2 v-html="formatText(question.text)"></h2>
           <img v-if="question.image" :src="question.image" alt="Question Image" />
-          <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
+          <!-- Hint reveal with friction -->
+          <template v-if="question.subtext">
+            <div class="hint-area">
+              <!-- Step 0: offer hint -->
+              <button
+                v-if="!hintState[index]"
+                class="hint-trigger-btn"
+                @click="hintState[index] = 'warn1'; $forceUpdate()"
+              >💡 Show Hint</button>
 
+              <!-- Step 1: first warning -->
+              <div v-else-if="hintState[index] === 'warn1'" class="hint-warn">
+                <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. Using a hint will <strong>deduct 1 point</strong> from your score. Are you sure?</p>
+                <div class="hint-warn-actions">
+                  <button class="hint-warn-yes" @click="hintState[index] = 'warn2'; $forceUpdate()">Yes, I need it</button>
+                  <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Never mind</button>
+                </div>
+              </div>
+
+              <!-- Step 2: last chance -->
+              <div v-else-if="hintState[index] === 'warn2'" class="hint-warn">
+                <p class="hint-warn-text">🚨 <strong>Last chance.</strong> This will cost you <strong>-1 point</strong>. The top competitors won't need this.</p>
+                <div class="hint-warn-actions">
+                  <button class="hint-warn-yes" @click="revealHint(index)">Show the hint</button>
+                  <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Actually, no</button>
+                </div>
+              </div>
+
+              <!-- Hint revealed -->
+              <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+            </div>
+          </template>
+          
+                    <!-- Live SHA256 preview -->
+                    <div v-if="question.validation?.type === 'sha256-leading-zeros' && answers[index]?.trim()" class="sha-preview">
+                      <span class="sha-label">SHA256:</span>
+                      <span class="sha-hash" :class="{ 'sha-match': liveHashes[index]?.startsWith('00') }">{{ liveHashes[index] || '…' }}</span>
+                    </div>
+          
           <!-- Input for answers -->
           <input
             v-if="question.type === 'text'"
             type="text"
             v-model="answers[index]"
-            @blur="checkAnswer(index)"
+            @input="handleInput(index)"
             @keyup.enter="checkAnswer(index)"
             placeholder="Type your answer here..."
           />
 
+          <!-- Live ROT13 preview -->
+          <div v-if="question.validation?.type === 'rot13' && answers[index]?.trim()" class="sha-preview">
+            <span class="sha-label">ROT13:</span>
+            <span class="sha-hash" :class="{ 'sha-match': liveRot13s[index] === question.validation.encoded }">{{ liveRot13s[index] || '…' }}</span>
+          </div>
+
           <!-- Feedback for correct/incorrect answers -->
           <p
-            v-if="feedback[index]"
+            v-if="showFeedback && feedback[index]"
             :class="{
               correct: feedback[index] === 'correct',
               incorrect: feedback[index] === 'incorrect'
@@ -109,16 +152,19 @@
     >
       <div class="score">
         <h2>{{ difficulty === 'senior' ? '🏆' : '⭐' }} Great job, {{ fullName }}!</h2>
-        <h3>Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
+        <h3 v-if="showFeedback">Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
         <p v-if="difficulty === 'senior'" class="score-prize-note">
           Top 5 scores win Bitcoin. Submit to enter!
         </p>
         <p v-else class="score-junior-note">
           Amazing effort! You crushed it! 🎉
         </p>
-        <button @click="restartHunt">Change Mode</button>
-        <button @click="sendScore" :disabled="scoreSubmitted">{{ scoreSubmitted ? 'Submitted ✓' : 'Submit Score' }}</button>
-        <button v-if="scoreSubmitted" @click="openLeaderboard" class="leaderboard-link-btn">🏆 View Leaderboard</button>
+        <button @click="sendScore" :disabled="scoreSubmitted" class="submit-score-btn">{{ scoreSubmitted ? 'Submitted ✓' : 'Submit Score' }}</button>
+        <div class="score-secondary-btns">
+          <button @click="editAnswers">Edit Answers</button>
+          <button @click="restartHunt">Change Mode</button>
+        </div>
+        <button @click="openLeaderboard" class="leaderboard-link-btn">🏆 View Leaderboard</button>
       </div>
     </div>
 
@@ -159,7 +205,7 @@
 
 <script>
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
-import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
+import chess_2 from '@/assets/images/scavenger_hunt/chess_2.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
 import quest from '@/assets/images/icons/quest.png'
 import trivia from '@/assets/images/icons/trivia.png'
@@ -168,7 +214,7 @@ import cypher from '@/assets/images/icons/cypher.png'
 import sequence from '@/assets/images/icons/sequence.png'
 import puzzle from '@/assets/images/icons/quiz.png'
 import { reunion_db } from '@/firebase.js'
-import { doc, updateDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
+import { doc, updateDoc, arrayUnion, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -177,7 +223,7 @@ export default {
       difficulty: null, // null | 'junior' | 'senior'
       currentQuestion: 0,
       backgroundImage: faded_frog,
-      chess_1: chess_1,
+      chess_2: chess_2,
       binary: binary,
       quest: quest,
       trivia: trivia,
@@ -242,7 +288,6 @@ export default {
           icon: quest
         },
         {
-          // UPDATE: set `answer` to the magic word printed inside the Junior flipbook
           text: 'Go to the Flipbook Station for your next clue.',
           answer: 'motion',
           type: 'text',
@@ -278,7 +323,7 @@ export default {
           icon: puzzle
         },
         {
-          text: "Amazing work, __NAME__!\n You finished the Junior Hunt!\n You're a superstar! 🌟",
+          text: "Amazing work, __NAME__!\n You finished the Junior Scavenger Hunt!\n You're a superstar! 🌟",
           type: 'information',
           category: 'Congratulations!'
         }
@@ -292,110 +337,109 @@ export default {
           category: 'Senior\nScavenger Hunt'
         },
         {
-          text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
-          answer: 'E',
+          text: 'Your first challenge is to identify the next letter in this sequence:\n M,V,E,M,J,?',
+          answer: 'S',
           type: 'text',
           category: 'Sequence',
           icon: sequence
         },
         {
           text: 'Find the Guardian of the Flame and identify his magic item.',
-          answer: 'lighter',
+          subtext: '',
+          answer: '',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: 'What is the largest planet in our solar system?',
-          answer: 'Jupiter',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'What is "Reunion" in Morse code?',
+          text: '.. -.-. --- -. .. -.-.',
           subtext:
-            'Hint: Use periods . and dashes - for the letters. Use spaces to separate letters.',
-          answer: '.-. . ..- -. .. --- -.',
+            'Hint: This is Morse code. Dots are short signals, dashes are long signals, and spaces separate letters.',
+          answer: 'iconic',
           type: 'text',
           category: 'Cypher',
           icon: cypher
         },
         {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
+          text: 'Look for the puzzle somewhere on the festival grounds.',
+          subtext: 'Hint: A map might be helpful for this one.',
+          answer: '121',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
-          answer: 'nothing',
+          text: '?',
+          answer: '',
           type: 'text',
           category: 'Riddle',
           icon: riddle
         },
         {
-          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
-          answer: '21',
+          text: 'What is the next number in this sequence:\n1,4,1,5,9,2,6?',
+          answer: '5',
           type: 'text',
           category: 'Sequence',
           icon: sequence
         },
         {
-          text: 'For this quest go to the Cote Corral and look for the magic word.',
-          answer: 'victory',
+          text: '',
+          answer: '',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 101010?',
+          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 01000101?',
           image: binary,
-          answer: '42',
+          answer: '69',
           type: 'text',
           category: 'Cypher',
           icon: cypher
         },
         {
-          text: 'I wonder where the next magic word is wading for you...',
-          subtext: 'Hint: Raise the temperature.',
-          answer: 'ocean',
+          text: 'What is the only element that is a liquid metal at room temperature?',
+          answer: 'mercury',
           type: 'text',
-          category: 'Quest',
-          icon: quest
+          category: 'Trivia',
+          icon: trivia
         },
-        {
-          text: 'What is the chemical symbol for gold?',
-          answer: 'Au',
+                {
+          text: 'What block height was Laurel Cardiff-Das born?',
+          subtext: 'Hint: Our Vectors & Logos expert might know the answer to this one.',
+          answer: '813918',
           type: 'text',
           category: 'Trivia',
           icon: trivia
         },
         {
-          text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
-          answer: '64,128,256,512,1024',
+          text: 'What are the missing words?\n52 c in a d without 2 j',
+          answer: '',
           type: 'text',
-          category: 'Sequence',
-          icon: sequence
+          category: 'Riddle',
+          icon: riddle,
+          validation: {
+            type: 'regex',
+            pattern: /cards[\s,]+deck[\s,]+jokers?$/i
+          },
         },
         {
           text: 'White to move and checkmate in two moves.',
           subtext:
             'Hint: Only the first move is required for the answer. Use standard chess notation.',
-          answer: 'Ra6',
+          answer: 'Qb8#',
           type: 'text',
-          image: chess_1,
+          image: chess_2,
           category: 'Puzzle',
           icon: puzzle
         },
         {
-          text: "Whispers speak of the story of Anno's seeds. What secret do they hold?",
-          subtext: 'Hint: Begin at the end.',
-          answer: 'magical events',
+          text: "What is the next row of numbers in this sequence?\n1\n1,1\n2,1\n1,2,1,1,\n1,1,1,2,1,1\n3,1,1,2,1,1",
+          subtext: 'Hint: The rows are self referential. Each row describes the previous row. The first row is "one 1" → 1,1. The second row is "two 1s" → 2,1. The third row is "one 2, then one 1" → 1,2,1,1, etc.',
+          answer: '',
           type: 'text',
-          category: 'Quest',
-          icon: quest
+          category: 'Sequence',
+          icon: sequence
         },
         {
           text: "Find one of our Children's Coordinators and ask for the magic word.",
@@ -405,12 +449,15 @@ export default {
           icon: quest
         },
         {
-          text: 'Decode this message:\n13-21-19-9-3',
-          subtext: 'Hint: You will never see 27 in this type of cypher',
-          answer: 'music',
+          text: 'What are the missing words?\n11 p on a s t',
+          answer: '',
           type: 'text',
-          category: 'Cypher',
-          icon: cypher
+          category: 'Riddle',
+          icon: riddle,
+          validation: {
+            type: 'regex',
+            pattern: /players[\s,]+(soccer|football)[\s,]+team$/i
+          }
         },
         {
           text: "Where is our international headliner's original hometown?",
@@ -420,48 +467,62 @@ export default {
           icon: quest
         },
         {
-          text: 'What gets wetter the more it dries?',
-          answer: 'towel',
+          text: '?',
+          answer: '',
           type: 'text',
           category: 'Riddle',
           icon: riddle
         },
         {
-          text: 'Decode this encrypted message to find the magic word:\nSRFGVINYY',
-          subtext: 'Hint: This is a Caesar cypher',
-          answer: 'festivall',
+          text: 'Decode this encrypted message to find the magic word:\n fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf',
+          subtext: 'Hint: This is a ROT13 cypher — type the letter "a" and see what letter it becomes!',
+          answer: 'supercalifragilisticexpialidocious',
           type: 'text',
           category: 'Cypher',
-          icon: cypher
+          icon: cypher,
+          validation: { type: 'rot13', encoded: 'fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf' }
         },
         {
-          text: 'What is the hardest natural substance on Earth?',
-          answer: 'diamond',
+          text: '',
+          answer: '',
           type: 'text',
           category: 'Trivia',
           icon: trivia
         },
         {
-          // UPDATE: set `answer` to the magic word printed inside the Senior flipbook
           text: 'Go to the Flipbook Station for your next clue.',
-          answer: 'illusion',
+          answer: 'animated',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: "Well done, __NAME__.\n You've completed the Senior Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
+          text: 'Find a number that has a SHA256 output \nwith 2 leading zeros.',
+          subtext: 'Hint: Use trial and error.\n(P.S. this is very similar to how Bitcoin mining works!)',
+          answer: '',
+          type: 'text',
+          category: 'Quest',
+          icon: quest,
+          validation: { type: 'sha256-leading-zeros', zeros: 2 } 
+        },
+        {
+          text: "Well done, __NAME__.\n You've completed the Senior Scavenger Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
           type: 'information',
-          category: 'Congratulations!'
+          category: 'Almost done!'
         }
       ],
 
       answers: [],
       feedback: [],
+      liveHashes: [],
+      liveRot13s: [],
       viewingLeaderboard: false,
       leaderboardData: { senior: [], junior: [] },
       leaderboardLoading: false,
-      scoreSubmitted: false
+      scoreSubmitted: false,
+      showFeedback: false,  // set true to reveal per-question correct/incorrect and nav score
+      hintState: {},  // per-question hint reveal state: null | 'warn1' | 'warn2' | 'shown'
+      hintsUsed: {}  // per-question flag set when hint is revealed
     }
   },
   computed: {
@@ -541,7 +602,9 @@ export default {
           updatedAt: new Date().toISOString(),
           currentQuestion: this.currentQuestion,
           answers: this.answers,
-          feedback: this.feedback
+          feedback: this.feedback,
+          hintsUsed: this.hintsUsed,
+          hintState: this.hintState
         }
         window?.localStorage?.setItem(this.progressKey, JSON.stringify(payload))
       } catch (e) {
@@ -577,6 +640,12 @@ export default {
         ) {
           this.currentQuestion = saved.currentQuestion
         }
+        if (saved.hintsUsed && typeof saved.hintsUsed === 'object') {
+          this.hintsUsed = { ...saved.hintsUsed }
+        }
+        if (saved.hintState && typeof saved.hintState === 'object') {
+          this.hintState = { ...saved.hintState }
+        }
       } catch (e) {
         // ignore parse/storage errors
       }
@@ -609,22 +678,105 @@ export default {
     showScoreSlide() {
       this.currentQuestion = 'score'
     },
-    checkAnswer(index) {
-      if (!this.questions[index]?.answer) {
-        return
-      }
-      const userAnswer = this.answers[index]?.trim().toLowerCase()
-      const correctAnswer = this.questions[index].answer?.toLowerCase()
-      if (userAnswer === correctAnswer) {
-        this.feedback[index] = 'correct'
-      } else {
-        this.feedback[index] = 'incorrect'
+    editAnswers() {
+      const idx = this.questions.findIndex((q, i) => q.type !== 'information' && !this.answers[i])
+      this.currentQuestion = idx !== -1 ? idx : 0
+    },
+    async revealHint(index) {
+      this.hintState[index] = 'shown'
+      this.hintsUsed[index] = true
+      this.$forceUpdate()
+      this.saveProgress()
+      if (this.id_code) {
+        try {
+          await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
+            'scavenger_hunt.hintsUsed': arrayUnion(index)
+          })
+        } catch (e) {
+          // non-fatal — penalty is still tracked locally
+        }
       }
     },
+    async checkAnswer(index) {
+      const question = this.questions[index]
+      if (!question) return
+
+      const input = (this.answers[index] || '').trim()
+
+      // Rule-based validator
+      if (question.validation?.type === 'sha256-leading-zeros') {
+        const ok = await this.validateShaLeadingZeros(input, question.validation.zeros || 2)
+        this.feedback[index] = ok ? 'correct' : 'incorrect'
+        return
+      }
+
+      if (question.validation?.type === 'rot13') {
+        this.feedback[index] = this.rot13(input) === question.validation.encoded ? 'correct' : 'incorrect'
+        return
+      }
+
+      if (question.validation?.type === 'regex') {
+        this.feedback[index] = question.validation.pattern.test(input) ? 'correct' : 'incorrect'
+        return
+      }
+
+      // Exact-match validator
+      if (!question.answer) return
+      const userAnswer = input.toLowerCase()
+      const correctAnswer = question.answer.toLowerCase()
+      this.feedback[index] = userAnswer === correctAnswer ? 'correct' : 'incorrect'
+    },
+    async handleInput(index) {
+      const question = this.questions[index]
+      if (question?.validation?.type === 'sha256-leading-zeros') {
+        await this.updateLiveHash(index)
+      }
+      if (question?.validation?.type === 'rot13') {
+        this.updateLiveRot13(index)
+      }
+      await this.checkAnswer(index)
+    },
+    async updateLiveHash(index) {
+      const input = (this.answers[index] || '').trim()
+      if (!input) {
+        this.liveHashes[index] = ''
+        return
+      }
+      const hash = await this.sha256Hex(input)
+      this.liveHashes = Object.assign([], this.liveHashes, { [index]: hash })
+    },
+    rot13(text) {
+      return text.replace(/[a-zA-Z]/g, (c) => {
+        const base = c <= 'Z' ? 65 : 97
+        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base)
+      })
+    },
+    updateLiveRot13(index) {
+      const input = (this.answers[index] || '').trim()
+      if (!input) {
+        this.liveRot13s[index] = ''
+        return
+      }
+      this.liveRot13s = Object.assign([], this.liveRot13s, { [index]: this.rot13(input) })
+    },
+    async validateShaLeadingZeros(input, zeros = 2) {
+      if (!/^\d+$/.test(input)) return false
+      const hashHex = await this.sha256Hex(input)
+      return hashHex.startsWith('0'.repeat(zeros))
+    },
+    async sha256Hex(text) {
+      const bytes = new TextEncoder().encode(text)
+      const digest = await crypto.subtle.digest('SHA-256', bytes)
+      return Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+    },
     calculateScore() {
-      return this.feedback.filter(
+      const correct = this.feedback.filter(
         (status, index) => status === 'correct' && this.questions[index]?.type === 'text'
       ).length
+      const hintPenalty = Object.keys(this.hintsUsed).length
+      return Math.max(0, correct - hintPenalty)
     },
     countScoredQuestions() {
       return this.questions.filter((question) => question.type === 'text').length
@@ -659,11 +811,13 @@ export default {
       }
       try {
         // Write score to participant's existing record in participants_2026
+        const hintsUsedCount = Object.keys(this.hintsUsed).length
         await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
           scavenger_hunt: {
             score,
             total,
             difficulty: this.difficulty,
+            hintsUsed: hintsUsedCount,
             submittedAt: new Date()
           }
         })
@@ -1104,6 +1258,34 @@ button:disabled {
   color: gold;
 }
 
+.nav-leaderboard-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.submit-score-btn {
+  width: 100%;
+  font-size: 1.15em;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+}
+
+.score-secondary-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.score-secondary-btns button {
+  flex: 1;
+}
+
 .leaderboard-overlay {
   position: fixed;
   inset: 0;
@@ -1209,5 +1391,117 @@ button:disabled {
 
 .lb-back-btn {
   margin-top: 1.5rem;
+}
+
+/* SHA256 live preview */
+.hint-area {
+  margin: 0.5rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+.hint-trigger-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-trigger-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hint-warn {
+  background: rgba(255, 180, 0, 0.06);
+  border: 1px solid rgba(255, 180, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.hint-warn-text {
+  font-size: 0.8rem;
+  color: rgba(255, 220, 100, 0.75);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.hint-warn-text strong {
+  color: rgba(255, 220, 100, 0.95);
+}
+
+.hint-warn-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hint-warn-yes {
+  background: transparent;
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  color: rgba(255, 130, 130, 0.8);
+  font-size: 0.75rem;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-warn-no {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-revealed {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sha-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0.5rem 0;
+  font-size: 0.75rem;
+  width: 100%;
+}
+
+.sha-label {
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.65rem;
+}
+
+.sha-hash {
+  font-family: monospace;
+  word-break: break-all;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.sha-hash.sha-match {
+  color: limegreen;
+  font-weight: bold;
 }
 </style>
