@@ -42,6 +42,7 @@
         </span>
       </div>
       <div class="nav-score" v-if="showFeedback">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+      <div class="nav-hints" v-if="Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br></br>{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
       <button class="leaderboard-link-btn nav-leaderboard-btn" @click="openLeaderboard">🏆</button>
     </div>
 
@@ -114,7 +115,7 @@
 
           <!-- Live ROT13 preview -->
           <div v-if="question.validation?.type === 'rot13' && answers[index]?.trim()" class="sha-preview">
-            <span class="sha-label">ROT13:</span>
+            <span class="sha-label">Result:</span>
             <span class="sha-hash" :class="{ 'sha-match': liveRot13s[index] === question.validation.encoded }">{{ liveRot13s[index] || '…' }}</span>
           </div>
 
@@ -332,20 +333,20 @@ export default {
       // ── SENIOR question set (21 scored questions) ────────────────────────
       questionsSenior: [
         {
-          text: 'Welcome, __NAME__.\n This is HARD.\n 21 brain-bending challenges stand between you and the leaderboard.\n The top 5 scores win Bitcoin.\n Think you\'re up for it?',
+          text: 'Welcome, __NAME__.\n This is meant to be HARD.\n 21 brain-bending challenges stand between you and the leaderboard.\n The top 5 scores win Bitcoin.\n Think you\'re up for it?',
           type: 'information',
           category: 'Senior\nScavenger Hunt'
         },
         {
-          text: 'Your first challenge is to identify the next letter in this sequence:\n M,V,E,M,J,?',
+          text: 'Your first challenge is to identify the next letter in this sequence:\nM,V,E,M,J,?',
+          subtext: 'Hint: Think outside the box, in fact think WAY outside the box.',
           answer: 'S',
           type: 'text',
           category: 'Sequence',
           icon: sequence
         },
         {
-          text: 'Find the Guardian of the Flame and identify his magic item.',
-          subtext: '',
+          text: 'Your next challenge is to find the Guardian of the Flame and identify his magic item.',
           answer: '',
           type: 'text',
           category: 'Quest',
@@ -361,19 +362,23 @@ export default {
           icon: cypher
         },
         {
-          text: 'Look for the puzzle somewhere on the festival grounds.',
-          subtext: 'Hint: A map might be helpful for this one.',
+          text: 'Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.',
+          subtext: 'Hint: ',
           answer: '121',
           type: 'text',
           category: 'Quest',
           icon: quest
         },
         {
-          text: '?',
+          text: 'What 4-digit number has the following properties?\n- All digits are different\n- The digit in the thousands place is three times the digit in the tens place\n- The digit in the hundreds place is one less than the digit in the tens place\n- The digit in the ones place is two more than the digit in the hundreds place',
           answer: '',
           type: 'text',
           category: 'Riddle',
-          icon: riddle
+          icon: riddle,
+          validation: {
+            type: 'regex',
+            pattern: /^(3012|6123|9234)$/
+          }
         },
         {
           text: 'What is the next number in this sequence:\n1,4,1,5,9,2,6?',
@@ -476,8 +481,8 @@ export default {
         },
         {
           text: 'Decode this encrypted message to find the magic word:\n fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf',
-          subtext: 'Hint: This is a ROT13 cypher — type the letter "a" and see what letter it becomes!',
-          answer: 'supercalifragilisticexpialidocious',
+          subtext: 'Hint: This is a ROT13 cypher — type the letter "a" and see what letter it becomes.\nWhat doyou notice about the relationship between the original letters and the transformed letters?',
+          answer: '',
           type: 'text',
           category: 'Cypher',
           icon: cypher,
@@ -498,8 +503,8 @@ export default {
           icon: quest
         },
         {
-          text: 'Find a number that has a SHA256 output \nwith 2 leading zeros.',
-          subtext: 'Hint: Use trial and error.\n(P.S. this is very similar to how Bitcoin mining works!)',
+          text: 'Find a number that has a SHA256 output with 2 leading zeros\n(Example Hash: 00abcdef...)\nUse trial and error.\nP.S. this is very similar to how Bitcoin mining works!',
+          subtext: '',
           answer: '',
           type: 'text',
           category: 'Quest',
@@ -673,6 +678,9 @@ export default {
       this.currentQuestion = 0
       this.answers = []
       this.feedback = []
+      this.hintState = {}
+      this.hintsUsed = {}
+      this.scoreSubmitted = false
       this.clearProgress()
       this.difficulty = null
     },
@@ -687,7 +695,7 @@ export default {
       this.hintState[index] = 'shown'
       this.hintsUsed[index] = true
       this.$forceUpdate()
-      this.saveProgress()
+      this.persistProgress()
       if (this.id_code) {
         try {
           await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
@@ -1096,6 +1104,14 @@ button:disabled {
   font-size: 14px;
   padding-left: 15px;
   border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.nav-hints {
+  font-size: 12px;
+  color: rgba(255, 180, 60, 0.85);
+  padding-left: 15px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 
 /* Mobile responsiveness for quick nav */
