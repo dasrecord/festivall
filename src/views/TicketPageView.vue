@@ -58,6 +58,15 @@
               alt="Meal Icon"
             />
           </div>
+          <button
+            v-if="order.meal_tickets_remaining === 0"
+            @click.stop="showAdHocMealModal = true"
+            style="font-size:0.7rem;padding:4px 10px;margin:4px;border-radius:20px;border:1px solid var(--reunion-frog-green);background:transparent;color:var(--reunion-frog-green);cursor:pointer;white-space:nowrap;"
+          >🍽️ Buy Meals</button>
+          <span
+            v-if="pendingMealPurchases.length > 0"
+            style="font-size:0.65rem;color:orange;margin:2px 0 4px;display:block;"
+          >⏳ {{ pendingMealPurchases.length }} order{{ pendingMealPurchases.length > 1 ? 's' : '' }} pending</span>
         </div>
       </div>
       <div class="status-bar">
@@ -229,7 +238,8 @@
               reunion@festivall.ca
             </a>
           </h3>
-          <button @click="showMealRedemptionHistoryModal = false">Close</button>
+          <button @click="showAdHocMealModal = true; showMealRedemptionHistoryModal = false">🍽️ Buy More Meals</button>
+          <button @click="showMealRedemptionHistoryModal = false" style="background:transparent;color:white;border-color:white;margin-top:0.5rem;">Close</button>
         </div>
       </div>
 
@@ -646,7 +656,68 @@
               reunion@festivall.ca
             </a>
           </h3>
+          <button @click="showAdHocMealModal = true; showMealServiceModal = false">🍽️ Buy More Meals</button>
           <button @click="showMealServiceModal = false">Close</button>
+        </div>
+      </div>
+
+      <!-- Ad Hoc Meal Order Modal -->
+      <div v-if="showAdHocMealModal" class="modal" @click.self="showAdHocMealModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showAdHocMealModal = false"></div>
+          <img
+            class="festivall-emblem"
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="meals_icon"
+            style="height: 64px; width: auto; margin: 0; filter: invert(1)"
+            alt="Meal Icon"
+          />
+          <h2>Buy More Meals</h2>
+          <h3>
+            👤 <strong style="color: orange">{{ order.fullname }}</strong><br />
+            🎫 Current meal tickets: <strong style="color: orange">{{ order.meal_tickets_remaining }}</strong>
+          </h3>
+          <h3>
+            💰 <strong>${{ REUNION_FESTIVAL.pricing.mealAdHocPrice }} CAD per meal</strong><br />
+            <img :src="bitcoin_icon" style="height:14px;width:14px;vertical-align:middle;" alt="Bitcoin" /> <strong style="color: orange">25% off with Bitcoin!</strong>
+          </h3>
+          <div style="width:100%;text-align:left;">
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Meal Quantity:</label>
+            <input
+              type="number"
+              v-model.number="adHocMealForm.meal_quantity"
+              min="1"
+              @input="calculateAdHocMealPrice"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Payment Method:</label>
+            <select
+              v-model="adHocMealForm.payment_type"
+              @change="calculateAdHocMealPrice"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            >
+              <option value="" disabled>Choose a payment method</option>
+              <option value="etransfer">E-transfer</option>
+              <option value="bitcoin">Bitcoin (25% off)</option>
+              <option value="cash">Cash at the Food Station</option>
+            </select>
+          </div>
+          <h3 v-if="adHocMealForm.payment_type && adHocMealForm.total_price">
+            <span v-if="adHocMealForm.payment_type === 'bitcoin'">
+              Total: <strong style="color: orange">{{ adHocMealForm.total_price }} BTC</strong>
+            </span>
+            <span v-else>
+              Total: <strong style="color: orange">${{ adHocMealForm.total_price }} CAD</strong>
+            </span>
+          </h3>
+          <button @click="submitAdHocMealOrder" :disabled="isAdHocSubmitting">
+            {{ isAdHocSubmitting ? 'Processing...' : '🍽️ Confirm Order' }}
+          </button>
+          <button @click="showAdHocMealModal = false" style="background:transparent;color:white;border-color:white;margin-top:0.5rem;">Close</button>
         </div>
       </div>
 
@@ -743,10 +814,11 @@
 <script>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, updateDoc, arrayUnion, increment } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
 import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
+import axios from 'axios'
 import frog_image from '@/assets/images/frog.png'
 import festivall_emblem_black from '@/assets/images/festivall_emblem_black.png'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
@@ -772,6 +844,7 @@ import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
 import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
 import task_icon from '@/assets/images/icons/task.png'
+import bitcoin_icon from '@/assets/images/bitcoin.svg?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -801,6 +874,11 @@ export default {
     const showEntranceActivityModal = ref(false)
     const showFMRadioModal = ref(false)
     const showVolunteerShiftsModal = ref(false)
+    const showAdHocMealModal = ref(false)
+    const isAdHocSubmitting = ref(false)
+    const btcRate = ref(0)
+    const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
+    const pendingMealPurchases = ref([])
 
       // Efficient team manual links map
       const teamManuals = {
@@ -820,6 +898,110 @@ export default {
       stagecrew: stagecrew_icon,
       cleanupcrew: cleanupcrew_icon,
       arcadeattendant: arcadeattendant_icon,
+    }
+
+    const fetchBtcRate = async () => {
+      try {
+        const response = await axios.get(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad'
+        )
+        btcRate.value = response.data.bitcoin.cad
+      } catch (error) {
+        console.error('Error fetching BTC rate:', error)
+      }
+    }
+
+    const calculateAdHocMealPrice = () => {
+      const { mealAdHocPrice } = REUNION_FESTIVAL.pricing
+      const qty = adHocMealForm.value.meal_quantity
+      const total = qty * mealAdHocPrice
+      if (adHocMealForm.value.payment_type === 'bitcoin') {
+        adHocMealForm.value.total_price = ((total * 0.75) / btcRate.value).toFixed(8)
+      } else {
+        adHocMealForm.value.total_price = total
+      }
+    }
+
+    const generateAdHocPaymentInstructions = () => {
+      const { meal_quantity, payment_type, total_price } = adHocMealForm.value
+      const { mealAdHocPrice } = REUNION_FESTIVAL.pricing
+      if (payment_type === 'etransfer') {
+        return `Please e-transfer $${total_price} CAD to humanoidtwo@gmail.com\nEnter your ID code in the message: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s) @ $${mealAdHocPrice} each`
+      } else if (payment_type === 'bitcoin') {
+        return `Pay ${total_price} BTC (25% discount applied)\nYour ID code: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s)`
+      } else if (payment_type === 'cash') {
+        return `Please bring $${total_price} CAD cash to the Food Team station.\nID code: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s) @ $${mealAdHocPrice} each`
+      }
+      return ''
+    }
+
+    const submitAdHocMealOrder = async () => {
+      if (isAdHocSubmitting.value) return
+      const { meal_quantity, payment_type } = adHocMealForm.value
+      if (!meal_quantity || meal_quantity < 1) {
+        alert('Please enter at least 1 meal.')
+        return
+      }
+      if (!payment_type) {
+        alert('Please select a payment method.')
+        return
+      }
+      try {
+        isAdHocSubmitting.value = true
+        calculateAdHocMealPrice()
+        const instructions = generateAdHocPaymentInstructions()
+        const { total_price } = adHocMealForm.value
+
+        // SMS
+        await axios.post('https://relayproxy.vercel.app/sms', {
+          value1: order.value.phone,
+          value2: instructions,
+          value3: 'Powered by Festivall'
+        }, { headers: { 'Content-Type': 'application/json' } })
+
+        // Email
+        await axios.post('https://relayproxy.vercel.app/email', {
+          value1: order.value.email,
+          value2: `Meal Order - Reunion ${REUNION_FESTIVAL.year}`,
+          value3: instructions.replace(/\n/g, '<br />')
+        }, { headers: { 'Content-Type': 'application/json' } })
+
+        // Firestore update — write as PENDING, no increment yet
+        const participantRef = doc(reunion_db, 'participants_2026', order.value.id_code)
+        const pendingEntry = {
+          timestamp: new Date().toISOString(),
+          meal_quantity: Number(meal_quantity),
+          payment_type,
+          fiat_total: payment_type === 'bitcoin'
+            ? Number((meal_quantity * REUNION_FESTIVAL.pricing.mealAdHocPrice * 0.75).toFixed(2))
+            : Number(meal_quantity * REUNION_FESTIVAL.pricing.mealAdHocPrice),
+          id_code: order.value.id_code,
+          status: 'pending'
+        }
+        await updateDoc(participantRef, {
+          'order.pending_meal_purchases': arrayUnion(pendingEntry)
+        })
+
+        // Update local pending state
+        pendingMealPurchases.value = [...pendingMealPurchases.value, pendingEntry]
+
+        // Slack
+        const displayPrice = payment_type === 'bitcoin'
+          ? `:bitcoin: ${total_price} BTC`
+          : `:moneybag: $${total_price} CAD`
+        await axios.post('https://relayproxy.vercel.app/reunion_sales', {
+          text: `:fork_and_knife: AD HOC MEAL ORDER (PENDING)\n:bust_in_silhouette: ${order.value.fullname}\n:id: ${order.value.id_code}\n:knife_fork_plate: ${meal_quantity} meal ticket(s)\n${displayPrice}\n:credit_card: ${payment_type}\n:hourglass: Awaiting ${payment_type === 'cash' ? 'cash confirmation at Food Station' : 'payment verification'}`
+        }, { headers: { 'Content-Type': 'application/json' } })
+
+        alert(`Meal order submitted!\nCheck your phone and email for payment instructions.\nYour ${meal_quantity} meal ticket(s) will be added once payment is confirmed.`)
+        showAdHocMealModal.value = false
+        adHocMealForm.value = { meal_quantity: 1, payment_type: '', total_price: 0 }
+      } catch (error) {
+        console.error('Error submitting ad hoc meal order:', error)
+        alert('Something went wrong. Please try again or contact the Food Team.')
+      } finally {
+        isAdHocSubmitting.value = false
+      }
     }
 
     const calculateReferralEarnings = async (id_code) => {
@@ -979,6 +1161,7 @@ export default {
             entrance_activity_history: p.order?.entrance_activity_history || [],
             last_entrance_activity: p.order?.last_entrance_activity || null,
             meal_redemption_history: p.order?.meal_redemption_history || [],
+            pending_meal_purchases: p.order?.pending_meal_purchases || [],
             // Roles & application data
             applicant_types: p.roles?.applicant_types || [],
             payment_type: p.order?.payment_type || '',
@@ -989,6 +1172,7 @@ export default {
           }
 
           // Merge claimed slots with up-to-date status and set mergedClaimedSlots
+          pendingMealPurchases.value = p.order?.pending_meal_purchases || []
           mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
 
           await nextTick()
@@ -1105,6 +1289,7 @@ export default {
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 20
+      fetchBtcRate()
       if (id_code) {
         loadOrder(id_code)
       } else {
@@ -1132,6 +1317,13 @@ export default {
       showEntranceActivityModal,
       showFMRadioModal,
       showVolunteerShiftsModal,
+      showAdHocMealModal,
+      isAdHocSubmitting,
+      btcRate,
+      adHocMealForm,
+      pendingMealPurchases,
+      calculateAdHocMealPrice,
+      submitAdHocMealOrder,
       downloadSettimes,
       ticket_icon,
       meals_icon,
@@ -1148,6 +1340,7 @@ export default {
       quiz_icon,
       currentAct,
       radio_icon,
+      bitcoin_icon,
       REUNION_FESTIVAL,
       mergedClaimedSlots,
       teamManuals,
@@ -1569,7 +1762,7 @@ a:hover {
   min-height: 48px;
   border: 2px solid var(--reunion-frog-green);
   border-radius: 25px;
-  padding: 0.75rem 1.5rem;
+  padding: 0rem 1.5rem;
   background-color: var(--reunion-frog-green);
   color: white;
   font-size: 16px;

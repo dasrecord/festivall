@@ -565,6 +565,24 @@
                   +
                 </button>
               </div>
+              <!-- Pending ad hoc meal purchases (e-transfer / bitcoin) -->
+              <div
+                v-if="applicant.pending_meal_purchases && applicant.pending_meal_purchases.filter(p => p.payment_type !== 'cash').length > 0"
+                style="margin-top:0.5rem;padding:0.5rem;background:rgba(255,165,0,0.1);border:1px solid orange;border-radius:6px;"
+              >
+                <strong style="color:orange;font-size:0.8rem;">⏳ Pending Meal Orders</strong>
+                <div
+                  v-for="(purchase, idx) in applicant.pending_meal_purchases.filter(p => p.payment_type !== 'cash')"
+                  :key="idx"
+                  style="display:flex;justify-content:space-between;align-items:center;margin-top:0.35rem;font-size:0.8rem;"
+                >
+                  <span>{{ purchase.meal_quantity }}x — ${{ purchase.fiat_total }} {{ purchase.payment_type }}</span>
+                  <button
+                    @click="approvePendingMeal(applicant.id_code, purchase)"
+                    style="font-size:0.7rem;padding:3px 8px;border-radius:12px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
+                  >✓ Approve</button>
+                </div>
+              </div>
             </div>
 
             <!-- Decline / Restore -->
@@ -610,7 +628,7 @@
 
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
@@ -620,7 +638,8 @@ import {
   sendSMS,
   sendEmail,
   sendReunionApplications,
-  sendReunionSales
+  sendReunionSales,
+  sendReunionFood
 } from '/scripts/notifications.js'
 import sms_icon from '@/assets/images/icons/sms.png'
 import compensation_icon from '@/assets/images/icons/compensation.png'
@@ -826,6 +845,7 @@ export default {
                 original_ticket_quantity: docData.order?.original_ticket_quantity || 0,
                 meal_tickets_remaining: docData.order?.meal_tickets_remaining || 0,
                 meal_packages: docData.order?.meal_packages || 0,
+                pending_meal_purchases: docData.order?.pending_meal_purchases || [],
                 total_price: docData.order?.fiat_total_price_cad || 0,
                 payment_type: docData.order?.payment_type || '',
                 paid: docData.order?.paid || false,
@@ -1755,6 +1775,37 @@ export default {
       }
     }
 
+    const approvePendingMeal = async (id_code, purchase) => {
+      try {
+        const docRef = doc(reunion_db, currentCollection.value, id_code)
+        const now = new Date().toISOString()
+        const approvedEntry = { ...purchase, status: 'paid', approved_by: 'admin', approved_at: now }
+        await updateDoc(docRef, {
+          'order.meal_tickets_remaining': increment(Number(purchase.meal_quantity)),
+          'order.pending_meal_purchases': arrayRemove(purchase),
+          'order.ad_hoc_meal_orders': arrayUnion(approvedEntry)
+        })
+        const updateApplicant = (a) => {
+          if (a.id_code === id_code || a.id === id_code) {
+            return {
+              ...a,
+              meal_tickets_remaining: (a.meal_tickets_remaining || 0) + Number(purchase.meal_quantity),
+              pending_meal_purchases: (a.pending_meal_purchases || []).filter(p =>
+                !(p.timestamp === purchase.timestamp && p.meal_quantity === purchase.meal_quantity && p.payment_type === purchase.payment_type)
+              )
+            }
+          }
+          return a
+        }
+        applicants.value = applicants.value.map(updateApplicant)
+        filteredApplicants.value = filteredApplicants.value.map(updateApplicant)
+        sendReunionFood(`:fork_and_knife: MEAL ORDER APPROVED\n:id: ${id_code}\n:knife_fork_plate: +${purchase.meal_quantity} ticket(s)\n:credit_card: ${purchase.payment_type}\n:moneybag: $${purchase.fiat_total}`)
+      } catch (error) {
+        console.error('Error approving pending meal:', error)
+        alert('Failed to approve. Please try again.')
+      }
+    }
+
     const incrementMealTickets = async (id_code) => {
       try {
         const docRef = doc(reunion_db, currentCollection.value, id_code)
@@ -1863,6 +1914,7 @@ export default {
       exportEntranceActivityData,
       incrementMealTickets,
       decrementMealTickets,
+      approvePendingMeal,
       expandedCards,
       toggleCard,
       declinePendingCards,
