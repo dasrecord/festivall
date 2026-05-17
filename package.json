@@ -19,7 +19,8 @@
     "clean-phones-apps-live": "node ./scripts/clean_database_phone_numbers.js applications_2025 reunion --live",
     "reunion-analytics": "node ./scripts/reunion-analytics.js",
     "check-etransfer": "node ./scripts/check-etransfer.js",
-    "seed-inventory": "node ./scripts/seed-inventory.js --write"
+    "seed-inventory": "node ./scripts/seed-inventory.js --write",
+    "seed-pending-meal-purchases": "node ./scripts/seed-pending-meal-purchases.js --write"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",

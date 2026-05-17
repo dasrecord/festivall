@@ -541,6 +541,28 @@
               <button @click="incrementMealTickets" class="meal-btn increment-btn">+</button>
             </div>
             <p class="meal-info">Current meal tickets: {{ mealTickets }}</p>
+
+            <!-- Pending ad hoc meal purchases -->
+            <div
+              v-if="applicant.pending_meal_purchases && applicant.pending_meal_purchases.filter(p => p.status === 'pending').length > 0"
+              style="margin-top:0.75rem;padding:0.6rem;background:rgba(255,165,0,0.1);border:1px solid orange;border-radius:6px;"
+            >
+              <strong style="color:orange;font-size:0.85rem;">⏳ Pending Meal Orders</strong>
+              <div
+                v-for="(purchase, idx) in applicant.pending_meal_purchases.filter(p => p.status === 'pending')"
+                :key="idx"
+                style="display:flex;justify-content:space-between;align-items:center;margin-top:0.4rem;font-size:0.82rem;"
+              >
+                <span>
+                  {{ purchase.meal_quantity }}× — ${{ purchase.fiat_total }}
+                  <span style="text-transform:capitalize;">{{ purchase.payment_type }}</span>
+                </span>
+                <button
+                  @click="approvePendingMeal(purchase)"
+                  style="font-size:0.75rem;padding:3px 10px;border-radius:12px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
+                >✓ Approve</button>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -552,7 +574,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 
 export default {
@@ -662,6 +684,8 @@ export default {
             original_ticket_quantity: docData.order?.original_ticket_quantity || 0,
             meal_tickets_remaining: docData.order?.meal_tickets_remaining || 0,
             meal_packages: docData.order?.meal_packages || 0,
+            pending_meal_purchases: docData.order?.pending_meal_purchases || [],
+            ad_hoc_meal_orders: docData.order?.ad_hoc_meal_orders || [],
             total_price: docData.order?.fiat_total_price_cad || 0,
             payment_type: docData.order?.payment_type || '',
             paid: docData.order?.paid || false,
@@ -772,6 +796,28 @@ export default {
     }
 
     // Meal Tickets Functions
+    const approvePendingMeal = async (purchase) => {
+      if (!applicant.value) return
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const now = new Date().toISOString()
+        const approvedEntry = { ...purchase, status: 'paid', approved_by: 'admin', approved_at: now }
+        await updateDoc(docRef, {
+          'order.meal_tickets_remaining': increment(Number(purchase.meal_quantity)),
+          'order.pending_meal_purchases': arrayRemove(purchase),
+          'order.ad_hoc_meal_orders': arrayUnion(approvedEntry)
+        })
+        mealTickets.value += Number(purchase.meal_quantity)
+        applicant.value.meal_tickets_remaining = mealTickets.value
+        applicant.value.pending_meal_purchases = (applicant.value.pending_meal_purchases || []).filter(
+          p => !(p.timestamp === purchase.timestamp && p.meal_quantity === purchase.meal_quantity && p.payment_type === purchase.payment_type)
+        )
+        applicant.value.ad_hoc_meal_orders = [...(applicant.value.ad_hoc_meal_orders || []), approvedEntry]
+      } catch (err) {
+        console.error('Error approving pending meal:', err)
+      }
+    }
+
     const updateMealTickets = async (newValue) => {
       if (!applicant.value) return
       try {
@@ -1114,6 +1160,7 @@ export default {
       removeSettime,
       incrementMealTickets,
       decrementMealTickets,
+      approvePendingMeal,
       deliverContract,
       deliverTicket,
       checkInTicket,
