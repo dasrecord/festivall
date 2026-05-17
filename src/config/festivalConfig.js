@@ -22,6 +22,7 @@ export const REUNION_FESTIVAL = {
     mealPackage: 30,
     cashSurchargeWeekend: 30,   // admin fee per Weekend Pass for cash payment
     cashSurchargeDayPass: 15,   // admin fee per Day Pass for cash payment
+    mealAdHocPrice: 15,         // à la carte meal price for ad hoc purchases
   },
 
   // Day Pass selectable days — derived from fridayDate/saturdayDate/sundayDate

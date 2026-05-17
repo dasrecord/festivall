@@ -172,6 +172,26 @@
     >
       ⚠️ Please enter a valid Scanner Operator ID to enable meal ticket redemption.
     </div>
+
+    <!-- Pending Cash Meal Purchases -->
+    <div
+      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.pending_meal_purchases && matchingOrder.pending_meal_purchases.filter(p => p.payment_type === 'cash').length > 0"
+      style="background:rgba(255,165,0,0.15);border:1px solid orange;border-radius:8px;padding:0.75rem;margin:0.5rem 0;"
+    >
+      <h4 style="color:orange;margin:0 0 0.5rem 0;">⏳ Pending Cash Meal Orders</h4>
+      <div
+        v-for="(purchase, index) in matchingOrder.pending_meal_purchases.filter(p => p.payment_type === 'cash')"
+        :key="index"
+        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;"
+      >
+        <span style="font-size:0.85rem;">{{ purchase.meal_quantity }} meal(s) — ${{ purchase.fiat_total }} cash</span>
+        <button
+          @click="confirmPendingCashMeal(matchingOrder, purchase)"
+          :disabled="isProcessing || !isValidOperator"
+          style="font-size:0.75rem;padding:4px 10px;border-radius:20px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
+        >✓ Confirm Cash</button>
+      </div>
+    </div>
   </div>
   <div class="at-a-glance">
     <h2>At A Glance</h2>
@@ -378,7 +398,7 @@
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
-import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
+import { collection, doc, updateDoc, getDocs, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFood } from '/scripts/notifications.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -475,7 +495,8 @@ export default {
           meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
           checked_in: p.order?.checked_in || false,
           meal_redemption_history: p.order?.meal_redemption_history || [],
-          last_meal_redemption: p.order?.last_meal_redemption || null
+          last_meal_redemption: p.order?.last_meal_redemption || null,
+          pending_meal_purchases: p.order?.pending_meal_purchases || []
         }
       })
       console.log(`Loaded ${this.orders.length} participants successfully`)
@@ -555,6 +576,36 @@ export default {
         }
       } catch (error) {
         console.warn('Audio playback failed:', error)
+      }
+    },
+    async confirmPendingCashMeal(order, purchase) {
+      if (this.isProcessing || !this.isValidOperator) return
+      this.isProcessing = true
+      try {
+        const now = new Date().toISOString()
+        const approvedEntry = {
+          ...purchase,
+          status: 'paid',
+          approved_by: this.operatorIdCode.trim(),
+          approved_at: now
+        }
+        const orderRef = doc(this.db, 'participants_2026', order.id_code)
+        await updateDoc(orderRef, {
+          'order.meal_tickets_remaining': increment(Number(purchase.meal_quantity)),
+          'order.pending_meal_purchases': arrayRemove(purchase),
+          'order.ad_hoc_meal_orders': arrayUnion(approvedEntry)
+        })
+        // Update local state
+        order.meal_tickets_remaining += Number(purchase.meal_quantity)
+        order.pending_meal_purchases = order.pending_meal_purchases.filter(p => p !== purchase)
+        sendReunionFood(
+          `:fork_and_knife: CASH MEAL CONFIRMED\n:bust_in_silhouette: ${order.fullname}\n:id: ${order.id_code}\n:knife_fork_plate: +${purchase.meal_quantity} meal ticket(s)\n:moneybag: $${purchase.fiat_total} cash received\n:white_check_mark: Confirmed by: ${this.operatorFullName || this.operatorIdCode}`
+        )
+      } catch (error) {
+        console.error('Error confirming cash meal:', error)
+        alert('Failed to confirm. Please try again.')
+      } finally {
+        this.isProcessing = false
       }
     },
     async decrementMealTickets(order, amount) {
@@ -723,7 +774,8 @@ export default {
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
             checked_in: p.order?.checked_in || false,
             meal_redemption_history: p.order?.meal_redemption_history || [],
-            last_meal_redemption: p.order?.last_meal_redemption || null
+            last_meal_redemption: p.order?.last_meal_redemption || null,
+            pending_meal_purchases: p.order?.pending_meal_purchases || []
           }
         })
         console.log('Orders refreshed successfully')
