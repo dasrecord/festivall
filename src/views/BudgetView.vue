@@ -76,7 +76,7 @@
           <div class="section-label">Redeemed — {{ mealTicketsRedeemed }} × $15</div>
           <div v-for="p in participantsWithMeals" :key="p.id" class="line-item">
             <span class="line-name">{{ p.contact?.fullname || p.id }}</span>
-            <span class="line-meta">{{ p.mealsRedeemed }} of {{ p.order?.meal_packages }} pkg</span>
+            <span class="line-meta">{{ p.mealsRedeemed }} of {{ (p.order?.meal_packages || 0) * 2 }} tickets</span>
             <span class="line-amount amber">{{ fmtCAD(p.mealsRedeemed * 15) }}</span>
           </div>
           <div v-if="!participantsWithMeals.length" class="empty-row">No meals redeemed yet</div>
@@ -286,10 +286,7 @@ const participantsWithMeals = computed(() =>
   participants.value
     .map((p) => ({
       ...p,
-      mealsRedeemed: Math.max(
-        0,
-        (p.order?.meal_packages || 0) - (p.order?.meal_tickets_remaining || 0)
-      )
+      mealsRedeemed: p.order?.meal_redemption_history?.length || 0
     }))
     .filter((p) => p.mealsRedeemed > 0)
 )

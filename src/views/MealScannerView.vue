@@ -93,9 +93,7 @@
     </div>
     <div class="order-details">
       <div>
-        <p v-if="matchingOrder && typeof matchingOrder === 'string'">
-          {{ matchingOrder }}
-        </p>
+        <p v-if="scanNotFound">No Matching Order Found</p>
         <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           Matching Order: {{ matchingOrder.id_code }}
         </p>
@@ -173,23 +171,31 @@
       ⚠️ Please enter a valid Scanner Operator ID to enable meal ticket redemption.
     </div>
 
-    <!-- Pending Cash Meal Purchases -->
+    <!-- Pending Meal Purchases (all types) -->
     <div
-      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.pending_meal_purchases && matchingOrder.pending_meal_purchases.filter(p => p.payment_type === 'cash').length > 0"
+      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.pending_meal_purchases && matchingOrder.pending_meal_purchases.filter(p => p.status === 'pending').length > 0"
       style="background:rgba(255,165,0,0.15);border:1px solid orange;border-radius:8px;padding:0.75rem;margin:0.5rem 0;"
     >
-      <h4 style="color:orange;margin:0 0 0.5rem 0;">⏳ Pending Cash Meal Orders</h4>
+      <h4 style="color:orange;margin:0 0 0.5rem 0;">⏳ Pending Meal Orders</h4>
       <div
-        v-for="(purchase, index) in matchingOrder.pending_meal_purchases.filter(p => p.payment_type === 'cash')"
+        v-for="(purchase, index) in matchingOrder.pending_meal_purchases.filter(p => p.status === 'pending')"
         :key="index"
         style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;"
       >
-        <span style="font-size:0.85rem;">{{ purchase.meal_quantity }} meal(s) — ${{ purchase.fiat_total }} cash</span>
+        <span style="font-size:0.85rem;">
+          {{ purchase.meal_quantity }} meal(s) — ${{ purchase.fiat_total }}
+          <span style="text-transform:capitalize;">{{ purchase.payment_type }}</span>
+        </span>
         <button
+          v-if="purchase.payment_type === 'cash'"
           @click="confirmPendingCashMeal(matchingOrder, purchase)"
           :disabled="isProcessing || !isValidOperator"
           style="font-size:0.75rem;padding:4px 10px;border-radius:20px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
         >✓ Confirm Cash</button>
+        <span
+          v-else
+          style="font-size:0.72rem;color:#aaa;font-style:italic;"
+        >Awaiting admin approval</span>
       </div>
     </div>
   </div>
@@ -250,7 +256,7 @@
   <div class="admin-controls">
     <h3>🔐 Admin Controls</h3>
     <button
-      @click="showEndServiceModal = true"
+      @click="openEndServiceModal"
       class="admin-button end-service"
       :disabled="isProcessing || !canEndMealService"
     >
@@ -265,17 +271,73 @@
   <div v-if="showEndServiceModal" class="modal danger-modal">
     <div class="modal-content">
       <h3>⚠️ END MEAL SERVICE</h3>
-      <p><strong>WARNING:</strong> This will decrement 1 meal ticket from ALL orders.</p>
-      <p>
-        Orders affected: <strong>{{ ordersWithMealTickets.length }}</strong>
-      </p>
-      <p>
-        Total tickets to be decremented: <strong>{{ ordersWithMealTickets.length }}</strong>
+      <p style="font-size:0.8rem;color:#ccc;">
+        Threshold: <strong>{{ mealsRemainingAfterNow }}</strong> service(s) remaining after this one.
+        Participants with <em>more</em> tickets than this lose 1.
       </p>
 
-      <!-- Step 1: Type confirmation -->
+      <!-- Step 1: Preview & Exemptions -->
       <div v-if="confirmationStep === 1">
-        <p><strong>Type "END SERVICE" to continue:</strong></p>
+        <div v-if="ordersEligibleForDecrement.length === 0" style="color:#aaa;padding:1rem 0;">
+          ✅ No participants above threshold — nothing to decrement.
+        </div>
+        <div v-else>
+          <p style="font-size:0.85rem;margin-bottom:0.5rem;">
+            <strong>{{ ordersEligibleForDecrement.length }}</strong> above threshold —
+            <strong style="color:var(--reunion-frog-green);">{{ ordersToDecrement.length }}</strong> will decrement,
+            <strong style="color:#888;">{{ endServiceExemptions.length }}</strong> exempt.
+          </p>
+          <div style="max-height:280px;overflow-y:auto;border:1px solid #444;border-radius:8px;">
+            <div
+              v-for="order in ordersEligibleForDecrement"
+              :key="order.id_code"
+              style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0.6rem;border-bottom:1px solid #2a2a2a;transition:opacity 0.15s;"
+              :style="{ opacity: endServiceExemptions.includes(order.id_code) ? 0.35 : 1 }"
+            >
+              <div style="font-size:0.82rem;text-align:left;">
+                <strong>{{ order.fullname }}</strong>
+                <span style="background:#2a2a2a;border-radius:10px;padding:1px 7px;margin-left:6px;font-size:0.72rem;color:#ddd;">
+                  {{ order.meal_tickets_remaining }} → {{ order.meal_tickets_remaining - 1 }}
+                </span>
+                <span
+                  v-if="order.ad_hoc_meal_orders && order.ad_hoc_meal_orders.length > 0"
+                  style="color:orange;margin-left:5px;font-size:0.7rem;"
+                  title="Has approved ad hoc meal purchases"
+                >⚡ ad hoc</span>
+                <span
+                  v-if="order.pending_meal_purchases && order.pending_meal_purchases.some(p => p.status === 'pending')"
+                  style="color:orange;margin-left:5px;font-size:0.7rem;"
+                >⏳ pending</span>
+              </div>
+              <button
+                @click="toggleExemption(order.id_code)"
+                style="font-size:0.7rem;padding:3px 10px;border-radius:12px;cursor:pointer;background:transparent;white-space:nowrap;"
+                :style="endServiceExemptions.includes(order.id_code)
+                  ? 'color:#888;border:1px solid #555;'
+                  : 'color:var(--reunion-frog-green);border:1px solid var(--reunion-frog-green);'"
+              >
+                {{ endServiceExemptions.includes(order.id_code) ? '✗ Exempt' : '✓ Include' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <button
+          @click="confirmationStep = 2"
+          :disabled="ordersToDecrement.length === 0"
+          class="warning-button"
+          style="margin-top:0.75rem;"
+        >
+          Continue → Decrement {{ ordersToDecrement.length }}
+        </button>
+      </div>
+
+      <!-- Step 2: Type confirmation -->
+      <div v-else-if="confirmationStep === 2">
+        <p style="font-size:0.85rem;">
+          Decrement <strong>{{ ordersToDecrement.length }}</strong> participant(s)
+          <span v-if="endServiceExemptions.length > 0" style="color:#888;">({{ endServiceExemptions.length }} exempted)</span>
+        </p>
+        <p><strong>Type "END SERVICE" to confirm:</strong></p>
         <input
           v-model="confirmationText"
           placeholder="Type: END SERVICE"
@@ -283,7 +345,7 @@
           class="confirmation-input"
         />
         <button
-          @click="confirmationStep = 2"
+          @click="confirmationStep = 3"
           :disabled="confirmationText !== 'END SERVICE'"
           class="warning-button"
         >
@@ -291,10 +353,10 @@
         </button>
       </div>
 
-      <!-- Step 2: Final confirmation -->
-      <div v-else-if="confirmationStep === 2">
+      <!-- Step 3: Final confirmation -->
+      <div v-else-if="confirmationStep === 3">
         <p><strong>FINAL CONFIRMATION:</strong></p>
-        <p>Are you absolutely sure you want to end the meal service?</p>
+        <p>Decrement {{ ordersToDecrement.length }} participant(s)? This cannot be undone.</p>
         <button @click="endMealService" class="danger-button">YES - End Service Now</button>
       </div>
 
@@ -313,6 +375,9 @@
       </button>
       <button @click="filter = 'noMealTickets'" :class="{ active: filter === 'noMealTickets' }">
         No Meal Tickets ({{ orders.filter((order) => order.meal_tickets_remaining === 0).length }})
+      </button>
+      <button @click="filter = 'pendingMealOrders'" :class="{ active: filter === 'pendingMealOrders' }">
+        ⏳ Pending Meal Orders ({{ orders.filter((order) => order.pending_meal_purchases && order.pending_meal_purchases.some(p => p.status === 'pending')).length }})
       </button>
     </div>
     <ul>
@@ -398,7 +463,7 @@
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
-import { collection, doc, updateDoc, getDocs, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
+import { collection, doc, updateDoc, onSnapshot, getDocs, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFood } from '/scripts/notifications.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -415,7 +480,7 @@ export default {
       fullResult: null,
       scanResult: null,
       orders: [],
-      matchingOrder: null,
+      scanNotFound: false,
       operatorIdCode: '', // Scanner operator identification
       operatorFullName: '', // Scanner operator full name from Firebase
       filter: 'all',
@@ -426,11 +491,17 @@ export default {
       // Admin controls
       showEndServiceModal: false,
       confirmationStep: 1,
+      unsubscribeOrders: null,
       confirmationText: '',
-      lastMealServiceEnd: null
+      lastMealServiceEnd: null,
+      endServiceExemptions: []
     }
   },
   computed: {
+    matchingOrder() {
+      if (!this.scanResult) return null
+      return this.orders.find((o) => o.id_code_long === this.scanResult) || 'No Matching Order Found'
+    },
     filteredOrders() {
       if (this.filter === 'all') {
         return this.orders
@@ -438,12 +509,28 @@ export default {
         return this.orders.filter((order) => order.meal_tickets_remaining > 0)
       } else if (this.filter === 'noMealTickets') {
         return this.orders.filter((order) => order.meal_tickets_remaining === 0)
+      } else if (this.filter === 'pendingMealOrders') {
+        return this.orders.filter((order) =>
+          order.pending_meal_purchases && order.pending_meal_purchases.some(p => p.status === 'pending')
+        )
       } else {
         return this.orders
       }
     },
     ordersWithMealTickets() {
       return this.orders.filter((order) => order.meal_tickets_remaining > 0)
+    },
+    mealsRemainingAfterNow() {
+      const now = new Date()
+      return REUNION_FESTIVAL.meals.filter((m) => new Date(m.time) > now).length
+    },
+    ordersEligibleForDecrement() {
+      return this.orders.filter((o) => o.meal_tickets_remaining > this.mealsRemainingAfterNow)
+    },
+    ordersToDecrement() {
+      return this.ordersEligibleForDecrement.filter(
+        (o) => !this.endServiceExemptions.includes(o.id_code)
+      )
     },
     canEndMealService() {
       if (!this.lastMealServiceEnd) return true
@@ -475,31 +562,35 @@ export default {
 
     try {
       const participantsCollection = collection(this.db, 'participants_2026')
-      const snap = await getDocs(participantsCollection)
-      this.orders = snap.docs.map((d) => {
-        const p = d.data()
-        return {
-          id_code: p.id_code,
-          id_code_long: p.id_code_long,
-          fullname: p.contact?.fullname || '',
-          email: p.contact?.email || '',
-          phone: p.contact?.phone || '',
-          ticket_type: p.order?.ticket_type || '',
-          selected_day: p.order?.selected_day || '',
-          total_price: p.order?.fiat_total_price_cad || 0,
-          currency: 'CAD',
-          paid: p.order?.paid || false,
-          original_ticket_quantity: p.order?.original_ticket_quantity || 0,
-          ticket_quantity: p.order?.ticket_quantity || 0,
-          meal_packages: p.order?.meal_packages || 0,
-          meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-          checked_in: p.order?.checked_in || false,
-          meal_redemption_history: p.order?.meal_redemption_history || [],
-          last_meal_redemption: p.order?.last_meal_redemption || null,
-          pending_meal_purchases: p.order?.pending_meal_purchases || []
-        }
+      this.unsubscribeOrders = onSnapshot(participantsCollection, (snap) => {
+        this.orders = snap.docs.map((d) => {
+          const p = d.data()
+          return {
+            id_code: p.id_code,
+            id_code_long: p.id_code_long,
+            fullname: p.contact?.fullname || '',
+            email: p.contact?.email || '',
+            phone: p.contact?.phone || '',
+            ticket_type: p.order?.ticket_type || '',
+            selected_day: p.order?.selected_day || '',
+            total_price: p.order?.fiat_total_price_cad || 0,
+            currency: 'CAD',
+            paid: p.order?.paid || false,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            meal_packages: p.order?.meal_packages || 0,
+            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+            checked_in: p.order?.checked_in || false,
+            meal_redemption_history: p.order?.meal_redemption_history || [],
+            last_meal_redemption: p.order?.last_meal_redemption || null,
+            pending_meal_purchases: p.order?.pending_meal_purchases || [],
+            ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || []
+          }
+        })
+        console.log(`Orders synced: ${this.orders.length} participants`)
+      }, (error) => {
+        console.error('Snapshot error:', error)
       })
-      console.log(`Loaded ${this.orders.length} participants successfully`)
     } catch (error) {
       console.error('Error loading participants:', error)
       alert('Failed to load orders. Please refresh the page.')
@@ -526,17 +617,17 @@ export default {
 
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
+      this.scanNotFound = false
 
       // Use long id_code for matching
-      const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
+      const found = this.orders.find((order) => order.id_code_long === this.scanResult)
 
-      if (matchingOrder) {
-        this.matchingOrder = matchingOrder
-        console.log('Order found:', this.matchingOrder)
+      if (found) {
+        console.log('Order found:', found.id_code)
         this.playSuccessSound()
       } else {
-        this.matchingOrder = 'No Matching Order Found'
-        console.log('Order not found:', this.matchingOrder)
+        this.scanNotFound = true
+        console.log('Order not found for:', this.scanResult)
         this.playFailureSound()
       }
     },
@@ -775,7 +866,8 @@ export default {
             checked_in: p.order?.checked_in || false,
             meal_redemption_history: p.order?.meal_redemption_history || [],
             last_meal_redemption: p.order?.last_meal_redemption || null,
-            pending_meal_purchases: p.order?.pending_meal_purchases || []
+            pending_meal_purchases: p.order?.pending_meal_purchases || [],
+            ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || []
           }
         })
         console.log('Orders refreshed successfully')
@@ -784,10 +876,29 @@ export default {
       }
     },
     // Admin Methods
+    openEndServiceModal() {
+      // Auto-exempt orders with unconfirmed pending purchases
+      this.endServiceExemptions = this.ordersEligibleForDecrement
+        .filter((o) =>
+          o.pending_meal_purchases &&
+          o.pending_meal_purchases.some((p) => p.status === 'pending')
+        )
+        .map((o) => o.id_code)
+      this.showEndServiceModal = true
+    },
+    toggleExemption(id_code) {
+      const idx = this.endServiceExemptions.indexOf(id_code)
+      if (idx >= 0) {
+        this.endServiceExemptions.splice(idx, 1)
+      } else {
+        this.endServiceExemptions.push(id_code)
+      }
+    },
     cancelEndService() {
       this.showEndServiceModal = false
       this.confirmationStep = 1
       this.confirmationText = ''
+      this.endServiceExemptions = []
     },
     async endMealService() {
       if (!this.canEndMealService) {
@@ -800,43 +911,16 @@ export default {
 
       try {
         const now = new Date()
+        const mealsRemainingAfterNow = REUNION_FESTIVAL.meals.filter(
+          (m) => new Date(m.time) > now
+        ).length
 
-        // Determine current meal service window
-        const currentHour = now.getHours()
-        let serviceStartTime
-
-        if (currentHour >= 12 && currentHour < 14) {
-          // Lunch service (12:00 PM - 2:00 PM)
-          serviceStartTime = new Date(now)
-          serviceStartTime.setHours(12, 0, 0, 0)
-        } else if (currentHour >= 18 && currentHour < 20) {
-          // Supper service (6:00 PM - 8:00 PM)
-          serviceStartTime = new Date(now)
-          serviceStartTime.setHours(18, 0, 0, 0)
-        } else {
-          // Outside meal times - use 4 hour window
-          serviceStartTime = new Date(now.getTime() - 4 * 60 * 60 * 1000)
-        }
-
-        // Filter orders: only decrement those who haven't redeemed since service started
-        const ordersToUpdate = this.orders.filter((order) => {
-          if (order.meal_tickets_remaining <= 0) return false
-
-          // Skip if they redeemed since this service period started
-          if (order.last_meal_redemption) {
-            const lastRedemption = new Date(order.last_meal_redemption)
-            if (lastRedemption >= serviceStartTime) {
-              return false // Don't decrement - they participated this service
-            }
-          }
-          return true // Decrement - they didn't participate this service
-        })
+        // Use computed list — respects both the surplus threshold and operator exemptions
+        const ordersToUpdate = this.ordersToDecrement
 
         console.log(`MEAL SERVICE ENDED at ${new Date().toISOString()}`)
-        console.log(`Service started at: ${serviceStartTime.toISOString()}`)
-        console.log(
-          `Orders to update: ${ordersToUpdate.length} (skipped ${this.orders.filter((o) => o.meal_tickets_remaining > 0).length - ordersToUpdate.length} who participated)`
-        )
+        console.log(`Meals remaining: ${mealsRemainingAfterNow} | Exempted: ${this.endServiceExemptions.length}`)
+        console.log(`Orders to decrement: ${ordersToUpdate.length}`)
 
         // Update orders that didn't participate in this service
         const updatePromises = ordersToUpdate.map(async (order) => {
@@ -854,7 +938,7 @@ export default {
             remaining_after: newMealTickets,
             redeemed_by: `auto_service_end_by_${this.operatorIdCode || 'unknown'}`,
             festival_day: this.getFestivalDay(redemptionTime),
-            reason: 'Did not participate in meal service'
+            reason: `Surplus ticket — ${mealsRemainingAfterNow} service(s) remaining`
           }
 
           // Add to redemption history
@@ -877,10 +961,8 @@ export default {
         this.lastMealServiceEnd = new Date().toISOString()
         localStorage.setItem('lastMealServiceEnd', this.lastMealServiceEnd)
 
-        const participantsProtected =
-          this.orders.filter((o) => o.meal_tickets_remaining > 0).length - ordersToUpdate.length
         alert(
-          `Meal service ended successfully!\n${ordersToUpdate.length} meal tickets decremented.\n${participantsProtected} participants protected from double-decrement.`
+          `Meal service ended!\n${ordersToUpdate.length} decremented.\n${this.ordersEligibleForDecrement.length - ordersToUpdate.length} protected (${this.endServiceExemptions.length} manually exempted).`
         )
         this.cancelEndService()
       } catch (error) {
@@ -892,6 +974,9 @@ export default {
     }
   },
   beforeUnmount() {
+    if (this.unsubscribeOrders) {
+      this.unsubscribeOrders()
+    }
     // Clean up QR scanner
     if (this.qrScanner) {
       this.qrScanner.stop()

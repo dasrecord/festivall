@@ -102,9 +102,7 @@
     </div>
     <div class="order-details">
       <div>
-        <p v-if="matchingOrder && typeof matchingOrder === 'string'">
-          {{ matchingOrder }}
-        </p>
+        <p v-if="scanNotFound">No Matching Order Found</p>
         <p v-if="matchingOrder && typeof matchingOrder === 'object'">
           <span
             v-if="matchingOrder.applicant_types && matchingOrder.applicant_types.includes('Artist')"
@@ -415,7 +413,7 @@
 import festivall_emblem from '@/assets/images/festivall_emblem_white.png'
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { reunion_db } from '@/firebase'
-import { collection, doc, updateDoc, getDocs } from 'firebase/firestore'
+import { collection, doc, updateDoc, onSnapshot, getDocs, arrayUnion } from 'firebase/firestore'
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFrontGate } from '/scripts/notifications.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -438,7 +436,8 @@ export default {
       fullResult: null,
       scanResult: null,
       orders: [],
-      matchingOrder: null,
+      scanNotFound: false,
+      unsubscribeOrders: null,
       operatorIdCode: '', // Scanner operator identification
       operatorFullName: '', // Scanner operator full name from Firebase
       filter: 'all',
@@ -450,6 +449,10 @@ export default {
   },
 
   computed: {
+    matchingOrder() {
+      if (!this.scanResult) return null
+      return this.orders.find((o) => o.id_code_long === this.scanResult) || null
+    },
     filteredOrders() {
       if (this.filter === 'all') {
         return this.orders
@@ -487,31 +490,34 @@ export default {
 
     try {
       const participantsCollection = collection(this.db, 'participants_2026')
-      const snap = await getDocs(participantsCollection)
-      this.orders = snap.docs.map((d) => {
-        const p = d.data()
-        return {
-          id_code: p.id_code,
-          id_code_long: p.id_code_long,
-          fullname: p.contact?.fullname || '',
-          email: p.contact?.email || '',
-          phone: p.contact?.phone || '',
-          ticket_type: p.order?.ticket_type || '',
-          selected_day: p.order?.selected_day || '',
-          total_price: p.order?.fiat_total_price_cad || 0,
-          currency: 'CAD',
-          paid: p.order?.paid || false,
-          original_ticket_quantity: p.order?.original_ticket_quantity || 0,
-          ticket_quantity: p.order?.ticket_quantity || 0,
-          meal_packages: p.order?.meal_packages || 0,
-          meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-          checked_in: p.order?.checked_in || false,
-          applicant_types: p.roles?.applicant_types || p.applicant_types || [],
-          entrance_activity_history: p.order?.entrance_activity_history || [],
-          last_entrance_activity: p.order?.last_entrance_activity || null
-        }
+      this.unsubscribeOrders = onSnapshot(participantsCollection, (snap) => {
+        this.orders = snap.docs.map((d) => {
+          const p = d.data()
+          return {
+            id_code: p.id_code,
+            id_code_long: p.id_code_long,
+            fullname: p.contact?.fullname || '',
+            email: p.contact?.email || '',
+            phone: p.contact?.phone || '',
+            ticket_type: p.order?.ticket_type || '',
+            selected_day: p.order?.selected_day || '',
+            total_price: p.order?.fiat_total_price_cad || 0,
+            currency: 'CAD',
+            paid: p.order?.paid || false,
+            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+            ticket_quantity: p.order?.ticket_quantity || 0,
+            meal_packages: p.order?.meal_packages || 0,
+            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+            checked_in: p.order?.checked_in || false,
+            applicant_types: p.roles?.applicant_types || p.applicant_types || [],
+            entrance_activity_history: p.order?.entrance_activity_history || [],
+            last_entrance_activity: p.order?.last_entrance_activity || null
+          }
+        })
+        console.log(`Orders synced: ${this.orders.length} participants`)
+      }, (error) => {
+        console.error('Snapshot error:', error)
       })
-      console.log(`Loaded ${this.orders.length} participants successfully`)
     } catch (error) {
       console.error('Error loading participants:', error)
       alert('Failed to load orders. Please refresh the page.')
@@ -538,16 +544,16 @@ export default {
 
       this.fullResult = result[0].rawValue
       this.scanResult = this.fullResult
+      this.scanNotFound = false
 
       // Use long id_code for matching
-      const matchingOrder = this.orders.find((order) => order.id_code_long === this.scanResult)
-      if (matchingOrder) {
-        this.matchingOrder = matchingOrder
-        console.log('Order found:', this.matchingOrder)
+      const found = this.orders.find((order) => order.id_code_long === this.scanResult)
+      if (found) {
+        console.log('Order found:', found.id_code)
         this.playSuccessSound()
       } else {
-        this.matchingOrder = 'No Matching Order Found'
-        console.log('Order not found:', this.matchingOrder)
+        this.scanNotFound = true
+        console.log('Order not found for:', this.scanResult)
         this.playFailureSound()
       }
     },
@@ -838,6 +844,9 @@ export default {
     }
   },
   beforeUnmount() {
+    if (this.unsubscribeOrders) {
+      this.unsubscribeOrders()
+    }
     // Clean up QR scanner
     if (this.qrScanner) {
       this.qrScanner.stop()
