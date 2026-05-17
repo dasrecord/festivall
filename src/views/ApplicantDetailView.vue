@@ -42,7 +42,7 @@
             </div>
             <div class="info-item" v-if="applicant.status">
               <label>Status:</label>
-              <span class="status-badge">{{ applicant.status }}</span>
+              <span :class="['status-badge', applicant.status === 'declined' ? 'declined' : '']">{{ applicant.status }}</span>
             </div>
             <div
               class="info-item"
@@ -230,20 +230,50 @@
             </div>
             <div class="info-item">
               <label>Payment Status:</label>
-              <span :class="{ 'status-paid': applicant.paid, 'status-unpaid': !applicant.paid }">
-                {{ applicant.paid ? 'Paid' : 'Unpaid' }}
-              </span>
+              <div class="info-action-row">
+                <span :class="{ 'status-paid': applicant.paid, 'status-unpaid': !applicant.paid }">
+                  {{ applicant.paid ? 'Paid' : 'Unpaid' }}
+                </span>
+                <template v-if="applicant.payment_type !== 'inkind'">
+                  <button v-if="!applicant.paid" @click="confirmPaymentReceived" class="success-btn">
+                    Confirm Paid
+                  </button>
+                  <template v-else>
+                    <button @click="revokeTicket" class="danger-btn">Revoke</button>
+                    <button @click="remindPayment" class="remind-btn">Remind</button>
+                  </template>
+                </template>
+              </div>
             </div>
             <div class="info-item">
               <label>Check-in Status:</label>
-              <span
-                :class="{
-                  'status-checked-in': applicant.checked_in,
-                  'status-not-checked-in': !applicant.checked_in
-                }"
-              >
-                {{ applicant.checked_in ? 'Checked In' : 'Not Checked In' }}
-              </span>
+              <div class="info-action-row">
+                <span
+                  :class="{
+                    'status-checked-in': applicant.checked_in,
+                    'status-not-checked-in': !applicant.checked_in
+                  }"
+                >
+                  {{ applicant.checked_in ? 'Checked In' : 'Not Checked In' }}
+                </span>
+                <span class="ticket-scan-count">
+                  {{ originalTicketQuantity - ticketQuantity }} / {{ originalTicketQuantity }} in
+                </span>
+                <button
+                  @click="checkInTicket"
+                  :disabled="ticketQuantity <= 0"
+                  class="success-btn"
+                >
+                  Check In
+                </button>
+                <button
+                  @click="checkOutTicket"
+                  :disabled="ticketQuantity >= originalTicketQuantity"
+                  class="danger-btn"
+                >
+                  Check Out
+                </button>
+              </div>
             </div>
             <div class="info-item" v-if="applicant.ticket_type">
               <label>Ticket Type:</label>
@@ -266,39 +296,6 @@
                 <span class="meal-count">{{ mealTickets }}</span>
                 <button @click="incrementMealTickets" class="meal-btn increment-btn">+</button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Contract Information -->
-        <div v-if="applicant.payment_type === 'inkind' || applicant.rates" class="section contract-info">
-          <h2>Contract Information</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Contract Status:</label>
-              <span
-                :class="{
-                  'status-signed': applicant.contract_signed,
-                  'status-not-signed': !applicant.contract_signed
-                }"
-              >
-                {{ applicant.contract_signed ? 'Signed' : 'Not Signed' }}
-              </span>
-            </div>
-            <div class="info-item" v-if="applicant.rates">
-              <label>Compensation:</label>
-              <span>{{ applicant.rates }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Set Times -->
-        <div v-if="applicant.settimes && applicant.settimes.length" class="section settimes-info">
-          <h2>Set Times</h2>
-          <div class="settimes-list">
-            <div v-for="(settime, index) in applicant.settimes" :key="index" class="settime-item">
-              <span>Set {{ index + 1 }}:</span>
-              <span>{{ new Date(settime).toLocaleString() }}</span>
             </div>
           </div>
         </div>
@@ -351,121 +348,167 @@
 
       <!-- Action Buttons -->
       <div class="actions">
-        <!-- Basic Actions Row -->
-        <div class="basic-actions">
-          <button v-if="applicant.id_code" @click="previewTicket" class="preview-btn">
-            Preview Ticket
-          </button>
-          <button v-if="applicant.id_code" @click="generateContract" class="preview-btn">
-            Preview Contract
-          </button>
+        <div class="actions-grid">
 
-          <!-- Conditional Email Actions -->
-          <a
-            v-if="applicant.email && applicant.id_code && applicant.paid"
-            :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
-            target="_blank"
-          >
-            <button class="deliver-btn">📧 Deliver Ticket</button>
-          </a>
-          <a
-            v-if="
-              applicant.email &&
-              applicant.id_code &&
-              applicant.payment_type === 'inkind' &&
-              !applicant.contract_signed &&
-              applicant.applicant_types
-            "
-            :href="
-              deliverContract(
-                applicant.email,
-                applicant.fullname,
-                applicant.applicant_types.join(', and '),
-                applicant.id_code
-              )
-            "
-            target="_blank"
-          >
-            <button class="deliver-btn">📋 Deliver Contract</button>
-          </a>
-        </div>
+          <!-- Document Delivery card -->
+          <div class="action-card">
+            <h2>Document Delivery</h2>
+            <div class="action-card-btns">
+              <button v-if="applicant.id_code" @click="previewTicket" class="preview-btn">
+                Preview Ticket
+              </button>
+              <button v-if="applicant.id_code" @click="generateContract" class="preview-btn">
+                Preview Contract
+              </button>
+              <a
+                v-if="applicant.email && applicant.id_code && applicant.paid"
+                :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
+                target="_blank"
+              >
+                <button class="deliver-btn">📧 Deliver Ticket</button>
+              </a>
+              <a
+                v-if="
+                  applicant.email &&
+                  applicant.id_code &&
+                  applicant.payment_type === 'inkind' &&
+                  !applicant.contract_signed &&
+                  applicant.applicant_types
+                "
+                :href="
+                  deliverContract(
+                    applicant.email,
+                    applicant.fullname,
+                    applicant.applicant_types.join(', and '),
+                    applicant.id_code
+                  )
+                "
+                target="_blank"
+              >
+                <button class="deliver-btn">📋 Deliver Contract</button>
+              </a>
+              <div v-if="applicant.mix_track_url" class="mix-track-section">
+                <a :href="applicant.mix_track_url" target="_blank" class="mix-track-link">
+                  🎵 Mix/Track
+                </a>
+              </div>
+            </div>
 
-        <!-- Applicant Actions (for all applicants) -->
-        <div
-          v-if="applicant.applicant_types && applicant.applicant_types.length"
-          class="applicant-actions"
-        >
-          <h3>Applicant Management</h3>
-
-          <!-- Mix Track URL -->
-          <div v-if="applicant.mix_track_url" class="mix-track-section">
-            <a :href="applicant.mix_track_url" target="_blank" class="mix-track-link">
-              🎵 Listen to Mix/Track
-            </a>
-          </div>
-
-          <!-- Contract Status for all applicants -->
-          <div class="contract-status-section">
-            <h3>Contract Status:</h3>
-            <p v-if="applicant.contract_signed" class="status-signed">✅ Signed</p>
-            <p v-else class="status-not-signed">❌ Not Signed</p>
-
-            <button
-              @click="toggleContractSigned"
-              :class="applicant.contract_signed ? 'danger-btn' : 'success-btn'"
+            <!-- Decline / Restore -->
+            <div
+              v-if="applicant.applicant_types && applicant.applicant_types.length"
+              class="decline-section"
             >
-              {{ applicant.contract_signed ? 'Mark Contract Not Signed' : 'Mark Contract Signed' }}
-            </button>
+              <div v-if="applicant.status === 'declined'" class="declined-badge-row">
+                <span class="declined-badge">✗ Declined</span>
+                <button @click="undeclineApplicant" class="restore-btn">↩ Restore</button>
+              </div>
+              <button
+                v-else-if="!declinePending"
+                @click="declinePending = true"
+                class="decline-trigger-btn"
+              >
+                ✗ Decline Applicant
+              </button>
+              <div v-else class="decline-confirm-panel">
+                <p class="decline-confirm-warning">⚠ Declining will update their status and automatically send them a notification email.</p>
+                <label class="decline-reason-label">Reason to include in email (optional):</label>
+                <select v-model="declineReason" class="decline-reason-select">
+                  <option v-for="option in declineReasons" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <p v-if="declineReason" class="decline-reason-preview">{{ declineReason }}</p>
+                <div class="decline-confirm-actions">
+                  <button @click="declinePending = false" class="cancel-decline-btn">Cancel</button>
+                  <button @click="declineApplicant" class="decline-btn">Confirm Decline</button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <button v-if="!applicant.contract_signed" @click="remindContract" class="remind-btn">
-            Remind Contract
-          </button>
-
-          <button v-if="applicant.email" @click="sendCustomEmail" class="remind-btn">
-            Send Custom Email
-          </button>
-
-          <!-- SMS Section for all applicants -->
-          <div v-if="applicant.phone" class="sms-section">
-            <input
-              type="text"
-              v-model="smsMessage"
-              placeholder="Send SMS message..."
-              class="sms-input"
-            />
-            <button @click="sendSMSMessage" class="sms-btn">Send SMS</button>
+          <!-- Contract & Comms card -->
+          <div
+            v-if="applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>Contract &amp; Communications</h2>
+            <div class="action-card-btns">
+              <p :class="applicant.contract_signed ? 'status-signed' : 'status-not-signed'">
+                {{ applicant.contract_signed ? '✅ Signed' : '❌ Not Signed' }}
+              </p>
+              <button v-if="!applicant.contract_signed" @click="remindContract" class="remind-btn">
+                Remind Contract
+              </button>
+            </div>
           </div>
 
-          <!-- Compensation Section -->
-          <div class="compensation-section">
-            <input
-              type="text"
-              v-model="newCompensation"
-              placeholder="Update compensation..."
-              class="compensation-input"
-            />
-            <button @click="updateCompensation" class="compensation-btn">
-              Update Compensation
-            </button>
-            <button v-if="applicant.rates" @click="clearCompensation" class="clear-btn">
-              Clear Compensation
-            </button>
-            <p v-if="applicant.rates" class="current-compensation">
-              Current Fee: {{ applicant.rates }}
-            </p>
+          <!-- SMS & Email card -->
+          <div
+            v-if="(applicant.phone || applicant.email) && applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>SMS &amp; Email</h2>
+            <div v-if="applicant.phone" class="sms-section">
+              <input
+                type="text"
+                v-model="smsMessage"
+                placeholder="SMS message..."
+                class="sms-input"
+              />
+              <button @click="sendSMSMessage" class="sms-btn">Send SMS</button>
+            </div>
+            <div v-if="applicant.email" class="custom-email-section">
+              <input
+                type="text"
+                v-model="emailSubject"
+                placeholder="Email subject..."
+                class="sms-input"
+              />
+              <textarea
+                v-model="emailBody"
+                placeholder="Email message..."
+                class="sms-input email-body-input"
+              ></textarea>
+              <button @click="sendCustomEmail" class="remind-btn">Send Email</button>
+            </div>
           </div>
 
-          <!-- Set Times Section -->
+          <!-- Compensation card -->
+          <div
+            v-if="applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>Compensation</h2>
+            <div class="compensation-section">
+              <p v-if="applicant.rates" class="current-compensation">
+                Current Fee: {{ applicant.rates }}
+              </p>
+              <input
+                type="text"
+                v-model="newCompensation"
+                placeholder="Update compensation..."
+                class="compensation-input"
+              />
+              <button @click="updateCompensation" class="compensation-btn">
+                Update Compensation
+              </button>
+              <button v-if="applicant.rates" @click="clearCompensation" class="clear-btn">
+                Clear Compensation
+              </button>
+            </div>
+          </div>
+
+          <!-- Set Times card -->
           <div
             v-if="
               applicant.applicant_types &&
               (applicant.applicant_types.includes('Artist') ||
                 applicant.applicant_types.includes('Workshop'))
             "
-            class="settime-section"
+            class="action-card"
           >
-            <h3>Manage Set Times</h3>
+            <h2>Manage Set Times</h2>
             <div v-if="applicant.settimes && applicant.settimes.length" class="existing-settimes">
               <div v-for="(settime, index) in applicant.settimes" :key="index" class="settime-item">
                 <span>{{ new Date(settime).toLocaleString() }}</span>
@@ -478,9 +521,12 @@
             </div>
           </div>
 
-          <!-- Meal Ticket Management -->
-          <div class="meal-management-section">
-            <h3>Meal Tickets Management</h3>
+          <!-- Meal Tickets card -->
+          <div
+            v-if="applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>Meal Tickets</h2>
             <div class="meal-tickets-control">
               <button
                 @click="decrementMealTickets"
@@ -494,46 +540,7 @@
             </div>
             <p class="meal-info">Current meal tickets: {{ mealTickets }}</p>
           </div>
-        </div>
 
-        <!-- Payment Actions -->
-        <div v-if="applicant.payment_type !== 'inkind'" class="payment-actions">
-          <button v-if="!applicant.paid" @click="confirmPaymentReceived" class="success-btn">
-            Confirm Payment Received
-          </button>
-          <button v-if="applicant.paid" @click="revokeTicket" class="danger-btn">
-            Revoke Ticket
-          </button>
-          <button @click="remindPayment" class="remind-btn">Remind Payment</button>
-          <button
-            @click="toggleCheckedIn"
-            :class="applicant.checked_in ? 'danger-btn' : 'success-btn'"
-          >
-            {{ applicant.checked_in ? 'Mark Not Checked In' : 'Mark Checked In' }}
-          </button>
-        </div>
-
-        <!-- In-Kind Payment Actions -->
-        <div v-if="applicant.payment_type === 'inkind'" class="inkind-payment-actions">
-          <h3>In-Kind Payment Management</h3>
-
-          <div class="info-grid">
-            <div class="info-item" v-if="applicant.total_price">
-              <label>Compensation Value:</label>
-              <span>${{ applicant.total_price }}</span>
-            </div>
-            <div class="info-item">
-              <label>Payment Status:</label>
-              <span class="status-badge">In-Kind Arrangement</span>
-            </div>
-          </div>
-
-          <button
-            @click="toggleCheckedIn"
-            :class="applicant.checked_in ? 'danger-btn' : 'success-btn'"
-          >
-            {{ applicant.checked_in ? 'Mark Not Checked In' : 'Mark Checked In' }}
-          </button>
         </div>
       </div>
     </div>
@@ -555,11 +562,42 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const smsMessage = ref('')
+    const emailSubject = ref('')
+    const emailBody = ref('')
     const newCompensation = ref('')
     const newSettime = ref('')
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
+    const declineEmailBody = ref('')
     const mealTickets = ref(0)
+    const ticketQuantity = ref(0)
+    const originalTicketQuantity = ref(0)
+    const declineReason = ref('')
+    const declinePending = ref(false)
+
+    const declineReasons = [
+      { value: '', label: '— No specific reason (optional) —' },
+      {
+        value: 'Our festival is still growing and we are not yet in a position to meet your performance fee — we hope to make it work in a future edition as we continue to expand.',
+        label: 'Budget — festival still growing'
+      },
+      {
+        value: 'Our performance schedule for this year is already fully booked, but we were genuinely impressed by your application and would love to revisit this for a future Reunion.',
+        label: 'Schedule full — interested next year'
+      },
+      {
+        value: 'We already have a number of acts with a similar sound or style this year and want to keep the lineup diverse — we would strongly encourage you to apply again next year.',
+        label: 'Lineup already filled with similar acts'
+      },
+      {
+        value: 'For local artists, we love to see applicants get more involved in the community throughout the year before we bring them onto our stage. Come out to our events, connect with the scene, and we hope to see your application again.',
+        label: 'Local artist — needs more community involvement'
+      },
+      {
+        value: 'We received an exceptional number of applications in your category this year and competition was fierce. A stronger press kit, mix/track, or social presence will help us give your application the full consideration it deserves next year.',
+        label: 'High competition — strengthen your application'
+      }
+    ]
 
     const loadApplicant = async () => {
       try {
@@ -643,6 +681,8 @@ export default {
           }
 
           mealTickets.value = applicant.value.meal_tickets_remaining || 0
+          ticketQuantity.value = applicant.value.ticket_quantity || 0
+          originalTicketQuantity.value = applicant.value.original_ticket_quantity || ticketQuantity.value
         } else {
           error.value = 'Applicant not found'
         }
@@ -845,22 +885,75 @@ export default {
       }
     }
 
-    // Check-in Management
-    const toggleCheckedIn = async () => {
-      if (!applicant.value.order) {
-        alert('No order information available')
+    // Check-in Management — mirrors TicketScannerView logic
+    const checkInTicket = async () => {
+      if (ticketQuantity.value <= 0) {
+        alert('No tickets remaining to check in.')
         return
       }
-
-      const newStatus = !applicant.value.checked_in
       try {
+        const newQty = ticketQuantity.value - 1
+        const activityTime = new Date().toISOString()
         const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
-        await updateDoc(docRef, { 'order.checked_in': newStatus })
-        applicant.value.checked_in = newStatus
-        console.log(`Check-in status updated: ${newStatus}`)
+        const existingHistory = applicant.value.entrance_activity_history || []
+        const newActivity = {
+          timestamp: activityTime,
+          action: 'check_in',
+          ticket_quantity_after: newQty,
+          operator: 'admin',
+          operator_name: 'Admin'
+        }
+        const updatedHistory = [...existingHistory, newActivity]
+        await updateDoc(docRef, {
+          'order.checked_in': true,
+          'order.ticket_quantity': newQty,
+          'order.original_ticket_quantity': originalTicketQuantity.value,
+          'order.last_entrance_activity': activityTime,
+          'order.entrance_activity_history': updatedHistory
+        })
+        ticketQuantity.value = newQty
+        applicant.value.ticket_quantity = newQty
+        applicant.value.checked_in = true
+        applicant.value.entrance_activity_history = updatedHistory
       } catch (error) {
-        console.error('Error updating check-in status:', error)
-        alert('Failed to update check-in status')
+        console.error('Error checking in:', error)
+        alert('Failed to check in')
+      }
+    }
+
+    const checkOutTicket = async () => {
+      if (ticketQuantity.value >= originalTicketQuantity.value) {
+        alert('All tickets already checked out — none to restore.')
+        return
+      }
+      try {
+        const newQty = ticketQuantity.value + 1
+        const activityTime = new Date().toISOString()
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const existingHistory = applicant.value.entrance_activity_history || []
+        const newActivity = {
+          timestamp: activityTime,
+          action: 'check_out',
+          ticket_quantity_after: newQty,
+          operator: 'admin',
+          operator_name: 'Admin'
+        }
+        const updatedHistory = [...existingHistory, newActivity]
+        const checkedIn = newQty < originalTicketQuantity.value
+        await updateDoc(docRef, {
+          'order.checked_in': checkedIn,
+          'order.ticket_quantity': newQty,
+          'order.original_ticket_quantity': originalTicketQuantity.value,
+          'order.last_entrance_activity': activityTime,
+          'order.entrance_activity_history': updatedHistory
+        })
+        ticketQuantity.value = newQty
+        applicant.value.ticket_quantity = newQty
+        applicant.value.checked_in = checkedIn
+        applicant.value.entrance_activity_history = updatedHistory
+      } catch (error) {
+        console.error('Error checking out:', error)
+        alert('Failed to check out')
       }
     }
 
@@ -880,21 +973,16 @@ export default {
 
     // Enhanced email functions
     const sendCustomEmail = async () => {
-      if (!applicant.value.email) {
-        alert('No email available for this applicant')
+      if (!applicant.value.email) return
+      if (!emailSubject.value.trim() || !emailBody.value.trim()) {
+        alert('Please fill in both subject and message.')
         return
       }
-
-      const subject = prompt('Email subject:', 'Reunion 2026')
-      if (!subject) return
-
-      const message = prompt('Email message:')
-      if (!message) return
-
       try {
         const { sendEmail } = await import('/scripts/notifications.js')
-        await sendEmail(applicant.value.email, subject, message)
-        alert('Email sent successfully!')
+        await sendEmail(applicant.value.email, emailSubject.value.trim(), emailBody.value.trim())
+        emailSubject.value = ''
+        emailBody.value = ''
       } catch (error) {
         console.error('Error sending email:', error)
         alert('Failed to send email')
@@ -905,7 +993,19 @@ export default {
       loadApplicant()
       loadContractDeliveryTemplate()
       loadTicketDeliveryTemplate()
+      loadDeclineTemplate()
     })
+
+    const loadDeclineTemplate = () => {
+      fetch('/email_templates/decline_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          declineEmailBody.value = text
+        })
+        .catch((error) => {
+          console.error('Error loading decline email template:', error)
+        })
+    }
 
     const loadContractDeliveryTemplate = () => {
       fetch('/email_templates/contract_delivery_template.txt')
@@ -948,6 +1048,46 @@ export default {
       return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
     }
 
+    const declineApplicant = async () => {
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { status: 'declined', updatedAt: new Date().toISOString() })
+        applicant.value.status = 'declined'
+
+        if (applicant.value.email) {
+          const { sendEmail } = await import('/scripts/notifications.js')
+          const roles = applicant.value.applicant_types?.join(', and ') || 'applicant'
+          const reasonText = declineReason.value ? `\n\n${declineReason.value}` : ''
+          const personalizedBody = declineEmailBody.value
+            .replace('{name}', applicant.value.fullname || 'there')
+            .replace('{roles}', roles)
+            .replace('{reason}', reasonText)
+          await sendEmail(applicant.value.email, 'Reunion 2026 — Application Update', personalizedBody)
+        }
+
+        declineReason.value = ''
+        declinePending.value = false
+        alert('Applicant declined and notified.')
+      } catch (err) {
+        console.error('Error declining applicant:', err)
+        alert('Failed to decline applicant.')
+      }
+    }
+
+    const undeclineApplicant = async () => {
+      if (!confirm('Restore this applicant back to active applicant status?')) return
+
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { status: 'applicant', updatedAt: new Date().toISOString() })
+        applicant.value.status = 'applicant'
+        alert('Applicant status restored.')
+      } catch (err) {
+        console.error('Error restoring applicant:', err)
+        alert('Failed to restore applicant status.')
+      }
+    }
+
     return {
       applicant,
       loading,
@@ -956,6 +1096,8 @@ export default {
       generateContract,
       emailLink,
       smsMessage,
+      emailSubject,
+      emailBody,
       newCompensation,
       newSettime,
       mealTickets,
@@ -972,9 +1114,17 @@ export default {
       decrementMealTickets,
       deliverContract,
       deliverTicket,
-      toggleCheckedIn,
+      checkInTicket,
+      checkOutTicket,
+      ticketQuantity,
+      originalTicketQuantity,
       toggleContractSigned,
-      sendCustomEmail
+      sendCustomEmail,
+      declineApplicant,
+      undeclineApplicant,
+      declineReason,
+      declineReasons,
+      declinePending
     }
   }
 }
@@ -984,10 +1134,12 @@ export default {
 .applicant-detail {
   width: 100%;
   margin: 0;
-  padding: 2rem;
+  padding: 1rem;
   background-color: #1f1e22;
-  color: #f0f4f8;
+  color: #e0e0e0;
   min-height: 100vh;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .loading-overlay {
@@ -1055,8 +1207,8 @@ h1 {
 
 .content-grid {
   display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 }
 
 @media (min-width: 1400px) {
@@ -1069,31 +1221,40 @@ h1 {
   .content-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+  /* Stretch orphaned last card to fill the row */
+  .content-grid .section:last-child:nth-child(4n+1) { grid-column: 1 / -1; }
+  .content-grid .section:last-child:nth-child(4n+2) { grid-column: span 3; }
+  .content-grid .section:last-child:nth-child(4n+3) { grid-column: span 2; }
 }
 
 .section {
-  background-color: #333;
-  padding: 1.5rem;
-  border-radius: 10px;
-  border: 1px solid var(--festivall-baby-blue);
+  background-color: #252528;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #333;
 }
 
 .section h2 {
-  color: var(--festivall-baby-blue);
-  margin: 0 0 1rem 0;
-  font-size: 1.3rem;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0 0 0.4rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #333;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.4rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.1rem;
 }
 
 .info-item.full-width {
@@ -1101,15 +1262,33 @@ h1 {
 }
 
 .info-item label {
-  font-weight: bold;
-  color: var(--festivall-baby-blue);
-  font-size: 0.9rem;
+  font-weight: 600;
+  color: #777;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* inline status + action button on same row */
+.info-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ticket-scan-count {
+  font-size: 10px;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .info-item span,
 .info-item p {
-  color: #f0f4f8;
+  color: #d0d0d0;
   margin: 0;
+  font-size: 12px;
 }
 
 .info-item a {
@@ -1166,136 +1345,154 @@ h1 {
 
 .actions {
   display: block;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #444;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #333;
   grid-column: 1 / -1;
 }
 
-.actions button {
-  padding: 0.75rem 1.5rem;
+.actions button,
+.section button {
+  padding: 0.4rem 0.9rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   background-color: var(--festivall-baby-blue);
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 11px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.actions button:hover {
+.actions button:hover,
+.section button:hover {
   background-color: #0056b3;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .actions a {
   text-decoration: none;
 }
 
-/* Basic Actions Row */
-.basic-actions {
-  display: flex;
-  flex-wrap: wrap;
+/* ── Actions card grid ── mirrors content-grid ────────────────── */
+.actions-grid {
+  display: grid;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #444;
-  border-radius: 8px;
-  background-color: #2a2930;
-  align-items: flex-start;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.basic-actions button {
-  flex: none !important;
-  height: auto !important;
-  min-height: auto !important;
-  max-height: 40px !important;
-  width: auto !important;
-  max-width: 200px !important;
-  padding: 0.5rem 1rem !important;
-  font-size: 0.9rem !important;
-  line-height: 1.2 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  display: inline-block !important;
-  vertical-align: top !important;
+.action-card {
+  background-color: #252528;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.basic-actions a {
-  display: inline-block !important;
-  max-height: 40px !important;
+.action-card h2 {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0 0 0.3rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #333;
 }
 
-.basic-actions .preview-btn {
-  background-color: var(--festivall-baby-blue) !important;
+/* buttons inside a card stack full-width */
+.action-card > button,
+.action-card > a,
+.action-card-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
-.basic-actions .deliver-btn {
-  background-color: #28a745 !important;
+.action-card > button {
+  width: 100%;
+}
+
+.action-card > a > button,
+.action-card-btns button,
+.action-card-btns a > button {
+  width: 100%;
+}
+
+.action-card-btns a {
+  display: block;
+}
+
+/* inkind row inside card */
+.inkind-badge {
+  align-self: flex-start;
+}
+
+.inkind-info-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}
+
+.inkind-label {
+  font-size: 9px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.inkind-value {
+  font-size: 11px;
+  color: #d0d0d0;
+  font-weight: 600;
 }
 
 /* Action Sections */
 .payment-actions,
-.inkind-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid #444;
-  border-radius: 8px;
-  background-color: #2a2930;
+.inkind-payment-actions {
+  display: contents;
 }
 
 .sms-section,
+.custom-email-section,
 .compensation-section,
 .settime-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background-color: #1f1e22;
-}
-
-.sms-section {
-  flex-direction: row;
-  align-items: center;
-}
-
-.compensation-section {
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
+  gap: 0.3rem;
 }
 
 .settime-section h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--festivall-baby-blue);
-  font-size: 1rem;
+  margin: 0 0 0.3rem 0;
+  color: #888;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .existing-settimes {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
 }
 
 .settime-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
-  background-color: #2a2930;
-  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  background-color: #252528;
+  border-radius: 3px;
+  font-size: 11px;
 }
 
 .add-settime {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
   align-items: center;
 }
 
@@ -1303,246 +1500,393 @@ h1 {
 .sms-input,
 .compensation-input,
 .settime-input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #555;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #444;
   border-radius: 4px;
-  background-color: #333;
-  color: #f0f4f8;
-  font-size: 0.9rem;
+  background-color: #1f1e22;
+  color: #d0d0d0;
+  font-size: 11px;
 }
 
 .sms-input::placeholder,
 .compensation-input::placeholder {
-  color: #999;
+  color: #666;
 }
 
 /* Button Variations */
 .success-btn {
-  background-color: #28a745 !important;
+  background-color: #2e7d32 !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .success-btn:hover {
-  background-color: #218838 !important;
+  background-color: #1b5e20 !important;
 }
 
 .danger-btn {
-  background-color: #dc3545 !important;
+  background-color: #c62828 !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .danger-btn:hover {
-  background-color: #c82333 !important;
+  background-color: #8e0000 !important;
 }
 
 .remind-btn {
-  background-color: #ffc107 !important;
-  color: #212529 !important;
+  background-color: #e65100 !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .remind-btn:hover {
-  background-color: #e0a800 !important;
+  background-color: #bf360c !important;
+}
+
+.email-body-input {
+  min-height: 70px;
+  resize: vertical;
+  line-height: 1.4;
 }
 
 .sms-btn {
-  background-color: #17a2b8 !important;
+  background-color: #00838f !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .sms-btn:hover {
-  background-color: #138496 !important;
+  background-color: #006064 !important;
 }
 
 .compensation-btn {
-  background-color: #6f42c1 !important;
+  background-color: #4527a0 !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .compensation-btn:hover {
-  background-color: #5a32a3 !important;
+  background-color: #311b92 !important;
 }
 
 .clear-btn {
-  background-color: #6c757d !important;
+  background-color: #424242 !important;
+  color: #bbb !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
 }
 
 .clear-btn:hover {
-  background-color: #5a6268 !important;
+  background-color: #616161 !important;
 }
 
 .add-btn {
-  background-color: #20c997 !important;
+  background-color: #00695c !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
+  white-space: nowrap;
 }
 
 .add-btn:hover {
-  background-color: #1ba085 !important;
+  background-color: #004d40 !important;
 }
 
 .remove-btn {
-  background-color: #dc3545 !important;
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.8rem !important;
+  background-color: #c62828 !important;
+  font-size: 10px !important;
+  padding: 0.2rem 0.4rem !important;
 }
 
 .remove-btn:hover {
-  background-color: #c82333 !important;
+  background-color: #8e0000 !important;
 }
 
-.deliver-btn {
-  background-color: #28a745 !important;
-  font-size: 0.9rem !important;
+/* ── Decline section ──────────────────────────────────────────────── */
+.decline-section {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #333;
 }
 
-.deliver-btn:hover {
-  background-color: #218838 !important;
-}
-
-/* Mix Track Section */
-.mix-track-section {
-  margin-bottom: 1rem;
-}
-
-.mix-track-link {
-  display: inline-block;
-  padding: 0.75rem 1rem;
-  background-color: #9b59b6 !important;
-  color: white !important;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.mix-track-link:hover {
-  background-color: #8e44ad !important;
-  transform: translateY(-2px);
-}
-
-/* Contract Status Section */
-.contract-status-section {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background-color: #2a2930;
-}
-
-.contract-status-section h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--festivall-baby-blue);
-  font-size: 1rem;
-}
-
-.status-signed {
-  color: #28a745 !important;
-  font-size: 1.1rem !important;
-  font-weight: bold !important;
-  margin: 0 !important;
-}
-
-.status-not-signed {
-  color: #dc3545 !important;
-  font-size: 1.1rem !important;
-  font-weight: bold !important;
-  margin: 0 !important;
-}
-
-/* Current Compensation Display */
-.current-compensation {
-  margin: 0.5rem 0 0 0 !important;
-  padding: 0.5rem;
-  background-color: #2a2930;
-  border-radius: 4px;
-  color: var(--festivall-baby-blue) !important;
-  font-weight: bold;
-}
-
-/* Meal Tickets Control */
-.meal-management-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background-color: #2a2930;
-  margin-top: 1rem;
-}
-
-.meal-management-section h3 {
-  margin: 0;
-  color: var(--festivall-baby-blue);
-  font-size: 1rem;
-}
-
-.meal-info {
-  margin: 0;
-  color: #f0f4f8;
-  font-size: 0.9rem;
-}
-
-.meal-tickets-control {
+.declined-badge-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+.declined-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ef5350;
+  letter-spacing: 0.05em;
+}
+
+.decline-trigger-btn {
+  width: 100%;
+  background-color: #4a1515 !important;
+  color: #ef9a9a !important;
+  border: 1px solid #7f1f1f !important;
+  font-size: 10px !important;
+  padding: 0.3rem 0.7rem !important;
+}
+
+.decline-trigger-btn:hover {
+  background-color: #7f1f1f !important;
+  color: #fff !important;
+}
+
+.decline-confirm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background-color: #2a1515;
+  border: 1px solid #7f1f1f;
+  border-radius: 5px;
+}
+
+.decline-confirm-warning {
+  margin: 0 !important;
+  font-size: 10px !important;
+  color: #ef9a9a !important;
+  font-style: italic;
+}
+
+.decline-reason-label {
+  font-size: 9px;
+  color: #888;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.decline-reason-select {
+  padding: 0.35rem 0.4rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #1f1e22;
+  color: #d0d0d0;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.decline-reason-select:focus {
+  outline: none;
+  border-color: #ef5350;
+}
+
+.decline-reason-preview {
+  margin: 0 !important;
+  padding: 0.35rem 0.5rem;
+  background-color: #1a1a1a;
+  border-left: 2px solid #7f1f1f;
+  border-radius: 3px;
+  color: #aaa !important;
+  font-size: 10px !important;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.decline-confirm-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.cancel-decline-btn {
+  background-color: #444 !important;
+  color: #ccc !important;
+  font-size: 10px !important;
+  padding: 0.3rem 0.6rem !important;
+}
+
+.cancel-decline-btn:hover {
+  background-color: #555 !important;
+}
+
+.decline-btn {
+  background-color: #b71c1c !important;
+  font-size: 10px !important;
+  padding: 0.3rem 0.7rem !important;
+}
+
+.decline-btn:hover {
+  background-color: #7f0000 !important;
+}
+
+.restore-btn {
+  background-color: #37474f !important;
+  color: #ccc !important;
+  font-size: 10px !important;
+  padding: 0.3rem 0.6rem !important;
+}
+
+.restore-btn:hover {
+  background-color: #546e7a !important;
+}
+
+.meal-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #1f1e22;
+  margin-top: 0.5rem;
+}
+
+.meal-management-section h3 {
+  margin: 0;
+  color: #888;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.meal-info {
+  margin: 0;
+  color: #999;
+  font-size: 10px;
+}
+
+.status-badge.declined {
+  background-color: #b71c1c;
+}
+
+.deliver-btn {
+  background-color: #2e7d32 !important;
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
+}
+
+.deliver-btn:hover {
+  background-color: #1b5e20 !important;
+}
+
+/* Mix Track Section */
+.mix-track-section {
+  margin-bottom: 0.5rem;
+}
+
+.mix-track-link {
+  display: block;
+  text-align: center;
+  padding: 0.3rem 0.75rem;
+  background-color: #4a148c !important;
+  color: #ce93d8 !important;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.mix-track-link:hover {
+  background-color: #6a1b9a !important;
+  color: #fff !important;
+}
+
+/* Current Compensation Display */
+.current-compensation {
+  margin: 0.2rem 0 0 0 !important;
+  padding: 0.25rem 0.4rem;
+  background-color: #252528;
+  border-radius: 3px;
+  color: #aaa !important;
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* Meal Tickets Control */
+.status-signed {
+  color: #4caf50 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.status-not-signed {
+  color: #f44336 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.meal-tickets-control {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .meal-btn {
-  width: 32px !important;
-  height: 32px !important;
-  border: none !important;
+  width: 22px !important;
+  height: 22px !important;
+  border: 1px solid #555 !important;
   border-radius: 50% !important;
-  background-color: var(--festivall-baby-blue) !important;
-  color: white !important;
-  font-size: 1.2rem !important;
-  font-weight: bold !important;
+  background-color: transparent !important;
+  color: #aaa !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.15s ease !important;
   padding: 0 !important;
   margin: 0 !important;
-  min-height: 32px !important;
-  max-height: 32px !important;
+  min-height: 22px !important;
+  max-height: 22px !important;
   line-height: 1 !important;
 }
 
-.meal-btn:hover {
-  background-color: #0056b3 !important;
-  transform: scale(1.1) !important;
+.meal-btn:hover:not(:disabled) {
+  border-color: var(--festivall-baby-blue) !important;
+  color: var(--festivall-baby-blue) !important;
+  background-color: transparent !important;
+  transform: none !important;
 }
 
 .meal-btn:disabled {
-  background-color: #6c757d !important;
+  opacity: 0.25 !important;
   cursor: not-allowed !important;
   transform: none !important;
-  opacity: 0.6 !important;
 }
 
 .meal-btn:disabled:hover {
-  background-color: #6c757d !important;
-  transform: none !important;
+  border-color: #555 !important;
+  color: #aaa !important;
 }
 
 .increment-btn {
-  background-color: #28a745 !important;
+  border-color: #2e7d32 !important;
+  color: #81c784 !important;
 }
 
-.increment-btn:hover {
-  background-color: #218838 !important;
+.increment-btn:hover:not(:disabled) {
+  border-color: #4caf50 !important;
+  color: #4caf50 !important;
 }
 
 .decrement-btn {
-  background-color: #dc3545 !important;
+  border-color: #c62828 !important;
+  color: #ef9a9a !important;
 }
 
-.decrement-btn:hover {
-  background-color: #c82333 !important;
+.decrement-btn:hover:not(:disabled) {
+  border-color: #ef5350 !important;
+  color: #ef5350 !important;
 }
 
 .meal-count {
-  font-size: 1.2rem !important;
-  font-weight: bold !important;
-  color: var(--festivall-baby-blue) !important;
-  min-width: 40px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #d0d0d0 !important;
+  min-width: 20px !important;
   text-align: center !important;
 }
 
@@ -1566,6 +1910,15 @@ h1 {
   }
 
   .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-main-grid,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-two-col {
     grid-template-columns: 1fr;
   }
 }

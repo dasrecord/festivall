@@ -566,6 +566,40 @@
                 </button>
               </div>
             </div>
+
+            <!-- Decline / Restore -->
+            <div v-if="applicant.applicant_types && applicant.applicant_types.length" class="card-decline-section">
+              <!-- Already declined -->
+              <div v-if="applicant.status === 'declined'" class="declined-badge-row">
+                <span class="card-declined-badge">✗ Declined</span>
+                <button @click="undeclineApplicantFromCard(applicant.id_code)" class="card-restore-btn">↩ Restore</button>
+              </div>
+
+              <!-- Stage 1 -->
+              <button
+                v-else-if="!declinePendingCards.has(applicant.id_code)"
+                @click="toggleDeclinePending(applicant.id_code)"
+                class="card-decline-trigger"
+              >
+                ✗ Decline
+              </button>
+
+              <!-- Stage 2 confirm -->
+              <div v-else class="card-decline-confirm">
+                <p class="card-decline-warning">⚠ This will send a decline email automatically.</p>
+                <select
+                  :value="declineCardReasons[applicant.id_code] || ''"
+                  @change="declineCardReasons[applicant.id_code] = $event.target.value"
+                  class="card-decline-select"
+                >
+                  <option v-for="opt in declineReasons" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                </select>
+                <div class="card-decline-btns">
+                  <button @click="toggleDeclinePending(applicant.id_code)" class="card-cancel-btn">Cancel</button>
+                  <button @click="declineApplicantFromCard(applicant.id_code)" class="card-confirm-decline-btn">Confirm</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -619,6 +653,18 @@ export default {
       else expandedCards.add(id)
     }
 
+    const declinePendingCards = reactive(new Set())
+    const declineCardReasons = reactive({})
+
+    const toggleDeclinePending = (id) => {
+      if (declinePendingCards.has(id)) {
+        declinePendingCards.delete(id)
+        delete declineCardReasons[id]
+      } else {
+        declinePendingCards.add(id)
+      }
+    }
+
     // Add loading and error states
     const loading = ref(false)
     const error = ref(null)
@@ -636,6 +682,7 @@ export default {
     const filters = ref([
       // Status filters - distinguish between applicants and customers
       { property: 'status', value: 'applicant', label: 'Applicants' },
+      { property: 'status', value: 'declined', label: 'Declined' },
       { property: 'status', value: 'customer', label: 'Customers' },
       { property: 'status', value: 'participant', label: 'Participants' },
 
@@ -902,6 +949,73 @@ export default {
 
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
+    const declineEmailBody = ref('')
+
+    const loadDeclineTemplate = () => {
+      fetch('/email_templates/decline_template.txt')
+        .then((response) => response.text())
+        .then((text) => { declineEmailBody.value = text })
+        .catch((err) => { console.error('Error loading decline template:', err) })
+    }
+
+    const declineReasons = [
+      { value: '', label: '\u2014 No specific reason (optional) \u2014' },
+      { value: 'Our festival is still growing and we are not yet in a position to meet your performance fee \u2014 we hope to make it work in a future edition as we continue to expand.', label: 'Budget \u2014 festival still growing' },
+      { value: 'Our performance schedule for this year is already fully booked, but we were genuinely impressed by your application and would love to revisit this for a future Reunion.', label: 'Schedule full \u2014 interested next year' },
+      { value: 'We already have a number of acts with a similar sound or style this year and want to keep the lineup diverse \u2014 we would strongly encourage you to apply again next year.', label: 'Lineup already filled with similar acts' },
+      { value: 'For local artists, we love to see applicants get more involved in the community throughout the year before we bring them onto our stage. Come out to our events, connect with the scene, and we hope to see your application again.', label: 'Local artist \u2014 needs more community involvement' },
+      { value: 'We received an exceptional number of applications in your category this year and competition was fierce. A stronger press kit, mix/track, or social presence will help us give your application the full consideration it deserves next year.', label: 'High competition \u2014 strengthen your application' }
+    ]
+
+    const declineApplicantFromCard = async (id_code) => {
+      const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+      if (!applicant) return
+      try {
+        const docId = applicant.id || id_code
+        const docRef = doc(reunion_db, currentCollection.value, docId)
+        await updateDoc(docRef, { status: 'declined', updatedAt: new Date().toISOString() })
+
+        const update = (a) =>
+          a.id_code === id_code || a.id === id_code ? { ...a, status: 'declined' } : a
+        applicants.value = applicants.value.map(update)
+        filteredApplicants.value = filteredApplicants.value.map(update)
+
+        if (applicant.email && declineEmailBody.value) {
+          const roles = applicant.applicant_types?.join(', and ') || 'applicant'
+          const reason = declineCardReasons[id_code] || ''
+          const reasonText = reason ? `\n\n${reason}` : ''
+          const body = declineEmailBody.value
+            .replace('{name}', applicant.fullname || 'there')
+            .replace('{roles}', roles)
+            .replace('{reason}', reasonText)
+          await sendEmail(applicant.email, 'Reunion 2026 \u2014 Application Update', body)
+        }
+
+        declinePendingCards.delete(id_code)
+        delete declineCardReasons[id_code]
+        alert(`${applicant.fullname || id_code} has been declined.`)
+      } catch (err) {
+        console.error('Error declining applicant:', err)
+        alert('Failed to decline applicant.')
+      }
+    }
+
+    const undeclineApplicantFromCard = async (id_code) => {
+      const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+      if (!applicant) return
+      try {
+        const docId = applicant.id || id_code
+        const docRef = doc(reunion_db, currentCollection.value, docId)
+        await updateDoc(docRef, { status: 'applicant', updatedAt: new Date().toISOString() })
+        const update = (a) =>
+          a.id_code === id_code || a.id === id_code ? { ...a, status: 'applicant' } : a
+        applicants.value = applicants.value.map(update)
+        filteredApplicants.value = filteredApplicants.value.map(update)
+      } catch (err) {
+        console.error('Error restoring applicant:', err)
+        alert('Failed to restore applicant.')
+      }
+    }
 
     const loadContractDeliveryTemplate = () => {
       fetch('/email_templates/contract_delivery_template.txt')
@@ -1368,6 +1482,7 @@ export default {
       loadApplicants('participants_2026', true)
       loadContractDeliveryTemplate()
       loadTicketDeliveryTemplate()
+      loadDeclineTemplate()
     })
 
     const exportMealRedemptionData = async () => {
@@ -1749,7 +1864,13 @@ export default {
       incrementMealTickets,
       decrementMealTickets,
       expandedCards,
-      toggleCard
+      toggleCard,
+      declinePendingCards,
+      declineCardReasons,
+      declineReasons,
+      toggleDeclinePending,
+      declineApplicantFromCard,
+      undeclineApplicantFromCard
     }
   }
 }
@@ -2359,5 +2480,110 @@ a {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* ── Card decline section ───────────────────────────────────────────────────── */
+.card-decline-section {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #333;
+}
+
+.declined-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card-declined-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: #ef5350;
+  letter-spacing: 0.05em;
+}
+
+.card-decline-trigger {
+  background-color: #4a1515 !important;
+  color: #ef9a9a !important;
+  border: 1px solid #7f1f1f !important;
+  font-size: 9px !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 4px !important;
+}
+
+.card-decline-trigger:hover {
+  background-color: #7f1f1f !important;
+  color: #fff !important;
+}
+
+.card-decline-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem;
+  background-color: #2a1515;
+  border: 1px solid #7f1f1f;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.card-decline-warning {
+  margin: 0 !important;
+  font-size: 9px !important;
+  color: #ef9a9a !important;
+  font-style: italic;
+}
+
+.card-decline-select {
+  padding: 0.25rem 0.3rem;
+  border: 1px solid #555;
+  border-radius: 3px;
+  background-color: #1f1e22;
+  color: #d0d0d0;
+  font-size: 9px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.card-decline-btns {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: flex-end;
+}
+
+.card-cancel-btn {
+  background-color: #444 !important;
+  color: #ccc !important;
+  font-size: 9px !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 3px !important;
+}
+
+.card-cancel-btn:hover {
+  background-color: #555 !important;
+}
+
+.card-confirm-decline-btn {
+  background-color: #b71c1c !important;
+  color: #fff !important;
+  font-size: 9px !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 3px !important;
+}
+
+.card-confirm-decline-btn:hover {
+  background-color: #7f0000 !important;
+}
+
+.card-restore-btn {
+  background-color: #37474f !important;
+  color: #ccc !important;
+  font-size: 9px !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 3px !important;
+}
+
+.card-restore-btn:hover {
+  background-color: #546e7a !important;
 }
 </style>
