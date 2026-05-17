@@ -437,9 +437,11 @@
               <p :class="applicant.contract_signed ? 'status-signed' : 'status-not-signed'">
                 {{ applicant.contract_signed ? '✅ Signed' : '❌ Not Signed' }}
               </p>
-              <button v-if="!applicant.contract_signed" @click="remindContract" class="remind-btn">
-                Remind Contract
-              </button>
+              <template v-if="!applicant.contract_signed">
+                <button @click="remindContract" class="remind-btn">
+                  Remind Contract
+                </button>
+              </template>
             </div>
           </div>
 
