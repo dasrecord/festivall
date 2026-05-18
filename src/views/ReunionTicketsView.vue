@@ -1,4 +1,4 @@
-<script setup>
+    <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import ticket from '@/assets/images/icons/ticket.png'
@@ -15,6 +15,28 @@ import { v4 as uuidv4 } from 'uuid'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
+import { useHead } from '@vueuse/head'
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+const { year, month, day, endDay, pricing } = REUNION_FESTIVAL
+const monthName = months[month - 1]
+const dateRange = `${monthName} ${day}–${endDay}, ${year}`
+
+useHead({
+  title: `Reunion Festival ${year} — Buy Tickets | Festivall`,
+  meta: [
+    { name: 'description', content: `Buy your Reunion Festival ${year} tickets. Weekend passes from $${pricing.weekendPass} CAD, day passes from $${pricing.dayPass} CAD. ${dateRange} near Saskatoon, SK. 25% bitcoin discount available.` },
+    { property: 'og:title', content: `Buy Reunion Festival ${year} Tickets` },
+    { property: 'og:description', content: `Weekend passes from $${pricing.weekendPass} CAD — ${dateRange} near Saskatoon, SK. Camping, music, meals. Bitcoin discount available.` },
+    { property: 'og:image', content: 'https://festivall.ca/reunion_2026_preview.png' },
+    { property: 'og:url', content: 'https://festivall.ca/reuniontickets' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: `Buy Reunion Festival ${year} Tickets` },
+    { name: 'twitter:description', content: `Weekend passes from $${pricing.weekendPass} CAD — ${dateRange} near Saskatoon, SK.` },
+    { name: 'twitter:image', content: 'https://festivall.ca/reunion_preview.png' },
+  ]
+})
 
 const form = ref({
   id_code_long: '',

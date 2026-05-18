@@ -80,18 +80,18 @@ export default {
   },
   setup() {
     useHead({
-      title: 'BLESSED COAST FESTIVAL',
+      title: 'Blessed Coast Festival — Coastal Arts & Culture in Squamish, BC',
       meta: [
-        {
-          name: 'description',
-          content:
-            'Blessed is a Celebration of Coastal Arts and Culture taking place in Squamish, BC.'
-        },
-        {
-          name: 'keywords',
-          content:
-            'Festival, Festiv-All, Impact, Evolved, Blessed Coast, Reunion, festival, Das Record'
-        }
+        { name: 'description', content: 'Blessed Coast is a celebration of coastal arts and culture taking place in Squamish, BC. Music, art, community, and the beauty of the BC coast.' },
+        { property: 'og:title', content: 'Blessed Coast Festival — Squamish, BC' },
+        { property: 'og:description', content: 'A celebration of coastal arts and culture in Squamish, BC. Music, community, and the beauty of the BC coast.' },
+        { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/blessedcoast' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Blessed Coast Festival — Squamish, BC' },
+        { name: 'twitter:description', content: 'A celebration of coastal arts and culture in Squamish, BC. Music, community, and the beauty of the BC coast.' },
+        { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
       ]
     })
 

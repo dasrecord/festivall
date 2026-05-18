@@ -55,9 +55,27 @@
 import piano from '@/assets/images/das_record/pd_piano.jpg'
 import headshot from '@/assets/images/das_record/pd_headshot.jpg'
 import soundcheck from '@/assets/images/das_record/pd_soundcheck.jpg'
+import { useHead } from '@vueuse/head'
 
 export default {
   name: 'DasRecordView',
+  setup() {
+    useHead({
+      title: 'Das Record — Prasenjit Das M.D. | Physician, Coder & Musician',
+      meta: [
+        { name: 'description', content: 'Das Record is the artistic and professional home of Prasenjit Das M.D. — physician, software developer, composer, DJ, and festival organizer based in Saskatchewan, Canada.' },
+        { property: 'og:title', content: 'Das Record — Prasenjit Das M.D.' },
+        { property: 'og:description', content: 'Physician, software developer, composer, DJ, and festival organizer. Explore the creative and professional world of Prasenjit Das.' },
+        { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/dasrecord' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Das Record — Prasenjit Das M.D.' },
+        { name: 'twitter:description', content: 'Physician, software developer, composer, DJ, and festival organizer based in Saskatchewan, Canada.' },
+        { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
+      ]
+    })
+  },
   data() {
     return {
       piano,

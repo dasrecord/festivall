@@ -76,11 +76,12 @@ const routes = [
     meta: { showHeader: true }
   },
   {
-    path: '/art&photography',
-    name: 'art&photography',
+    path: '/art-and-photography',
+    name: 'art-and-photography',
     component: ArtPhotographyView,
     meta: { showHeader: true }
   },
+  { path: '/art&photography', redirect: '/art-and-photography' },
   {
     path: '/workshopsignup',
     name: 'workshopsignup',
@@ -114,11 +115,12 @@ const routes = [
     component: ExternalRedirect,    
   },
   {
-    path: '/coding&webdev',
-    name: 'coding&webdev',
+    path: '/coding-and-webdev',
+    name: 'coding-and-webdev',
     component: CodingWebDevView,
     meta: { showHeader: true }
   },
+  { path: '/coding&webdev', redirect: '/coding-and-webdev' },
   {
     path: '/fusecollective', 
     name: 'fusecollective',
@@ -131,12 +133,7 @@ const routes = [
     component: DasRecordView,
     meta: { showHeader: false }
   },
-  {
-    path: '/das-record',
-    name :'das-record',
-    component: DasRecordView,
-    meta: { showHeader: false }
-  },
+  { path: '/das-record', redirect: '/dasrecord' },
   {
     path: '/onyx',
     name: 'onyx',

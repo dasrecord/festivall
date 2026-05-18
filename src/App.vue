@@ -2,9 +2,14 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
+const route = useRoute()
+
+// Default global meta (individual pages override title/description via their own useHead)
 useHead({
-  title: 'FESTIVALL',
+  title: 'Festivall — Canadian Electronic Music Festivals',
   meta: [
     {
       name: 'description',
@@ -16,6 +21,21 @@ useHead({
     }
   ]
 })
+
+// Noindex all pages not in the public allowlist
+const PUBLIC_PATHS = [
+  '/', '/about', '/reunion', '/blessedcoast', '/blessedcoastlineup',
+  '/fusecollective', '/dasrecord', '/synergistic', '/services', '/testimonials',
+  '/reunionlineup', '/reuniontickets', '/reunionfaq', '/reunionamenities',
+  '/reunionfamily', '/reunionteam', '/reunionsoundsystem',
+  '/art-and-photography', '/coding-and-webdev', '/soundtech', '/reunioncontact',
+]
+
+useHead(computed(() => ({
+  meta: PUBLIC_PATHS.includes(route.path)
+    ? []
+    : [{ name: 'robots', content: 'noindex, nofollow' }]
+})))
 </script>
 
 <template>

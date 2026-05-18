@@ -82,8 +82,71 @@ import { RouterLink } from 'vue-router'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import { useHead } from '@vueuse/head'
 
 export default {
+  setup() {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+    const { year, month, day, endDay, pricing, startDate } = REUNION_FESTIVAL
+    const monthName = months[month - 1]
+    const dateRange = `${monthName} ${day}–${endDay}, ${year}`
+    const startDateStr = startDate.toISOString().slice(0, 10)
+    const endDateStr = `${year}-${String(month).padStart(2, '0')}-${String(endDay).padStart(2, '0')}`
+
+    useHead({
+      title: `Reunion Festival ${year} — Grassroots Electronic Music Near Saskatoon, SK`,
+      meta: [
+        { name: 'description', content: `Reunion is a grassroots electronic music festival 30 minutes from Saskatoon, SK. ${dateRange}. Music, dancing, camping, family, friends, and food. Weekend passes from $${pricing.weekendPass} CAD.` },
+        { property: 'og:title', content: `Reunion Festival ${year} — Near Saskatoon, SK` },
+        { property: 'og:description', content: `A grassroots electronic music festival in Saskatchewan. ${dateRange}. Camping, live music, and community. Weekend passes from $${pricing.weekendPass} CAD.` },
+        { property: 'og:image', content: 'https://festivall.ca/reunion_2026_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/reunion' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: `Reunion Festival ${year} — Near Saskatoon, SK` },
+        { name: 'twitter:description', content: `A grassroots electronic music festival in Saskatchewan. ${dateRange}. Camping, live music, and community.` },
+        { name: 'twitter:image', content: 'https://festivall.ca/reunion_preview.png' },
+      ],
+      script: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'MusicEvent',
+            name: `Reunion Festival ${year}`,
+            description: `Reunion is a grassroots electronic music festival 30 minutes from Saskatoon, SK. Music, dancing, camping, family, friends, and food.`,
+            startDate: startDateStr,
+            endDate: endDateStr,
+            eventStatus: 'https://schema.org/EventScheduled',
+            eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+            location: {
+              '@type': 'Place',
+              name: 'Near Saskatoon, Saskatchewan, Canada',
+              address: {
+                '@type': 'PostalAddress',
+                addressRegion: 'SK',
+                addressCountry: 'CA'
+              }
+            },
+            offers: {
+              '@type': 'Offer',
+              url: 'https://festivall.ca/reuniontickets',
+              price: String(pricing.weekendPass),
+              priceCurrency: 'CAD',
+              availability: 'https://schema.org/InStock'
+            },
+            organizer: {
+              '@type': 'Organization',
+              name: 'Festivall',
+              url: 'https://festivall.ca'
+            },
+            image: 'https://festivall.ca/reunion_preview.png',
+            url: 'https://festivall.ca/reunion'
+          })
+        }
+      ]
+    })
+  },
   components: {
     CountdownTimer,
     CalltoAction,

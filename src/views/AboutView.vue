@@ -93,6 +93,23 @@ import headphones_icon from '@/assets/images/icons/headphones.png'
 import vector_icon from '@/assets/images/icons/vectors.png'
 import { logEvent } from 'firebase/analytics'
 import { festivall_analytics } from '@/firebase'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'About — Prasenjit Das M.D. | DJ, Developer & Festival Organizer',
+  meta: [
+    { name: 'description', content: 'Prasenjit Das is a physician, software developer, composer, DJ, turntablist, and festival organizer based in Saskatchewan. Learn about his work under the Festivall umbrella.' },
+    { property: 'og:title', content: 'About Prasenjit Das M.D. — Festivall' },
+    { property: 'og:description', content: 'Physician by day, DJ by night. Prasenjit Das is a composer, software developer, and festival organizer based in Saskatchewan, Canada.' },
+    { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+    { property: 'og:url', content: 'https://festivall.ca/about' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'About Prasenjit Das M.D. — Festivall' },
+    { name: 'twitter:description', content: 'Physician by day, DJ by night. Composer, software developer, and festival organizer based in Saskatchewan.' },
+    { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
+  ]
+})
 
 const images = import.meta.glob('../assets/images/das_record/playbills/*.*')
 const imageList = ref([])

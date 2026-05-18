@@ -1,0 +1,58 @@
+User-agent: *
+Allow: /
+
+# Admin & auth-protected pages
+Disallow: /dashboard
+Disallow: /admin/
+Disallow: /login
+
+# Operational / scanner pages
+Disallow: /reunionticketscanner
+Disallow: /reunionmealscanner
+Disallow: /self-checkin
+Disallow: /self-meal-service
+Disallow: /reunionreceipttracker
+Disallow: /dasbuttons
+Disallow: /bitcoin-wallet
+Disallow: /physicianreceipttracker
+
+# Contract & ticket delivery (ID-gated)
+Disallow: /reunioncontract
+Disallow: /reunionticket
+Disallow: /scavengerhunt/
+
+# Internal crew & volunteer pages
+Disallow: /reunionsetupcrew
+Disallow: /reunionfoodteam
+Disallow: /reunionfrontgate
+Disallow: /reunionstagecrew
+Disallow: /reunioncleanupcrew
+Disallow: /reunionarcadeattendant
+Disallow: /reunion-artist-responsibilities
+Disallow: /reunion-volunteer-responsibilities
+Disallow: /reunion-workshop-responsibilities
+Disallow: /reunion-vendor-responsibilities
+Disallow: /reunion-artinstallation-responsibilities
+Disallow: /reunion-volunteer-welcome
+Disallow: /reunion-volunteer-signup
+Disallow: /reunionslack
+Disallow: /collaborate
+Disallow: /stagerider
+Disallow: /placeholder
+Disallow: /hotspot
+
+# External redirect shortcuts (no indexable content)
+Disallow: /bitcoinmeetup
+Disallow: /boilerroom
+Disallow: /cakeaway
+Disallow: /howitallworks
+Disallow: /nye
+Disallow: /stayconnected
+Disallow: /munnismeals
+Disallow: /reunionlocation
+Disallow: /reuniontrailer
+Disallow: /partyinthepark
+Disallow: /chooseyourvisuals
+Disallow: /reunionmassage
+
+Sitemap: https://festivall.ca/sitemap.xml
