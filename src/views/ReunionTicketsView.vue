@@ -28,7 +28,7 @@ useHead({
     { name: 'description', content: `Buy your Reunion Festival ${year} tickets. Weekend passes from $${pricing.weekendPass} CAD, day passes from $${pricing.dayPass} CAD. ${dateRange} near Saskatoon, SK. 25% bitcoin discount available.` },
     { property: 'og:title', content: `Buy Reunion Festival ${year} Tickets` },
     { property: 'og:description', content: `Weekend passes from $${pricing.weekendPass} CAD — ${dateRange} near Saskatoon, SK. Camping, music, meals. Bitcoin discount available.` },
-    { property: 'og:image', content: 'https://festivall.ca/reunion_2026_preview.png' },
+    { property: 'og:image', content: 'https://festivall.ca/reuniontickets_preview.png' },
     { property: 'og:url', content: 'https://festivall.ca/reuniontickets' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
