@@ -71,6 +71,28 @@ import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import { useHead } from '@vueuse/head'
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+const { year, month, day, endDay } = REUNION_FESTIVAL
+const monthName = months[month - 1]
+const dateRange = `${monthName} ${day}–${endDay}, ${year}`
+
+useHead({
+  title: `Reunion Festival ${year} — Full Lineup | Festivall`,
+  meta: [
+    { name: 'description', content: `See the full artist lineup for Reunion Festival ${year} — ${dateRange} near Saskatoon, SK. Browse sets by day and build your personal schedule.` },
+    { property: 'og:title', content: `Reunion Festival ${year} — Full Lineup` },
+    { property: 'og:description', content: `Full artist lineup for Reunion ${year}. Browse by day, star your favourites, and plan your festival weekend near Saskatoon.` },
+    { property: 'og:image', content: 'https://festivall.ca/reunion_2026_preview.png' },
+    { property: 'og:url', content: 'https://festivall.ca/reunionlineup' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: `Reunion Festival ${year} — Full Lineup` },
+    { name: 'twitter:description', content: `Full artist lineup for Reunion ${year}. Browse by day and plan your festival weekend near Saskatoon.` },
+    { name: 'twitter:image', content: 'https://festivall.ca/reunion_preview.png' },
+  ]
+})
 
 const { isStarred, updateCurrentAct } = useLineupState()
 

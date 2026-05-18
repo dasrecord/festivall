@@ -38,7 +38,7 @@
     </div>
     <div class="service">
       <h1>
-        <RouterLink to="/art&photography">Art & Photography</RouterLink>
+        <RouterLink to="/art-and-photography">Art & Photography</RouterLink>
       </h1>
       <p>Looking for a photographer or artist for your event?<br />Drop us a line.</p>
     </div>
@@ -68,7 +68,7 @@
     </div>
     <div class="service">
       <h1>
-        <RouterLink to="/coding&webdev">Coding & Web Development</RouterLink>
+        <RouterLink to="/coding-and-webdev">Coding & Web Development</RouterLink>
       </h1>
       <p>
         Searching for a computer programmer or webmaster?<br />
@@ -90,9 +90,27 @@
 <script>
 import { RouterLink } from 'vue-router'
 import festivallEmblemWhite from '@/assets/images/festivall_emblem_white.png'
+import { useHead } from '@vueuse/head'
 
 export default {
   name: 'ServicesView',
+  setup() {
+    useHead({
+      title: 'Services — Festivall | Sound Tech, Web Dev, Photography & More',
+      meta: [
+        { name: 'description', content: 'Festivall offers a suite of creative services: sound tech, web development, art & photography, event production, and more. Based in Saskatchewan, Canada.' },
+        { property: 'og:title', content: 'Services — Festivall' },
+        { property: 'og:description', content: 'Sound tech, web development, art & photography, event production, and more. Creative services from the Festivall network.' },
+        { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/services' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Services — Festivall' },
+        { name: 'twitter:description', content: 'Sound tech, web development, art & photography, event production, and more. Creative services from the Festivall network.' },
+        { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
+      ]
+    })
+  },
   components: {
     RouterLink
   },

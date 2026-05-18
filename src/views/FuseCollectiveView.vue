@@ -1,10 +1,28 @@
 <script>
 import fuse_image from '@/assets/images/fuse_logo_white.png'
 import CarouselComponent from '@/components/carousel/CarouselComponent.vue'
+import { useHead } from '@vueuse/head'
 
 const images = import.meta.glob('@/assets/images/fuse_collective/playbills/*.jpg')
 
 export default {
+  setup() {
+    useHead({
+      title: 'Fuse Collective — Electronic Music Artists & Promoters',
+      meta: [
+        { name: 'description', content: 'Fuse Collective is a Canadian group of artists, musicians, producers, DJs, and promoters creating and supporting new growth in the electronic music scene.' },
+        { property: 'og:title', content: 'Fuse Collective — Electronic Music Artists & Promoters' },
+        { property: 'og:description', content: 'A Canadian collective of artists, musicians, producers, DJs, and promoters united to grow the electronic music scene.' },
+        { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/fusecollective' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Fuse Collective — Electronic Music Artists & Promoters' },
+        { name: 'twitter:description', content: 'A Canadian collective of artists, musicians, producers, DJs, and promoters united to grow the electronic music scene.' },
+        { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
+      ]
+    })
+  },
   components: { CarouselComponent },
   data() {
     return {

@@ -37,8 +37,26 @@
 
 <script>
 import axios from 'axios'
+import { useHead } from '@vueuse/head'
 
 export default {
+  setup() {
+    useHead({
+      title: 'Synergistic — Event Production & Consultation',
+      meta: [
+        { name: 'description', content: 'Synergistic offers event production, consultation, and partnership services. Get in touch to bring your event vision to life.' },
+        { property: 'og:title', content: 'Synergistic — Event Production & Consultation' },
+        { property: 'og:description', content: 'Event production, consultation, and partnerships. Connect with Synergistic to bring your vision to life.' },
+        { property: 'og:image', content: 'https://festivall.ca/festivall_preview.png' },
+        { property: 'og:url', content: 'https://festivall.ca/synergistic' },
+        { property: 'og:type', content: 'website' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Synergistic — Event Production & Consultation' },
+        { name: 'twitter:description', content: 'Event production, consultation, and partnerships. Connect with Synergistic to bring your vision to life.' },
+        { name: 'twitter:image', content: 'https://festivall.ca/festivall_preview.png' },
+      ]
+    })
+  },
   data() {
     return {
       form: {
