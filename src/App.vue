@@ -26,7 +26,7 @@ useHead({
 const PUBLIC_PATHS = [
   '/', '/about', '/reunion', '/blessedcoast', '/blessedcoastlineup',
   '/fusecollective', '/dasrecord', '/synergistic', '/services', '/testimonials',
-  '/reunionlineup', '/reuniontickets', '/reunionfaq', '/reunionamenities',
+  '/reunionlineup', '/reuniontickets', '/reunionapplication', '/reunionfaq', '/reunionamenities',
   '/reunionfamily', '/reunionteam', '/reunionsoundsystem',
   '/art-and-photography', '/coding-and-webdev', '/soundtech', '/reunioncontact',
 ]

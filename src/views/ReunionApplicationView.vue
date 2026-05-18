@@ -12,8 +12,26 @@ import profit_icon from '../assets/images/icons/profit.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 
 import { ref, onMounted, watch, computed } from 'vue'
+import { useHead } from '@vueuse/head'
 import axios from 'axios'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+
+const { year } = REUNION_FESTIVAL
+useHead({
+  title: `Apply to Reunion ${year} — Artists, Volunteers & Vendors | Festivall`,
+  meta: [
+    { name: 'description', content: `Apply to perform, volunteer, run a workshop, or vend at Reunion ${year}. Canada's premier grassroots electronic music festival. Applications open now.` },
+    { property: 'og:title', content: `Apply to Reunion ${year} | Festivall` },
+    { property: 'og:description', content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.` },
+    { property: 'og:image', content: 'https://festivall.ca/reunionapplication_preview.png' },
+    { property: 'og:url', content: 'https://festivall.ca/reunionapplication' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: `Apply to Reunion ${year} | Festivall` },
+    { name: 'twitter:description', content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.` },
+    { name: 'twitter:image', content: 'https://festivall.ca/reunionapplication_preview.png' },
+  ]
+})
 import { reunion_db } from '@/firebase'
 import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
