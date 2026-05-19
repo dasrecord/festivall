@@ -1,11 +1,33 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { ref, watch, computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
-import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import PosterSplash from './components/PosterSplash.vue'
+import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
+import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
+import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
+
+const POSTER_ROUTES = ['/reunion', '/reunionapplication', '/reuniontickets']
+const STORAGE_KEY = 'posterSplashShown_2026'
 
 const route = useRoute()
+const showPoster = ref(false)
+
+watch(
+  () => route.path,
+  (path) => {
+    if (POSTER_ROUTES.includes(path) && !sessionStorage.getItem(STORAGE_KEY)) {
+      showPoster.value = true
+    }
+  },
+  { immediate: true }
+)
+
+const onPosterDismissed = () => {
+  showPoster.value = false
+  sessionStorage.setItem(STORAGE_KEY, '1')
+}
 
 // Default global meta (individual pages override title/description via their own useHead)
 useHead({
@@ -68,6 +90,7 @@ useHead(computed(() => ({
     </div>
   </header>
 
+  <PosterSplash v-if="showPoster" :src="poster2025" @dismissed="onPosterDismissed" />
   <RouterView />
 </template>
 

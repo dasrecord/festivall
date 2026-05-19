@@ -766,18 +766,32 @@
             </span>
           </p>
         </div>
-        <RouterLink to="/reunionlocation">
-          <p>
-            <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
-            Location
-          </p>
-        </RouterLink>
-        <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
-          <p>
-            <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
-            Interactive Grounds Map
-          </p>
-        </RouterLink>
+        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <RouterLink to="/reunionlocation">
+            <p>
+              <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
+              Location
+            </p>
+          </RouterLink>
+          <div class="poster-tile" @click="activePoster = poster2025">
+            <p>
+              <img :src="poster2025" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
+              2025 Poster
+            </p>
+          </div>
+          <!-- <div @click="activePoster = poster2026">
+            <p>
+              <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
+              2026 Poster
+            </p>
+          </div> -->
+          <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
+            <p>
+              <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
+              Grounds Map
+            </p>
+          </RouterLink>
+        </div>
         <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
@@ -800,6 +814,8 @@
       </div>
     </div>
 
+    <PosterSplash v-if="activePoster" :src="activePoster" @dismissed="activePoster = null" />
+
     <div class="qr-code">
       <canvas ref="qrCanvas"></canvas>
     </div>
@@ -814,7 +830,7 @@
 <script>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { collection, getDocs, query, where, updateDoc, arrayUnion, increment } from 'firebase/firestore'
+import { collection, getDocs, query, where, updateDoc, arrayUnion } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
 import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
@@ -845,14 +861,19 @@ import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
 import task_icon from '@/assets/images/icons/task.png'
 import bitcoin_icon from '@/assets/images/bitcoin.svg?url'
+import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
+import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
+import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import PosterSplash from '@/components/PosterSplash.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   name: 'TicketPageView',
   components: {
-    CountdownTimer
+    CountdownTimer,
+    PosterSplash
   },
 
   setup() {
@@ -879,6 +900,7 @@ export default {
     const btcRate = ref(0)
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
     const pendingMealPurchases = ref([])
+    const activePoster = ref(null)
 
       // Efficient team manual links map
       const teamManuals = {
@@ -1051,7 +1073,7 @@ export default {
                   try {
                     const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
                     if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
-                  } catch {}
+                  } catch { /* skip missing slot */ }
                 }
               }
             } catch (e) {
@@ -1061,7 +1083,7 @@ export default {
                 try {
                   const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
                   if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
-                } catch {}
+                } catch { /* skip missing slot */ }
               }
             }
             // Map by id for fast lookup
@@ -1073,7 +1095,6 @@ export default {
             })
           }
 
-          // ...existing code...
       try {
         if (!id_code) {
           throw new Error('ID code is undefined')
@@ -1345,7 +1366,11 @@ export default {
       mergedClaimedSlots,
       teamManuals,
       teamIcons,
-      task_icon
+      task_icon,
+      activePoster,
+      poster2026,
+      poster2025,
+      poster2024,
     }
   }
 }
@@ -1539,6 +1564,14 @@ a {
 a:hover {
   text-decoration: underline;
   background: none;
+}
+
+.links .poster-tile {
+  cursor: pointer;
+}
+
+.links .poster-tile:hover p {
+  text-decoration: underline;
 }
 
 .qr-code {
