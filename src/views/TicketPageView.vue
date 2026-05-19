@@ -695,18 +695,32 @@
             </span>
           </p>
         </div>
-        <RouterLink to="/reunionlocation">
-          <p>
-            <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
-            Location
-          </p>
-        </RouterLink>
-        <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
-          <p>
-            <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
-            Grounds Map
-          </p>
-        </RouterLink>
+        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <RouterLink to="/reunionlocation">
+            <p>
+              <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
+              Location
+            </p>
+          </RouterLink>
+          <div class="poster-tile" @click="activePoster = poster2025">
+            <p>
+              <img :src="poster2025" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
+              2025 Poster
+            </p>
+          </div>
+          <!-- <div @click="activePoster = poster2026">
+            <p>
+              <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
+              2026 Poster
+            </p>
+          </div> -->
+          <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
+            <p>
+              <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
+              Grounds Map
+            </p>
+          </RouterLink>
+        </div>
         <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
@@ -728,6 +742,8 @@
         </RouterLink>
       </div>
     </div>
+
+    <PosterSplash v-if="activePoster" :src="activePoster" @dismissed="activePoster = null" />
 
     <div class="qr-code">
       <canvas ref="qrCanvas"></canvas>
@@ -772,14 +788,19 @@ import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
 import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
 import task_icon from '@/assets/images/icons/task.png'
+import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
+import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
+import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import PosterSplash from '@/components/PosterSplash.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
   name: 'TicketPageView',
   components: {
-    CountdownTimer
+    CountdownTimer,
+    PosterSplash
   },
 
   setup() {
@@ -801,6 +822,7 @@ export default {
     const showEntranceActivityModal = ref(false)
     const showFMRadioModal = ref(false)
     const showVolunteerShiftsModal = ref(false)
+    const activePoster = ref(null)
 
       // Efficient team manual links map
       const teamManuals = {
@@ -1152,7 +1174,11 @@ export default {
       mergedClaimedSlots,
       teamManuals,
       teamIcons,
-      task_icon
+      task_icon,
+      activePoster,
+      poster2026,
+      poster2025,
+      poster2024,
     }
   }
 }
@@ -1262,7 +1288,6 @@ a {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .status-btn {
@@ -1346,6 +1371,14 @@ a {
 a:hover {
   text-decoration: underline;
   background: none;
+}
+
+.links .poster-tile {
+  cursor: pointer;
+}
+
+.links .poster-tile:hover p {
+  text-decoration: underline;
 }
 
 .qr-code {

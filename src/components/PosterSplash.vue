@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import posterUrl from '@/assets/images/reunion_2026_poster_v1.svg?url'
 
+const props = defineProps<{ src: string }>()
 const emit = defineEmits<{ dismissed: [] }>()
 
 const visible = ref(true)
@@ -155,7 +155,8 @@ onMounted(async () => {
   }, 1000)
 
   try {
-    const res = await fetch(posterUrl)
+    if (!props.src.endsWith('.svg')) throw new Error('not svg')
+    const res = await fetch(props.src)
     if (!res.ok) throw new Error('fetch failed')
     inlineSvgContent.value = await res.text()
     await nextTick()
@@ -189,7 +190,7 @@ onBeforeUnmount(() => {
             <!-- Inline SVG: crisp vector at any zoom level -->
             <div v-if="!svgLoadError" class="poster-svg-host" v-html="inlineSvgContent" />
             <!-- Fallback if fetch fails -->
-            <img v-else :src="posterUrl" class="poster-img-fallback" alt="Reunion Festival Poster" />
+            <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
           </div>
         </div>
         <div class="poster-hint">
