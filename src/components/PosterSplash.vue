@@ -21,7 +21,7 @@ const isDragging = ref(false)
 const dragLast = ref({ x: 0, y: 0 })
 const dragMoved = ref(false)
 const MIN_SCALE = 1
-const MAX_SCALE = 5
+const MAX_SCALE = 6
 
 const zoomStyle = computed(() => ({
   transform: `translate(${mapTx.value}px, ${mapTy.value}px) scale(${mapScale.value})`,
@@ -195,7 +195,8 @@ onBeforeUnmount(() => {
         </div>
         <div class="poster-hint">
           <span class="countdown">{{ secondsLeft }}</span>
-          <span>Tap to continue</span>
+          <span>Here is our 2025 poster.<br> 
+          2026 edition coming soon!</span>
         </div>
       </div>
     </Transition>
@@ -233,6 +234,7 @@ onBeforeUnmount(() => {
   display: block;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 /* Cancel the global `svg { fill/stroke: white }` rule — poster SVG has its own fills */
@@ -252,7 +254,7 @@ onBeforeUnmount(() => {
 
 .poster-hint {
   position: fixed;
-  bottom: 2rem;
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
@@ -264,7 +266,7 @@ onBeforeUnmount(() => {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 1);
   padding: 0.4rem 1rem;
   border-radius: 2rem;
   white-space: nowrap;
