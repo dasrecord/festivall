@@ -5,7 +5,7 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 import PosterSplash from './components/PosterSplash.vue'
 import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
-import poster2025 from '@/assets/images/reunion_2025_poster_v1.svg?url'
+import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 
 
