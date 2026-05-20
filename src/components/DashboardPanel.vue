@@ -93,9 +93,9 @@
           Reunion Participants 2026
         </button>
       </div>
-      <h2>Talent Pool</h2>
+      <!-- <h2>Talent Pool</h2> -->
       <div class="buttons">
-        <button @click="loadApplicants('leads', true)">Festivall Leads</button>
+        <!-- <button @click="loadApplicants('leads', true)">Festivall Leads</button> -->
       </div>
     </div>
 
@@ -689,6 +689,9 @@ export default {
     // Add active filters for cumulative filtering
     const activeFilters = ref([])
 
+    // Session cache — avoids repeat Firestore reads within the same page session
+    const collectionCache = {}
+
     const filters = ref([
       // Status filters - distinguish between applicants and customers
       { property: 'status', value: 'applicant', label: 'Applicants' },
@@ -794,9 +797,18 @@ export default {
     })
 
     const loadApplicants = async (type, isFirestore = false) => {
+      currentCollection.value = type
+      activeFilters.value = []
+      currentPage.value = 1
+
+      if (collectionCache[type]) {
+        applicants.value = collectionCache[type]
+        filteredApplicants.value = collectionCache[type]
+        return
+      }
+
       loading.value = true
       error.value = null
-      currentCollection.value = type
 
       try {
         let data = []
@@ -894,6 +906,7 @@ export default {
             if (!a.url && b.url) return 1
             return 0
           })
+        collectionCache[type] = applicants.value
         filteredApplicants.value = applicants.value
       } catch (err) {
         error.value = `Failed to load ${type}: ${err.message}`
