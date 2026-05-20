@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR.js Barcode Markers – Print / Screen Sheet</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #fff; color: #000; padding: 24px; }
+
+    .toolbar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .toolbar h1 { font-size: 1.1rem; flex: 1; }
+    button.mode-btn {
+      padding: 7px 18px; border: 2px solid #333; border-radius: 20px;
+      background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold;
+    }
+    button.mode-btn.active { background: #333; color: #fff; }
+    button.print-btn {
+      padding: 7px 18px; border: 2px solid #1976d2; border-radius: 20px;
+      background: #1976d2; color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold;
+    }
+
+    p.sub { font-size: 0.8rem; color: #555; margin-bottom: 20px; }
+
+    /* ── Print / normal layout ── */
+    .grid {
+      display: flex; gap: 36px; flex-wrap: wrap; justify-content: center;
+    }
+    .marker-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .marker-img {
+      width: 220px; height: 220px;
+      image-rendering: pixelated;
+      border: 6px solid #fff;   /* white margin around marker is required */
+      outline: 1px solid #ccc;
+    }
+    .label { font-weight: bold; font-size: 0.9rem; }
+    .hint  { font-size: 0.7rem; color: #666; text-align: center; max-width: 220px; }
+
+    /* ── Screen / fullscreen mode ── */
+    body.screen-mode .grid    { display: none; }
+    body.screen-mode .toolbar { display: none; }
+    body.screen-mode .sub     { display: none; }
+    #screenSlide {
+      display: none;
+      position: fixed; inset: 0;
+      background: #fff;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px;
+    }
+    body.screen-mode #screenSlide { display: flex; }
+    #screenSlide img {
+      max-width: min(80vw, 80vh);
+      max-height: min(80vw, 80vh);
+      image-rendering: pixelated;
+    }
+    #screenSlide .sc-label { font-size: 1.4rem; font-weight: bold; }
+    #screenSlide .sc-hint  { font-size: 0.9rem; color: #555; }
+    .sc-nav {
+      display: flex; gap: 24px;
+    }
+    .sc-nav button {
+      padding: 10px 28px; font-size: 1rem; border-radius: 24px;
+      border: 2px solid #333; background: #fff; cursor: pointer; font-weight: bold;
+    }
+    .sc-nav button:disabled { opacity: 0.3; cursor: default; }
+    .sc-exit {
+      position: fixed; top: 12px; right: 12px;
+      padding: 6px 16px; border-radius: 20px;
+      border: 2px solid #999; background: #fff; cursor: pointer; font-size: 0.8rem;
+    }
+
+    @media print {
+      .toolbar, .sub { display: none; }
+      .marker-img { width: 180px; height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <h1>AR.js 3×3_HAMMING63 Barcode Markers</h1>
+    <button class="mode-btn active" id="btnPrint">Print layout</button>
+    <button class="mode-btn"        id="btnScreen">Screen / no-printer mode</button>
+    <button class="print-btn no-screen" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <p class="sub">
+    Official pre-generated markers from
+    <a href="https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection" target="_blank">
+      artoolkit-barcode-markers-collection
+    </a>.
+    Type: <strong>3x3_HAMMING63</strong> (Hamming Distance = 3 — reliable for real-world detection).
+    Keep at least 1 cm of white border around each marker.
+  </p>
+
+  <div class="grid" id="markerGrid"></div>
+
+  <!-- Full-screen slide for no-printer testing -->
+  <div id="screenSlide">
+    <button class="sc-exit" id="exitScreen">✕ Exit</button>
+    <img id="slideImg" src="" alt="AR Marker" />
+    <div class="sc-label" id="slideLabel"></div>
+    <div class="sc-hint"  id="slideHint"></div>
+    <div class="sc-nav">
+      <button id="prevBtn" disabled>← Prev</button>
+      <button id="nextBtn">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    // Official pre-generated 3x3_HAMMING63 markers from:
+    // https://github.com/nicolocarpignoli/artoolkit-barcode-markers-collection
+    const BASE = 'https://cdn.jsdelivr.net/gh/nicolocarpignoli/artoolkit-barcode-markers-collection@master/3x3_hamming_6_3/';
+
+    const markers = [
+      { src: 'https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/data/images/hiro.png',
+        label: '★ HIRO (test first!)', hint: 'Built-in AR.js pattern marker. Point phone at this first — if a red cube appears, AR is working.' },
+      { src: `${BASE}0.png`, label: 'Marker 0 – Origin / Floor', hint: 'Place FLAT ON THE FLOOR. Used to measure camera height.' },
+      { src: `${BASE}1.png`, label: 'Marker 1 – Zone A',         hint: 'Tape vertically to a wall, ~2 m from Marker 0. Bottom edge ~1 m from floor.' },
+      { src: `${BASE}2.png`, label: 'Marker 2 – Zone B',         hint: 'Tape vertically to a wall, ~2 m from Marker 0 in another direction.' },
+    ];
+
+    // Build print grid
+    const grid = document.getElementById('markerGrid');
+    markers.forEach(({ src, label, hint }) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'marker-wrap';
+      wrap.innerHTML = `
+        <img class="marker-img" src="${src}" alt="${label}" />
+        <div class="label">${label}</div>
+        <div class="hint">${hint}</div>
+      `;
+      grid.append(wrap);
+    });
+
+    // Screen / slideshow mode
+    let idx = 0;
+    function showSlide(i) {
+      idx = i;
+      const m = markers[idx];
+      document.getElementById('slideImg').src   = m.src;
+      document.getElementById('slideLabel').textContent = m.label;
+      document.getElementById('slideHint').textContent  = m.hint;
+      document.getElementById('prevBtn').disabled = idx === 0;
+      document.getElementById('nextBtn').disabled = idx === markers.length - 1;
+    }
+
+    document.getElementById('btnScreen').addEventListener('click', () => {
+      document.body.classList.add('screen-mode');
+      document.getElementById('btnPrint').classList.remove('active');
+      document.getElementById('btnScreen').classList.add('active');
+      showSlide(0);
+    });
+    document.getElementById('btnPrint').addEventListener('click', () => {
+      document.body.classList.remove('screen-mode');
+      document.getElementById('btnScreen').classList.remove('active');
+      document.getElementById('btnPrint').classList.add('active');
+    });
+    document.getElementById('exitScreen').addEventListener('click', () =>
+      document.getElementById('btnPrint').click()
+    );
+    document.getElementById('prevBtn').addEventListener('click', () => showSlide(idx - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => showSlide(idx + 1));
+  </script>
+</body>
+</html>

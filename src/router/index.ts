@@ -60,6 +60,7 @@ import BudgetView from '@/views/BudgetView.vue'
 import InventoryAdminView from '@/views/InventoryAdminView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
+import ARExperienceView from '@/views/ARExperienceView.vue'
 
 
 const routes = [
@@ -504,6 +505,12 @@ const routes = [
     name: 'videolibrary',
     component: ExternalRedirect,
     props: { url: 'https://drive.google.com/drive/folders/1l-xagltGwdnR1z7Jh5sw8PSu4h4oUjGl?usp=sharing' }
+  },
+  {
+    path: '/ar-experience/:id_code',
+    name: 'ARExperience',
+    component: ARExperienceView,
+    meta: { showHeader: false }
   },
   {
     path: '/bitcoin-wallet',

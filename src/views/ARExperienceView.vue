@@ -1,438 +1,526 @@
 <template>
-  <div class="ar-experience">
-    <!-- Loading screen -->
-    <div v-if="isLoading" class="loading-screen">
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <h2>Loading AR Experience...</h2>
-        <p>Please allow camera and location permissions</p>
-      </div>
+  <div class="ar-root">
+
+    <!-- ① Validating -->
+    <div v-if="appState === 'validating'" class="overlay center">
+      <div class="spinner"></div>
+      <p>Verifying your ticket...</p>
     </div>
 
-    <!-- AR Scene -->
-    <div v-else class="ar-container">
-      <!-- AR.js + A-Frame Scene -->
-      <a-scene
-        ref="arScene"
-        vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true; colorManagement: true"
-        arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;"
-        embedded
-        @arjs-video-loaded="onARReady"
-      >
-        <!-- Assets -->
-        <a-assets>
-          <!-- 3D Models -->
-          <a-asset-item id="festival-marker" :src="assets.festivalMarker"></a-asset-item>
-          <a-asset-item id="quest-orb" :src="assets.questOrb"></a-asset-item>
+    <!-- ② Invalid -->
+    <div v-else-if="appState === 'invalid'" class="overlay center error">
+      <h2>Access Required</h2>
+      <p>{{ authError }}</p>
+      <router-link to="/reunionticket" class="pill-link">Go to ticket entry</router-link>
+    </div>
 
-          <!-- Textures -->
-          <img id="info-panel-texture" :src="assets.infoPanelTexture" />
-        </a-assets>
+    <!-- ③ Calibrating + ④ Active — A-Frame runs in both states -->
+    <template v-else>
 
-        <!-- Camera with GPS -->
-        <a-camera
-          id="ar-camera"
-          gps-camera="simulateLatitude: {{ userLocation.lat }}; simulateLongitude: {{ userLocation.lng }}; simulateAltitude: 0"
-          rotation-reader
-        ></a-camera>
-
-        <!-- Dynamic AR Objects -->
-        <a-entity
-          v-for="object in arObjects"
-          :key="object.id"
-          :id="`ar-object-${object.id}`"
-          :gps-entity-place="`latitude: ${object.location.lat}; longitude: ${object.location.lng}`"
-          :geometry="object.geometry"
-          :material="object.material"
-          :animation="object.animation"
-          :scale="object.scale"
-          :rotation="object.rotation"
-          @click="onObjectClick(object)"
-          cursor="rayOrigin: mouse"
-        >
-          <!-- Info overlay for each object -->
-          <a-text
-            v-if="object.showInfo"
-            :value="object.infoText"
-            position="0 2 0"
-            align="center"
-            color="#ffffff"
-            background-color="#000000"
-            background-opacity="0.7"
-            width="8"
-          ></a-text>
-        </a-entity>
-
-        <!-- Quest markers -->
-        <a-entity
-          v-for="quest in activeQuests"
-          :key="`quest-${quest.id}`"
-          :gps-entity-place="`latitude: ${quest.location.lat}; longitude: ${quest.location.lng}`"
-          geometry="primitive: sphere; radius: 0.5"
-          material="color: #ff6b35; emissive: #ff6b35; emissiveIntensity: 0.3"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"
-          @click="onQuestClick(quest)"
-          cursor="rayOrigin: mouse"
-        >
-          <!-- Quest info -->
-          <a-text
-            :value="quest.title"
-            position="0 1 0"
-            align="center"
-            color="#ffffff"
-            width="6"
-          ></a-text>
-        </a-entity>
-      </a-scene>
-
-      <!-- UI Overlay -->
-      <div class="ar-ui-overlay">
-        <!-- Top bar -->
-        <div class="top-bar">
-          <button @click="toggleInfo" class="info-btn">
-            <i class="fas fa-info-circle"></i>
-          </button>
-          <div class="location-info">
-            <span>{{ userLocation.lat.toFixed(6) }}, {{ userLocation.lng.toFixed(6) }}</span>
+      <!-- Calibration overlay (shown over the live camera) -->
+      <div v-if="appState === 'calibrating'" class="overlay calibration">
+        <div class="cal-card">
+          <h2>Point at an AR Marker</h2>
+          <p class="hint">Print AR.js 3x3 barcode markers 0-2 and place them around the space.</p>
+          <div class="dots">
+            <span
+              v-for="i in 2"
+              :key="i"
+              :class="['dot', markersDetected.size >= i ? 'dot--on' : '']"
+            />
           </div>
-          <button @click="exitAR" class="exit-btn">
-            <i class="fas fa-times"></i>
+          <p class="cal-status">
+            <template v-if="markersDetected.size === 0">Searching for markers...</template>
+            <template v-else-if="markersDetected.size === 1">
+              First marker found! Scan one more to calibrate.
+            </template>
+            <template v-else>Calibrated — Ready to explore.</template>
+          </p>
+          <button v-if="markersDetected.size >= 2" class="btn-go" @click="appState = 'active'">
+            Begin Experience
           </button>
+          <button v-if="markersDetected.size >= 1" class="btn-skip" @click="appState = 'active'">
+            Skip (single marker)
+          </button>
+        </div>
+      </div>
+
+      <!-- Active AR UI overlay -->
+      <div v-if="appState === 'active'" class="ar-ui">
+        <div class="top-bar">
+          <span class="name">{{ participantName }}</span>
+          <span v-if="cameraHeight > 0" class="cam-h">{{ cameraHeight.toFixed(2) }}m</span>
+          <button class="btn-icon" @click="showInfo = !showInfo">?</button>
+        </div>
+
+        <!-- Object info panel -->
+        <div v-if="selectedObject" class="bottom-panel">
+          <h3>{{ selectedObject.content.title }}</h3>
+          <p>{{ selectedObject.content.text }}</p>
+          <button @click="selectedObject = null" class="btn-close">Close</button>
         </div>
 
         <!-- Quest panel -->
-        <div v-if="selectedQuest" class="quest-panel">
+        <div v-else-if="selectedQuest" class="bottom-panel">
           <h3>{{ selectedQuest.title }}</h3>
           <p>{{ selectedQuest.description }}</p>
-          <div class="quest-actions">
-            <button @click="completeQuest(selectedQuest)" class="complete-btn">
-              Complete Quest
+          <div class="row">
+            <button
+              @click="completeQuest(selectedQuest)"
+              class="btn-complete"
+              :disabled="isSaving"
+            >
+              {{ isSaving ? 'Saving...' : 'Complete Quest' }}
             </button>
-            <button @click="selectedQuest = null" class="close-btn">Close</button>
+            <button @click="selectedQuest = null" class="btn-close">Close</button>
           </div>
         </div>
 
-        <!-- Info panel -->
-        <div v-if="showInfo" class="info-panel">
-          <h3>Festival AR Guide</h3>
-          <p>Look around to discover hidden objects and complete quests!</p>
+        <!-- Info guide panel -->
+        <div v-else-if="showInfo" class="bottom-panel">
+          <h3>AR Guide</h3>
           <ul>
-            <li>Tap on glowing orbs to start quests</li>
-            <li>Find 3D objects placed around the festival</li>
-            <li>Complete all quests to unlock special rewards</li>
+            <li>Scan AR markers to reveal 3D objects</li>
+            <li>Tap glowing orbs to start quests</li>
+            <li>Complete quests to earn rewards</li>
           </ul>
-          <button @click="showInfo = false" class="close-btn">Close</button>
+          <button @click="showInfo = false" class="btn-close">Close</button>
         </div>
 
-        <!-- Progress indicator -->
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: questProgress + '%' }"></div>
-          <span class="progress-text">{{ completedQuests.length }}/{{ totalQuests }} Quests</span>
+        <div class="progress-wrap">
+          <div class="progress-fill" :style="{ width: questProgress + '%' }" />
+          <span class="progress-label">
+            {{ completedQuestIds.size }} / {{ allQuests.length }} Quests
+          </span>
         </div>
       </div>
-    </div>
+
+      <!-- AR scene is built via raw DOM in buildARScene() — not managed by Vue -->
+
+    </template>
   </div>
 </template>
 
-<script>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
+  serverTimestamp
+} from 'firebase/firestore'
+import { reunion_db } from '@/firebase'
 
-export default {
-  name: 'ARExperienceView',
-  setup() {
-    // Reactive data
-    const isLoading = ref(true)
-    const showInfo = ref(false)
-    const selectedQuest = ref(null)
-    const userLocation = reactive({ lat: 0, lng: 0 })
-    const arObjects = ref([])
-    const activeQuests = ref([])
-    const completedQuests = ref([])
+const route = useRoute()
 
-    // Assets configuration
-    const assets = reactive({
-      festivalMarker: '/models/festival-marker.glb',
-      questOrb: '/models/quest-orb.glb',
-      infoPanelTexture: '/textures/info-panel.jpg'
-    })
+// ─── App state ────────────────────────────────────────────────────────────────
+// validating → (invalid | calibrating) → active
+const appState = ref('validating')
+const authError = ref('')
+const aframeLoaded = ref(false)
 
-    // Computed properties
-    const totalQuests = computed(() => activeQuests.value.length + completedQuests.value.length)
-    const questProgress = computed(() =>
-      totalQuests.value > 0 ? (completedQuests.value.length / totalQuests.value) * 100 : 0
+// ─── Participant ──────────────────────────────────────────────────────────────
+const participantDocId = ref(null)
+const participantName = ref('')
+
+// ─── AR config ────────────────────────────────────────────────────────────────
+const configMarkers = ref([])
+const allObjects = ref([])
+const allQuests = ref([])
+
+// ─── Calibration ─────────────────────────────────────────────────────────────
+const markersDetected = ref(new Set())
+const cameraHeightSamples = []
+const cameraHeight = ref(0)
+
+// ─── Interaction ─────────────────────────────────────────────────────────────
+const selectedObject = ref(null)
+const selectedQuest = ref(null)
+const showInfo = ref(false)
+const completedQuestIds = ref(new Set())
+const isSaving = ref(false)
+
+// ─── Computed ─────────────────────────────────────────────────────────────────
+const questProgress = computed(() =>
+  allQuests.value.length ? (completedQuestIds.value.size / allQuests.value.length) * 100 : 0
+)
+
+// ─── Config helpers ───────────────────────────────────────────────────────────
+const getObjectsForMarker = (val) => allObjects.value.filter((o) => o.markerValue === val)
+const getQuestsForMarker = (val) =>
+  allQuests.value.filter((q) => q.markerValue === val && !completedQuestIds.value.has(q.id))
+
+// ─── A-Frame dynamic loader ───────────────────────────────────────────────────
+const loadScript = (src) =>
+  new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve()
+      return
+    }
+    const s = document.createElement('script')
+    s.src = src
+    s.onerror = () => reject(new Error(`Failed to load script: ${src}`))
+    const timeout = setTimeout(() => reject(new Error(`Timeout loading: ${src}`)), 20000)
+    s.onload = () => { clearTimeout(timeout); resolve() }
+    document.head.appendChild(s)
+  })
+
+const loadAFrame = async () => {
+  if (!window.AFRAME) {
+    console.log('[AR] Loading A-Frame...')
+    await loadScript('https://aframe.io/releases/1.4.0/aframe.min.js')
+    console.log('[AR] A-Frame loaded, AFRAME:', !!window.AFRAME)
+  } else {
+    console.log('[AR] A-Frame already present')
+  }
+  console.log('[AR] Loading AR.js...')
+  await loadScript('https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js')
+  console.log('[AR] AR.js loaded, setting aframeLoaded=true')
+  aframeLoaded.value = true
+}
+
+// ─── AR config loader ─────────────────────────────────────────────────────────
+const loadARConfig = async () => {
+  const config = await fetch('/ar-config.json').then((r) => r.json())
+  const active = config.configs[config.activeConfig]
+  configMarkers.value = active.markers || []
+  allObjects.value = active.arObjects || []
+  allQuests.value = config.quests || []
+}
+
+// ─── Firebase validation + bootstrap ─────────────────────────────────────────
+const validateAndLoad = async () => {
+  const idCode = route.params.id_code?.toLowerCase?.()
+  if (!idCode) {
+    authError.value = 'No ID code provided.'
+    appState.value = 'invalid'
+    return
+  }
+
+  // Admin bypass — skip ticket validation when running locally or logged in as admin
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.endsWith('.devtunnels.ms')
+  const adminUser = localStorage.getItem('user')
+  if (isLocalhost || adminUser) {
+    if (adminUser) {
+      try {
+        const parsed = JSON.parse(adminUser)
+        participantName.value = parsed.displayName || parsed.email || 'Admin'
+      } catch {
+        participantName.value = 'Admin (dev)'
+      }
+    } else {
+      participantName.value = 'Dev Preview'
+    }
+    await Promise.all([loadARConfig(), loadAFrame()])
+    buildARScene()
+    appState.value = 'calibrating'
+    setupMarkerListeners()
+    return
+  }
+
+  try {
+    const snap = await getDocs(
+      query(collection(reunion_db, 'participants_2026'), where('id_code', '==', idCode))
     )
+    if (snap.empty) {
+      authError.value = 'Invalid ID code. Check your ticket email.'
+      appState.value = 'invalid'
+      return
+    }
+    const docSnap = snap.docs[0]
+    participantDocId.value = docSnap.id
+    const data = docSnap.data()
+    participantName.value = data.fullname || 'Guest'
 
-    // Location tracking
-    let watchId = null
-
-    const startLocationTracking = () => {
-      if (navigator.geolocation) {
-        watchId = navigator.geolocation.watchPosition(
-          (position) => {
-            userLocation.lat = position.coords.latitude
-            userLocation.lng = position.coords.longitude
-            updateNearbyContent()
-          },
-          (error) => {
-            console.error('Geolocation error:', error)
-            // Fallback to default festival coordinates
-            userLocation.lat = 40.7589 // Example coordinates
-            userLocation.lng = -111.8883
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 1000
-          }
-        )
-      }
+    // Restore saved AR progress
+    if (data.ar_progress?.completedQuests) {
+      completedQuestIds.value = new Set(data.ar_progress.completedQuests)
     }
 
-    const stopLocationTracking = () => {
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId)
-        watchId = null
-      }
-    }
-
-    // AR Content Management
-    const loadARContent = async () => {
-      try {
-        // This would normally fetch from your backend/JSON config
-        const contentConfig = {
-          objects: [
-            {
-              id: 'main-stage-info',
-              location: { lat: 40.7589, lng: -111.8883 },
-              geometry: 'primitive: box; width: 2; height: 3; depth: 0.1',
-              material: 'color: #4CC3D9; opacity: 0.8',
-              scale: '1 1 1',
-              rotation: '0 0 0',
-              infoText: 'Main Stage\nNext show: 8:00 PM',
-              showInfo: true,
-              animation: 'property: rotation; to: 0 360 0; loop: true; dur: 10000'
-            },
-            {
-              id: 'food-court-marker',
-              location: { lat: 40.759, lng: -111.8884 },
-              geometry: 'primitive: cylinder; radius: 1; height: 2',
-              material: 'color: #FF6B35; emissive: #FF6B35; emissiveIntensity: 0.2',
-              scale: '1 1 1',
-              rotation: '0 0 0',
-              infoText: 'Food Court\nOpen until 10 PM',
-              showInfo: true
-            }
-          ],
-          quests: [
-            {
-              id: 'find-hidden-treasure',
-              title: 'Find the Hidden Treasure',
-              description: 'Look for the golden orb near the main stage!',
-              location: { lat: 40.7588, lng: -111.8882 },
-              reward: 'Festival coin',
-              completed: false
-            },
-            {
-              id: 'scavenger-hunt-ar',
-              title: 'AR Scavenger Hunt',
-              description: 'Find all 5 AR markers around the festival!',
-              location: { lat: 40.7591, lng: -111.8885 },
-              reward: 'Special badge',
-              completed: false
-            }
-          ]
-        }
-
-        arObjects.value = contentConfig.objects
-        activeQuests.value = contentConfig.quests
-
-        // Load completed quests from localStorage
-        const saved = localStorage.getItem('festival-ar-progress')
-        if (saved) {
-          const progress = JSON.parse(saved)
-          completedQuests.value = progress.completed || []
-        }
-      } catch (error) {
-        console.error('Failed to load AR content:', error)
-      }
-    }
-
-    const updateNearbyContent = () => {
-      // Filter and show only nearby objects (within 100 meters)
-      const maxDistance = 100 // meters
-
-      arObjects.value = arObjects.value.map((obj) => ({
-        ...obj,
-        visible: calculateDistance(userLocation, obj.location) <= maxDistance
-      }))
-    }
-
-    const calculateDistance = (point1, point2) => {
-      const R = 6371e3 // Earth's radius in meters
-      const φ1 = (point1.lat * Math.PI) / 180
-      const φ2 = (point2.lat * Math.PI) / 180
-      const Δφ = ((point2.lat - point1.lat) * Math.PI) / 180
-      const Δλ = ((point2.lng - point1.lng) * Math.PI) / 180
-
-      const a =
-        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-      return R * c
-    }
-
-    // Event handlers
-    const onARReady = () => {
-      console.log('AR is ready!')
-      isLoading.value = false
-    }
-
-    const onObjectClick = (object) => {
-      console.log('Object clicked:', object.id)
-      // Handle object interaction
-      object.showInfo = !object.showInfo
-    }
-
-    const onQuestClick = (quest) => {
-      selectedQuest.value = quest
-    }
-
-    const completeQuest = (quest) => {
-      const index = activeQuests.value.findIndex((q) => q.id === quest.id)
-      if (index !== -1) {
-        const completed = activeQuests.value.splice(index, 1)[0]
-        completed.completed = true
-        completedQuests.value.push(completed)
-
-        // Save progress
-        const progress = {
-          completed: completedQuests.value,
-          timestamp: Date.now()
-        }
-        localStorage.setItem('festival-ar-progress', JSON.stringify(progress))
-
-        selectedQuest.value = null
-
-        // Show completion feedback
-        alert(`Quest completed: ${quest.title}!`)
-      }
-    }
-
-    const toggleInfo = () => {
-      showInfo.value = !showInfo.value
-    }
-
-    const exitAR = () => {
-      // Return to main app
-      window.history.back()
-    }
-
-    // Lifecycle
-    onMounted(async () => {
-      try {
-        await loadARContent()
-        startLocationTracking()
-
-        // Request camera permission
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true })
-        stream.getTracks().forEach((track) => track.stop()) // Stop immediately, AR.js will handle it
-      } catch (error) {
-        console.error('Failed to initialize AR:', error)
-        alert('Camera permission is required for AR experience')
-      }
-    })
-
-    onUnmounted(() => {
-      stopLocationTracking()
-    })
-
-    return {
-      isLoading,
-      showInfo,
-      selectedQuest,
-      userLocation,
-      arObjects,
-      activeQuests,
-      completedQuests,
-      assets,
-      questProgress,
-      totalQuests,
-      onARReady,
-      onObjectClick,
-      onQuestClick,
-      completeQuest,
-      toggleInfo,
-      exitAR
-    }
+    // Load config and A-Frame libraries in parallel
+    await Promise.all([loadARConfig(), loadAFrame()])
+    buildARScene()
+    appState.value = 'calibrating'
+    setupMarkerListeners()
+  } catch (err) {
+    console.error('AR init error:', err)
+    authError.value = err?.message || 'Something went wrong. Please try again.'
+    appState.value = 'invalid'
   }
 }
+
+const saveProgress = async () => {
+  if (!participantDocId.value) return
+  isSaving.value = true
+  try {
+    await updateDoc(doc(reunion_db, 'participants_2026', participantDocId.value), {
+      ar_progress: {
+        completedQuests: Array.from(completedQuestIds.value),
+        lastUpdated: serverTimestamp()
+      }
+    })
+  } catch (err) {
+    console.error('Failed to save AR progress:', err)
+  } finally {
+    isSaving.value = false
+  }
+}
+
+// ─── AR scene (DOM-based, bypasses Vue rendering to fix markersAreaEnabled) ─────
+let arSceneEl = null
+
+const buildARScene = () => {
+  const existing = document.getElementById('ar-main-scene')
+  if (existing) existing.remove()
+
+  const scene = document.createElement('a-scene')
+  scene.id = 'ar-main-scene'
+  // Use screen dimensions (not window.inner*) so the canvas covers the full screen
+  // including any area hidden by the browser address bar or safe-area insets.
+  const W = window.screen.width
+  const H = window.screen.height
+  scene.setAttribute('arjs', `sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3_HAMMING63; debugUIEnabled: false; displayWidth: ${W}; displayHeight: ${H};`)
+  scene.setAttribute('vr-mode-ui', 'enabled: false')
+  scene.setAttribute('renderer', 'logarithmicDepthBuffer: true; antialias: false')
+  scene.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;'
+
+  // ── Hiro test marker ──────────────────────────────────────────────────────
+  const hiro = document.createElement('a-marker')
+  hiro.setAttribute('preset', 'hiro')
+  hiro.setAttribute('emitevents', 'true')
+  const hiroBox = document.createElement('a-box')
+  hiroBox.setAttribute('position', '0 0.5 0')
+  hiroBox.setAttribute('scale', '0.5 0.5 0.5')
+  hiroBox.setAttribute('material', 'color: #ff0000')
+  hiroBox.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 2000')
+  hiro.appendChild(hiroBox)
+  const hiroText = document.createElement('a-text')
+  hiroText.setAttribute('value', 'HIRO WORKS!')
+  hiroText.setAttribute('position', '0 1 0')
+  hiroText.setAttribute('align', 'center')
+  hiroText.setAttribute('color', '#fff')
+  hiroText.setAttribute('width', '4')
+  hiro.appendChild(hiroText)
+  scene.appendChild(hiro)
+
+  // ── Barcode markers ───────────────────────────────────────────────────────
+  configMarkers.value.forEach((marker) => {
+    const el = document.createElement('a-marker')
+    el.id = `ar-marker-${marker.value}`
+    el.setAttribute('type', 'barcode')
+    el.setAttribute('value', String(marker.value))
+    el.setAttribute('emitevents', 'true')
+
+    getObjectsForMarker(marker.value).forEach((obj) => {
+      const entity = document.createElement('a-entity')
+      entity.setAttribute('position', obj.localPosition || '0 0.5 0')
+      if (obj.scale) entity.setAttribute('scale', obj.scale)
+      if (obj.geometry) entity.setAttribute('geometry', obj.geometry)
+      if (obj.material) entity.setAttribute('material', obj.material)
+      if (obj.animation) entity.setAttribute('animation__rot', obj.animation)
+      entity.addEventListener('click', () => onObjectClick(obj))
+      el.appendChild(entity)
+    })
+
+    getQuestsForMarker(marker.value).forEach((quest) => {
+      const entity = document.createElement('a-entity')
+      entity.setAttribute('position', quest.localPosition || '0 0.8 0')
+      entity.setAttribute('geometry', 'primitive: sphere; radius: 0.3')
+      entity.setAttribute('material', 'color: #ff6b35; emissive: #ff6b35; emissiveIntensity: 0.5')
+      entity.addEventListener('click', () => onQuestClick(quest))
+      el.appendChild(entity)
+    })
+
+    scene.appendChild(el)
+  })
+
+  // ── Camera ─────────────────────────────────────────────────────────────────
+  const camera = document.createElement('a-entity')
+  camera.setAttribute('camera', '')
+  scene.appendChild(camera)
+
+  document.body.appendChild(scene)
+  arSceneEl = scene
+  console.log('[AR] Scene appended to body, markers:', configMarkers.value.length)
+
+  // A-Frame's Three.js renderer and AR.js both call setSize() with camera/video dimensions,
+  // overriding CSS. Use a MutationObserver to re-enforce screen dimensions any time
+  // the canvas style is changed.
+  const fixCanvas = () => {
+    const canvas = scene.querySelector('canvas')
+    if (!canvas) return
+    const applySize = () => {
+      canvas.style.setProperty('position', 'fixed', 'important')
+      canvas.style.setProperty('top', '0', 'important')
+      canvas.style.setProperty('left', '0', 'important')
+      canvas.style.setProperty('width', W + 'px', 'important')
+      canvas.style.setProperty('height', H + 'px', 'important')
+      canvas.style.setProperty('max-width', W + 'px', 'important')
+      canvas.style.setProperty('max-height', H + 'px', 'important')
+    }
+    applySize()
+    const observer = new MutationObserver(applySize)
+    observer.observe(canvas, { attributes: true, attributeFilter: ['style'] })
+    setTimeout(() => observer.disconnect(), 10000)
+    console.log('[AR] Canvas size enforced at', W, 'x', H)
+  }
+  scene.addEventListener('loaded', fixCanvas, { once: true })
+}
+
+const removeARScene = () => {
+  if (arSceneEl) {
+    arSceneEl.remove()
+    arSceneEl = null
+  }
+}
+
+// ─── Marker event listeners ───────────────────────────────────────────────────
+let listeners = []
+
+const setupMarkerListeners = () => {
+  configMarkers.value.forEach((marker) => {
+    const el = document.getElementById(`ar-marker-${marker.value}`)
+    if (!el) return
+
+    const onFound = () => {
+      markersDetected.value = new Set([...markersDetected.value, marker.value])
+
+      // When a floor marker is flat on the ground, its Y position in camera
+      // space is negative and its absolute value equals the camera height.
+      if (marker.floorMarker) {
+        const y = el.object3D?.position?.y
+        if (y && y < 0) {
+          cameraHeightSamples.push(Math.abs(y))
+          cameraHeight.value =
+            cameraHeightSamples.reduce((a, b) => a + b, 0) / cameraHeightSamples.length
+        }
+      }
+    }
+
+    el.addEventListener('markerFound', onFound)
+    listeners.push({ el, onFound })
+  })
+}
+
+// ─── Interaction handlers ─────────────────────────────────────────────────────
+const onObjectClick = (obj) => {
+  selectedObject.value = obj
+}
+const onQuestClick = (quest) => {
+  selectedQuest.value = quest
+}
+const completeQuest = async (quest) => {
+  completedQuestIds.value = new Set([...completedQuestIds.value, quest.id])
+  selectedQuest.value = null
+  await saveProgress()
+}
+
+// ─── Lifecycle ────────────────────────────────────────────────────────────────
+onMounted(validateAndLoad)
+
+onUnmounted(() => {
+  listeners.forEach(({ el, onFound }) => el?.removeEventListener('markerFound', onFound))
+  listeners = []
+  removeARScene()
+})
 </script>
 
 <style scoped>
-.ar-experience {
+.ar-root {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  z-index: 1000;
+  inset: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  z-index: 2; /* above a-scene (z-index: 1) so overlays render on top of camera */
 }
 
-.loading-screen {
+/* ── Shared overlay ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.loading-content {
+  color: #fff;
+  padding: 24px;
   text-align: center;
 }
+.overlay.center { background: rgba(0, 0, 0, 0.92); }
+.overlay.error h2 { color: #ff6b35; margin-bottom: 8px; }
+.overlay.calibration { background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(6px); }
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
+.pill-link {
+  margin-top: 20px;
+  padding: 10px 28px;
+  background: #4cc3d9;
+  color: #fff;
+  border-radius: 24px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* ── Calibration card ── */
+.cal-card {
+  text-align: center;
+  padding: 28px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  max-width: 300px;
+  width: 100%;
+}
+.cal-card h2 { margin: 0 0 6px; font-size: 1.5rem; }
+.hint { font-size: 0.8rem; opacity: 0.6; margin: 0 0 16px; }
+
+.dots { display: flex; justify-content: center; gap: 12px; margin: 12px 0; }
+.dot {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s;
 }
+.dot--on { background: #4caf50; border-color: #4caf50; box-shadow: 0 0 10px #4caf50; }
+.cal-status { font-size: 0.88rem; opacity: 0.8; min-height: 1.3em; }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.ar-container {
-  position: relative;
+.btn-go {
+  margin-top: 16px;
   width: 100%;
-  height: 100%;
+  padding: 12px;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.btn-skip {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
-.ar-ui-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+/* ── Active AR UI ── */
+.ar-ui {
+  position: fixed;
+  inset: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: 100;
 }
-
-.ar-ui-overlay > * {
-  pointer-events: auto;
-}
+.ar-ui > * { pointer-events: auto; }
 
 .top-bar {
   position: absolute;
@@ -443,132 +531,136 @@ export default {
   justify-content: space-between;
   align-items: center;
   background: rgba(0, 0, 0, 0.7);
-  padding: 10px 15px;
-  border-radius: 25px;
-  color: white;
+  padding: 10px 16px;
+  border-radius: 24px;
+  color: #fff;
+  backdrop-filter: blur(8px);
 }
-
-.info-btn,
-.exit-btn {
-  background: rgba(255, 255, 255, 0.2);
+.name { font-size: 0.9rem; font-weight: bold; }
+.cam-h { font-size: 0.72rem; opacity: 0.5; }
+.btn-icon {
+  background: rgba(255, 255, 255, 0.15);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  color: white;
-  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 0.95rem;
 }
 
-.info-btn:hover,
-.exit-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.location-info {
-  font-size: 12px;
-  opacity: 0.8;
-}
-
-.quest-panel,
-.info-panel {
+.bottom-panel {
   position: absolute;
-  bottom: 100px;
+  bottom: 80px;
   left: 20px;
   right: 20px;
   background: rgba(0, 0, 0, 0.9);
-  color: white;
+  color: #fff;
   padding: 20px;
-  border-radius: 15px;
-  max-height: 60vh;
-  overflow-y: auto;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
+.bottom-panel h3 { margin-top: 0; color: #4cc3d9; }
 
-.quest-panel h3,
-.info-panel h3 {
-  margin-top: 0;
-  color: #ff6b35;
-}
-
-.quest-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.complete-btn {
+.row { display: flex; gap: 10px; margin-top: 12px; }
+.btn-complete {
+  flex: 1;
+  padding: 10px;
   background: #4caf50;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.close-btn {
-  background: #666;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 25px;
+  border-radius: 20px;
   cursor: pointer;
 }
+.btn-complete:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-close {
+  flex: 1;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
 
-.progress-bar {
+.progress-wrap {
   position: absolute;
   bottom: 20px;
   left: 20px;
   right: 20px;
-  height: 30px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 18px;
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
-
 .progress-fill {
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
-  background: linear-gradient(90deg, #4caf50, #8bc34a);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #4cc3d9, #4caf50);
+  transition: width 0.5s ease;
+  border-radius: 18px;
 }
-
-.progress-text {
+.progress-label {
   position: relative;
-  color: white;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 0.85rem;
   font-weight: bold;
-  font-size: 14px;
-  z-index: 1;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .top-bar {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    padding: 8px 12px;
-  }
+/* A-Frame scene lives outside Vue's scope — canvas rules are in global <style> below */
 
-  .quest-panel,
-  .info-panel {
-    bottom: 80px;
-    left: 10px;
-    right: 10px;
-    padding: 15px;
-  }
+/* ── Spinner ── */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 
-  .progress-bar {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    height: 25px;
-  }
+<!-- Global overrides: A-Frame scene + AR.js video injected into document.body, outside Vue's scope -->
+<style>
+html, body {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+a-scene {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+.a-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  display: block !important;
+}
+#arjs-video,
+video.a-src-video {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
 }
 </style>

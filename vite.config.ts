@@ -11,7 +11,14 @@ dotenv.config({path: resolve(__dirname, '.env.festivall')})
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // Treat all a-* tags as native custom elements (A-Frame)
+          isCustomElement: (tag) => tag.startsWith('a-')
+        }
+      }
+    }),
     vueJsx(),
   ],
   resolve: {
