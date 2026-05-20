@@ -95,16 +95,7 @@
       </div>
       <h2>Talent Pool</h2>
       <div class="buttons">
-        <!-- <button @click="loadApplicants('blessed_coast')">Blessed Coast</button> -->
-        <!-- <button @click="loadApplicants('impact')">Impact</button> -->
-        <!-- <button @click="loadApplicants('cream_collective')">Cream Collective</button> -->
-        <!-- <button @click="loadApplicants('evolved_music_group')">Evolved Music Group</button> -->
-        <!-- <button @click="loadApplicants('rapture')">Rapture</button> -->
-        <!-- <button @click="loadApplicants('partywell')">PartyWell</button> -->
-        <!-- <button @click="loadApplicants('festivall', true)">Festivall</button> -->
-        <!-- <button @click="loadApplicants('reunion')">Reunion Static</button> -->
-        <!-- <button @click="loadApplicants('applications', true)">Reunion Applicants 2024</button> -->
-        <button @click="loadApplicants('applications_2025', true)">Reunion Applicants 2025</button>
+        <button @click="loadApplicants('leads', true)">Festivall Leads</button>
       </div>
     </div>
 
@@ -629,7 +620,7 @@
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
-import { reunion_db } from '@/firebase'
+import { reunion_db, festivall_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
 import contract_icon from '@/assets/images/icons/contract.png'
@@ -741,6 +732,22 @@ export default {
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
 
+      // Leads filters (festivall_db leads collection)
+      { property: 'source', value: 'reunion', label: 'Source: Reunion', collections: ['leads'] },
+      { property: 'source', value: 'impact', label: 'Source: Impact', collections: ['leads'] },
+      { property: 'source', value: 'blessed_coast', label: 'Source: Blessed Coast', collections: ['leads'] },
+      { property: 'source', value: 'cream_collective', label: 'Source: Cream Collective', collections: ['leads'] },
+      { property: 'source', value: 'evolved_music_group', label: 'Source: EMG', collections: ['leads'] },
+      { property: 'source', value: 'rapture', label: 'Source: Rapture', collections: ['leads'] },
+      { property: 'source', value: 'partywell', label: 'Source: PartyWell', collections: ['leads'] },
+      { property: 'applicant_type', value: 'Artist', label: 'Artists', collections: ['leads'] },
+      { property: 'applicant_type', value: 'DJ', label: 'DJs', collections: ['leads'] },
+      { property: 'applicant_type', value: 'Musician', label: 'Musicians', collections: ['leads'] },
+      { property: 'applicant_type', value: 'Volunteer', label: 'Volunteers', collections: ['leads'] },
+      { property: 'genre', value: 'has_value', label: 'Has Genre', collections: ['leads'] },
+      { property: 'url', value: 'has_value', label: 'Has URL', collections: ['leads'] },
+      { property: 'duplicate_email', value: true, label: 'Duplicate Email', collections: ['leads'] },
+
       // Order/Payment filters (for orders/customers only)
       { property: 'payment_type', value: 'bitcoin', label: 'Bitcoin Payment', collections: ['orders_2025'] },
       { property: 'payment_type', value: 'etransfer', label: 'E-Transfer Payment', collections: ['orders_2025'] },
@@ -795,13 +802,20 @@ export default {
         let data = []
         if (isFirestore) {
           // Fetch data from Firestore
-          const applicantsCollection = collection(reunion_db, type)
+          const db = type === 'leads' ? festivall_db : reunion_db
+          const applicantsCollection = collection(db, type)
           const applicantsSnapshot = await getDocs(applicantsCollection)
           data = applicantsSnapshot.docs.map((doc) => {
             const docData = doc.data()
 
             // Normalize data structure for participants_2026 vs orders_2025
-            if (type === 'participants_2026') {
+            if (type === 'leads') {
+              return {
+                id: doc.id,
+                ...docData,
+                fullname: docData.full_name || '',
+              }
+            } else if (type === 'participants_2026') {
               return {
                 id: doc.id,
                 id_code: docData.id_code,
