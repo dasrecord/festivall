@@ -37,3 +37,6 @@ scripts/revenue-debug.txt
 .gitignore
 scripts/reunion-festival-analytics.txt
 public/TO_DO.txt
+
+# Private data — PII applicant leads (imported to Firestore; kept locally as backup)
+public/data/applicants/
