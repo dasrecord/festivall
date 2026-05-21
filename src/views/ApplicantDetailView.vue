@@ -367,26 +367,6 @@
               >
                 <button class="deliver-btn">📧 Deliver Ticket</button>
               </a>
-              <a
-                v-if="
-                  applicant.email &&
-                  applicant.id_code &&
-                  applicant.payment_type === 'inkind' &&
-                  !applicant.contract_signed &&
-                  applicant.applicant_types
-                "
-                :href="
-                  deliverContract(
-                    applicant.email,
-                    applicant.fullname,
-                    applicant.applicant_types.join(', and '),
-                    applicant.id_code
-                  )
-                "
-                target="_blank"
-              >
-                <button class="deliver-btn">📋 Deliver Contract</button>
-              </a>
               <div v-if="applicant.mix_track_url" class="mix-track-section">
                 <a :href="applicant.mix_track_url" target="_blank" class="mix-track-link">
                   🎵 Mix/Track
@@ -438,6 +418,13 @@
                 {{ applicant.contract_signed ? '✅ Signed' : '❌ Not Signed' }}
               </p>
               <template v-if="!applicant.contract_signed">
+                <a
+                  v-if="applicant.email && applicant.id_code && applicant.applicant_types"
+                  :href="deliverContract(applicant.email, applicant.fullname, applicant.applicant_types.join(', and '), applicant.id_code)"
+                  target="_blank"
+                >
+                  <button class="deliver-btn">📋 Send Contract</button>
+                </a>
                 <button @click="remindContract" class="remind-btn">
                   Remind Contract
                 </button>

@@ -315,7 +315,7 @@ const addApplicant = async () => {
           meal_tickets_remaining: compensation.mealPackages * 2,
           meal_packages: compensation.mealPackages,
           // Payment fields
-          payment_type: '',
+          payment_type: form.value.payment_type || 'inkind',
           fiat_total_price_cad: 0,
           paid: false,
           checked_in: false,

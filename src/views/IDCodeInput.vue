@@ -21,6 +21,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import frog_image from '@/assets/images/frog.png'
+import { sendReunionDevops } from '/scripts/notifications.js'
 
 export default {
   name: 'EnterIDCode',
@@ -43,16 +44,37 @@ export default {
         const querySnapshot = await getDocs(q)
 
         if (!querySnapshot.empty) {
-          // Determine which page to redirect to based on current path
-          if (route.path === '/reunioncontract') {
-            // If we're on the contract entry page, go to contract
+          const participantData = querySnapshot.docs[0].data()
+          const participantEmail = (participantData.contact?.email || '').toLowerCase().trim()
+
+          const enteredEmail = prompt('For security, please enter the email address associated with this ticket.')
+          if (enteredEmail === null) return // user cancelled
+
+          if (enteredEmail.toLowerCase().trim() !== participantEmail) {
+            errorMessage.value = 'Email does not match. Please try again.'
+            sendReunionDevops(
+              `⚠️ *Failed Login — Email Mismatch*\n*Page:* ${route.path}\n*ID Code:* \`${normalizedIdCode}\`\n*Entered Email:* ${enteredEmail.toLowerCase().trim()}\n*Time:* ${new Date().toISOString()}\n*User Agent:* ${navigator.userAgent}`
+            )
+            return
+          }
+
+          // Store verification so TicketPageView skips its own prompt
+          sessionStorage.setItem(`verified_${normalizedIdCode}`, 'true')
+          const paymentType = participantData.order?.payment_type || participantData.payment_type || ''
+          const hasApplicantTypes = Array.isArray(participantData.roles?.applicant_types) && participantData.roles.applicant_types.length > 0
+          const isInKindParticipant = paymentType === 'inkind' || paymentType === 'In Kind' || (paymentType === '' && hasApplicantTypes)
+          const contractSigned = participantData.contract?.signed === true
+
+          if (isInKindParticipant && !contractSigned) {
             router.push({ name: 'ContractPage', params: { id_code: normalizedIdCode } })
           } else {
-            // Default to ticket page
             router.push({ name: 'TicketPage', params: { id_code: normalizedIdCode } })
           }
         } else {
           errorMessage.value = 'Invalid ID code. Please try again.'
+          sendReunionDevops(
+            `⚠️ *Failed Login — Invalid ID Code*\n*Page:* ${route.path}\n*Attempted Code:* \`${normalizedIdCode}\`\n*Time:* ${new Date().toISOString()}\n*User Agent:* ${navigator.userAgent}`
+          )
         }
       } catch (error) {
         console.error('Error checking ID code:', error)
