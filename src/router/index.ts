@@ -60,6 +60,11 @@ import BudgetView from '@/views/BudgetView.vue'
 import InventoryAdminView from '@/views/InventoryAdminView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
+import MunnismealsView from '@/views/MunnismealsView.vue'
+import BitcoinMeetupView from '@/views/BitcoinMeetupView.vue'
+import WeddingDJView from '@/views/WeddingDJView.vue'
+import WeddingDJInvoiceView from '@/views/WeddingDJInvoiceView.vue'
+import WeddingPlaylistView from '@/views/WeddingPlaylistView.vue'
 
 
 const routes = [
@@ -90,8 +95,7 @@ const routes = [
   {
     path: '/bitcoinmeetup',
     name: 'bitcoinmeetup',
-    component: ExternalRedirect,
-    props: { url: 'https://calendar.app.google/18VPBcwYU6HLcpL98' }
+    component: BitcoinMeetupView
   },
   {
     path: '/blessedcoast',
@@ -408,8 +412,7 @@ const routes = [
   {
     path: '/munnismeals',
     name: 'munnismeals',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/fx9c8lFb' }
+    component: MunnismealsView
   },
   {
     path: '/reunionlocation',
@@ -510,6 +513,22 @@ const routes = [
     name: 'bitcoin-wallet',
     component: BitcoinWalletView,
     meta: { showHeader: false }
+  },
+  {
+    path: '/wedding-dj',
+    name: 'wedding-dj',
+    component: WeddingDJView,
+    meta: { showHeader: true }
+  },
+  {
+    path: '/wedding-dj/invoice/:lead_id',
+    name: 'wedding-dj-invoice',
+    component: WeddingDJInvoiceView
+  },
+  {
+    path: '/wedding-dj/playlist/:lead_id',
+    name: 'wedding-dj-playlist',
+    component: WeddingPlaylistView
   }
 ]
 

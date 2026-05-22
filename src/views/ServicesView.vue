@@ -1,89 +1,93 @@
 <template>
-  <div class="services">
-    <div class="service">
-      <h1>
-        <RouterLink to="/hotspot">Community Hotspot</RouterLink>
-      </h1>
-      <p>
-        Looking for a creative space for microevents?<br />
-        Check this place out.
-      </p>
+  <div class="services-page">
+    <div class="banner">
+      <img :src="emblem" alt="Festivall" class="logo" />
+      <h1>SERVICES</h1>
+      <span class="tagline">What we do</span>
     </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/starcrossed">Record Label</RouterLink>
-      </h1>
-      <p>
-        Want to submit your producer/dj demos?<br />
-        Start here.
-      </p>
+
+    <div class="services-grid">
+
+      <!-- Community Hotspot — commented out (venue TBD)
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/hotspot" class="card-title">Community Hotspot →</RouterLink>
+        </div>
+        <p class="card-blurb">Looking for a creative space for microevents? Check this place out.</p>
+      </div>
+      -->
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/starcrossed" class="card-title">Record Label →</RouterLink>
+        </div>
+        <p class="card-blurb">Want to submit your producer/DJ demos? Start here.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/soundtech" class="card-title">Sound Tech →</RouterLink>
+        </div>
+        <p class="card-blurb">Need someone to run sound for your event? We have you covered.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/stagerider" class="card-title">Stage Rider →</RouterLink>
+        </div>
+        <p class="card-blurb">Need to submit your stage rider for your performance? We can help.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/art-and-photography" class="card-title">Art & Photography →</RouterLink>
+        </div>
+        <p class="card-blurb">Looking for a photographer or artist for your event? Drop us a line.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/onyx" class="card-title">Onyx →</RouterLink>
+        </div>
+        <p class="card-blurb">Interested in custom hair, photo & design? Check this out.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <a href="https://www.instagram.com/cakeawaysk" target="_blank" rel="noopener noreferrer" class="card-title">Cakeaway →</a>
+        </div>
+        <p class="card-blurb">Interested in custom desserts and cakes? Dig in.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/munnismeals" class="card-title">Munni's Meals →</RouterLink>
+        </div>
+        <p class="card-blurb">Craving homemade Indian/Bengali food? We deliver.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/coding-and-webdev" class="card-title">Coding & Web Development →</RouterLink>
+        </div>
+        <p class="card-blurb">Searching for a computer programmer or webmaster? Look no further.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/wedding-dj" class="card-title">Wedding DJ →</RouterLink>
+        </div>
+        <p class="card-blurb">Looking for a premium DJ + production for your wedding or event? Let's talk.</p>
+      </div>
+
+      <div class="budget-card">
+        <div class="card-header">
+          <RouterLink to="/bitcoinmeetup" class="card-title bitcoin-title">Bitcoin →</RouterLink>
+        </div>
+        <p class="card-blurb">Interested in learning about Bitcoin? Schedule a free workshop.</p>
+      </div>
+
     </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/soundtech">Sound Tech</RouterLink>
-      </h1>
-      <p>
-        Need someone to run sound for your event?<br />
-        We have you covered.
-      </p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/stagerider">Stage Rider</RouterLink>
-      </h1>
-      <p>
-        Need to submit your stage rider for your performance?<br />
-        We can help.
-      </p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/art-and-photography">Art & Photography</RouterLink>
-      </h1>
-      <p>Looking for a photographer or artist for your event?<br />Drop us a line.</p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/onyx">Onyx</RouterLink>
-      </h1>
-      <p>Interested in a custom hair, photo, & design?<br />Check this out.</p>
-    </div>
-    <div class="service">
-      <h1>
-        <a href="https://www.instagram.com/cakeawaysk">Cakeaway</a>
-      </h1>
-      <p>
-        Interested in custom desserts and cakes?<br />
-        Dig in.
-      </p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/munnismeals">Munni's Meals</RouterLink>
-      </h1>
-      <p>
-        Craving homemade indian/bengali food?<br />
-        We deliver.
-      </p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink to="/coding-and-webdev">Coding & Web Development</RouterLink>
-      </h1>
-      <p>
-        Searching for a computer programmer or webmaster?<br />
-        Look no further.
-      </p>
-    </div>
-    <div class="service">
-      <h1>
-        <RouterLink id="bitcoin" to="/bitcoinmeetup">Bitcoin</RouterLink>
-      </h1>
-      <p>Interested in learning about Bitcoin?<br />Schedule a free workshop.</p>
-    </div>
-  </div>
-  <div id="emblem">
-    <img :src="festivall_emblem" alt="Festivall Emblem" class="festivall-emblem" />
   </div>
 </template>
 
@@ -111,65 +115,100 @@ export default {
       ]
     })
   },
-  components: {
-    RouterLink
-  },
+  components: { RouterLink },
   data() {
-    return {
-      festivall_emblem: festivallEmblemWhite
-    }
+    return { emblem: festivallEmblemWhite }
   }
 }
 </script>
 
 <style scoped>
-/* .services {
-  height: 300px;
-  padding: 1rem;
+.services-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1f1e22;
+  color: #e0e0e0;
+  padding-bottom: 3rem;
+}
+
+.banner {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
   justify-content: space-between;
-} */
-
-.services {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-.service {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 10px;
-  border: 1px solid white;
-  border-radius: 5px;
-
-  margin: 1rem;
-}
-#bitcoin {
-  color: #ff9900;
+  background-color: #333;
+  padding: 0.75rem 1rem;
 }
 
-#emblem {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.festivall-emblem {
-  width: 100px;
-  height: auto;
-  margin-bottom: 1rem;
+.logo {
+  height: 32px;
+  width: auto;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--festivall-baby-blue);
+  margin: 0;
 }
-h2 {
-  font-size: 1.5rem;
-  margin: 2rem;
+
+.tagline {
+  font-size: 11px;
+  color: #666;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background-color: #2a2a2e;
+  padding: 1px;
+  margin-top: 1px;
+}
+
+.budget-card {
+  background-color: #252528;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.card-header {
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.4rem;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--festivall-baby-blue);
+  text-decoration: none;
+}
+
+.card-title:hover {
+  color: #fff;
+}
+
+.bitcoin-title {
+  color: #ff9900;
+}
+
+.bitcoin-title:hover {
+  color: #ffb84d;
+}
+
+.card-blurb {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

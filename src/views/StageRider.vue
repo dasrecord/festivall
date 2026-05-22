@@ -1,10 +1,13 @@
 <template>
-  <div class="basic">
-    <a href="/">
-      <img :src="emblem" alt="Festivall Emblem" style="width: 250px" />
-    </a>
-    <h1>Stage Rider Information Form</h1>
-    <h3 class="application-form">
+  <div class="page">
+    <div class="banner">
+      <RouterLink to="/services" class="back-link">← Services</RouterLink>
+      <h1>STAGE RIDER</h1>
+      <span></span>
+    </div>
+    <div class="content">
+      <div class="budget-card">
+        <div class="card-header"><span class="card-title">Artist Stage Rider Submission</span></div>
       <form @submit.prevent="submitForm">
         <div class="form-section">
           <label for="fullname">Full Name:</label>
@@ -183,13 +186,15 @@
 
         <button type="submit">SUBMIT</button>
       </form>
-    </h3>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { RouterLink } from 'vue-router'
 import { collection, getDoc, doc, setDoc } from 'firebase/firestore'
 import { reunion_db, festivall_db } from '@/firebase'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
@@ -357,97 +362,145 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.basic {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  justify-items: flex-start;
-  align-items: center;
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1f1e22;
+  color: #e0e0e0;
+  padding-bottom: 3rem;
 }
 
-.application-form {
-  width: 80vw;
+.banner {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 0.75rem 1rem;
+}
+
+.back-link {
+  font-size: 11px;
+  color: var(--festivall-baby-blue);
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--festivall-baby-blue);
+  margin: 0;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
   padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 15px;
+}
+
+.budget-card {
+  background-color: #252528;
+  padding: 0.75rem;
+}
+
+.card-header {
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ccc;
 }
 
 .form-section {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  height: auto;
-  font-family: Helvetica;
-  width: 100%;
-  margin-bottom: 5px;
+  align-items: stretch;
+  margin-bottom: 6px;
+  font-family: Helvetica, sans-serif;
 }
 
 label {
   display: flex;
-  flex-direction: column;
-  width: 25%;
-  /* height: 40px; */
-  text-align: left;
-  padding: 0.5rem;
+  align-items: center;
+  width: 30%;
+  min-width: 130px;
+  padding: 8px 10px;
   background-color: var(--festivall-baby-blue);
-  color: black;
+  color: #000;
   border-radius: 15px 0 0 15px;
+  font-size: 11px;
 }
 
 input,
 textarea,
 select {
-  width: 75%;
-  height: 42px;
-  font-family: Helvetica;
-  gap: 0.5rem;
+  flex: 1;
+  padding: 8px 10px;
+  background-color: #1a1a1d;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-left: none;
   border-radius: 0 15px 15px 0;
-  padding: 5px;
-  margin: 5px;
-  cursor: pointer;
+  font-family: Helvetica, sans-serif;
+  font-size: 11px;
+  outline: none;
 }
 
-button {
-  background-color: white;
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--festivall-baby-blue);
+}
+
+select option {
+  background-color: #252528;
+  color: #e0e0e0;
+}
+
+button[type='submit'] {
   width: 100%;
   padding: 10px;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 5px;
-}
-button:hover {
+  margin-top: 0.5rem;
   background-color: var(--festivall-baby-blue);
-  color: black;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
-a {
-  border-radius: 15px;
-}
-@media (max-width: 768px) {
-  .application-form {
-    width: 95vw;
-  }
 
+button[type='submit']:hover {
+  background-color: #fff;
+}
+
+@media (max-width: 600px) {
   .form-section {
     flex-direction: column;
   }
-
   label {
     width: 100%;
+    min-width: unset;
     border-radius: 15px 15px 0 0;
-    text-align: center;
   }
-
   input,
   textarea,
   select {
-    width: 100%;
+    border-left: 1px solid #444;
+    border-top: none;
     border-radius: 0 0 15px 15px;
-  }
-
-  button {
-    width: 100%;
   }
 }
 </style>

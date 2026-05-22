@@ -1,189 +1,137 @@
 <template>
-  <div class="basic">
-    <HelloWorld msg="Sound Tech" />
-    FESTIVALL features an in-house team of sound technicians & audio professionals to help you
-    create the perfect sonic representation of your brand.
-    <h2>We Provide:</h2>
-    <ul class="services">
-      <li>live sound technicians</li>
-      <li>sound system setup & tuning</li>
-      <li>P/A system installation</li>
-      <li>acoustic treatment</li>
-      <li>repairs & upgrades</li>
-      <li>reasonable rates</li>
-      <li>positive references</li>
-      <li>free consultations</li>
-      <li>guitar servicing</li>
-      <li>drum tuning</li>
-      <li>speaker/amplifier repair</li>
-    </ul>
-    <br />
-    <h2>We Serve:</h2>
-    <ul class="audience">
-      <li>individuals</li>
-      <li>bands</li>
-      <li>schools</li>
-      <li>theaters</li>
-      <li>clubs</li>
-      <li>bars</li>
-      <li>restaurants</li>
-      <li>auditoriums</li>
-      <li>arenas</li>
-      <li>stadiums</li>
-      <li>outdoor events</li>
-      <li>festivals</li>
-      <li>conferences</li>
-      <li>convention centers</li>
-      <li>hotels</li>
-      <li>banquet halls</li>
-      <li>conference rooms</li>
-      <li>churches</li>
-      <li>houses of worship</li>
-    </ul>
-    <br />
-    <h2>We Also Do:</h2>
-    <ul class="audio-services">
-      <li>mixing & mastering</li>
-      <li>audio recording</li>
-      <li>music production</li>
-      <li>custom composition</li>
-      <li>voiceovers</li>
-      <li>sound design</li>
-      <li>audio editing</li>
-    </ul>
-    <div class="contact-form">
-      <h2>Contact Us</h2>
-      Let's talk about your project.<br />Fill out the form below and we'll get back to you as soon
-      as possible.<br /><br />
-      <form @submit.prevent="submitForm">
-        <div>
-          <label for="name">Name:</label>
-          <input type="text" id="name" v-model="form.name" required />
+  <div class="page">
+    <div class="banner">
+      <RouterLink to="/services" class="back-link">← Services</RouterLink>
+      <h1>SOUND TECH</h1>
+      <span></span>
+    </div>
+
+    <div class="content">
+      <p class="intro">FESTIVALL features an in-house team of sound technicians & audio professionals to help you create the perfect sonic representation of your brand.</p>
+
+      <div class="cards-grid">
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Provide</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in provides" :key="item" @click="setNeeds(item)" :class="{ 'chip-active': form.needs === item }">{{ item }}</span>
+          </div>
         </div>
-        <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Serve</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in serves" :key="item" @click="setClient(item)" :class="{ 'chip-active': form.client === item }">{{ item }}</span>
+          </div>
         </div>
-        <!-- <div>
-          <label for="phone">Phone:</label>
-          <input type="tel" id="phone" v-model="form.phone" />
-        </div> -->
-        <div>
-          <label for="client">I am/represent a(n):</label>
-          <select id="client" v-model="form.client" required>
-            <option value="individual">individual</option>
-            <option value="band">band</option>
-            <option value="school">school</option>
-            <option value="theater">theater</option>
-            <option value="club">club</option>
-            <option value="bar">bar</option>
-            <option value="restaurant">restaurant</option>
-            <option value="auditorium">auditorium</option>
-            <option value="arena">arena</option>
-            <option value="stadium">stadium</option>
-            <option value="outdoor event">outdoor event</option>
-            <option value="festival">festival</option>
-            <option value="conference">conference</option>
-            <option value="convention center">convention center</option>
-            <option value="hotel">hotel</option>
-            <option value="banquet hall">banquet hall</option>
-            <option value="conference room">conference room</option>
-            <option value="church">church</option>
-            <option value="house of worship">house of worship</option>
-            <option value="other">other</option>
-          </select>
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Also Do</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in alsoDoes" :key="item" @click="setNeeds(item)" :class="{ 'chip-active': form.needs === item }">{{ item }}</span>
+          </div>
         </div>
-        <div>
-          <label for="needs">I am looking for:</label>
-          <select id="needs" v-model="form.needs" required>
-            <option value="live sound technician">a live sound technician</option>
-            <option value="sound system setup & tuning">sound system setup & tuning</option>
-            <option value="P/A system installation">P/A system installation</option>
-            <option value="acoustic treatment">acoustic treatment</option>
-            <option value="repairs & upgrades">repairs & upgrades</option>
-            <option value="reasonable rates">reasonable rates</option>
-            <option value="positive references">positive references</option>
-            <option value="free consultations">free consultations</option>
-            <option value="guitar servicing">guitar servicing</option>
-            <option value="drum tuning">drum tuning</option>
-            <option value="speaker/amplifier repair">speaker/amplifier repair</option>
-            <option value="mixing & mastering">mixing & mastering</option>
-            <option value="audio recording">audio recording</option>
-            <option value="music production">music production</option>
-            <option value="custom composition">custom composition</option>
-            <option value="voiceovers">voiceovers</option>
-            <option value="sound design">sound design</option>
-            <option value="audio editing">audio editing</option>
-            <option value="other">other</option>
-          </select>
+      </div>
+
+      <div class="budget-card form-card" ref="contactForm">
+        <div class="card-header">
+          <span class="card-title">Contact Us</span>
+          <span class="card-sub">Let's talk about your project.</span>
         </div>
-        <div>
-          <label for="contact_point">Preferred Contact Person:</label>
-          <select id="contact-point" v-model="form.contact" required>
-            <option value="Prasenjit">Prasenjit</option>
-            <option value="Brandon">Brandon</option>
-            <option value="Yvo">Yvo</option>
-            <option value="Arthur">Arthur</option>
-            <option value="Janicka">Janicka</option>
-            <option value="Cory">Cory</option>
-          </select>
-        </div>
-        <div>
-          <label for="message">Message:</label>
-          <textarea id="message" v-model="form.message" required></textarea>
-        </div>
-        <button type="submit">SUBMIT</button>
-      </form>
+        <form @submit.prevent="submitForm">
+          <div class="form-section">
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="form.name" required />
+          </div>
+          <div class="form-section">
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="form.email" required />
+          </div>
+          <div class="form-section">
+            <label for="client">I represent</label>
+            <select id="client" v-model="form.client" required>
+              <option value="" disabled>Select...</option>
+              <option v-for="c in clientTypes" :key="c" :value="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="needs">I need</label>
+            <select id="needs" v-model="form.needs" required>
+              <option value="" disabled>Select...</option>
+              <option v-for="n in needsOptions" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="contact_point">Preferred contact</label>
+            <select id="contact_point" v-model="form.contact" required>
+              <option value="" disabled>Select...</option>
+              <option value="Prasenjit">Prasenjit</option>
+              <option value="Brandon">Brandon</option>
+              <option value="Yvo">Yvo</option>
+              <option value="Arthur">Arthur</option>
+              <option value="Janicka">Janicka</option>
+              <option value="Cory">Cory</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="message">Message</label>
+            <textarea id="message" v-model="form.message" required></textarea>
+          </div>
+          <button type="submit">SUBMIT</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import HelloWorld from '@/components/HelloWorld.vue'
+import { RouterLink } from 'vue-router'
+import { sendReunionServicesSlack } from '/scripts/notifications.js'
 
 export default {
   name: 'SoundTechView',
-  components: {
-    HelloWorld
-  },
+  components: { RouterLink },
   data() {
     return {
-      form: {
-        name: '',
-        email: '',
-        client: '',
-        needs: '',
-        contact_point: '',
-        message: ''
-      }
+      form: { name: '', email: '', client: '', needs: '', contact_point: '', message: '' },
+      provides: [
+        'a live sound technician', 'sound system setup & tuning', 'P/A system installation',
+        'acoustic treatment', 'repairs & upgrades', 'free consultation',
+        'guitar servicing', 'drum tuning', 'speaker/amplifier repair'
+      ],
+      serves: [
+        'individual', 'band', 'school', 'theater', 'club', 'bar', 'restaurant',
+        'auditorium', 'arena', 'stadium', 'outdoor event', 'festival', 'conference',
+        'convention center', 'hotel', 'banquet hall', 'church', 'house of worship'
+      ],
+      alsoDoes: [
+        'mixing & mastering', 'audio recording', 'music production', 'custom composition',
+        'voiceovers', 'sound design', 'audio editing'
+      ],
+      clientTypes: [
+        'individual', 'band', 'school', 'theater', 'club', 'bar', 'restaurant',
+        'auditorium', 'arena', 'stadium', 'outdoor event', 'festival', 'conference',
+        'convention center', 'hotel', 'banquet hall', 'church', 'house of worship', 'other'
+      ],
+      needsOptions: [
+        'a live sound technician', 'sound system setup & tuning', 'P/A system installation',
+        'acoustic treatment', 'repairs & upgrades', 'free consultation', 'guitar servicing',
+        'drum tuning', 'speaker/amplifier repair', 'mixing & mastering', 'audio recording',
+        'music production', 'custom composition', 'voiceovers', 'sound design', 'audio editing', 'other'
+      ]
     }
   },
   methods: {
+    setNeeds(item) {
+      this.form.needs = item
+      this.$nextTick(() => this.$refs.contactForm?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    },
+    setClient(item) {
+      this.form.client = item
+      this.$nextTick(() => this.$refs.contactForm?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    },
     async submitForm() {
       try {
-        const response = await axios.post(
-          'https://relayproxy.vercel.app/reunion_services_slack',
-          {
-            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nPreferred Contact Person: ${this.form.contact_point}\nMessage: ${this.form.message}`
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        )
-        if (response.status === 200) {
-          alert('Form submitted successfully!')
-          this.form.name = ''
-          this.form.email = ''
-          this.form.client = ''
-          this.form.needs = ''
-          this.form.contact_point = ''
-          this.form.message = ''
-        } else {
-          alert('Failed to submit the form.')
-        }
+        await sendReunionServicesSlack(`Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nPreferred Contact Person: ${this.form.contact}\nMessage: ${this.form.message}`)
+        alert('Form submitted successfully!')
+        this.form = { name: '', email: '', client: '', needs: '', contact_point: '', message: '' }
       } catch (error) {
         console.error('Error submitting form:', error)
         alert('An error occurred while submitting the form.')
@@ -194,66 +142,201 @@ export default {
 </script>
 
 <style scoped>
-.basic {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1f1e22;
+  color: #e0e0e0;
+  padding-bottom: 3rem;
 }
-.services,
-.audience,
-.audio-services {
-  padding: 0;
-  font-weight: bold;
+
+.banner {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-
-  list-style-type: none;
-}
-li {
-  /* font-weight: bold; */
-  padding: 5px;
-  margin: 3px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  background-color: #333;
+  padding: 0.75rem 1rem;
 }
 
-.contact-form {
+.back-link {
+  font-size: 11px;
+  color: var(--festivall-baby-blue);
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--festivall-baby-blue);
+  margin: 0;
+}
+
+.content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.intro {
+  font-size: 12px;
+  color: #888;
+  margin: 1rem 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background-color: #2a2a2e;
+  margin-bottom: 1px;
+}
+
+.budget-card {
+  background-color: #252528;
+  padding: 0.75rem;
+}
+
+.card-header {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
 }
-form,
-label,
-input,
-textarea,
-select {
-  font-family: Oswald, Helvetica, sans-serif;
-  width: 500px;
-  max-width: 80vw;
-  display: block;
-  margin-bottom: 10px;
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ccc;
 }
-button {
-  background-color: white;
-  width: 100%;
-  max-width: 80vw;
-  display: block;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
+
+.card-sub {
+  font-size: 10px;
+  color: #666;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #aaa;
+  background-color: #1f1e22;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
-button:hover {
+
+.chip:hover {
+  border-color: var(--festivall-baby-blue);
+  color: var(--festivall-baby-blue);
+}
+
+.chip-active {
   background-color: var(--festivall-baby-blue);
-  color: white;
+  color: #000;
+  border-color: var(--festivall-baby-blue);
+}
+
+.form-card {
+  margin-top: 1px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-bottom: 6px;
+}
+
+.form-section label {
+  width: 30%;
+  min-width: 120px;
+  font-size: 11px;
+  font-family: Oswald, Helvetica, sans-serif;
+  padding: 8px 10px;
+  background-color: var(--festivall-baby-blue);
+  color: #000;
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+.form-section input,
+.form-section select,
+.form-section textarea {
+  flex: 1;
+  font-size: 11px;
+  font-family: Oswald, Helvetica, sans-serif;
+  padding: 8px 10px;
+  background-color: #1a1a1d;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  outline: none;
+}
+
+.form-section textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+  border-color: var(--festivall-baby-blue);
+}
+
+.form-section select option {
+  background-color: #252528;
+  color: #e0e0e0;
+}
+
+button[type='submit'] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 0.5rem;
+  background-color: var(--festivall-baby-blue);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type='submit']:hover {
+  background-color: #fff;
+}
+
+@media (max-width: 600px) {
+  .form-section {
+    flex-direction: column;
+  }
+  .form-section label {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-width: unset;
+  }
+  .form-section input,
+  .form-section select,
+  .form-section textarea {
+    border-left: 1px solid #444;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
 }
 </style>

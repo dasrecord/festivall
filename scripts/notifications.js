@@ -252,3 +252,59 @@ export const sendVolunteerCoordinator = async (message) => {
     console.error('There was a problem with the axios operation:', error);
   }
 }
+
+export const sendReunionSlack = async (message) => {
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/reunion_slack',
+      { text: message },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+    throw error;
+  }
+};
+
+export const sendReunionServicesSlack = async (message) => {
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/reunion_services_slack',
+      { text: message },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+    throw error;
+  }
+};
+
+export const sendFestivallNotifications = async (message) => {
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/festivall_notifications',
+      { text: message },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+    throw error;
+  }
+};
+
+export const sendFestivallDJSlack = async (message) => {
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/festivall_dj_slack',
+      { text: message },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+    throw error;
+  }
+};

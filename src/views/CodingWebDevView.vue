@@ -1,220 +1,138 @@
 <template>
-  <div class="basic">
-    <HelloWorld msg="Coding & Web Development" />
-    <p>
-      Welcome to our Coding & Web Development services page. We offer a wide range of services to
-      meet your needs.
-    </p>
-    <h2>We Provide:</h2>
-    <ul class="services">
-      <li>Web Development</li>
-      <li>Mobile App Development</li>
-      <li>Software Development</li>
-      <li>Database Design & Management</li>
-      <li>Custom Programming</li>
-      <li>API Integration</li>
-      <li>Content Management Systems</li>
-      <li>E-commerce Solutions</li>
-      <li>SEO & Digital Marketing</li>
-      <li>Web Hosting & Domain Registration</li>
-      <li>Technical Support & Maintenance</li>
-    </ul>
-    <br />
-    <h2>We Serve:</h2>
-    <ul class="industry">
-      <li>Individuals</li>
-      <li>Small Businesses</li>
-      <li>Startups</li>
-      <li>Non-profits</li>
-      <li>Corporations</li>
-      <li>Government Agencies</li>
-      <li>Academic Institutions</li>
-      <li>Healthcare Providers</li>
-      <li>Entertainment Industry</li>
-      <li>Real Estate Professionals</li>
-      <li>Legal Firms</li>
-      <li>Financial Institutions</li>
-      <li>Manufacturing Companies</li>
-      <li>Transportation & Logistics</li>
-      <li>Travel & Hospitality</li>
-      <li>Retail & E-commerce</li>
-      <li>Food & Beverage</li>
-      <li>Media & Publishing</li>
-      <li>Technology & Telecom</li>
-      <li>Energy & Utilities</li>
-      <li>Construction & Engineering</li>
-      <li>Education & Training</li>
-      <li>Government & Public Sector</li>
-      <li>Healthcare & Life Sciences</li>
-      <li>Professional Services</li>
-      <li>Financial Services & Insurance</li>
-      <li>Energy & Natural Resources</li>
-      <li>Technology & Telecommunications</li>
-      <li>Media & Entertainment</li>
-      <li>Healthcare & Pharmaceuticals</li>
-      <li>Consumer & Retail</li>
-      <li>Travel & Hospitality</li>
-      <li>Education & Research</li>
-      <li>Government & Public Services</li>
-      <li>Professional Services</li>
-      <li>Non-profit Organizations</li>
-      <li>Other Industries</li>
-    </ul>
-    <br />
-    <h2>We Also Do:</h2>
-    <ul class="additional">
-      <li>Web Scraping</li>
-      <li>Web Automation</li>
-      <li>API Automation</li>
-      <li>Task Automation</li>
-      <li>Process Automation</li>
-      <li>Workflow Automation</li>
-      <li>Automated Notifications</li>
-      <li>Automated Emails & SMS</li>
-    </ul>
-    <div class="contact-form">
-      <h2>Contact Us</h2>
-      Let's talk about your project.<br />Fill out the form below and we'll get back to you as soon
-      as possible.<br /><br />
-      <form @submit.prevent="submitForm">
-        <div>
-          <label for="name">Name:</label>
-          <input type="text" id="name" v-model="form.name" required />
+  <div class="page">
+    <div class="banner">
+      <RouterLink to="/services" class="back-link">← Services</RouterLink>
+      <h1>CODING & WEB DEVELOPMENT</h1>
+      <span></span>
+    </div>
+
+    <div class="content">
+      <p class="intro">We offer a wide range of software and web services to meet your needs — from simple websites to complex custom systems.</p>
+
+      <div class="cards-grid">
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Provide</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in provides" :key="item" @click="setNeeds(item)" :class="{ 'chip-active': form.needs === item }">{{ item }}</span>
+          </div>
         </div>
-        <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" v-model="form.email" required />
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Serve</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in serves" :key="item" @click="setClient(item)" :class="{ 'chip-active': form.client === item }">{{ item }}</span>
+          </div>
         </div>
-        <!-- <div>
-          <label for="phone">Phone:</label>
-          <input type="tel" id="phone" v-model="form.phone" />
-        </div> -->
-        <div>
-          <label for="client">I am/represent a(n):</label>
-          <select id="client" v-model="form.client" required>
-            <option value="individual">individual</option>
-            <option value="small business">small business</option>
-            <option value="startup">startup</option>
-            <option value="non-profit">non-profit</option>
-            <option value="corporation">corporation</option>
-            <option value="government agency">government agency</option>
-            <option value="academic institution">academic institution</option>
-            <option value="healthcare provider">healthcare provider</option>
-            <option value="entertainment industry">entertainment industry</option>
-            <option value="real estate professional">real estate professional</option>
-            <option value="legal firm">legal firm</option>
-            <option value="financial institution">financial institution</option>
-            <option value="manufacturing company">manufacturing company</option>
-            <option value="transportation & logistics">transportation & logistics</option>
-            <option value="travel & hospitality">travel & hospitality</option>
-            <option value="retail & e-commerce">retail & e-commerce</option>
-            <option value="food & beverage">food & beverage</option>
-            <option value="media & publishing">media & publishing</option>
-            <option value="technology & telecom">technology & telecom</option>
-            <option value="energy & utilities">energy & utilities</option>
-            <option value="construction & engineering">construction & engineering</option>
-            <option value="education & training">education & training</option>
-            <option value="government & public sector">government & public sector</option>
-            <option value="healthcare & life sciences">healthcare & life sciences</option>
-            <option value="professional services">professional services</option>
-            <option value="consumer goods & services">consumer goods & services</option>
-            <option value="automotive & aerospace">automotive & aerospace</option>
-            <option value="industrial & manufacturing">industrial & manufacturing</option>
-            <option value="financial services & insurance">financial services & insurance</option>
-            <option value="energy & natural resources">energy & natural resources</option>
-            <option value="technology & telecommunications">technology & telecommunications</option>
-            <option value="media & entertainment">media & entertainment</option>
-            <option value="healthcare & pharmaceuticals">healthcare & pharmaceuticals</option>
-            <option value="consumer & retail">consumer & retail</option>
-            <option value="travel & hospitality">travel & hospitality</option>
-            <option value="education & research">education & research</option>
-            <option value="government & public services">government & public services</option>
-            <option value="professional services">professional services</option>
-            <option value="non-profit organizations">non-profit organizations</option>
-            <option value="other industries">other industries</option>
-          </select>
+        <div class="budget-card">
+          <div class="card-header"><span class="card-title">We Also Do</span></div>
+          <div class="chips">
+            <span class="chip" v-for="item in alsoDoes" :key="item" @click="setNeeds(item)" :class="{ 'chip-active': form.needs === item }">{{ item }}</span>
+          </div>
         </div>
-        <div>
-          <label for="needs">I am looking for:</label>
-          <select id="needs" v-model="form.needs" required>
-            <option value="web development">Web Development</option>
-            <option value="mobile app development">Mobile App Development</option>
-            <option value="software development">Software Development</option>
-            <option value="database design & management">Database Design & Management</option>
-            <option value="custom programming">Custom Programming</option>
-            <option value="API integration">API Integration</option>
-            <option value="content management systems">Content Management Systems</option>
-            <option value="e-commerce solutions">E-commerce Solutions</option>
-            <option value="SEO & digital marketing">SEO & Digital Marketing</option>
-            <option value="web hosting & domain registration">
-              Web Hosting & Domain Registration
-            </option>
-            <option value="technical support & maintenance">Technical Support & Maintenance</option>
-            <option value="web scraping">Web Scraping</option>
-            <option value="web automation">Web Automation</option>
-            <option value="API automation">API Automation</option>
-            <option value="task automation">Task Automation</option>
-            <option value="process automation">Process Automation</option>
-            <option value="workflow automation">Workflow Automation</option>
-            <option value="automated notifications">Automated Notifications</option>
-            <option value="automated emails & SMS">Automated Emails & SMS</option>
-            <option value="other">Other</option>
-          </select>
+      </div>
+
+      <div class="budget-card form-card" ref="contactForm">
+        <div class="card-header">
+          <span class="card-title">Contact Us</span>
+          <span class="card-sub">Let's talk about your project.</span>
         </div>
-        <div>
-          <label for="message">Message:</label>
-          <textarea id="message" v-model="form.message" required></textarea>
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+        <form @submit.prevent="submitForm">
+          <div class="form-section">
+            <label for="name">Name</label>
+            <input type="text" id="name" v-model="form.name" required />
+          </div>
+          <div class="form-section">
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="form.email" required />
+          </div>
+          <div class="form-section">
+            <label for="client">I represent</label>
+            <select id="client" v-model="form.client" required>
+              <option value="" disabled>Select...</option>
+              <option v-for="c in clientTypes" :key="c" :value="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="needs">I need</label>
+            <select id="needs" v-model="form.needs" required>
+              <option value="" disabled>Select...</option>
+              <option v-for="n in needsOptions" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+          <div class="form-section">
+            <label for="message">Message</label>
+            <textarea id="message" v-model="form.message" required></textarea>
+          </div>
+          <button type="submit">SUBMIT</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import HelloWorld from '@/components/HelloWorld.vue'
+import { RouterLink } from 'vue-router'
+import { sendReunionSlack } from '/scripts/notifications.js'
 
 export default {
-  name: 'coding&webdev',
-  components: {
-    HelloWorld
-  },
+  name: 'CodingWebDevView',
+  components: { RouterLink },
   data() {
     return {
-      form: {
-        name: '',
-        email: '',
-        client: '',
-        needs: '',
-        message: ''
-      }
+      form: { name: '', email: '', client: '', needs: '', message: '' },
+      provides: [
+        'Web Development', 'Mobile App Development', 'Software Development',
+        'Database Design & Management', 'Custom Programming', 'API Integration',
+        'Content Management Systems', 'E-commerce Solutions', 'SEO & Digital Marketing',
+        'Web Hosting & Domain Registration', 'Technical Support & Maintenance'
+      ],
+      serves: [
+        'individual', 'small business', 'startup', 'non-profit', 'corporation',
+        'government agency', 'academic institution', 'healthcare provider',
+        'entertainment industry', 'real estate professional', 'legal firm',
+        'financial institution', 'manufacturing company', 'transportation & logistics',
+        'travel & hospitality', 'retail & e-commerce', 'food & beverage',
+        'media & publishing', 'technology & telecom', 'energy & utilities',
+        'construction & engineering', 'education & training', 'other'
+      ],
+      alsoDoes: [
+        'Web Scraping', 'Web Automation', 'API Automation', 'Task Automation',
+        'Process Automation', 'Workflow Automation', 'Automated Notifications',
+        'Automated Emails & SMS'
+      ],
+      clientTypes: [
+        'individual', 'small business', 'startup', 'non-profit', 'corporation',
+        'government agency', 'academic institution', 'healthcare provider',
+        'entertainment industry', 'real estate professional', 'legal firm',
+        'financial institution', 'manufacturing company', 'transportation & logistics',
+        'travel & hospitality', 'retail & e-commerce', 'food & beverage',
+        'media & publishing', 'technology & telecom', 'energy & utilities',
+        'construction & engineering', 'education & training', 'other'
+      ],
+      needsOptions: [
+        'Web Development', 'Mobile App Development', 'Software Development',
+        'Database Design & Management', 'Custom Programming', 'API Integration',
+        'Content Management Systems', 'E-commerce Solutions', 'SEO & Digital Marketing',
+        'Web Hosting & Domain Registration', 'Technical Support & Maintenance',
+        'Web Scraping', 'Web Automation', 'API Automation', 'Task Automation',
+        'Process Automation', 'Workflow Automation', 'Automated Notifications',
+        'Automated Emails & SMS', 'Other'
+      ]
     }
   },
   methods: {
+    setNeeds(item) {
+      this.form.needs = item
+      this.$nextTick(() => this.$refs.contactForm?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    },
+    setClient(item) {
+      this.form.client = item
+      this.$nextTick(() => this.$refs.contactForm?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    },
     async submitForm() {
       try {
-        const response = await axios.post(
-          'https://relayproxy.vercel.app/reunion_slack',
-          {
-            text: `Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nMessage: ${this.form.message}`
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        )
-        if (response.status === 200) {
-          alert('Form submitted successfully!')
-          this.form.name = ''
-          this.form.email = ''
-          this.form.client = ''
-          this.form.needs = ''
-          this.form.message = ''
-        } else {
-          alert('Failed to submit the form.')
-        }
+        await sendReunionSlack(`Name: ${this.form.name}\nEmail: ${this.form.email}\nClient: ${this.form.client}\nNeeds: ${this.form.needs}\nMessage: ${this.form.message}`)
+        alert('Form submitted successfully!')
+        this.form = { name: '', email: '', client: '', needs: '', message: '' }
       } catch (error) {
         console.error('Error submitting form:', error)
         alert('An error occurred while submitting the form.')
@@ -225,67 +143,201 @@ export default {
 </script>
 
 <style scoped>
-.basic {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1f1e22;
+  color: #e0e0e0;
+  padding-bottom: 3rem;
 }
 
-.industry,
-.services,
-.additional {
-  padding: 0;
-  font-weight: bold;
+.banner {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-
-  list-style-type: none;
-}
-li {
-  /* font-weight: bold; */
-  padding: 5px;
-  margin: 3px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  background-color: #333;
+  padding: 0.75rem 1rem;
 }
 
-.contact-form {
+.back-link {
+  font-size: 11px;
+  color: var(--festivall-baby-blue);
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--festivall-baby-blue);
+  margin: 0;
+}
+
+.content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.intro {
+  font-size: 12px;
+  color: #888;
+  margin: 1rem 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background-color: #2a2a2e;
+  margin-bottom: 1px;
+}
+
+.budget-card {
+  background-color: #252528;
+  padding: 0.75rem;
+}
+
+.card-header {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
 }
-form,
-label,
-input,
-textarea,
-select {
-  font-family: Oswald, Helvetica, sans-serif;
-  width: 500px;
-  max-width: 80vw;
-  display: block;
-  margin-bottom: 10px;
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ccc;
 }
-button {
-  background-color: white;
-  width: 100%;
-  max-width: 80vw;
-  display: block;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
+
+.card-sub {
+  font-size: 10px;
+  color: #666;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip {
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #aaa;
+  background-color: #1f1e22;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
-button:hover {
-  background-color: #0080ff;
-  color: white;
+
+.chip:hover {
+  border-color: var(--festivall-baby-blue);
+  color: var(--festivall-baby-blue);
+}
+
+.chip-active {
+  background-color: var(--festivall-baby-blue);
+  color: #000;
+  border-color: var(--festivall-baby-blue);
+}
+
+.form-card {
+  margin-top: 1px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-bottom: 6px;
+}
+
+.form-section label {
+  width: 30%;
+  min-width: 120px;
+  font-size: 11px;
+  font-family: Oswald, Helvetica, sans-serif;
+  padding: 8px 10px;
+  background-color: var(--festivall-baby-blue);
+  color: #000;
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+.form-section input,
+.form-section select,
+.form-section textarea {
+  flex: 1;
+  font-size: 11px;
+  font-family: Oswald, Helvetica, sans-serif;
+  padding: 8px 10px;
+  background-color: #1a1a1d;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  outline: none;
+}
+
+.form-section textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+  border-color: var(--festivall-baby-blue);
+}
+
+.form-section select option {
+  background-color: #252528;
+  color: #e0e0e0;
+}
+
+button[type='submit'] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 0.5rem;
+  background-color: var(--festivall-baby-blue);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button[type='submit']:hover {
+  background-color: #fff;
+}
+
+@media (max-width: 600px) {
+  .form-section {
+    flex-direction: column;
+  }
+  .form-section label {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-width: unset;
+  }
+  .form-section input,
+  .form-section select,
+  .form-section textarea {
+    border-left: 1px solid #444;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
 }
 </style>
