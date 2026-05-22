@@ -9,7 +9,7 @@ export const sendSMS = async (phone, message) => {
   const payload = {
     value1: phone,
     value2: message,
-    value3: '********************\nPowered by Festivall\n********************'
+    value3: '⟢Powered by Festivall⟣'
   };
 
   console.log('Sending SMS payload:', JSON.stringify(payload));
