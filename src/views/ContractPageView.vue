@@ -83,7 +83,11 @@
         One complementary weekend pass for VOLUNTEER*
       </li>
       <li v-if="applicant.applicant_types.includes('Volunteer')">
-        One complementary meal package for each festival day worked
+        <span v-if="applicant.meal_tickets_remaining !== undefined && applicant.meal_packages">
+          {{ applicant.meal_tickets_remaining }} meal ticket{{ applicant.meal_tickets_remaining !== 1 ? 's' : '' }} remaining
+          ({{ (applicant.meal_packages * 2) - applicant.meal_tickets_remaining }} of {{ applicant.meal_packages * 2 }} used)
+        </span>
+        <span v-else>One complementary meal package for each festival day worked</span>
       </li>
       <li v-if="applicant.applicant_types.includes('Workshop')">
         One complementary weekend pass for WORKSHOP*
@@ -94,7 +98,28 @@
       </li>
     </ul>
     * Applicants with multiple roles will only receive one complementary weekend pass.
-    <p v-if="applicant.rates">
+
+    <!-- Structured compensation object -->
+    <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
+      <p v-if="applicant.rates.monetary_amount">
+        <strong>Fee:</strong> {{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}<br />
+        <strong>Balance Due:</strong> no later than 30 days after Event Date unless otherwise specified.
+      </p>
+      <p v-if="applicant.rates.non_monetary">
+        <strong>Additional Compensation:</strong> {{ applicant.rates.non_monetary }}
+      </p>
+      <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff)">
+        <p><strong>Provided Accommodations &amp; Logistics:</strong></p>
+        <ul>
+          <li v-if="applicant.rates.addons.tent">Tent provided on-site</li>
+          <li v-if="applicant.rates.addons.sleeping_bag">Sleeping bag provided on-site</li>
+          <li v-if="applicant.rates.addons.airport_pickup">Airport pickup arranged</li>
+          <li v-if="applicant.rates.addons.airport_dropoff">Airport dropoff arranged</li>
+        </ul>
+      </div>
+    </template>
+    <!-- Legacy string compensation -->
+    <p v-else-if="applicant.rates">
       <strong>Additional Compensation:</strong> {{ applicant.rates
       }}<strong><br />Balance Due:</strong> no later than 30 days after Event Date unless otherwise
       specified in Additional Compensation.
@@ -310,7 +335,9 @@ export default {
           contract_signed: p.contract?.signed === true,
           signature: p.contract?.signature || '',
           signedAt: p.contract?.signedAt || '',
-          rates: p.application?.data?.rates || ''
+          rates: p.application?.data?.rates ?? null,
+          meal_packages: p.order?.meal_packages || 0,
+          meal_tickets_remaining: p.order?.meal_tickets_remaining || 0
         }
         applicant.value = applicantData
         console.log('Loaded from participants_2026:', applicantData)

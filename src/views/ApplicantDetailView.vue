@@ -470,21 +470,60 @@
           >
             <h2>Compensation</h2>
             <div class="compensation-section">
-              <p v-if="applicant.rates" class="current-compensation">
+              <!-- Current rates: structured object -->
+              <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
+                <p v-if="applicant.rates.monetary_amount" class="current-compensation">
+                  <strong>Fee:</strong> {{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
+                </p>
+                <p v-if="applicant.rates.non_monetary" class="current-compensation">
+                  <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
+                </p>
+                <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff)" class="comp-addon-badges">
+                  <span v-if="applicant.rates.addons.tent" class="addon-badge">Tent</span>
+                  <span v-if="applicant.rates.addons.sleeping_bag" class="addon-badge">Sleeping Bag</span>
+                  <span v-if="applicant.rates.addons.airport_pickup" class="addon-badge">Airport Pickup</span>
+                  <span v-if="applicant.rates.addons.airport_dropoff" class="addon-badge">Airport Dropoff</span>
+                </div>
+              </template>
+              <!-- Current rates: legacy string -->
+              <p v-else-if="applicant.rates" class="current-compensation">
                 Current Fee: {{ applicant.rates }}
               </p>
+              <!-- Monetary row -->
+              <div class="comp-monetary-row">
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  v-model="compAmount"
+                  placeholder="Amount"
+                  class="compensation-input"
+                />
+                <select v-model="compCurrency" class="comp-currency-select">
+                  <option value="CAD">CAD</option>
+                  <option value="USD">USD</option>
+                  <option value="JPY">JPY</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="BTC">BTC</option>
+                </select>
+              </div>
+              <!-- Non-monetary -->
               <input
                 type="text"
-                v-model="newCompensation"
-                placeholder="Update compensation..."
+                v-model="compNonMonetary"
+                placeholder="Non-monetary (e.g. weekend pass, accommodations, etc.)"
                 class="compensation-input"
               />
-              <button @click="updateCompensation" class="compensation-btn">
-                Update Compensation
-              </button>
-              <button v-if="applicant.rates" @click="clearCompensation" class="clear-btn">
-                Clear Compensation
-              </button>
+              <!-- Add-ons -->
+              <div class="comp-addons">
+                <label class="addon-toggle"><input type="checkbox" v-model="compAddons.tent" /> Tent</label>
+                <label class="addon-toggle"><input type="checkbox" v-model="compAddons.sleeping_bag" /> Sleeping Bag</label>
+                <label class="addon-toggle"><input type="checkbox" v-model="compAddons.airport_pickup" /> Airport Pickup</label>
+                <label class="addon-toggle"><input type="checkbox" v-model="compAddons.airport_dropoff" /> Airport Dropoff</label>
+              </div>
+              <button @click="updateCompensation" class="compensation-btn">Update Compensation</button>
+              <button v-if="applicant.rates" @click="clearCompensation" class="clear-btn">Clear Compensation</button>
             </div>
           </div>
 
@@ -575,7 +614,11 @@ export default {
     const smsMessage = ref('')
     const emailSubject = ref('')
     const emailBody = ref('')
-    const newCompensation = ref('')
+    const newCompensation = ref('')  // kept for any legacy refs
+    const compAmount = ref('')
+    const compCurrency = ref('CAD')
+    const compNonMonetary = ref('')
+    const compAddons = ref({ tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false })
     const newSettime = ref('')
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
@@ -659,7 +702,7 @@ export default {
             other_requirements: docData.application?.data?.other_requirements || '',
             portfolio_url: docData.application?.data?.portfolio_url || '',
             fixture_type: docData.application?.data?.fixture_type || '',
-            rates: docData.application?.data?.rates || '',
+            rates: docData.application?.data?.rates ?? null,
             statement: docData.application?.data?.statement || '',
             bio: docData.bio || '',
             comments: docData.comments || '',
@@ -851,17 +894,78 @@ export default {
     }
 
     // Compensation Functions
+    const fetchCADEquivalent = async (amount, currency) => {
+      try {
+        if (currency === 'BTC') {
+          const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad')
+          const data = await res.json()
+          return amount * data.bitcoin.cad
+        } else {
+          const res = await fetch('https://open.er-api.com/v6/latest/CAD')
+          const data = await res.json()
+          const rate = data.rates[currency]
+          return rate ? amount / rate : null
+        }
+      } catch {
+        return null
+      }
+    }
+
     const updateCompensation = async () => {
-      if (!newCompensation.value.trim()) {
-        alert('Please enter a compensation amount')
+      const amount = compAmount.value !== '' ? parseFloat(compAmount.value) : null
+      const currency = compCurrency.value || 'CAD'
+      const non_monetary = compNonMonetary.value.trim() || null
+      const addons = { ...compAddons.value }
+      const hasMonetary = amount !== null && !isNaN(amount)
+      const hasAddons = Object.values(addons).some(Boolean)
+
+      if (!hasMonetary && !non_monetary && !hasAddons) {
+        alert('Please fill in at least one compensation field before saving.')
         return
+      }
+      if (hasMonetary && amount <= 0) {
+        alert('Monetary amount must be greater than zero.')
+        return
+      }
+      if (hasMonetary && currency === 'BTC' && amount > 0.1) {
+        if (!confirm(`\u26a0\ufe0f ${amount} BTC is a very large amount. Are you sure?`)) return
+      }
+
+      let warnPrefix = ''
+      let cadHint = ''
+      if (hasMonetary) {
+        if (currency !== 'CAD') {
+          const cad = await fetchCADEquivalent(amount, currency)
+          if (cad !== null) {
+            cadHint = ` (\u2248 $${cad.toLocaleString('en-CA', { maximumFractionDigits: 0 })} CAD)`
+            if (cad >= 5000) warnPrefix = `\u26a0\ufe0f WARNING: \u2248 $${cad.toFixed(0)} CAD equivalent.\n\n`
+          }
+        } else if (amount >= 5000) {
+          warnPrefix = `\u26a0\ufe0f WARNING: $${amount} CAD is a large amount.\n\n`
+        }
+      }
+
+      const parts = []
+      if (hasMonetary) parts.push(`Fee: ${amount} ${currency}${cadHint}`)
+      if (non_monetary) parts.push(`Non-monetary: ${non_monetary}`)
+      if (hasAddons) parts.push(`Add-ons: ${Object.entries(addons).filter(([, v]) => v).map(([k]) => k.replace(/_/g, ' ')).join(', ')}`)
+      if (!confirm(`${warnPrefix}Save compensation?\n\n${parts.join('\n')}`)) return
+
+      const ratesObj = {
+        monetary_amount: hasMonetary ? amount : null,
+        monetary_currency: hasMonetary ? currency : null,
+        non_monetary,
+        addons
       }
 
       try {
         const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
-        await updateDoc(docRef, { 'application.data.rates': newCompensation.value })
-        applicant.value.rates = newCompensation.value
-        newCompensation.value = ''
+        await updateDoc(docRef, { 'application.data.rates': ratesObj })
+        applicant.value.rates = ratesObj
+        compAmount.value = ''
+        compCurrency.value = 'CAD'
+        compNonMonetary.value = ''
+        compAddons.value = { tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false }
         console.log('Compensation updated for:', applicant.value.fullname)
       } catch (error) {
         console.error('Error updating compensation:', error)
@@ -874,6 +978,10 @@ export default {
           const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
           await updateDoc(docRef, { 'application.data.rates': null })
           applicant.value.rates = null
+          compAmount.value = ''
+          compCurrency.value = 'CAD'
+          compNonMonetary.value = ''
+          compAddons.value = { tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false }
           console.log('Compensation cleared for:', applicant.value.fullname)
         } catch (error) {
           console.error('Error clearing compensation:', error)
@@ -1134,6 +1242,10 @@ export default {
       emailSubject,
       emailBody,
       newCompensation,
+      compAmount,
+      compCurrency,
+      compNonMonetary,
+      compAddons,
       newSettime,
       mealTickets,
       confirmPaymentReceived,
@@ -1498,6 +1610,48 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+}
+
+.comp-monetary-row {
+  display: flex;
+  gap: 0.3rem;
+}
+.comp-currency-select {
+  width: 72px;
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #1e1e21;
+  color: white;
+  font-size: 11px;
+}
+.comp-addons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+.addon-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 10px;
+  color: #bbb;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.comp-addon-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+.addon-badge {
+  background: #1e3a1e;
+  color: #7ecb7e;
+  border: 1px solid #2e5a2e;
+  border-radius: 10px;
+  padding: 0.1rem 0.4rem;
+  font-size: 9px;
+  white-space: nowrap;
 }
 
 .settime-section h3 {

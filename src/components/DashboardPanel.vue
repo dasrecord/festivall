@@ -528,28 +528,73 @@
               />
             </div>
             <div v-if="true" class="compensation-section">
-              <input
-                type="text"
-                v-model="applicant.additional_compensation"
-                placeholder="update compensation"
-              />
-              <img
-                @click="
-                  updateCompensation(applicant, applicant.additional_compensation),
-                    (applicant.additional_compensation = '')
-                "
-                :src="compensation_icon"
-                alt="Update Compensation"
-                class="action-icon"
-                style="width: auto; height: 32px"
-              />
-
-              <p v-if="applicant.rates">
-                Fee: {{ applicant.rates }}
-                <button @click="clearCompensation(applicant)">
-                  Clear Compensation
-                </button>
-              </p>
+              <!-- Left: inputs + current display -->
+              <div class="comp-left">
+                <div class="comp-monetary-row">
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    v-model="applicant.comp_amount"
+                    placeholder="Amount"
+                    class="comp-amount-input"
+                  />
+                  <select v-model="applicant.comp_currency" class="comp-currency-select">
+                    <option value="CAD">CAD</option>
+                    <option value="USD">USD</option>
+                    <option value="JPY">JPY</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="BTC">BTC</option>
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  v-model="applicant.comp_non_monetary"
+                  placeholder="Non-monetary (e.g. weekend pass, accommodations, etc.)"
+                  class="comp-text-input"
+                />
+                <div class="comp-addons">
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_tent" /> Tent</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_sleeping_bag" /> Sleeping Bag</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_airport_pickup" /> Airport Pickup</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_airport_dropoff" /> Airport Dropoff</label>
+                </div>
+                <!-- Current display: structured object -->
+                <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
+                  <p v-if="applicant.rates.monetary_amount" class="comp-current-line">
+                    <strong>Fee:</strong> {{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
+                  </p>
+                  <p v-if="applicant.rates.non_monetary" class="comp-current-line">
+                    <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
+                  </p>
+                  <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff)" class="comp-addon-badges">
+                    <span v-if="applicant.rates.addons.tent" class="addon-badge">Tent</span>
+                    <span v-if="applicant.rates.addons.sleeping_bag" class="addon-badge">Sleeping Bag</span>
+                    <span v-if="applicant.rates.addons.airport_pickup" class="addon-badge">Airport Pickup</span>
+                    <span v-if="applicant.rates.addons.airport_dropoff" class="addon-badge">Airport Dropoff</span>
+                  </div>
+                </template>
+                <!-- Current display: legacy string -->
+                <template v-else-if="applicant.rates">
+                  <p class="comp-current-line"><strong>Fee:</strong> {{ applicant.rates }}</p>
+                </template>
+              </div>
+              <!-- Right: save + clear -->
+              <div class="comp-right">
+                <img
+                  @click="updateCompensation(applicant)"
+                  :src="compensation_icon"
+                  alt="Update Compensation"
+                  class="action-icon"
+                  style="width: auto; height: 32px; cursor: pointer"
+                />
+                <button
+                  v-if="applicant.rates"
+                  @click="clearCompensation(applicant)"
+                  class="comp-clear-btn"
+                >Clear</button>
+              </div>
             </div>
 
             <div
@@ -937,7 +982,7 @@ export default {
                 other_requirements: docData.application?.data?.other_requirements || '',
                 portfolio_url: docData.application?.data?.portfolio_url || '',
                 fixture_type: docData.application?.data?.fixture_type || '',
-                rates: docData.application?.data?.rates || '',
+                rates: docData.application?.data?.rates ?? null,
                 statement: docData.application?.data?.statement || '',
                 // Contract and order data (if exists)
                 contract_signed: docData.contract?.signed || false,
@@ -974,7 +1019,14 @@ export default {
           .map((applicant) => ({
             ...applicant,
             message: '',
-            isUpdating: false // Track individual loading states
+            isUpdating: false, // Track individual loading states
+            comp_amount: '',
+            comp_currency: 'CAD',
+            comp_non_monetary: '',
+            comp_tent: false,
+            comp_sleeping_bag: false,
+            comp_airport_pickup: false,
+            comp_airport_dropoff: false
           }))
           .sort((a, b) => {
             if (a.url && !b.url) return -1
@@ -1237,16 +1289,82 @@ export default {
 
     const router = useRouter()
 
-    const updateCompensation = async (applicant, additional_compensation) => {
+    const fetchCADEquivalent = async (amount, currency) => {
+      try {
+        if (currency === 'BTC') {
+          const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad')
+          const data = await res.json()
+          return amount * data.bitcoin.cad
+        } else {
+          const res = await fetch('https://open.er-api.com/v6/latest/CAD')
+          const data = await res.json()
+          const rate = data.rates[currency]
+          return rate ? amount / rate : null
+        }
+      } catch {
+        return null
+      }
+    }
+
+    const updateCompensation = async (applicant) => {
+      const rawAmount = applicant.comp_amount
+      const amount = rawAmount !== '' && rawAmount !== null && rawAmount !== undefined
+        ? parseFloat(rawAmount) : null
+      const currency = applicant.comp_currency || 'CAD'
+      const non_monetary = (applicant.comp_non_monetary || '').trim() || null
+      const addons = {
+        tent: !!applicant.comp_tent,
+        sleeping_bag: !!applicant.comp_sleeping_bag,
+        airport_pickup: !!applicant.comp_airport_pickup,
+        airport_dropoff: !!applicant.comp_airport_dropoff
+      }
+      const hasMonetary = amount !== null && !isNaN(amount)
+      const hasAddons = Object.values(addons).some(Boolean)
+
+      if (!hasMonetary && !non_monetary && !hasAddons) {
+        alert('Please fill in at least one compensation field before saving.')
+        return
+      }
+      if (hasMonetary && amount <= 0) {
+        alert('Monetary amount must be greater than zero.')
+        return
+      }
+      if (hasMonetary && currency === 'BTC' && amount > 0.1) {
+        if (!confirm(`\u26a0\ufe0f ${amount} BTC is a very large amount. Are you sure?`)) return
+      }
+
+      let warnPrefix = ''
+      let cadHint = ''
+      if (hasMonetary) {
+        if (currency !== 'CAD') {
+          const cad = await fetchCADEquivalent(amount, currency)
+          if (cad !== null) {
+            cadHint = ` (\u2248 $${cad.toLocaleString('en-CA', { maximumFractionDigits: 0 })} CAD)`
+            if (cad >= 5000) warnPrefix = `\u26a0\ufe0f WARNING: \u2248 $${cad.toFixed(0)} CAD equivalent.\n\n`
+          }
+        } else if (amount >= 5000) {
+          warnPrefix = `\u26a0\ufe0f WARNING: $${amount} CAD is a large amount.\n\n`
+        }
+      }
+
+      const parts = []
+      if (hasMonetary) parts.push(`Fee: ${amount} ${currency}${cadHint}`)
+      if (non_monetary) parts.push(`Non-monetary: ${non_monetary}`)
+      if (hasAddons) parts.push(`Add-ons: ${Object.entries(addons).filter(([, v]) => v).map(([k]) => k.replace(/_/g, ' ')).join(', ')}`)
+      if (!confirm(`${warnPrefix}Save compensation?\n\n${parts.join('\n')}`)) return
+
+      const ratesObj = {
+        monetary_amount: hasMonetary ? amount : null,
+        monetary_currency: hasMonetary ? currency : null,
+        non_monetary,
+        addons
+      }
+
+      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
-        await updateDoc(docRef, { 'application.data.rates': additional_compensation })
-
-        const update = (a) =>
-          a.id === applicant.id
-            ? { ...a, rates: additional_compensation, additional_compensation: '' }
-            : a
-
+        await updateDoc(docRef, { 'application.data.rates': ratesObj })
+        const update = (a) => a.id === applicant.id ? { ...a, rates: ratesObj, ...resetComp } : a
         applicants.value = applicants.value.map(update)
         filteredApplicants.value = filteredApplicants.value.map(update)
       } catch (error) {
@@ -1255,13 +1373,11 @@ export default {
     }
 
     const clearCompensation = async (applicant) => {
+      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
-        await updateDoc(docRef, { 'application.data.rates': '' })
-
-        const update = (a) =>
-          a.id === applicant.id ? { ...a, rates: '', additional_compensation: '' } : a
-
+        await updateDoc(docRef, { 'application.data.rates': null })
+        const update = (a) => a.id === applicant.id ? { ...a, rates: null, ...resetComp } : a
         applicants.value = applicants.value.map(update)
         filteredApplicants.value = filteredApplicants.value.map(update)
       } catch (error) {
@@ -2205,15 +2321,9 @@ button.active-filter:hover {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.9);
   transition: transform 0.3s ease;
   width: 100%;
-  max-width: 350px;
-  height: 350px;
-  align-items: center;
-  text-align: center;
-  overflow: hidden;
   position: relative;
-  overflow-y: auto;
-  padding: 0.5rem;
   border: 1px solid var(--festivall-baby-blue);
+  overflow: visible;
 }
 
 .detail-link-icon {
@@ -2241,7 +2351,6 @@ button.active-filter:hover {
 .preview-section,
 .ticket-section,
 .message-section,
-.compensation-section,
 .settime-section,
 .contract-section {
   display: grid;
@@ -2250,13 +2359,9 @@ button.active-filter:hover {
   margin-top: 0.5rem;
   padding: 0.5rem;
   border-radius: 10px;
-  /* background-color: #444; */
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
   align-items: center;
-  max-width: 350px;
-  height: 100%;
-  overflow: hidden;
 }
 .checkedin-section,
 .revenue-section,
@@ -2821,5 +2926,114 @@ a {
 
 .card-restore-btn:hover {
   background-color: #546e7a !important;
+}
+
+/* ── Compensation section ─────────────────────────────────────────────────── */
+.compensation-section {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid var(--festivall-baby-blue);
+  width: 100%;
+  align-items: start;
+}
+.comp-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.comp-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  padding-top: 0.15rem;
+}
+.comp-monetary-row {
+  display: flex;
+  gap: 0.3rem;
+}
+.comp-amount-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1a1a1d;
+  color: white;
+  font-size: 0.8rem;
+}
+.comp-currency-select {
+  width: 70px;
+  padding: 0.3rem 0.2rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1a1a1d;
+  color: white;
+  font-size: 0.8rem;
+}
+.comp-text-input {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #1a1a1d;
+  color: white;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+.comp-addons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+}
+.addon-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  color: #ccc;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.comp-current-line {
+  font-size: 0.8rem;
+  margin: 0;
+  color: #e0e0e0;
+}
+.comp-addon-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.1rem;
+}
+.addon-badge {
+  background: #2a3a2a;
+  color: #7ecb7e;
+  border: 1px solid #3d5a3d;
+  border-radius: 12px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.comp-clear-btn {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #c0392b;
+  background: transparent;
+  color: #e74c3c;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.1rem;
+}
+.comp-clear-btn:hover {
+  background: #c0392b;
+  color: white;
 }
 </style>

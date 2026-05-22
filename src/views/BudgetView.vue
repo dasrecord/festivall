@@ -86,13 +86,22 @@
         <div class="budget-card">
           <div class="card-header">
             <span class="card-title">Artists</span>
-            <span class="card-badge red">{{ fmtCAD(artistMonetaryTotal) }}</span>
+            <span class="card-badge red">
+              {{ fmtCAD(artistMonetaryTotal) }}
+              <span v-if="artistsNonCAD.length" class="non-cad-note">+{{ artistsNonCAD.length }} non-CAD</span>
+            </span>
           </div>
 
           <div class="section-label">Monetary</div>
           <div v-for="a in artistsMonetary" :key="a.id" class="line-item">
             <span class="line-name">{{ a.roles?.act_name || a.contact?.fullname }}</span>
-            <span class="line-amount red">{{ fmtCAD(a.parsedAmount) }}</span>
+            <div class="line-right">
+              <span class="line-amount red">{{ fmtAmount(a.parsedAmount, a.parsedCurrency) }}</span>
+              <span v-if="getAddons(a.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
+              <span v-if="getAddons(a.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
+              <span v-if="getAddons(a.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YYZ</span>
+              <span v-if="getAddons(a.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YYZ</span>
+            </div>
           </div>
           <div v-if="!artistsMonetary.length" class="empty-row">None set</div>
 
@@ -101,7 +110,7 @@
           <div class="section-label">Non-Monetary</div>
           <div v-for="a in artistsNonMonetary" :key="a.id" class="line-item">
             <span class="line-name">{{ a.roles?.act_name || a.contact?.fullname }}</span>
-            <span class="line-meta inkind">{{ a.application?.data?.rates }}</span>
+            <span class="line-meta inkind">{{ getNonMonetary(a.application?.data?.rates) }}</span>
           </div>
           <div v-if="!artistsNonMonetary.length" class="empty-row">None set</div>
         </div>
@@ -110,14 +119,23 @@
         <div class="budget-card">
           <div class="card-header">
             <span class="card-title">Staff</span>
-            <span class="card-badge red">{{ fmtCAD(staffMonetaryTotal) }}</span>
+            <span class="card-badge red">
+              {{ fmtCAD(staffMonetaryTotal) }}
+              <span v-if="staffNonCAD.length" class="non-cad-note">+{{ staffNonCAD.length }} non-CAD</span>
+            </span>
           </div>
 
           <div class="section-label">Monetary</div>
           <div v-for="s in staffMonetary" :key="s.id" class="line-item">
             <span class="line-name">{{ s.contact?.fullname || s.id }}</span>
             <span class="line-meta">{{ s.roles?.volunteer_type }}</span>
-            <span class="line-amount red">{{ fmtCAD(s.parsedAmount) }}</span>
+            <div class="line-right">
+              <span class="line-amount red">{{ fmtAmount(s.parsedAmount, s.parsedCurrency) }}</span>
+              <span v-if="getAddons(s.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
+              <span v-if="getAddons(s.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
+              <span v-if="getAddons(s.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YYZ</span>
+              <span v-if="getAddons(s.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YYZ</span>
+            </div>
           </div>
           <div v-if="!staffMonetary.length" class="empty-row">None set</div>
 
@@ -127,7 +145,7 @@
           <div v-for="s in staffNonMonetary" :key="s.id" class="line-item">
             <span class="line-name">{{ s.contact?.fullname || s.id }}</span>
             <span class="line-meta">{{ s.roles?.volunteer_type }}</span>
-            <span class="line-meta inkind">{{ s.application?.data?.rates }}</span>
+            <span class="line-meta inkind">{{ getNonMonetary(s.application?.data?.rates) }}</span>
           </div>
           <div v-if="!staffNonMonetary.length" class="empty-row">None set</div>
         </div>
@@ -305,14 +323,48 @@ const totalRevenue = computed(() =>
 )
 
 // ── Compensation helpers ──────────────────────────────────────────────────────
-const parseAmount = (ratesStr) => {
-  if (!ratesStr) return null
-  const match = String(ratesStr).match(/\$?\s*([\d,]+(?:\.\d{1,2})?)/)
+const parseAmountFromString = (str) => {
+  if (!str) return null
+  const match = String(str).match(/\$?\s*([\d,]+(?:\.\d{1,2})?)/)
   if (!match) return null
   return parseFloat(match[1].replace(/,/g, ''))
 }
 
-const isMonetary = (ratesStr) => parseAmount(ratesStr) !== null
+const parseAmount = (rates) => {
+  if (!rates) return null
+  if (typeof rates === 'object') return rates.monetary_amount > 0 ? rates.monetary_amount : null
+  return parseAmountFromString(rates)
+}
+
+const parseCurrency = (rates) => {
+  if (!rates) return 'CAD'
+  if (typeof rates === 'object') return rates.monetary_currency || 'CAD'
+  return 'CAD'
+}
+
+const isMonetary = (rates) => parseAmount(rates) !== null
+
+const getNonMonetary = (rates) => {
+  if (!rates) return null
+  if (typeof rates === 'object') return rates.non_monetary || null
+  if (typeof rates === 'string') return rates
+  return null
+}
+
+const getAddons = (rates) => {
+  if (!rates || typeof rates !== 'object') return {}
+  return rates.addons || {}
+}
+
+const fmtAmount = (amount, currency) => {
+  if (!amount) return ''
+  if (currency === 'BTC') return `${amount} BTC`
+  if (currency === 'JPY') return `\xa5${Number(amount).toLocaleString('en-CA', { maximumFractionDigits: 0 })} JPY`
+  if (currency === 'EUR') return `\u20ac${Number(amount).toLocaleString('en-CA', { maximumFractionDigits: 2 })} EUR`
+  if (currency === 'GBP') return `\xa3${Number(amount).toLocaleString('en-CA', { maximumFractionDigits: 2 })} GBP`
+  if (currency === 'USD') return `$${Number(amount).toLocaleString('en-CA', { maximumFractionDigits: 2 })} USD`
+  return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(amount)
+}
 
 // ── Artists ───────────────────────────────────────────────────────────────────
 // Deduplicate participants for compensation lists
@@ -345,7 +397,7 @@ const uniqueCompensated = computed(() => {
 const artistsMonetary = computed(() =>
   uniqueCompensated.value
     .filter((a) => (a.roles?.applicant_types || []).includes('Artist') && isMonetary(a.application?.data?.rates))
-    .map((a) => ({ ...a, parsedAmount: parseAmount(a.application.data.rates) }))
+    .map((a) => ({ ...a, parsedAmount: parseAmount(a.application.data.rates), parsedCurrency: parseCurrency(a.application.data.rates) }))
 )
 
 const artistsNonMonetary = computed(() =>
@@ -356,7 +408,7 @@ const artistsNonMonetary = computed(() =>
 const staffMonetary = computed(() =>
   uniqueCompensated.value
     .filter((s) => (s.roles?.applicant_types || []).includes('Volunteer') && isMonetary(s.application?.data?.rates) && !(s.roles?.applicant_types || []).includes('Artist'))
-    .map((s) => ({ ...s, parsedAmount: parseAmount(s.application.data.rates) }))
+    .map((s) => ({ ...s, parsedAmount: parseAmount(s.application.data.rates), parsedCurrency: parseCurrency(s.application.data.rates) }))
 )
 
 const staffNonMonetary = computed(() =>
@@ -365,12 +417,15 @@ const staffNonMonetary = computed(() =>
 )
 
 const artistMonetaryTotal = computed(() =>
-  artistsMonetary.value.reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
+  artistsMonetary.value.filter((a) => a.parsedCurrency === 'CAD').reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
 )
 
 const staffMonetaryTotal = computed(() =>
-  staffMonetary.value.reduce((sum, s) => sum + (s.parsedAmount || 0), 0)
+  staffMonetary.value.filter((s) => s.parsedCurrency === 'CAD').reduce((sum, s) => sum + (s.parsedAmount || 0), 0)
 )
+
+const artistsNonCAD = computed(() => artistsMonetary.value.filter((a) => a.parsedCurrency !== 'CAD'))
+const staffNonCAD = computed(() => staffMonetary.value.filter((s) => s.parsedCurrency !== 'CAD'))
 
 // ── Manual budget items ───────────────────────────────────────────────────────
 const itemsByCategory = (cat) => budgetItems.value.filter((i) => i.category === cat)
@@ -679,5 +734,24 @@ h1 {
   .summary-amount {
     font-size: 13px;
   }
+}
+
+.line-right {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: auto;
+}
+.addon-tag {
+  font-size: 12px;
+  opacity: 0.75;
+  cursor: default;
+}
+.non-cad-note {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  color: #aaa;
+  margin-top: 1px;
 }
 </style>
