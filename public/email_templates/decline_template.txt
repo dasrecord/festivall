@@ -2,13 +2,11 @@ Hello {name},
 
 Thank you so much for applying to Reunion 2026 as a {roles}.
 
-After careful consideration, we regret to inform you that we are unable to accommodate your application this year. This was a very difficult decision — we received an overwhelming number of talented applicants, and the competition was incredibly strong.{reason}
+After careful consideration, we regret to inform you that we are unable to accommodate your application this year. {reason}
 
 We truly appreciate your interest and the time you took to apply. We hope you will consider applying again in the future, and we look forward to the possibility of working together at a future Reunion.
 
 Warm regards,
 The Reunion Team
 
-********************
-Powered by Festivall
-********************
+⟢Powered by Festivall⟣

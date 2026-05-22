@@ -315,6 +315,12 @@
               reunion@festivall.ca
             </a>
           </h3>
+          <button
+            v-if="order.ticket_quantity > 0 && order.paid"
+            @click="showEntranceActivityModal = false; showTransferModal = true"
+          >
+            🎫 Transfer Ticket
+          </button>
           <button @click="showEntranceActivityModal = false">Close</button>
         </div>
       </div>
@@ -661,6 +667,71 @@
         </div>
       </div>
 
+      <!-- Ticket Transfer Modal -->
+      <div v-if="showTransferModal" class="modal" @click.self="showTransferModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-close" @click="showTransferModal = false"></div>
+          <img
+            class="festivall-emblem"
+            :src="festivall_emblem_white"
+            style="height: 64px; width: auto"
+            alt="Festivall Emblem"
+          />
+          <img
+            :src="ticket_icon"
+            style="height: 64px; width: auto; margin: 0"
+            alt="Ticket Icon"
+          />
+          <h2>Transfer Ticket</h2>
+          <h3>
+            👤 <strong style="color: orange">{{ order.fullname }}</strong><br />
+            🎫 Available to transfer: <strong style="color: orange">{{ order.ticket_quantity }}</strong>
+          </h3>
+          <div style="width:100%;text-align:left;">
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Recipient Full Name:</label>
+            <input
+              type="text"
+              v-model="transferForm.recipientFullname"
+              placeholder="Jane Smith"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Recipient Email:</label>
+            <input
+              type="email"
+              v-model="transferForm.recipientEmail"
+              placeholder="jane@example.com"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Recipient Phone:</label>
+            <input
+              type="tel"
+              v-model="transferForm.recipientPhone"
+              placeholder="+1 (555) 555-5555"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Recipient ID_CODE <span style="color:#aaa;font-size:0.8rem;">(optional — if they already have one)</span>:</label>
+            <input
+              type="text"
+              v-model="transferForm.recipientIdCode"
+              placeholder="e.g. abc12"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+            <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Number of Tickets to Transfer:</label>
+            <input
+              type="number"
+              v-model.number="transferForm.nTickets"
+              :min="1"
+              :max="order.ticket_quantity"
+              style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;"
+            />
+          </div>
+          <button @click="submitTransfer" :disabled="isTransferSubmitting">
+            {{ isTransferSubmitting ? 'Transferring...' : '🎫 Confirm Transfer' }}
+          </button>
+          <button @click="showTransferModal = false" style="background:transparent;color:white;border-color:white;margin-top:0.5rem;">Cancel</button>
+        </div>
+      </div>
+
       <!-- Ad Hoc Meal Order Modal -->
       <div v-if="showAdHocMealModal" class="modal" @click.self="showAdHocMealModal = false">
         <div class="modal-content" @click.stop>
@@ -832,6 +903,7 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where, updateDoc, arrayUnion } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
+import { transferTicket } from '@/composables/useTicketTransfer'
 import { reunion_db, festivall_auth } from '@/firebase'
 import QRCode from 'qrcode'
 import axios from 'axios'
@@ -897,6 +969,9 @@ export default {
     const showVolunteerShiftsModal = ref(false)
     const showAdHocMealModal = ref(false)
     const isAdHocSubmitting = ref(false)
+    const showTransferModal = ref(false)
+    const isTransferSubmitting = ref(false)
+    const transferForm = ref({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const btcRate = ref(0)
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
     const pendingMealPurchases = ref([])
@@ -978,7 +1053,7 @@ export default {
         await axios.post('https://relayproxy.vercel.app/sms', {
           value1: order.value.phone,
           value2: instructions,
-          value3: 'Powered by Festivall'
+          value3: '⟢Powered by Festivall⟣'
         }, { headers: { 'Content-Type': 'application/json' } })
 
         // Email
@@ -1023,6 +1098,39 @@ export default {
         alert('Something went wrong. Please try again or contact the Food Team.')
       } finally {
         isAdHocSubmitting.value = false
+      }
+    }
+
+    const submitTransfer = async () => {
+      if (isTransferSubmitting.value) return
+      const { recipientFullname, recipientEmail, recipientPhone, recipientIdCode, nTickets } = transferForm.value
+      if (!recipientFullname.trim()) { alert('Please enter the recipient\'s full name.'); return }
+      if (!recipientEmail.trim()) { alert('Please enter the recipient\'s email address.'); return }
+      if (!recipientPhone.trim()) { alert('Please enter the recipient\'s phone number.'); return }
+      if (!nTickets || nTickets < 1) { alert('Please enter at least 1 ticket to transfer.'); return }
+      if (nTickets > order.value.ticket_quantity) { alert(`You only have ${order.value.ticket_quantity} ticket(s) to transfer.`); return }
+      if (!confirm(`Transfer ${nTickets} ticket(s) to ${recipientFullname.trim()}?`)) return
+      try {
+        isTransferSubmitting.value = true
+        await transferTicket({
+          originalIdCode: order.value.id_code,
+          fromName: order.value.fullname,
+          recipientFullname,
+          recipientEmail,
+          recipientPhone,
+          recipientIdCode: recipientIdCode?.trim() || '',
+          nTickets: Number(nTickets),
+          originalOrder: order.value
+        })
+        order.value.ticket_quantity = order.value.ticket_quantity - Number(nTickets)
+        showTransferModal.value = false
+        transferForm.value = { recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 }
+        alert(`Transfer complete! ${recipientFullname.trim()} has been notified by email and SMS.`)
+      } catch (err) {
+        console.error('Transfer error:', err)
+        alert(err.message || 'Transfer failed. Please try again.')
+      } finally {
+        isTransferSubmitting.value = false
       }
     }
 
@@ -1340,6 +1448,10 @@ export default {
       showVolunteerShiftsModal,
       showAdHocMealModal,
       isAdHocSubmitting,
+      showTransferModal,
+      isTransferSubmitting,
+      transferForm,
+      submitTransfer,
       btcRate,
       adHocMealForm,
       pendingMealPurchases,

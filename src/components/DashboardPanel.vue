@@ -1,5 +1,72 @@
 <template>
   <div class="dashboard">
+    <!-- Ticket Transfer Modal -->
+    <div
+      v-if="showTransferModal"
+      class="loading-overlay"
+      style="z-index:9999;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;"
+      @click.self="showTransferModal = false"
+    >
+      <div style="background:#1f1e22;border:1px solid #4a90d9;border-radius:12px;padding:2rem;max-width:480px;width:90%;color:white;">
+        <h2 style="margin-top:0;">\ud83c\udfab Transfer Ticket</h2>
+        <p v-if="transferTargetApplicant" style="color:orange;">
+          From: <strong>{{ transferTargetApplicant.contact?.fullname || transferTargetApplicant.id_code }}</strong>
+          &nbsp;|&nbsp; Available: <strong>{{ transferTargetApplicant.ticket_quantity }}</strong>
+        </p>
+        <label style="display:block;margin-bottom:4px;font-size:0.9rem;">Recipient Full Name:</label>
+        <input
+          type="text"
+          v-model="transferForm.recipientFullname"
+          placeholder="Jane Smith"
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #4a90d9;background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;box-sizing:border-box;"
+        />
+        <label style="display:block;margin-bottom:4px;font-size:0.9rem;">Recipient Email:</label>
+        <input
+          type="email"
+          v-model="transferForm.recipientEmail"
+          placeholder="jane@example.com"
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #4a90d9;background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;box-sizing:border-box;"
+        />
+        <label style="display:block;margin-bottom:4px;font-size:0.9rem;">Recipient Phone:</label>
+        <input
+          type="tel"
+          v-model="transferForm.recipientPhone"
+          placeholder="+1 (555) 555-5555"
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #4a90d9;background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;box-sizing:border-box;"
+        />
+        <label style="display:block;margin-bottom:4px;font-size:0.9rem;">Recipient ID_CODE <span style="color:#aaa;font-size:0.8rem;">(optional)</span>:</label>
+        <input
+          type="text"
+          v-model="transferForm.recipientIdCode"
+          placeholder="e.g. abc12"
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #4a90d9;background:#111;color:white;font-size:1rem;margin-bottom:0.75rem;box-sizing:border-box;"
+        />
+        <label style="display:block;margin-bottom:4px;font-size:0.9rem;">Number of Tickets:</label>
+        <input
+          type="number"
+          v-model.number="transferForm.nTickets"
+          :min="1"
+          :max="transferTargetApplicant ? transferTargetApplicant.ticket_quantity : 1"
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #4a90d9;background:#111;color:white;font-size:1rem;margin-bottom:1rem;box-sizing:border-box;"
+        />
+        <div style="display:flex;gap:0.5rem;">
+          <button
+            @click="submitAdminTransfer"
+            :disabled="isTransferSubmitting"
+            style="background-color:#4a90d9;flex:1;"
+          >
+            {{ isTransferSubmitting ? 'Transferring...' : '\ud83c\udfab Confirm Transfer' }}
+          </button>
+          <button
+            @click="showTransferModal = false"
+            style="background:transparent;color:white;border:1px solid white;flex:1;"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add loading overlay -->
     <div v-if="loading" class="loading-overlay">
       <div class="spinner"></div>
@@ -338,6 +405,13 @@
 
                 <button @click="revokeTicket(applicant.id_code)" style="background-color: red">
                   Revoke Ticket</button
+                >
+                <button
+                  v-if="applicant.ticket_quantity > 0"
+                  @click="openTransferModal(applicant)"
+                  style="background-color: #4a90d9; margin-top: 4px"
+                >
+                  Transfer Ticket</button
                 ><br />
               </p>
               <p v-else style="color: red; font-size: large">
@@ -619,7 +693,8 @@
 
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, setDoc, query, where } from 'firebase/firestore'
+import { transferTicket } from '@/composables/useTicketTransfer'
 import { reunion_db, festivall_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 import mixTrack_icon from '@/assets/images/icons/mix_track.png'
@@ -996,6 +1071,11 @@ export default {
 
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
+    const transferEmailBody = ref('')
+    const showTransferModal = ref(false)
+    const isTransferSubmitting = ref(false)
+    const transferTargetApplicant = ref(null)
+    const transferForm = reactive({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const declineEmailBody = ref('')
 
     const loadDeclineTemplate = () => {
@@ -1084,6 +1164,75 @@ export default {
         .catch((error) => {
           console.error('Error loading email template:', error)
         })
+    }
+
+    const loadTransferTemplate = () => {
+      fetch('/email_templates/ticket_transfer_template.txt')
+        .then((response) => response.text())
+        .then((text) => {
+          transferEmailBody.value = text
+        })
+        .catch((error) => {
+          console.error('Error loading transfer email template:', error)
+        })
+    }
+
+    const openTransferModal = (applicant) => {
+      transferTargetApplicant.value = applicant
+      transferForm.recipientFullname = ''
+      transferForm.recipientEmail = ''
+      transferForm.recipientPhone = ''
+      transferForm.recipientIdCode = ''
+      transferForm.nTickets = 1
+      showTransferModal.value = true
+    }
+
+    const submitAdminTransfer = async () => {
+      if (isTransferSubmitting.value) return
+      const applicant = transferTargetApplicant.value
+      if (!applicant) return
+      const { recipientFullname, recipientEmail, recipientPhone, recipientIdCode, nTickets } = transferForm
+      if (!recipientFullname.trim()) { alert('Please enter the recipient\'s full name.'); return }
+      if (!recipientEmail.trim()) { alert('Please enter the recipient\'s email address.'); return }
+      if (!recipientPhone.trim()) { alert('Please enter the recipient\'s phone number.'); return }
+      if (!nTickets || nTickets < 1) { alert('Please enter at least 1 ticket to transfer.'); return }
+      if (nTickets > applicant.ticket_quantity) { alert(`This participant only has ${applicant.ticket_quantity} ticket(s) to transfer.`); return }
+      if (!confirm(`Transfer ${nTickets} ticket(s) from ${applicant.contact?.fullname || applicant.id_code} to ${recipientFullname.trim()}?`)) return
+      try {
+        isTransferSubmitting.value = true
+        await transferTicket({
+          originalIdCode: applicant.id_code,
+          fromName: applicant.contact?.fullname || applicant.id_code,
+          recipientFullname,
+          recipientEmail,
+          recipientPhone,
+          recipientIdCode: recipientIdCode?.trim() || '',
+          nTickets: Number(nTickets),
+          originalOrder: applicant
+        })
+        // Update local state
+        const updated = applicants.value.map((a) => {
+          if (a.id_code === applicant.id_code) {
+            return { ...a, ticket_quantity: a.ticket_quantity - Number(nTickets) }
+          }
+          return a
+        })
+        applicants.value = updated
+        filteredApplicants.value = filteredApplicants.value.map((a) => {
+          if (a.id_code === applicant.id_code) {
+            return { ...a, ticket_quantity: a.ticket_quantity - Number(nTickets) }
+          }
+          return a
+        })
+        showTransferModal.value = false
+        transferTargetApplicant.value = null
+        alert(`Transfer complete! ${recipientFullname.trim()} has been notified by email and SMS.`)
+      } catch (err) {
+        console.error('Transfer error:', err)
+        alert(err.message || 'Transfer failed. Please try again.')
+      } finally {
+        isTransferSubmitting.value = false
+      }
     }
 
     const router = useRouter()
@@ -1529,6 +1678,7 @@ export default {
       loadApplicants('participants_2026', true)
       loadContractDeliveryTemplate()
       loadTicketDeliveryTemplate()
+      loadTransferTemplate()
       loadDeclineTemplate()
     })
 
@@ -1923,6 +2073,13 @@ export default {
       remindPayment,
       confirmPaymentReceived,
       revokeTicket,
+      openTransferModal,
+      submitAdminTransfer,
+      showTransferModal,
+      isTransferSubmitting,
+      transferTargetApplicant,
+      transferForm,
+      transferEmailBody,
       previewTicket,
       mixTrack_icon,
       contract_icon,
