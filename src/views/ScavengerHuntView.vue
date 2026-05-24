@@ -42,8 +42,9 @@
         </span>
       </div>
       <div class="nav-score" v-if="showFeedback">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
-      <div class="nav-hints" v-if="Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br />{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
+      <div class="nav-hints" v-if="difficulty === 'senior' && Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br />{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
       <button v-if="difficulty === 'senior'" class="leaderboard-link-btn nav-toolkit-btn" @click="viewingToolkit = true">🧰</button>
+      <button class="leaderboard-link-btn nav-map-btn" @click="$router.push({ path: '/reunionmap', query: id_code ? { id_code } : {} })">🗺️</button>
       <button class="leaderboard-link-btn nav-leaderboard-btn" @click="openLeaderboard">🏆</button>
     </div>
 
@@ -1139,6 +1140,16 @@ button:disabled {
 }
 
 .nav-toolkit-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nav-map-btn {
   margin-top: 0;
   width: auto;
   padding: 8px 6px;
