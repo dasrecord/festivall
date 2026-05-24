@@ -32,8 +32,7 @@
           class="nav-dot"
           :class="{
             current: currentQuestion === index,
-            completed: feedback[index] === 'correct',
-            attempted: answers[index] && feedback[index] !== 'correct',
+            completed: answers[index] && question.type !== 'information',
             information: question.type === 'information'
           }"
           @click="goToQuestion(index)"
@@ -42,7 +41,11 @@
           {{ question.type === 'information' ? '' : getQuestionNumber(index) || '?' }}
         </span>
       </div>
-      <div class="nav-score">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+      <div class="nav-score" v-if="showFeedback">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
+      <div class="nav-hints" v-if="difficulty === 'senior' && Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br />{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
+      <button v-if="difficulty === 'senior'" class="leaderboard-link-btn nav-toolkit-btn" @click="viewingToolkit = true">🧰</button>
+      <button class="leaderboard-link-btn nav-map-btn" @click="$router.push({ path: '/reunionmap', query: id_code ? { id_code } : {} })">🗺️</button>
+      <button class="leaderboard-link-btn nav-leaderboard-btn" @click="openLeaderboard">🏆</button>
     </div>
 
     <!-- Question Slides -->
@@ -59,25 +62,83 @@
       >
         <div class="question">
           <img v-if="question.icon" :src="question.icon" alt="Category Icon" class="category-icon" />
-
+          
           <h1 v-html="formatText(question.category)"></h1>
           <h2 v-html="formatText(question.text)"></h2>
           <img v-if="question.image" :src="question.image" alt="Question Image" />
-          <p v-if="question.subtext" v-html="formatText(question.subtext)"></p>
+          <!-- Hint reveal with friction -->
+          <template v-if="question.subtext">
+            <div class="hint-area">
+              <!-- Junior: no friction, free hints -->
+              <template v-if="difficulty === 'junior'">
+                <button
+                  v-if="!hintState[index]"
+                  class="hint-trigger-btn"
+                  @click="revealHint(index)"
+                >💡 Show Hint</button>
+                <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+              </template>
 
+              <!-- Senior: two-step warning with penalty -->
+              <template v-else>
+                <!-- Step 0: offer hint -->
+                <button
+                  v-if="!hintState[index]"
+                  class="hint-trigger-btn"
+                  @click="hintState[index] = 'warn1'; $forceUpdate()"
+                >💡 Show Hint</button>
+
+                <!-- Step 1: first warning -->
+                <div v-else-if="hintState[index] === 'warn1'" class="hint-warn">
+                  <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. This may have an impact on your score and ranking. Are you sure?</p>
+                  <div class="hint-warn-actions">
+                    <button class="hint-warn-yes" @click="hintState[index] = 'warn2'; $forceUpdate()">Yes, I need it</button>
+                    <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Never mind</button>
+                  </div>
+                </div>
+
+                <!-- Step 2: last chance -->
+                <div v-else-if="hintState[index] === 'warn2'" class="hint-warn">
+                  <p class="hint-warn-text">🚨 <strong>Last chance.</strong> This will cost you <strong>-1 point</strong>. The top competitors won't need this.</p>
+                  <div class="hint-warn-actions">
+                    <button class="hint-warn-yes" @click="revealHint(index)">Show the hint</button>
+                    <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Actually, no</button>
+                  </div>
+                </div>
+
+                <!-- Hint revealed -->
+                <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+              </template>
+            </div>
+          </template>
+          
+                    <!-- Live SHA256 preview -->
+                    <div v-if="question.validation?.type === 'sha256-leading-zeros' && answers[index]?.trim()" class="sha-preview">
+                      <span class="sha-label">SHA256:</span>
+                      <span class="sha-hash" :class="{ 'sha-match': liveHashes[index]?.startsWith('00') }">{{ liveHashes[index] || '…' }}</span>
+                    </div>
+          
           <!-- Input for answers -->
+          <p v-if="lockedAnswers[index]" class="answer-locked-note">Points Collected. Well done.</p>
+
           <input
-            v-if="question.type === 'text'"
+            v-if="question.type === 'text' && !lockedAnswers[index]"
             type="text"
             v-model="answers[index]"
-            @blur="checkAnswer(index)"
+            @input="handleInput(index)"
             @keyup.enter="checkAnswer(index)"
             placeholder="Type your answer here..."
           />
 
+          <!-- Live ROT13 preview -->
+          <div v-if="question.validation?.type === 'rot13' && answers[index]?.trim()" class="sha-preview">
+            <span class="sha-label">Result:</span>
+            <span class="sha-hash" :class="{ 'sha-match': liveRot13s[index] === question.validation.encoded }">{{ liveRot13s[index] || '…' }}</span>
+          </div>
+
           <!-- Feedback for correct/incorrect answers -->
           <p
-            v-if="feedback[index]"
+            v-if="showFeedback && feedback[index]"
             :class="{
               correct: feedback[index] === 'correct',
               incorrect: feedback[index] === 'incorrect'
@@ -109,16 +170,19 @@
     >
       <div class="score">
         <h2>{{ difficulty === 'senior' ? '🏆' : '⭐' }} Great job, {{ fullName }}!</h2>
-        <h3>Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
+        <h3 v-if="showFeedback">Your Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</h3>
         <p v-if="difficulty === 'senior'" class="score-prize-note">
           Top 5 scores win Bitcoin. Submit to enter!
         </p>
         <p v-else class="score-junior-note">
           Amazing effort! You crushed it! 🎉
         </p>
-        <button @click="restartHunt">Change Mode</button>
-        <button @click="sendScore" :disabled="scoreSubmitted">{{ scoreSubmitted ? 'Submitted ✓' : 'Submit Score' }}</button>
-        <button v-if="scoreSubmitted" @click="openLeaderboard" class="leaderboard-link-btn">🏆 View Leaderboard</button>
+        <button @click="sendScore" :disabled="scoreSubmitted" class="submit-score-btn">{{ scoreSubmitted ? 'Submitted ✓' : 'Submit Score' }}</button>
+        <div class="score-secondary-btns">
+          <button @click="editAnswers">Edit Answers</button>
+          <button @click="restartHunt">Change Mode</button>
+        </div>
+        <button @click="openLeaderboard" class="leaderboard-link-btn">🏆 View Leaderboard</button>
       </div>
     </div>
 
@@ -154,12 +218,45 @@
         <button class="lb-back-btn" @click="viewingLeaderboard = false">← Back</button>
       </div>
     </div>
+
+    <!-- Toolkit Overlay -->
+    <div class="leaderboard-overlay" v-if="viewingToolkit">
+      <div class="leaderboard-panel toolkit-panel">
+        <h2>🧰 Puzzle Toolkit</h2>
+        <p class="toolkit-subtitle">Here you'll find useful tools for solving puzzles and challenges.</p>
+                <h3 class="toolkit-section-title">Lookups & Converters</h3>
+        <div class="toolkit-links">
+          <button
+            v-for="(tool, i) in puzzleToolkitLinks"
+            :key="i"
+            class="toolkit-link-btn"
+            @click="openExternalTool(tool.url)"
+          >
+            <span class="toolkit-link-name">{{ tool.name }}</span>
+            <span class="toolkit-link-desc">{{ tool.description }}</span>
+          </button>
+        </div>
+        <h3 class="toolkit-section-title">Chess Helpers</h3>
+        <div class="toolkit-links">
+          <button
+            v-for="(tool, i) in chessToolkitLinks"
+            :key="`chess-${i}`"
+            class="toolkit-link-btn"
+            @click="openExternalTool(tool.url)"
+          >
+            <span class="toolkit-link-name">{{ tool.name }}</span>
+            <span class="toolkit-link-desc">{{ tool.description }}</span>
+          </button>
+        </div>
+        <button class="lb-back-btn" @click="viewingToolkit = false">← Back</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
-import chess_1 from '@/assets/images/scavenger_hunt/chess_1.png'
+import chess_2 from '@/assets/images/scavenger_hunt/chess_2.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
 import quest from '@/assets/images/icons/quest.png'
 import trivia from '@/assets/images/icons/trivia.png'
@@ -167,8 +264,9 @@ import riddle from '@/assets/images/icons/riddle.png'
 import cypher from '@/assets/images/icons/cypher.png'
 import sequence from '@/assets/images/icons/sequence.png'
 import puzzle from '@/assets/images/icons/quiz.png'
+import scavengerQuestions from '@/data/scavengerQuestions.json'
 import { reunion_db } from '@/firebase.js'
-import { doc, updateDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
+import { doc, updateDoc, arrayUnion, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 
 export default {
   props: ['id_code', 'fullName'],
@@ -177,304 +275,93 @@ export default {
       difficulty: null, // null | 'junior' | 'senior'
       currentQuestion: 0,
       backgroundImage: faded_frog,
-      chess_1: chess_1,
-      binary: binary,
-      quest: quest,
-      trivia: trivia,
-      cypher: cypher,
-      sequence: sequence,
-      puzzle: puzzle,
-
-      // ── JUNIOR question set (12 scored questions) ────────────────────────
-      questionsJunior: [
-        {
-          text: 'Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 12 fun challenges and find magic words hidden around the festival!',
-          type: 'information',
-          category: 'Junior\nScavenger Hunt'
-        },
-        {
-          text: 'What colour do you get when you mix red and blue?',
-          answer: 'purple',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'How many legs does a spider have?',
-          answer: '8',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: "I have hands but I can't clap. What am I?",
-          answer: 'clock',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: 'What is the next number?\n2, 4, 6, 8, ?',
-          answer: '10',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'Find the Guardian of the Flame and ask for his magic item.',
-          answer: 'lighter',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is a baby dog called?',
-          answer: 'puppy',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          // UPDATE: set `answer` to the magic word printed inside the Junior flipbook
-          text: 'Go to the Flipbook Station for your next clue.',
-          answer: 'motion',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What do caterpillars turn into?',
-          answer: 'butterfly',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: "I'm tall when I'm young and short when I'm old. What am I?",
-          answer: 'candle',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: "Find one of our Children's Coordinators and ask for the magic word.",
-          answer: 'friendship',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is 4 × 3?',
-          answer: '12',
-          type: 'text',
-          category: 'Puzzle',
-          icon: puzzle
-        },
-        {
-          text: "Amazing work, __NAME__!\n You finished the Junior Hunt!\n You're a superstar! 🌟",
-          type: 'information',
-          category: 'Congratulations!'
-        }
-      ],
-
-      // ── SENIOR question set (21 scored questions) ────────────────────────
-      questionsSenior: [
-        {
-          text: 'Welcome, __NAME__.\n This is HARD.\n 21 brain-bending challenges stand between you and the leaderboard.\n The top 5 scores win Bitcoin.\n Think you\'re up for it?',
-          type: 'information',
-          category: 'Senior\nScavenger Hunt'
-        },
-        {
-          text: 'Your first challenge is to identify the next letter in this sequence:\n O,T,T,F,F,S,S,?',
-          answer: 'E',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'Find the Guardian of the Flame and identify his magic item.',
-          answer: 'lighter',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is the largest planet in our solar system?',
-          answer: 'Jupiter',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'What is "Reunion" in Morse code?',
-          subtext:
-            'Hint: Use periods . and dashes - for the letters. Use spaces to separate letters.',
-          answer: '.-. . ..- -. .. --- -.',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'The poor have it, the rich want it, and if you eat it you die. What is it?',
-          answer: 'nothing',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: 'What is the next number in this sequence:\n0,1,1,2,3,5,8,13,?',
-          answer: '21',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'For this quest go to the Cote Corral and look for the magic word.',
-          answer: 'victory',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 101010?',
-          image: binary,
-          answer: '42',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: 'I wonder where the next magic word is wading for you...',
-          subtext: 'Hint: Raise the temperature.',
-          answer: 'ocean',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is the chemical symbol for gold?',
-          answer: 'Au',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'Separated by commas, what are the next five numbers in this sequence?\n2,4,8,16,32,?,?,?,?,?',
-          answer: '64,128,256,512,1024',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'White to move and checkmate in two moves.',
-          subtext:
-            'Hint: Only the first move is required for the answer. Use standard chess notation.',
-          answer: 'Ra6',
-          type: 'text',
-          image: chess_1,
-          category: 'Puzzle',
-          icon: puzzle
-        },
-        {
-          text: "Whispers speak of the story of Anno's seeds. What secret do they hold?",
-          subtext: 'Hint: Begin at the end.',
-          answer: 'magical events',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: "Find one of our Children's Coordinators and ask for the magic word.",
-          answer: 'friendship',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'Decode this message:\n13-21-19-9-3',
-          subtext: 'Hint: You will never see 27 in this type of cypher',
-          answer: 'music',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: "Where is our international headliner's original hometown?",
-          answer: 'Preston',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What gets wetter the more it dries?',
-          answer: 'towel',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: 'Decode this encrypted message to find the magic word:\nSRFGVINYY',
-          subtext: 'Hint: This is a Caesar cypher',
-          answer: 'festivall',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: 'What is the hardest natural substance on Earth?',
-          answer: 'diamond',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          // UPDATE: set `answer` to the magic word printed inside the Senior flipbook
-          text: 'Go to the Flipbook Station for your next clue.',
-          answer: 'illusion',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: "Well done, __NAME__.\n You've completed the Senior Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
-          type: 'information',
-          category: 'Congratulations!'
-        }
-      ],
+      rawQuestions: scavengerQuestions,
 
       answers: [],
       feedback: [],
+      liveHashes: [],
+      liveRot13s: [],
       viewingLeaderboard: false,
+      viewingToolkit: false,
+      puzzleToolkitLinks: [
+        {
+          name: 'Morse Code Translator',
+          description: 'Decode and encode Morse quickly',
+          url: 'https://morsecode.world/international/translator.html'
+        },
+        {
+          name: 'Timechain Calendar',
+          description: 'Map calendar dates to Bitcoin block heights',
+          url: 'https://timechaincalendar.com/en'
+        },
+        {
+          name: 'CyberChef ROT13',
+          description: 'Solve ROT13 and other text ciphers',
+          url: 'https://gchq.github.io/CyberChef/#recipe=ROT13(true,true,false,13)'
+        },
+        {
+          name: 'Binary to Decimal',
+          description: 'Convert binary numbers instantly',
+          url: 'https://www.rapidtables.com/convert/number/binary-to-decimal.html'
+        },
+        {
+          name: 'SHA256 Tool',
+          description: 'Check hash outputs for leading zeros',
+          url: 'https://emn178.github.io/online-tools/sha256.html'
+        }
+      ],
+      chessToolkitLinks: [
+        {
+          name: 'Lichess Analysis Board',
+          description: 'Set up and analyze positions quickly',
+          url: 'https://lichess.org/analysis'
+        },
+        {
+          name: 'Chess Tempo Puzzles',
+          description: 'Tactics training and pattern recognition',
+          url: 'https://chesstempo.com/chess-tactics/'
+        },
+        {
+          name: 'Chess Notation Guide',
+          description: 'Quick SAN notation reference',
+          url: 'https://www.chess.com/terms/chess-notation'
+        }
+      ],
       leaderboardData: { senior: [], junior: [] },
       leaderboardLoading: false,
-      scoreSubmitted: false
+      scoreSubmitted: false,
+      hostValidationKey: 'a2c4e2026', // change this to your onsite host key
+      showFeedback: false,  // set true to reveal per-question correct/incorrect and nav score
+      hintState: {},  // per-question hint reveal state: null | 'warn1' | 'warn2' | 'shown'
+      hintsUsed: {},  // per-question flag set when hint is revealed
+      lockedAnswers: {} // per-question lock state after host verification
     }
   },
   computed: {
     questions() {
+      const icons = { quest, trivia, riddle, cypher, sequence, puzzle }
+      const images = { binary, chess_2 }
       const base =
         this.difficulty === 'junior'
-          ? this.questionsJunior
+          ? this.rawQuestions.questionsJunior
           : this.difficulty === 'senior'
-            ? this.questionsSenior
+            ? this.rawQuestions.questionsSenior
             : []
       if (!base.length) return base
+      const hydrated = base.map((q) => {
+        const item = { ...q }
+        if (item.iconKey) item.icon = icons[item.iconKey] || null
+        if (item.imageKey) item.image = images[item.imageKey] || null
+        if (item.validation?.type === 'regex' && typeof item.validation.pattern === 'string') {
+          item.validation = {
+            ...item.validation,
+            pattern: new RegExp(item.validation.pattern, item.validation.flags || '')
+          }
+        }
+        return item
+      })
       const name = this.fullName || 'Guest'
-      const out = [...base]
+      const out = [...hydrated]
       out[0] = { ...out[0], text: out[0].text.replace('__NAME__', name) }
       out[out.length - 1] = {
         ...out[out.length - 1],
@@ -541,7 +428,10 @@ export default {
           updatedAt: new Date().toISOString(),
           currentQuestion: this.currentQuestion,
           answers: this.answers,
-          feedback: this.feedback
+          feedback: this.feedback,
+          hintsUsed: this.hintsUsed,
+          hintState: this.hintState,
+          lockedAnswers: this.lockedAnswers
         }
         window?.localStorage?.setItem(this.progressKey, JSON.stringify(payload))
       } catch (e) {
@@ -577,6 +467,15 @@ export default {
         ) {
           this.currentQuestion = saved.currentQuestion
         }
+        if (saved.hintsUsed && typeof saved.hintsUsed === 'object') {
+          this.hintsUsed = { ...saved.hintsUsed }
+        }
+        if (saved.hintState && typeof saved.hintState === 'object') {
+          this.hintState = { ...saved.hintState }
+        }
+        if (saved.lockedAnswers && typeof saved.lockedAnswers === 'object') {
+          this.lockedAnswers = { ...saved.lockedAnswers }
+        }
       } catch (e) {
         // ignore parse/storage errors
       }
@@ -603,28 +502,131 @@ export default {
       this.currentQuestion = 0
       this.answers = []
       this.feedback = []
+      this.hintState = {}
+      this.hintsUsed = {}
+      this.lockedAnswers = {}
+      this.scoreSubmitted = false
       this.clearProgress()
       this.difficulty = null
     },
     showScoreSlide() {
       this.currentQuestion = 'score'
     },
-    checkAnswer(index) {
-      if (!this.questions[index]?.answer) {
-        return
-      }
-      const userAnswer = this.answers[index]?.trim().toLowerCase()
-      const correctAnswer = this.questions[index].answer?.toLowerCase()
-      if (userAnswer === correctAnswer) {
-        this.feedback[index] = 'correct'
-      } else {
-        this.feedback[index] = 'incorrect'
+    editAnswers() {
+      const idx = this.questions.findIndex((q, i) => q.type !== 'information' && !this.answers[i])
+      this.currentQuestion = idx !== -1 ? idx : 0
+    },
+    async revealHint(index) {
+      this.hintState[index] = 'shown'
+      this.hintsUsed[index] = true
+      this.$forceUpdate()
+      this.persistProgress()
+      if (this.id_code) {
+        try {
+          await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
+            'scavenger_hunt.hintsUsed': arrayUnion(index)
+          })
+        } catch (e) {
+          // non-fatal — penalty is still tracked locally
+        }
       }
     },
+    async checkAnswer(index) {
+      const question = this.questions[index]
+      if (!question) return
+      if (this.lockedAnswers[index]) {
+        this.feedback[index] = 'correct'
+        return
+      }
+
+      const input = (this.answers[index] || '').trim()
+
+      if (question.validation?.type === 'host-key') {
+        const ok = input.toUpperCase() === (this.hostValidationKey || '').trim().toUpperCase()
+        this.feedback[index] = ok ? 'correct' : 'incorrect'
+        if (ok) {
+          this.lockedAnswers = Object.assign({}, this.lockedAnswers, { [index]: true })
+          this.answers = Object.assign([], this.answers, { [index]: 'VERIFIED' })
+          this.persistProgress()
+        }
+        return
+      }
+
+      // Rule-based validator
+      if (question.validation?.type === 'sha256-leading-zeros') {
+        const ok = await this.validateShaLeadingZeros(input, question.validation.zeros || 2)
+        this.feedback[index] = ok ? 'correct' : 'incorrect'
+        return
+      }
+
+      if (question.validation?.type === 'rot13') {
+        this.feedback[index] = this.rot13(input) === question.validation.encoded ? 'correct' : 'incorrect'
+        return
+      }
+
+      if (question.validation?.type === 'regex') {
+        this.feedback[index] = question.validation.pattern.test(input) ? 'correct' : 'incorrect'
+        return
+      }
+
+      // Exact-match validator
+      if (!question.answer) return
+      const userAnswer = input.toLowerCase()
+      const correctAnswer = question.answer.toLowerCase()
+      this.feedback[index] = userAnswer === correctAnswer ? 'correct' : 'incorrect'
+    },
+    async handleInput(index) {
+      const question = this.questions[index]
+      if (this.lockedAnswers[index]) return
+      if (question?.validation?.type === 'sha256-leading-zeros') {
+        await this.updateLiveHash(index)
+      }
+      if (question?.validation?.type === 'rot13') {
+        this.updateLiveRot13(index)
+      }
+      await this.checkAnswer(index)
+    },
+    async updateLiveHash(index) {
+      const input = (this.answers[index] || '').trim()
+      if (!input) {
+        this.liveHashes[index] = ''
+        return
+      }
+      const hash = await this.sha256Hex(input)
+      this.liveHashes = Object.assign([], this.liveHashes, { [index]: hash })
+    },
+    rot13(text) {
+      return text.replace(/[a-zA-Z]/g, (c) => {
+        const base = c <= 'Z' ? 65 : 97
+        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base)
+      })
+    },
+    updateLiveRot13(index) {
+      const input = (this.answers[index] || '').trim()
+      if (!input) {
+        this.liveRot13s[index] = ''
+        return
+      }
+      this.liveRot13s = Object.assign([], this.liveRot13s, { [index]: this.rot13(input) })
+    },
+    async validateShaLeadingZeros(input, zeros = 2) {
+      if (!/^\d+$/.test(input)) return false
+      const hashHex = await this.sha256Hex(input)
+      return hashHex.startsWith('0'.repeat(zeros))
+    },
+    async sha256Hex(text) {
+      const bytes = new TextEncoder().encode(text)
+      const digest = await crypto.subtle.digest('SHA-256', bytes)
+      return Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+    },
     calculateScore() {
-      return this.feedback.filter(
+      const correct = this.feedback.filter(
         (status, index) => status === 'correct' && this.questions[index]?.type === 'text'
       ).length
+      const hintPenalty = this.difficulty === 'senior' ? Object.keys(this.hintsUsed).length : 0
+      return Math.max(0, correct - hintPenalty)
     },
     countScoredQuestions() {
       return this.questions.filter((question) => question.type === 'text').length
@@ -659,11 +661,13 @@ export default {
       }
       try {
         // Write score to participant's existing record in participants_2026
+        const hintsUsedCount = Object.keys(this.hintsUsed).length
         await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
           scavenger_hunt: {
             score,
             total,
             difficulty: this.difficulty,
+            hintsUsed: hintsUsedCount,
             submittedAt: new Date()
           }
         })
@@ -693,6 +697,12 @@ export default {
     async openLeaderboard() {
       this.viewingLeaderboard = true
       await this.loadLeaderboard()
+    },
+    openExternalTool(url) {
+      const opened = window.open(url, '_blank', 'noopener,noreferrer')
+      if (opened) {
+        opened.opener = null
+      }
     },
     async loadLeaderboard() {
       this.leaderboardLoading = true
@@ -819,6 +829,7 @@ input {
   border-radius: 5px;
   color: white;
   transition: border-color 0.3s ease;
+  text-align: center;
 }
 
 input:focus {
@@ -859,6 +870,12 @@ button:disabled {
 .incorrect {
   color: red;
   font-weight: bold;
+}
+
+.answer-locked-note {
+  color: rgba(120, 255, 120, 0.95);
+  font-weight: 700;
+  margin: 0.75rem 0;
 }
 
 .score {
@@ -941,6 +958,14 @@ button:disabled {
   font-size: 14px;
   padding-left: 15px;
   border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.nav-hints {
+  font-size: 12px;
+  color: rgba(255, 180, 60, 0.85);
+  padding-left: 15px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
 }
 
 /* Mobile responsiveness for quick nav */
@@ -1104,6 +1129,54 @@ button:disabled {
   color: gold;
 }
 
+.nav-leaderboard-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nav-toolkit-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nav-map-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.submit-score-btn {
+  width: 100%;
+  font-size: 1.15em;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+}
+
+.score-secondary-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.score-secondary-btns button {
+  flex: 1;
+}
+
 .leaderboard-overlay {
   position: fixed;
   inset: 0;
@@ -1209,5 +1282,161 @@ button:disabled {
 
 .lb-back-btn {
   margin-top: 1.5rem;
+}
+
+.toolkit-panel {
+  max-width: 680px;
+}
+
+.toolkit-subtitle {
+  opacity: 0.8;
+  margin: -0.5rem 0 1rem;
+}
+
+.toolkit-section-title {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.toolkit-links {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.toolkit-link-btn {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.toolkit-link-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.toolkit-link-desc {
+  opacity: 0.8;
+  font-size: 0.86rem;
+}
+
+/* SHA256 live preview */
+.hint-area {
+  margin: 0.5rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+.hint-trigger-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-trigger-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hint-warn {
+  background: rgba(255, 180, 0, 0.06);
+  border: 1px solid rgba(255, 180, 0, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.hint-warn-text {
+  font-size: 0.8rem;
+  color: rgba(255, 220, 100, 0.75);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.hint-warn-text strong {
+  color: rgba(255, 220, 100, 0.95);
+}
+
+.hint-warn-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hint-warn-yes {
+  background: transparent;
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  color: rgba(255, 130, 130, 0.8);
+  font-size: 0.75rem;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-warn-no {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0;
+  width: auto;
+}
+
+.hint-revealed {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sha-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0.5rem 0;
+  font-size: 0.75rem;
+  width: 100%;
+}
+
+.sha-label {
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.65rem;
+}
+
+.sha-hash {
+  font-family: monospace;
+  word-break: break-all;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.sha-hash.sha-match {
+  color: limegreen;
+  font-weight: bold;
 }
 </style>

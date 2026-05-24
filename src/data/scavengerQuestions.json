@@ -1,0 +1,343 @@
+{
+  "questionsJunior": [
+    {
+      "text": "Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 15 fun challenges and find magic words hidden around the festival!",
+      "type": "information",
+      "category": "Junior\nScavenger Hunt"
+    },
+    {
+      "text": "What colour do you get when you mix red and blue?",
+      "subtext": "Hint: Think about what happens when you mix paint!",
+      "answer": "purple",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "How many legs does a spider have?",
+      "subtext": "Hint: Count carefully — spiders have more legs than insects!",
+      "answer": "8",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "I have hands but I can't clap. What am I?",
+      "subtext": "Hint: You'll find me on a wall, and I tell you something very important.",
+      "answer": "clock",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "What is the next number in the sequence?\n1, 1, 2, 3, 5, ?",
+      "subtext": "Hint: Each number is the sum of the two numbers before it.",
+      "answer": "8",
+      "type": "text",
+      "category": "Sequence",
+      "iconKey": "sequence"
+    },
+    {
+      "text": "Find the Guardian of the Flame and ask for his magic item.",
+      "subtext": "Hint: Look for someone tending to a flame somewhere on the festival grounds.",
+      "answer": "lighter",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "I have cities but no houses live there.\nI have mountains but no trees grow there.\nI have water but no fish swim there.\nWhat am I?",
+      "subtext": "Hint: You might need one to find your way around the festival grounds!",
+      "answer": "map",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Head to the main stage and look near the front for a hidden symbol. What is it?",
+      "subtext": "Hint: Look carefully — it's smaller than you'd expect!",
+      "answer": "star",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "Go to the Flipbook Station for your next clue.",
+      "subtext": "Hint: Find the Flipbook Station on the festival grounds and complete the activity there.",
+      "answer": "motion",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "What is the closest planet to the Sun?",
+      "subtext": "Hint: Think about the order of planets in our solar system — which one is first?",
+      "answer": "mercury",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "I'm tall when I'm young and short when I'm old. What am I?",
+      "subtext": "Hint: I provide light and warmth, and I slowly disappear as I do.",
+      "answer": "candle",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Find one of our Children's Coordinators and ask for the magic word.",
+      "subtext": "Hint: Look for someone wearing a Children's Coordinator badge — they're here to help!",
+      "answer": "friendship",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "The more you take, the more you leave behind. What am I?",
+      "subtext": "Hint: You've been making these all day at the festival!",
+      "answer": "footsteps",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Decode this secret message to find the magic word:\n18-5-21-14-9-15-14",
+      "subtext": "Hint: Each number represents a letter of the alphabet. A=1, B=2, C=3... Z=26.",
+      "answer": "reunion",
+      "type": "text",
+      "category": "Cypher",
+      "iconKey": "cypher"
+    },
+    {
+      "text": "What goes up but never comes down?",
+      "subtext": "Hint: Think about birthdays — once it goes up, can it ever go back?",
+      "answer": "age",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Find the Reunion DevOps guy somewhere on the festival grounds.\nChallenge him to a game of chess — or if you don't know how to play, ask him to teach you a few basics.\nEither way, he'll give you the magic word!",
+      "subtext": "Hint: Look for someone with a chess board. You can play a game or just learn how the pieces move — both count!",
+      "answer": "",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest",
+      "validation": {
+        "type": "host-key"
+      }
+    },
+    {
+      "text": "Amazing work, __NAME__!\n You finished the Junior Scavenger Hunt!\n You're a superstar! 🌟",
+      "type": "information",
+      "category": "Congratulations!"
+    }
+  ],
+  "questionsSenior": [
+    {
+      "text": "Welcome, __NAME__.\n This is meant to be QUITE DIFFICULT.\n 21 brain-bending challenges.\n The top 5 scores win actual Bitcoin\n - the hardest money ever created.\n Think you're up for it?",
+      "type": "information",
+      "category": "Senior\nScavenger Hunt"
+    },
+    {
+      "text": "Your first challenge is to identify the next letter in this sequence:\nM,V,E,M,J,?",
+      "subtext": "Hint: Think outside the box, in fact think WAY outside the box.",
+      "answer": "S",
+      "type": "text",
+      "category": "Sequence",
+      "iconKey": "sequence"
+    },
+    {
+      "text": "Your next challenge is to find the Guardian of the Flame and identify his magic item.",
+      "answer": "lighter",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": ".. -.-. --- -. .. -.-.",
+      "subtext": "Hint: This is Morse code. Dots are short signals, dashes are long signals, and spaces separate letters.",
+      "answer": "iconic",
+      "type": "text",
+      "category": "Cypher",
+      "iconKey": "cypher"
+    },
+    {
+      "text": "Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.",
+      "subtext": "Hint: Don't forget to count the quadrilaterals of all dimensions. including the clue itself! ",
+      "answer": "121",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "Play the Reunion DevOps guy in a 5-minute chess game (5|0) on the physical board and clock.\nIf you win, boastfully present your your phone to collect your reward.\nIf you lose, wait 1 hour and try again.\nIf you can't win don't worry ... it's only 1 point.",
+      "subtext": "",
+      "answer": "",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest",
+      "validation": {
+        "type": "host-key"
+      }
+    },
+    {
+      "text": "What 5-digit number has the following properties?\n- All digits are different\n- The digit in the ten-thousands place is three times the digit in the tens place\n- The digit in the thousands place is one less than the digit in the tens place\n- The digit in the ones place is two more than the digit in the thousands place\n- The digit in the hundreds place is four more than the digit in the thousands place\n- The full number is divisible by 7",
+      "answer": "",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle",
+      "validation": {
+        "type": "regex",
+        "pattern": "^61523$",
+        "flags": ""
+      }
+    },
+    {
+      "text": "What is the next number in this sequence:\n1,4,1,5,9,2,6?",
+      "subtext": "Hint: This sequence is infinite and non-repeating. The ratio of circle's circumference to its diameter is an important mathematical constant that starts with these digits.",
+      "answer": "5",
+      "type": "text",
+      "category": "Sequence",
+      "iconKey": "sequence"
+    },
+    {
+      "text": "Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 01000101?",
+      "imageKey": "binary",
+      "answer": "69",
+      "type": "text",
+      "category": "Cypher",
+      "iconKey": "cypher"
+    },
+    {
+      "text": "What is the only element that is a liquid metal at room temperature?",
+      "subtext": "Hint: It shares its name with a planet.",
+      "answer": "mercury",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "What block height was Laurel Cardiff-Das born?",
+      "subtext": "Hint: Our Vectors & Logos expert might know the answer to this one.",
+      "answer": "813918",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "What are the missing words?\n52 c_ in a d_ without j_",
+      "subtext": "Hint: You must be royally flushed to get this one.",
+      "answer": "",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle",
+      "validation": {
+        "type": "regex",
+        "pattern": "cards[\\s,]+deck[\\s,]+jokers?$",
+        "flags": "i"
+      }
+    },
+    {
+      "text": "White to move and checkmate in two moves.\n Only the first move is required for the answer.\nUse standard chess notation.",
+      "subtext": "Hint: Look for a move that puts black in check, even if it seems to lose material at first.\nAre you missing a \"+\" for check?\nThe eventual plan is Rd8#",
+      "answer": "Qb8+",
+      "type": "text",
+      "imageKey": "chess_2",
+      "category": "Puzzle",
+      "iconKey": "puzzle"
+    },
+    {
+      "text": "What is the next row of numbers in this sequence?\n1\n1,1\n2,1\n1,2,1,1,\n1,1,1,2,1,1\n3,1,1,2,1,1",
+      "subtext": "Hint: The rows are self referential. Each row describes the previous row. The first row is \"one 1\" -> 1,1. The second row is \"two 1s\" -> 2,1. The third row is \"one 2, then one 1\" -> 1,2,1,1, etc.",
+      "answer": "",
+      "type": "text",
+      "category": "Sequence",
+      "iconKey": "sequence"
+    },
+    {
+      "text": "Find one of our Children's Coordinators and ask for the magic word.",
+      "answer": "friendship",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "What are the missing words?\n11 p_ on a s_ t_",
+      "answer": "",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle",
+      "validation": {
+        "type": "regex",
+        "pattern": "players[\\s,]+(soccer|football)[\\s,]+team$",
+        "flags": "i"
+      }
+    },
+    {
+      "text": "What is the hometown of last year's international headliner?",
+      "answer": "Preston",
+      "type": "text",
+      "category": "Trivia",
+      "iconKey": "trivia"
+    },
+    {
+      "text": "What something the maker doesn't need, the buyer doesn't use, and the user doesn't see?",
+      "subtext": "Hint: This is a classic riddle that has been around for centuries.\nIt describes something that is associated with death, but it is not alive itself.",
+      "answer": "coffin",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Decode this encrypted message to find the magic word:\n fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf",
+      "subtext": "Hint: This is a ROT13 cypher - type the letter \"a\" and see what letter it becomes.\nWhat doyou notice about the relationship between the original letters and the transformed letters?",
+      "answer": "",
+      "type": "text",
+      "category": "Cypher",
+      "iconKey": "cypher",
+      "validation": {
+        "type": "rot13",
+        "encoded": "fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf"
+      }
+    },
+    {
+      "text": "What are the missing words?\n88 k_ on a g_ p_.",
+      "subtext": "Hint: ",
+      "answer": "",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle",
+      "validation": {
+        "type": "regex",
+        "pattern": "keys[\\s,]+grand[\\s,]+piano",
+        "flags": "i"
+      }
+    },
+    {
+      "text": "Complete the Flipbook Station for your next clue.",
+      "answer": "animated",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest"
+    },
+    {
+      "text": "Find a number that has a SHA256 output with 2 leading zeros\n(Example Hash: 00abcdef...)\nUse trial and error.\nP.S. this is very similar to how Bitcoin mining works!",
+      "subtext": "",
+      "answer": "",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest",
+      "validation": {
+        "type": "sha256-leading-zeros",
+        "zeros": 2
+      }
+    },
+    {
+      "text": "Well done, __NAME__.\n You've completed the Senior Scavenger Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
+      "type": "information",
+      "category": "Almost done!"
+    }
+  ]
+}
