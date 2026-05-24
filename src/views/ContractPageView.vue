@@ -108,13 +108,16 @@
       <p v-if="applicant.rates.non_monetary">
         <strong>Additional Compensation:</strong> {{ applicant.rates.non_monetary }}
       </p>
-      <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff)">
+      <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff || applicant.rates.addons.shuttle || applicant.rates.addons.backline || applicant.rates.addons.accommodation)">
         <p><strong>Provided Accommodations &amp; Logistics:</strong></p>
         <ul>
           <li v-if="applicant.rates.addons.tent">Tent provided on-site</li>
           <li v-if="applicant.rates.addons.sleeping_bag">Sleeping bag provided on-site</li>
           <li v-if="applicant.rates.addons.airport_pickup">Airport pickup arranged</li>
           <li v-if="applicant.rates.addons.airport_dropoff">Airport dropoff arranged</li>
+          <li v-if="applicant.rates.addons.shuttle">Festival shuttle arranged</li>
+          <li v-if="applicant.rates.addons.backline">Backline provided</li>
+          <li v-if="applicant.rates.addons.accommodation">Accommodation provided<template v-if="applicant.rates.accommodation_notes">: {{ applicant.rates.accommodation_notes }}</template></li>
         </ul>
       </div>
     </template>
