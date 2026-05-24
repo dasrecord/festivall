@@ -240,7 +240,7 @@
         required
         style="width: 100%"
       />
-      <button @click="handleSubmit" style="width: 100%; max-width: 400px">SIGN & SUBMIT</button>
+      <button @click="handleSubmit" :disabled="isSubmitting" style="width: 100%; max-width: 400px">{{ isSubmitting ? 'SUBMITTING...' : 'SIGN & SUBMIT' }}</button>
     </div>
     <div v-else>
       <div class="signed-contract">
@@ -426,7 +426,11 @@ export default {
       }
     }
 
+    const isSubmitting = ref(false)
+
     const handleSubmit = async () => {
+      if (isSubmitting.value) return
+      isSubmitting.value = true
       try {
         console.log('Starting contract submission process...')
 
@@ -494,6 +498,7 @@ export default {
       saveContract,
       addOrder,
       handleSubmit,
+      isSubmitting,
       currentDate,
       sendSMS,
       sendEmail,
