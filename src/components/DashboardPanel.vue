@@ -551,6 +551,26 @@
                   <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_sleeping_bag" /> Sleeping Bag</label>
                   <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_airport_pickup" /> Airport Pickup</label>
                   <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_airport_dropoff" /> Airport Dropoff</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_shuttle" /> Shuttle</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_backline" /> Backline</label>
+                  <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_accommodation" /> Accommodation</label>
+                </div>
+                <input
+                  v-if="applicant.comp_accommodation"
+                  type="text"
+                  v-model="applicant.comp_accommodation_notes"
+                  placeholder="Accommodation details (e.g. hostel on-site, room 4)"
+                  class="comp-text-input"
+                />
+                <div class="comp-payment-method">
+                  <span class="comp-payment-label">Preferred payment:</span>
+                  <button
+                    v-for="method in ['bitcoin', 'cash', 'etransfer']"
+                    :key="method"
+                    class="comp-payment-btn"
+                    :class="`comp-payment-btn--${method}` + (applicant.comp_payment_method === method ? ' comp-payment-btn--active' : '')"
+                    @click="applicant.comp_payment_method = applicant.comp_payment_method === method ? '' : method"
+                  >{{ method === 'etransfer' ? 'E-Transfer' : method.charAt(0).toUpperCase() + method.slice(1) }}</button>
                 </div>
                 <!-- Current display: structured object -->
                 <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
@@ -560,12 +580,21 @@
                   <p v-if="applicant.rates.non_monetary" class="comp-current-line">
                     <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
                   </p>
-                  <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff)" class="comp-addon-badges">
+                  <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff || applicant.rates.addons.shuttle || applicant.rates.addons.backline || applicant.rates.addons.accommodation)" class="comp-addon-badges">
                     <span v-if="applicant.rates.addons.tent" class="addon-badge">Tent</span>
                     <span v-if="applicant.rates.addons.sleeping_bag" class="addon-badge">Sleeping Bag</span>
                     <span v-if="applicant.rates.addons.airport_pickup" class="addon-badge">Airport Pickup</span>
                     <span v-if="applicant.rates.addons.airport_dropoff" class="addon-badge">Airport Dropoff</span>
+                    <span v-if="applicant.rates.addons.shuttle" class="addon-badge">Shuttle</span>
+                    <span v-if="applicant.rates.addons.backline" class="addon-badge">Backline</span>
+                    <span v-if="applicant.rates.addons.accommodation" class="addon-badge">Accommodation</span>
                   </div>
+                  <p v-if="applicant.rates.accommodation_notes" class="comp-current-line">
+                    <strong>Accommodation:</strong> {{ applicant.rates.accommodation_notes }}
+                  </p>
+                  <p v-if="applicant.rates.preferred_payment_method" class="comp-current-line">
+                    <strong>Payment:</strong> {{ applicant.rates.preferred_payment_method === 'etransfer' ? 'E-Transfer' : applicant.rates.preferred_payment_method.charAt(0).toUpperCase() + applicant.rates.preferred_payment_method.slice(1) }}
+                  </p>
                 </template>
                 <!-- Current display: legacy string -->
                 <template v-else-if="applicant.rates">
@@ -1047,7 +1076,12 @@ export default {
             comp_tent: false,
             comp_sleeping_bag: false,
             comp_airport_pickup: false,
-            comp_airport_dropoff: false
+            comp_airport_dropoff: false,
+            comp_shuttle: false,
+            comp_backline: false,
+            comp_accommodation: false,
+            comp_accommodation_notes: '',
+            comp_payment_method: ''
           }))
           .sort((a, b) => {
             if (a.url && !b.url) return -1
@@ -1337,7 +1371,10 @@ export default {
         tent: !!applicant.comp_tent,
         sleeping_bag: !!applicant.comp_sleeping_bag,
         airport_pickup: !!applicant.comp_airport_pickup,
-        airport_dropoff: !!applicant.comp_airport_dropoff
+        airport_dropoff: !!applicant.comp_airport_dropoff,
+        shuttle: !!applicant.comp_shuttle,
+        backline: !!applicant.comp_backline,
+        accommodation: !!applicant.comp_accommodation
       }
       const hasMonetary = amount !== null && !isNaN(amount)
       const hasAddons = Object.values(addons).some(Boolean)
@@ -1378,10 +1415,12 @@ export default {
         monetary_amount: hasMonetary ? amount : null,
         monetary_currency: hasMonetary ? currency : null,
         non_monetary,
+        preferred_payment_method: applicant.comp_payment_method || null,
+        accommodation_notes: applicant.comp_accommodation && applicant.comp_accommodation_notes ? applicant.comp_accommodation_notes.trim() : null,
         addons
       }
 
-      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false }
+      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false, comp_shuttle: false, comp_backline: false, comp_accommodation: false, comp_accommodation_notes: '', comp_payment_method: '' }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
         await updateDoc(docRef, { 'application.data.rates': ratesObj })
@@ -1394,7 +1433,7 @@ export default {
     }
 
     const clearCompensation = async (applicant) => {
-      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false }
+      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false, comp_shuttle: false, comp_backline: false, comp_accommodation: false, comp_accommodation_notes: '', comp_payment_method: '' }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
         await updateDoc(docRef, { 'application.data.rates': null })
@@ -3275,6 +3314,37 @@ a {
   cursor: pointer;
   white-space: nowrap;
 }
+
+/* ── Payment method pills ─────────────────────────────────────────────────── */
+.comp-payment-method {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.comp-payment-label {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.comp-payment-btn {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 99px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.comp-payment-btn--bitcoin       { border: 1px solid #f7931a; color: #f7931a; }
+.comp-payment-btn--bitcoin.comp-payment-btn--active { background: #f7931a; color: #000; }
+.comp-payment-btn--cash          { border: 1px solid #4caf50; color: #4caf50; }
+.comp-payment-btn--cash.comp-payment-btn--active    { background: #4caf50; color: #000; }
+.comp-payment-btn--etransfer     { border: 1px solid #ff9800; color: #ff9800; }
+.comp-payment-btn--etransfer.comp-payment-btn--active { background: #ff9800; color: #000; }
 .comp-current-line {
   font-size: 0.8rem;
   margin: 0;
