@@ -17,7 +17,8 @@ const showPoster = ref(false)
 watch(
   () => route.path,
   (path) => {
-    if (POSTER_ROUTES.includes(path) && !sessionStorage.getItem(STORAGE_KEY)) {
+    const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
+    if (POSTER_ROUTES.includes(path) && shown < 3) {
       showPoster.value = true
     }
   },
@@ -26,7 +27,8 @@ watch(
 
 const onPosterDismissed = () => {
   showPoster.value = false
-  sessionStorage.setItem(STORAGE_KEY, '1')
+  const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
+  sessionStorage.setItem(STORAGE_KEY, String(shown + 1))
 }
 
 // Default global meta (individual pages override title/description via their own useHead)

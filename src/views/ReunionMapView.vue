@@ -455,7 +455,7 @@ function listenToVolunteerShifts() {
 const CHECKIN_DECAY_MS = 10 * 60 * 1000   // how long a check-in stays visible on the map
 const MEAL_WINDOW_MS   = 90 * 60 * 1000   // how long "now serving" stays active (1.5 h)
 const MIN_SCALE = 1   // minimum map zoom level
-const MAX_SCALE = 5   // maximum map zoom level
+const MAX_SCALE = 10   // maximum map zoom level
 
 const STAGE_ICONS = [
   { svgId: 'stage_area_icon', label: 'Main Stage',

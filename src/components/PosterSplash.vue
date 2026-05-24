@@ -21,7 +21,7 @@ const isDragging = ref(false)
 const dragLast = ref({ x: 0, y: 0 })
 const dragMoved = ref(false)
 const MIN_SCALE = 1
-const MAX_SCALE = 6
+const MAX_SCALE = 10
 
 const zoomStyle = computed(() => ({
   transform: `translate(${mapTx.value}px, ${mapTy.value}px) scale(${mapScale.value})`,
@@ -195,8 +195,8 @@ onBeforeUnmount(() => {
         </div>
         <div class="poster-hint">
           <span class="countdown">{{ secondsLeft }}</span>
-          <span>Here is our 2025 poster.<br> 
-          2026 edition coming soon!</span>
+          <span>This was our 2025 poster.<br> 
+          The 2026 edition is going to be Iconic</span>
         </div>
       </div>
     </Transition>
