@@ -42,7 +42,8 @@
         </span>
       </div>
       <div class="nav-score" v-if="showFeedback">Score: {{ calculateScore() }}/{{ countScoredQuestions() }}</div>
-      <div class="nav-hints" v-if="Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br></br>{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
+      <div class="nav-hints" v-if="Object.keys(hintsUsed).length > 0">💡 {{ Object.keys(hintsUsed).length }} hints used<br />{{ Object.keys(hintsUsed).length > 1 ? 's' : '' }} (-{{ Object.keys(hintsUsed).length }} pts)</div>
+      <button v-if="difficulty === 'senior'" class="leaderboard-link-btn nav-toolkit-btn" @click="viewingToolkit = true">🧰</button>
       <button class="leaderboard-link-btn nav-leaderboard-btn" @click="openLeaderboard">🏆</button>
     </div>
 
@@ -104,8 +105,10 @@
                     </div>
           
           <!-- Input for answers -->
+          <p v-if="lockedAnswers[index]" class="answer-locked-note">Points Collected. Well done.</p>
+
           <input
-            v-if="question.type === 'text'"
+            v-if="question.type === 'text' && !lockedAnswers[index]"
             type="text"
             v-model="answers[index]"
             @input="handleInput(index)"
@@ -201,6 +204,39 @@
         <button class="lb-back-btn" @click="viewingLeaderboard = false">← Back</button>
       </div>
     </div>
+
+    <!-- Toolkit Overlay -->
+    <div class="leaderboard-overlay" v-if="viewingToolkit">
+      <div class="leaderboard-panel toolkit-panel">
+        <h2>🧰 Puzzle Toolkit</h2>
+        <p class="toolkit-subtitle">Here you'll find useful tools for solving puzzles and challenges.</p>
+                <h3 class="toolkit-section-title">Lookups & Converters</h3>
+        <div class="toolkit-links">
+          <button
+            v-for="(tool, i) in puzzleToolkitLinks"
+            :key="i"
+            class="toolkit-link-btn"
+            @click="openExternalTool(tool.url)"
+          >
+            <span class="toolkit-link-name">{{ tool.name }}</span>
+            <span class="toolkit-link-desc">{{ tool.description }}</span>
+          </button>
+        </div>
+        <h3 class="toolkit-section-title">Chess Helpers</h3>
+        <div class="toolkit-links">
+          <button
+            v-for="(tool, i) in chessToolkitLinks"
+            :key="`chess-${i}`"
+            class="toolkit-link-btn"
+            @click="openExternalTool(tool.url)"
+          >
+            <span class="toolkit-link-name">{{ tool.name }}</span>
+            <span class="toolkit-link-desc">{{ tool.description }}</span>
+          </button>
+        </div>
+        <button class="lb-back-btn" @click="viewingToolkit = false">← Back</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -214,6 +250,7 @@ import riddle from '@/assets/images/icons/riddle.png'
 import cypher from '@/assets/images/icons/cypher.png'
 import sequence from '@/assets/images/icons/sequence.png'
 import puzzle from '@/assets/images/icons/quiz.png'
+import scavengerQuestions from '@/data/scavengerQuestions.json'
 import { reunion_db } from '@/firebase.js'
 import { doc, updateDoc, arrayUnion, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 
@@ -224,327 +261,93 @@ export default {
       difficulty: null, // null | 'junior' | 'senior'
       currentQuestion: 0,
       backgroundImage: faded_frog,
-      chess_2: chess_2,
-      binary: binary,
-      quest: quest,
-      trivia: trivia,
-      cypher: cypher,
-      sequence: sequence,
-      puzzle: puzzle,
-
-      // ── JUNIOR question set (12 scored questions) ────────────────────────
-      questionsJunior: [
-        {
-          text: 'Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 12 fun challenges and find magic words hidden around the festival!',
-          type: 'information',
-          category: 'Junior\nScavenger Hunt'
-        },
-        {
-          text: 'What colour do you get when you mix red and blue?',
-          answer: 'purple',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'How many legs does a spider have?',
-          answer: '8',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: "I have hands but I can't clap. What am I?",
-          answer: 'clock',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: 'What is the next number?\n2, 4, 6, 8, ?',
-          answer: '10',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'Find the Guardian of the Flame and ask for his magic item.',
-          answer: 'lighter',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is a baby dog called?',
-          answer: 'puppy',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'Visit the main stage and look for the secret symbol.',
-          answer: 'star',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'Go to the Flipbook Station for your next clue.',
-          answer: 'motion',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What do caterpillars turn into?',
-          answer: 'butterfly',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: "I'm tall when I'm young and short when I'm old. What am I?",
-          answer: 'candle',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: "Find one of our Children's Coordinators and ask for the magic word.",
-          answer: 'friendship',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What is 4 × 3?',
-          answer: '12',
-          type: 'text',
-          category: 'Puzzle',
-          icon: puzzle
-        },
-        {
-          text: "Amazing work, __NAME__!\n You finished the Junior Scavenger Hunt!\n You're a superstar! 🌟",
-          type: 'information',
-          category: 'Congratulations!'
-        }
-      ],
-
-      // ── SENIOR question set (21 scored questions) ────────────────────────
-      questionsSenior: [
-        {
-          text: 'Welcome, __NAME__.\n This is meant to be QUITE DIFFICULT.\n 21 brain-bending challenges.\n The top 5 scores win actual Bitcoin\n - the hardest money ever created.\n Think you\'re up for it?',
-          type: 'information',
-          category: 'Senior\nScavenger Hunt'
-        },
-        {
-          text: 'Your first challenge is to identify the next letter in this sequence:\nM,V,E,M,J,?',
-          subtext: 'Hint: Think outside the box, in fact think WAY outside the box.',
-          answer: 'S',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: 'Your next challenge is to find the Guardian of the Flame and identify his magic item.',
-          answer: 'lighter',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: '.. -.-. --- -. .. -.-.',
-          subtext:
-            'Hint: This is Morse code. Dots are short signals, dashes are long signals, and spaces separate letters.',
-          answer: 'iconic',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: 'Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.',
-          subtext: "Hint: Don't forget to count the quadrilaterals of all dimensions. including the clue itself! ",
-          answer: '121',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What 4-digit number has the following properties?\n- All digits are different\n- The digit in the thousands place is three times the digit in the tens place\n- The digit in the hundreds place is one less than the digit in the tens place\n- The digit in the ones place is two more than the digit in the hundreds place',
-          answer: '',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle,
-          validation: {
-            type: 'regex',
-            pattern: /^(3012|6123|9234)$/
-          }
-        },
-        {
-          text: 'What is the next number in this sequence:\n1,4,1,5,9,2,6?',
-          subtext: 'Hint: This sequence is infinite and non-repeating. It describes something very fundamental about our universe.',
-          answer: '5',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: '',
-          answer: '',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'Great! Now, solve this binary puzzle:\nThe decimal equivalent of the binary number 1100110 is 102 as shown here.\n What is the decimal equivalent of the binary number 01000101?',
-          image: binary,
-          answer: '69',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher
-        },
-        {
-          text: 'What is the only element that is a liquid metal at room temperature?',
-          subtext: 'Hint: It shares its name with a planet.',
-          answer: 'mercury',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-                {
-          text: 'What block height was Laurel Cardiff-Das born?',
-          subtext: 'Hint: Our Vectors & Logos expert might know the answer to this one.',
-          answer: '813918',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'What are the missing words?\n52 c in a d without 2 j',
-          subtext: 'Hint: You must be royally flushed to get this one.',
-          answer: '',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle,
-          validation: {
-            type: 'regex',
-            pattern: /cards[\s,]+deck[\s,]+jokers?$/i
-          },
-        },
-        {
-          text: 'White to move and checkmate in two moves.\n Only the first move is required for the answer.\nUse standard chess notation.',
-          subtext:
-            'Hint: Look for a move that puts black in check, even if it seems to lose material at first.\nAre you missing a "+" for check?\nThe eventual plan is Rd8#',
-          answer: 'Qb8+',
-          type: 'text',
-          image: chess_2,
-          category: 'Puzzle',
-          icon: puzzle
-        },
-        {
-          text: "What is the next row of numbers in this sequence?\n1\n1,1\n2,1\n1,2,1,1,\n1,1,1,2,1,1\n3,1,1,2,1,1",
-          subtext: 'Hint: The rows are self referential. Each row describes the previous row. The first row is "one 1" → 1,1. The second row is "two 1s" → 2,1. The third row is "one 2, then one 1" → 1,2,1,1, etc.',
-          answer: '',
-          type: 'text',
-          category: 'Sequence',
-          icon: sequence
-        },
-        {
-          text: "Find one of our Children's Coordinators and ask for the magic word.",
-          answer: 'friendship',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'What are the missing words?\n11 p on a s t',
-          answer: '',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle,
-          validation: {
-            type: 'regex',
-            pattern: /players[\s,]+(soccer|football)[\s,]+team$/i
-          }
-        },
-        {
-          text: "What is the hometown of last year's international headliner?",
-          answer: 'Preston',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: "What something the maker doesn't need, the buyer doesn't use, and the user doesn't see?",
-          subtext: 'Hint: This is a classic riddle that has been around for centuries.\nIt describes something that is associated with death, but it is not alive itself.',
-          answer: 'coffin',
-          type: 'text',
-          category: 'Riddle',
-          icon: riddle
-        },
-        {
-          text: 'Decode this encrypted message to find the magic word:\n fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf',
-          subtext: 'Hint: This is a ROT13 cypher — type the letter "a" and see what letter it becomes.\nWhat doyou notice about the relationship between the original letters and the transformed letters?',
-          answer: '',
-          type: 'text',
-          category: 'Cypher',
-          icon: cypher,
-          validation: { type: 'rot13', encoded: 'fhcrepnyvsentvyvfgvprkcvnyvqbpvbhf' }
-        },
-        {
-          text: '',
-          answer: '',
-          type: 'text',
-          category: 'Trivia',
-          icon: trivia
-        },
-        {
-          text: 'Go to the Flipbook Station for your next clue.',
-          answer: 'animated',
-          type: 'text',
-          category: 'Quest',
-          icon: quest
-        },
-        {
-          text: 'Find a number that has a SHA256 output with 2 leading zeros\n(Example Hash: 00abcdef...)\nUse trial and error.\nP.S. this is very similar to how Bitcoin mining works!',
-          subtext: '',
-          answer: '',
-          type: 'text',
-          category: 'Quest',
-          icon: quest,
-          validation: { type: 'sha256-leading-zeros', zeros: 2 } 
-        },
-        {
-          text: "Well done, __NAME__.\n You've completed the Senior Scavenger Hunt.\n If your score is in the top 5, you're in the running for Bitcoin.\n Submit your score to enter.",
-          type: 'information',
-          category: 'Almost done!'
-        }
-      ],
+      rawQuestions: scavengerQuestions,
 
       answers: [],
       feedback: [],
       liveHashes: [],
       liveRot13s: [],
       viewingLeaderboard: false,
+      viewingToolkit: false,
+      puzzleToolkitLinks: [
+        {
+          name: 'Morse Code Translator',
+          description: 'Decode and encode Morse quickly',
+          url: 'https://morsecode.world/international/translator.html'
+        },
+        {
+          name: 'Timechain Calendar',
+          description: 'Map calendar dates to Bitcoin block heights',
+          url: 'https://timechaincalendar.com/en'
+        },
+        {
+          name: 'CyberChef ROT13',
+          description: 'Solve ROT13 and other text ciphers',
+          url: 'https://gchq.github.io/CyberChef/#recipe=ROT13(true,true,false,13)'
+        },
+        {
+          name: 'Binary to Decimal',
+          description: 'Convert binary numbers instantly',
+          url: 'https://www.rapidtables.com/convert/number/binary-to-decimal.html'
+        },
+        {
+          name: 'SHA256 Tool',
+          description: 'Check hash outputs for leading zeros',
+          url: 'https://emn178.github.io/online-tools/sha256.html'
+        }
+      ],
+      chessToolkitLinks: [
+        {
+          name: 'Lichess Analysis Board',
+          description: 'Set up and analyze positions quickly',
+          url: 'https://lichess.org/analysis'
+        },
+        {
+          name: 'Chess Tempo Puzzles',
+          description: 'Tactics training and pattern recognition',
+          url: 'https://chesstempo.com/chess-tactics/'
+        },
+        {
+          name: 'Chess Notation Guide',
+          description: 'Quick SAN notation reference',
+          url: 'https://www.chess.com/terms/chess-notation'
+        }
+      ],
       leaderboardData: { senior: [], junior: [] },
       leaderboardLoading: false,
       scoreSubmitted: false,
+      hostValidationKey: 'a2c4e2026', // change this to your onsite host key
       showFeedback: false,  // set true to reveal per-question correct/incorrect and nav score
       hintState: {},  // per-question hint reveal state: null | 'warn1' | 'warn2' | 'shown'
-      hintsUsed: {}  // per-question flag set when hint is revealed
+      hintsUsed: {},  // per-question flag set when hint is revealed
+      lockedAnswers: {} // per-question lock state after host verification
     }
   },
   computed: {
     questions() {
+      const icons = { quest, trivia, riddle, cypher, sequence, puzzle }
+      const images = { binary, chess_2 }
       const base =
         this.difficulty === 'junior'
-          ? this.questionsJunior
+          ? this.rawQuestions.questionsJunior
           : this.difficulty === 'senior'
-            ? this.questionsSenior
+            ? this.rawQuestions.questionsSenior
             : []
       if (!base.length) return base
+      const hydrated = base.map((q) => {
+        const item = { ...q }
+        if (item.iconKey) item.icon = icons[item.iconKey] || null
+        if (item.imageKey) item.image = images[item.imageKey] || null
+        if (item.validation?.type === 'regex' && typeof item.validation.pattern === 'string') {
+          item.validation = {
+            ...item.validation,
+            pattern: new RegExp(item.validation.pattern, item.validation.flags || '')
+          }
+        }
+        return item
+      })
       const name = this.fullName || 'Guest'
-      const out = [...base]
+      const out = [...hydrated]
       out[0] = { ...out[0], text: out[0].text.replace('__NAME__', name) }
       out[out.length - 1] = {
         ...out[out.length - 1],
@@ -613,7 +416,8 @@ export default {
           answers: this.answers,
           feedback: this.feedback,
           hintsUsed: this.hintsUsed,
-          hintState: this.hintState
+          hintState: this.hintState,
+          lockedAnswers: this.lockedAnswers
         }
         window?.localStorage?.setItem(this.progressKey, JSON.stringify(payload))
       } catch (e) {
@@ -655,6 +459,9 @@ export default {
         if (saved.hintState && typeof saved.hintState === 'object') {
           this.hintState = { ...saved.hintState }
         }
+        if (saved.lockedAnswers && typeof saved.lockedAnswers === 'object') {
+          this.lockedAnswers = { ...saved.lockedAnswers }
+        }
       } catch (e) {
         // ignore parse/storage errors
       }
@@ -683,6 +490,7 @@ export default {
       this.feedback = []
       this.hintState = {}
       this.hintsUsed = {}
+      this.lockedAnswers = {}
       this.scoreSubmitted = false
       this.clearProgress()
       this.difficulty = null
@@ -712,8 +520,23 @@ export default {
     async checkAnswer(index) {
       const question = this.questions[index]
       if (!question) return
+      if (this.lockedAnswers[index]) {
+        this.feedback[index] = 'correct'
+        return
+      }
 
       const input = (this.answers[index] || '').trim()
+
+      if (question.validation?.type === 'host-key') {
+        const ok = input.toUpperCase() === (this.hostValidationKey || '').trim().toUpperCase()
+        this.feedback[index] = ok ? 'correct' : 'incorrect'
+        if (ok) {
+          this.lockedAnswers = Object.assign({}, this.lockedAnswers, { [index]: true })
+          this.answers = Object.assign([], this.answers, { [index]: 'VERIFIED' })
+          this.persistProgress()
+        }
+        return
+      }
 
       // Rule-based validator
       if (question.validation?.type === 'sha256-leading-zeros') {
@@ -740,6 +563,7 @@ export default {
     },
     async handleInput(index) {
       const question = this.questions[index]
+      if (this.lockedAnswers[index]) return
       if (question?.validation?.type === 'sha256-leading-zeros') {
         await this.updateLiveHash(index)
       }
@@ -859,6 +683,12 @@ export default {
     async openLeaderboard() {
       this.viewingLeaderboard = true
       await this.loadLeaderboard()
+    },
+    openExternalTool(url) {
+      const opened = window.open(url, '_blank', 'noopener,noreferrer')
+      if (opened) {
+        opened.opener = null
+      }
     },
     async loadLeaderboard() {
       this.leaderboardLoading = true
@@ -985,6 +815,7 @@ input {
   border-radius: 5px;
   color: white;
   transition: border-color 0.3s ease;
+  text-align: center;
 }
 
 input:focus {
@@ -1025,6 +856,12 @@ button:disabled {
 .incorrect {
   color: red;
   font-weight: bold;
+}
+
+.answer-locked-note {
+  color: rgba(120, 255, 120, 0.95);
+  font-weight: 700;
+  margin: 0.75rem 0;
 }
 
 .score {
@@ -1288,6 +1125,16 @@ button:disabled {
   flex-shrink: 0;
 }
 
+.nav-toolkit-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 8px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .submit-score-btn {
   width: 100%;
   font-size: 1.15em;
@@ -1411,6 +1258,50 @@ button:disabled {
 
 .lb-back-btn {
   margin-top: 1.5rem;
+}
+
+.toolkit-panel {
+  max-width: 680px;
+}
+
+.toolkit-subtitle {
+  opacity: 0.8;
+  margin: -0.5rem 0 1rem;
+}
+
+.toolkit-section-title {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.toolkit-links {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.toolkit-link-btn {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.toolkit-link-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.toolkit-link-desc {
+  opacity: 0.8;
+  font-size: 0.86rem;
 }
 
 /* SHA256 live preview */
