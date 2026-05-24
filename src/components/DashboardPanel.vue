@@ -2326,6 +2326,30 @@ button.active-filter:hover {
   overflow: visible;
 }
 
+@media (min-width: 769px) {
+  .applicant {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .applicant-content {
+    gap: 0.35rem;
+  }
+
+  .preview-section,
+  .ticket-section,
+  .message-section,
+  .settime-section,
+  .contract-section,
+  .checkedin-section,
+  .revenue-section,
+  .quantities-section {
+    margin-top: 0.35rem;
+    padding: 0.35rem;
+    gap: 0.35rem;
+  }
+}
+
 .detail-link-icon {
   position: absolute;
   top: 0.5rem;
@@ -2400,11 +2424,28 @@ button.active-filter:hover {
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .actions img {
-  margin: auto;
+  margin: 0;
+}
+
+.message-section {
+  grid-template-columns: 3fr 1fr;
+  align-items: center;
+}
+
+.message-section input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.message-section .action-icon {
+  justify-self: center;
+  align-self: center;
+  margin: 0;
 }
 
 input [type='datetime-local'],
@@ -2746,6 +2787,10 @@ a {
   img {
     margin: 0.2rem;
   }
+
+  .message-section .action-icon {
+    justify-self: center;
+  }
 }
 
 /* Loading state for individual items */
@@ -2932,13 +2977,16 @@ a {
 .compensation-section {
   display: grid;
   grid-template-columns: 3fr 1fr;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.35rem;
   border-radius: 10px;
   border: 1px solid var(--festivall-baby-blue);
   width: 100%;
   align-items: start;
+  box-sizing: border-box;
+  max-height: 120px;
+  overflow-y: auto;
 }
 .comp-left {
   display: flex;
@@ -2953,10 +3001,12 @@ a {
   justify-content: flex-start;
   gap: 0.35rem;
   padding-top: 0.15rem;
+  min-width: 70px;
 }
 .comp-monetary-row {
   display: flex;
   gap: 0.3rem;
+  min-width: 0;
 }
 .comp-amount-input {
   flex: 1;
@@ -2970,6 +3020,7 @@ a {
 }
 .comp-currency-select {
   width: 70px;
+  flex: 0 0 70px;
   padding: 0.3rem 0.2rem;
   border-radius: 6px;
   border: 1px solid #555;
@@ -2988,9 +3039,10 @@ a {
   box-sizing: border-box;
 }
 .comp-addons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.2rem 0.5rem;
+  min-width: 0;
 }
 .addon-toggle {
   display: flex;
@@ -3035,5 +3087,33 @@ a {
 .comp-clear-btn:hover {
   background: #c0392b;
   color: white;
+}
+
+@media (max-width: 920px) {
+  .compensation-section {
+    grid-template-columns: 3fr 1fr;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .comp-right {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    padding-top: 0.15rem;
+    min-width: 70px;
+  }
+
+  .comp-clear-btn {
+    align-self: flex-start;
+    margin-top: 0.1rem;
+  }
+
+  .comp-addons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.5rem;
+  }
 }
 </style>
