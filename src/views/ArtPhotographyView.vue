@@ -91,8 +91,6 @@
             <select id="contact_point" v-model="form.contact_point" required>
               <option value="">— select —</option>
               <option value="Nish">Nish</option>
-              <option value="Janicka">Janicka</option>
-              <option value="Becca">Becca</option>
               <option value="Prasenjit">Prasenjit</option>
             </select>
           </div>

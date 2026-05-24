@@ -66,8 +66,6 @@
               <option value="Brandon">Brandon</option>
               <option value="Yvo">Yvo</option>
               <option value="Arthur">Arthur</option>
-              <option value="Janicka">Janicka</option>
-              <option value="Cory">Cory</option>
             </select>
           </div>
           <div class="form-section">
