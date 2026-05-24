@@ -1409,6 +1409,9 @@ export default {
       if (hasMonetary) parts.push(`Fee: ${amount} ${currency}${cadHint}`)
       if (non_monetary) parts.push(`Non-monetary: ${non_monetary}`)
       if (hasAddons) parts.push(`Add-ons: ${Object.entries(addons).filter(([, v]) => v).map(([k]) => k.replace(/_/g, ' ')).join(', ')}`)
+      const accNotes = applicant.comp_accommodation && applicant.comp_accommodation_notes ? applicant.comp_accommodation_notes.trim() : null
+      if (accNotes) parts.push(`Accommodation notes: ${accNotes}`)
+      if (applicant.comp_payment_method) parts.push(`Preferred payment: ${applicant.comp_payment_method === 'etransfer' ? 'E-Transfer' : applicant.comp_payment_method.charAt(0).toUpperCase() + applicant.comp_payment_method.slice(1)}`)
       if (!confirm(`${warnPrefix}Save compensation?\n\n${parts.join('\n')}`)) return
 
       const ratesObj = {
