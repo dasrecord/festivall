@@ -68,33 +68,46 @@
           <!-- Hint reveal with friction -->
           <template v-if="question.subtext">
             <div class="hint-area">
-              <!-- Step 0: offer hint -->
-              <button
-                v-if="!hintState[index]"
-                class="hint-trigger-btn"
-                @click="hintState[index] = 'warn1'; $forceUpdate()"
-              >💡 Show Hint</button>
+              <!-- Junior: no friction, free hints -->
+              <template v-if="difficulty === 'junior'">
+                <button
+                  v-if="!hintState[index]"
+                  class="hint-trigger-btn"
+                  @click="revealHint(index)"
+                >💡 Show Hint</button>
+                <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+              </template>
 
-              <!-- Step 1: first warning -->
-              <div v-else-if="hintState[index] === 'warn1'" class="hint-warn">
-                <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. This may have an impact on your score and ranking. Are you sure?</p>
-                <div class="hint-warn-actions">
-                  <button class="hint-warn-yes" @click="hintState[index] = 'warn2'; $forceUpdate()">Yes, I need it</button>
-                  <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Never mind</button>
+              <!-- Senior: two-step warning with penalty -->
+              <template v-else>
+                <!-- Step 0: offer hint -->
+                <button
+                  v-if="!hintState[index]"
+                  class="hint-trigger-btn"
+                  @click="hintState[index] = 'warn1'; $forceUpdate()"
+                >💡 Show Hint</button>
+
+                <!-- Step 1: first warning -->
+                <div v-else-if="hintState[index] === 'warn1'" class="hint-warn">
+                  <p class="hint-warn-text">⚠️ This is a <strong>Bitcoin competition</strong>. This may have an impact on your score and ranking. Are you sure?</p>
+                  <div class="hint-warn-actions">
+                    <button class="hint-warn-yes" @click="hintState[index] = 'warn2'; $forceUpdate()">Yes, I need it</button>
+                    <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Never mind</button>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Step 2: last chance -->
-              <div v-else-if="hintState[index] === 'warn2'" class="hint-warn">
-                <p class="hint-warn-text">🚨 <strong>Last chance.</strong> This will cost you <strong>-1 point</strong>. The top competitors won't need this.</p>
-                <div class="hint-warn-actions">
-                  <button class="hint-warn-yes" @click="revealHint(index)">Show the hint</button>
-                  <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Actually, no</button>
+                <!-- Step 2: last chance -->
+                <div v-else-if="hintState[index] === 'warn2'" class="hint-warn">
+                  <p class="hint-warn-text">🚨 <strong>Last chance.</strong> This will cost you <strong>-1 point</strong>. The top competitors won't need this.</p>
+                  <div class="hint-warn-actions">
+                    <button class="hint-warn-yes" @click="revealHint(index)">Show the hint</button>
+                    <button class="hint-warn-no" @click="hintState[index] = null; $forceUpdate()">Actually, no</button>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Hint revealed -->
-              <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+                <!-- Hint revealed -->
+                <p v-else-if="hintState[index] === 'shown'" class="hint-revealed" v-html="formatText(question.subtext)"></p>
+              </template>
             </div>
           </template>
           
@@ -611,7 +624,7 @@ export default {
       const correct = this.feedback.filter(
         (status, index) => status === 'correct' && this.questions[index]?.type === 'text'
       ).length
-      const hintPenalty = Object.keys(this.hintsUsed).length
+      const hintPenalty = this.difficulty === 'senior' ? Object.keys(this.hintsUsed).length : 0
       return Math.max(0, correct - hintPenalty)
     },
     countScoredQuestions() {

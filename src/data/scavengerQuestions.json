@@ -1,12 +1,13 @@
 {
   "questionsJunior": [
     {
-      "text": "Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 12 fun challenges and find magic words hidden around the festival!",
+      "text": "Welcome, __NAME__!\n Ready for a fun adventure?\n Complete 15 fun challenges and find magic words hidden around the festival!",
       "type": "information",
       "category": "Junior\nScavenger Hunt"
     },
     {
       "text": "What colour do you get when you mix red and blue?",
+      "subtext": "Hint: Think about what happens when you mix paint!",
       "answer": "purple",
       "type": "text",
       "category": "Trivia",
@@ -14,6 +15,7 @@
     },
     {
       "text": "How many legs does a spider have?",
+      "subtext": "Hint: Count carefully — spiders have more legs than insects!",
       "answer": "8",
       "type": "text",
       "category": "Trivia",
@@ -21,34 +23,39 @@
     },
     {
       "text": "I have hands but I can't clap. What am I?",
+      "subtext": "Hint: You'll find me on a wall, and I tell you something very important.",
       "answer": "clock",
       "type": "text",
       "category": "Riddle",
       "iconKey": "riddle"
     },
     {
-      "text": "What is the next number?\n2, 4, 6, 8, ?",
-      "answer": "10",
+      "text": "What is the next number in the sequence?\n1, 1, 2, 3, 5, ?",
+      "subtext": "Hint: Each number is the sum of the two numbers before it.",
+      "answer": "8",
       "type": "text",
       "category": "Sequence",
       "iconKey": "sequence"
     },
     {
       "text": "Find the Guardian of the Flame and ask for his magic item.",
+      "subtext": "Hint: Look for someone tending to a flame somewhere on the festival grounds.",
       "answer": "lighter",
       "type": "text",
       "category": "Quest",
       "iconKey": "quest"
     },
     {
-      "text": "What is a baby dog called?",
-      "answer": "puppy",
+      "text": "I have cities but no houses live there.\nI have mountains but no trees grow there.\nI have water but no fish swim there.\nWhat am I?",
+      "subtext": "Hint: You might need one to find your way around the festival grounds!",
+      "answer": "map",
       "type": "text",
-      "category": "Trivia",
-      "iconKey": "trivia"
+      "category": "Riddle",
+      "iconKey": "riddle"
     },
     {
-      "text": "Visit the main stage and look for the secret symbol.",
+      "text": "Head to the main stage and look near the front for a hidden symbol. What is it?",
+      "subtext": "Hint: Look carefully — it's smaller than you'd expect!",
       "answer": "star",
       "type": "text",
       "category": "Quest",
@@ -56,20 +63,23 @@
     },
     {
       "text": "Go to the Flipbook Station for your next clue.",
+      "subtext": "Hint: Find the Flipbook Station on the festival grounds and complete the activity there.",
       "answer": "motion",
       "type": "text",
       "category": "Quest",
       "iconKey": "quest"
     },
     {
-      "text": "What do caterpillars turn into?",
-      "answer": "butterfly",
+      "text": "What is the closest planet to the Sun?",
+      "subtext": "Hint: Think about the order of planets in our solar system — which one is first?",
+      "answer": "mercury",
       "type": "text",
       "category": "Trivia",
       "iconKey": "trivia"
     },
     {
       "text": "I'm tall when I'm young and short when I'm old. What am I?",
+      "subtext": "Hint: I provide light and warmth, and I slowly disappear as I do.",
       "answer": "candle",
       "type": "text",
       "category": "Riddle",
@@ -77,17 +87,46 @@
     },
     {
       "text": "Find one of our Children's Coordinators and ask for the magic word.",
+      "subtext": "Hint: Look for someone wearing a Children's Coordinator badge — they're here to help!",
       "answer": "friendship",
       "type": "text",
       "category": "Quest",
       "iconKey": "quest"
     },
     {
-      "text": "What is 4 × 3?",
-      "answer": "12",
+      "text": "The more you take, the more you leave behind. What am I?",
+      "subtext": "Hint: You've been making these all day at the festival!",
+      "answer": "footsteps",
       "type": "text",
-      "category": "Puzzle",
-      "iconKey": "puzzle"
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Decode this secret message to find the magic word:\n18-5-21-14-9-15-14",
+      "subtext": "Hint: Each number represents a letter of the alphabet. A=1, B=2, C=3... Z=26.",
+      "answer": "reunion",
+      "type": "text",
+      "category": "Cypher",
+      "iconKey": "cypher"
+    },
+    {
+      "text": "What goes up but never comes down?",
+      "subtext": "Hint: Think about birthdays — once it goes up, can it ever go back?",
+      "answer": "age",
+      "type": "text",
+      "category": "Riddle",
+      "iconKey": "riddle"
+    },
+    {
+      "text": "Find the Reunion DevOps guy somewhere on the festival grounds.\nChallenge him to a game of chess — or if you don't know how to play, ask him to teach you a few basics.\nEither way, he'll give you the magic word!",
+      "subtext": "Hint: Look for someone with a chess board. You can play a game or just learn how the pieces move — both count!",
+      "answer": "",
+      "type": "text",
+      "category": "Quest",
+      "iconKey": "quest",
+      "validation": {
+        "type": "host-key"
+      }
     },
     {
       "text": "Amazing work, __NAME__!\n You finished the Junior Scavenger Hunt!\n You're a superstar! 🌟",
