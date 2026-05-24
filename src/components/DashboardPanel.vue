@@ -230,6 +230,19 @@
           >
             📋
           </div>
+          <!-- Contract status chip -->
+          <div class="contract-chip">
+            <span v-if="applicant.contract_signed" class="contract-chip-signed">✓ Signed</span>
+            <button
+              v-else
+              class="contract-chip-unsigned"
+              :class="{ 'contract-chip-confirm': contractRemindPending.has(applicant.id_code) }"
+              @click.stop="triggerContractRemind(applicant.id_code)"
+            >
+              <span v-if="!contractRemindPending.has(applicant.id_code)">✗ Unsigned</span>
+              <span v-else>Send reminder?</span>
+            </button>
+          </div>
           <div class="applicant-content">
             <div class="name-section">
               <h2>
@@ -398,35 +411,21 @@
             class="ticket-content"
           >
             <div class="payment-section">
-              <!-- PAID STATUS -->
-              Payment Status:
-              <p v-if="applicant.paid" style="color: green; font-size: large">
-                Paid<br />
-
-                <button @click="revokeTicket(applicant.id_code)" style="background-color: red">
-                  Revoke Ticket</button
-                >
-                <button
-                  v-if="applicant.ticket_quantity > 0"
-                  @click="openTransferModal(applicant)"
-                  style="background-color: #4a90d9; margin-top: 4px"
-                >
-                  Transfer Ticket</button
-                ><br />
-              </p>
-              <p v-else style="color: red; font-size: large">
-                Unpaid<br />
+              <div class="status-row">
+                <span class="status-label">Payment:</span>
+                <span v-if="applicant.paid" class="status-badge status-ok">Paid</span>
+                <span v-else class="status-badge status-bad">Unpaid</span>
+              </div>
+              <div class="card-action-row" v-if="applicant.paid">
+                <button @click="revokeTicket(applicant.id_code)" class="card-btn-danger">Revoke Ticket</button>
+                <button v-if="applicant.ticket_quantity > 0" @click="openTransferModal(applicant)" class="card-btn-primary">Transfer Ticket</button>
+              </div>
+              <div class="card-action-row" v-else>
                 <a @click="remindPayment(applicant.id_code)">
-                  <img :src="reminder_icon" alt="Remind Payment" class="action-icon" />
+                  <img :src="reminder_icon" alt="Remind Payment" class="action-icon" style="width:auto;height:24px;" />
                 </a>
-                <button
-                  @click="confirmPaymentReceived(applicant.id_code)"
-                  style="background-color: green"
-                >
-                  Confirm Payment Received
-                </button>
-              </p>
-              <br />
+                <button @click="confirmPaymentReceived(applicant.id_code)" class="card-btn-success">Confirm Payment</button>
+              </div>
             </div>
             <div class="checkedin-section">
               <!-- CHECKED IN STATUS -->
@@ -483,7 +482,7 @@
             </div>
             <div class="preview-section">
               <!-- PREVIEW TICKET -->
-              <button @click="previewTicket(applicant.id_code)">Preview Ticket</button>
+              <button @click="previewTicket(applicant.id_code)" class="section-action-btn">Preview Ticket</button>
               <a
                 :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
                 target="_blank"
@@ -509,13 +508,6 @@
           >
             <a v-if="applicant.mix_track_url" :href="applicant.mix_track_url" target="_blank">
               <img :src="mixTrack_icon" alt="Listen to Mix/Track" class="action-icon" />
-            </a>
-            Contract Status:
-            <p v-if="applicant.contract_signed" style="color: green; font-size: large">Signed</p>
-            <p v-else style="color: red; font-size: large">Not Signed</p>
-
-            <a v-if="!applicant.contract_signed" @click="remindContract(applicant.id_code)">
-              <img :src="reminder_icon" alt="Remind Applicant" class="action-icon" />
             </a>
             <div v-if="applicant.phone" class="message-section">
               <input type="text" v-model="applicant.message" placeholder="message applicant" />
@@ -607,22 +599,6 @@
               "
               class="settime-section"
             >
-              <div v-for="(settime, index) in applicant.settimes || []" :key="index">
-                <p>
-                  Settime {{ index + 1 }}:
-                  {{
-                    new Date(settime).toLocaleString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      year: 'numeric',
-                      month: 'numeric',
-                      day: 'numeric'
-                    })
-                  }}
-                  <button @click="removeSettime(applicant.id_code, index)">Remove</button>
-                </p>
-              </div>
-
               <input type="datetime-local" v-model="applicant.newSettime" />
               <img
                 @click="
@@ -634,10 +610,32 @@
                 class="action-icon"
                 style="width: auto; height: 32px"
               />
+
+              <div v-for="(settime, index) in applicant.settimes || []" :key="index">
+                <p
+                  class="settime-row"
+                  :class="{ 'settime-row--confirm': settimeRemovePending.has(`${applicant.id_code}-${index}`) }"
+                  @click="triggerSettimeRemove(applicant.id_code, index)"
+                >
+                  <span v-if="!settimeRemovePending.has(`${applicant.id_code}-${index}`)">
+                    Settime {{ index + 1 }}:
+                    {{
+                      new Date(settime).toLocaleString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric'
+                      })
+                    }}
+                  </span>
+                  <span v-else>Remove settime {{ index + 1 }}?</span>
+                </p>
+              </div>
             </div>
 
             <div class="contract-section">
-              <button @click="generateContract(applicant.id_code)">Preview Contract</button>
+              <button @click="generateContract(applicant.id_code)" class="contract-preview-btn">Preview Contract</button>
               <a
                 v-if="applicant.email"
                 :href="
@@ -652,7 +650,7 @@
                 "
                 target="_blank"
               >
-                <img :src="contract_icon" alt="Book Applicant" class="action-icon" />
+                <img :src="contract_icon" alt="Book Applicant" class="action-icon" style="width:auto;height:32px;" />
               </a>
             </div>
 
@@ -785,6 +783,29 @@ export default {
 
     const declinePendingCards = reactive(new Set())
     const declineCardReasons = reactive({})
+
+    const contractRemindPending = reactive(new Set())
+    const triggerContractRemind = (id_code) => {
+      if (contractRemindPending.has(id_code)) {
+        contractRemindPending.delete(id_code)
+        remindContract(id_code)
+      } else {
+        contractRemindPending.add(id_code)
+        setTimeout(() => contractRemindPending.delete(id_code), 3000)
+      }
+    }
+
+    const settimeRemovePending = reactive(new Set())
+    const triggerSettimeRemove = (id_code, index) => {
+      const key = `${id_code}-${index}`
+      if (settimeRemovePending.has(key)) {
+        settimeRemovePending.delete(key)
+        removeSettime(id_code, index)
+      } else {
+        settimeRemovePending.add(key)
+        setTimeout(() => settimeRemovePending.delete(key), 3000)
+      }
+    }
 
     const toggleDeclinePending = (id) => {
       if (declinePendingCards.has(id)) {
@@ -2186,6 +2207,10 @@ export default {
       exportPosterText,
       generateContract,
       remindContract,
+      contractRemindPending,
+      triggerContractRemind,
+      settimeRemovePending,
+      triggerSettimeRemove,
       remindPayment,
       confirmPaymentReceived,
       revokeTicket,
@@ -2372,6 +2397,56 @@ button.active-filter:hover {
   transform: scale(1.1);
 }
 
+/* ── Contract status chip (top-left of card) ──────────────────────────────── */
+.contract-chip {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.contract-chip-signed,
+.contract-chip-unsigned {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.12rem 0.4rem;
+  border-radius: 99px;
+  pointer-events: none;
+}
+
+.contract-chip-signed {
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+}
+
+.contract-chip-unsigned {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.12rem 0.4rem;
+  border-radius: 99px;
+  cursor: pointer;
+  color: #ef5350;
+  background: rgba(239, 83, 80, 0.12);
+  border: 1px solid rgba(239, 83, 80, 0.35);
+  pointer-events: all;
+  transition: background 0.2s, color 0.2s;
+}
+
+.contract-chip-unsigned:hover {
+  background: rgba(239, 83, 80, 0.25);
+}
+
+.contract-chip-confirm {
+  color: #fff;
+  background: #c0392b;
+  border-color: #c0392b;
+}
+
 .preview-section,
 .ticket-section,
 .message-section,
@@ -2439,6 +2514,7 @@ button.active-filter:hover {
 .message-section input {
   width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   margin: 0;
 }
 
@@ -2448,11 +2524,154 @@ button.active-filter:hover {
   margin: 0;
 }
 
+
+.settime-section > div {
+  grid-column: 1 / -1;
+}
+
+.settime-section p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.settime-section input {
+  width: clamp(150px, 85%, 280px);
+  min-width: 0;
+  justify-self: start;
+}
+
+.settime-section .action-icon {
+  display: flex;
+  justify-self: center;
+  align-self: center;
+  margin: 0 auto;
+}
+
+.settime-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  user-select: none;
+}
+
+.settime-row:hover {
+  border-color: rgba(192, 57, 43, 0.4);
+  background: rgba(192, 57, 43, 0.07);
+}
+
+.settime-row--confirm {
+  border-color: #c0392b !important;
+  background: #c0392b !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* contract-status-* kept for back-compat but status-row/badge are canonical now */
+
+/* ── Shared section action button (blue outline, fills left cell) ─────────── */
+.section-action-btn,
+.contract-preview-btn {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--festivall-baby-blue);
+  border: 1px solid var(--festivall-baby-blue);
+  cursor: pointer;
+  width: 100%;
+}
+
+.section-action-btn:hover,
+.contract-preview-btn:hover {
+  background: var(--festivall-baby-blue);
+  color: white;
+}
+
+/* ── Payment section ──────────────────────────────────────────────────────── */
+.payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 10px;
+  border: 1px solid var(--festivall-baby-blue);
+}
+
+/* ── Shared status row (payment, contract, etc.) ──────────────────────────── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.status-label {
+  color: #aaa;
+}
+
+.status-badge {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.status-ok  { color: #4caf50; }
+.status-bad { color: #ef5350; }
+
+/* ── Card action row (button groups inside sections) ──────────────────────── */
+.card-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.card-btn-primary,
+.card-btn-danger,
+.card-btn-success {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.card-btn-primary {
+  border: 1px solid var(--festivall-baby-blue);
+  color: var(--festivall-baby-blue);
+}
+.card-btn-primary:hover { background: var(--festivall-baby-blue); color: white; }
+
+.card-btn-danger {
+  border: 1px solid #c0392b;
+  color: #e74c3c;
+}
+.card-btn-danger:hover { background: #c0392b; color: white; }
+
+.card-btn-success {
+  border: 1px solid #388e3c;
+  color: #4caf50;
+}
+.card-btn-success:hover { background: #388e3c; color: white; }
+
 input [type='datetime-local'],
 input {
   padding: 0.4rem;
   border-radius: 6px;
   border: 1px solid var(--festivall-baby-blue);
+  background: #1a1a1d;
+  color: white;
 }
 
 h2 {
@@ -2800,9 +3019,14 @@ a {
 }
 
 /* Meal ticket controls */
+.meal-management-section {
+  text-align: center;
+}
+
 .meal-tickets-control {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   margin: 0.5rem 0;
 }
@@ -2985,8 +3209,6 @@ a {
   width: 100%;
   align-items: start;
   box-sizing: border-box;
-  max-height: 120px;
-  overflow-y: auto;
 }
 .comp-left {
   display: flex;
@@ -3081,7 +3303,6 @@ a {
   background: transparent;
   color: #e74c3c;
   cursor: pointer;
-  align-self: flex-start;
   margin-top: 0.1rem;
 }
 .comp-clear-btn:hover {
@@ -3092,8 +3313,6 @@ a {
 @media (max-width: 920px) {
   .compensation-section {
     grid-template-columns: 3fr 1fr;
-    max-height: 120px;
-    overflow-y: auto;
   }
 
   .comp-right {
