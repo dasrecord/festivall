@@ -384,6 +384,7 @@ export default {
       } catch (error) {
         console.error('Error saving contract:', error)
         alert('Failed to save the contract.')
+        throw error
       }
     }
 
@@ -433,6 +434,18 @@ export default {
       isSubmitting.value = true
       try {
         console.log('Starting contract submission process...')
+
+        // Guard against double-submission (e.g. two open tabs)
+        const guardQuery = query(
+          collection(reunion_db, 'participants_2026'),
+          where('id_code', '==', applicant.value.id_code)
+        )
+        const guardSnap = await getDocs(guardQuery)
+        if (!guardSnap.empty && guardSnap.docs[0].data().contract?.signed === true) {
+          alert('Your contract has already been signed.')
+          router.push({ name: 'reunionticket' })
+          return
+        }
 
         // Complete all critical database operations first
         await updateApplication()
