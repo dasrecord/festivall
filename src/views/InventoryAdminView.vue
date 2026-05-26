@@ -56,43 +56,122 @@
       </div>
     </div>
 
-    <!-- Inventory Table -->
+    <!-- Filter / Group toolbar -->
+    <div class="inv-toolbar">
+      <input class="inv-search" v-model="searchQuery" placeholder="Search items…" />
+      <div class="inv-tb-seg">
+        <span class="inv-tb-lbl">Group</span>
+        <select class="inv-select" v-model="groupBy">
+          <option value="none">None</option>
+          <option value="sub_location">Sub-location</option>
+          <option value="location">Location</option>
+          <option value="department">Department</option>
+        </select>
+      </div>
+      <div class="inv-tb-seg">
+        <span class="inv-tb-lbl">Dept</span>
+        <select class="inv-select" v-model="filterDept">
+          <option value="">All</option>
+          <option v-for="d in ALL_DEPARTMENTS" :key="d.key" :value="d.key">{{ d.label }}</option>
+        </select>
+      </div>
+      <div class="inv-tb-seg">
+        <span class="inv-tb-lbl">Sort</span>
+        <select class="inv-select" v-model="sortBy">
+          <option value="name">Name</option>
+          <option value="sub_location">Sub-loc</option>
+          <option value="location">Location</option>
+        </select>
+      </div>
+      <label class="inv-flag-toggle" :class="{ active: filterRestock }">
+        <input type="checkbox" v-model="filterRestock" style="display:none" />⚠ Restock
+      </label>
+      <label class="inv-flag-toggle" :class="{ active: filterMissing }">
+        <input type="checkbox" v-model="filterMissing" style="display:none" />❌ Missing
+      </label>
+      <span class="inv-result-count">{{ filteredItems.length }} items</span>
+    </div>
+
+    <!-- Items: flat or grouped -->
     <div class="inv-grid">
-      <div class="inv-card">
-        <div class="card-header">
-          <span class="card-title">All Items</span>
-          <span class="card-badge amber">{{ inventoryItems.length }}</span>
-        </div>
-        <div class="section-label" style="margin-bottom:0.3rem;">Name · Location · Departments</div>
-        <div v-if="!inventoryItems.length" class="empty-row">No items yet. Add one above.</div>
-        <div
-          v-for="item in inventoryItems"
-          :key="item.id"
-          class="line-item"
-          :class="{ 'inv-restock': item.needs_restock }"
-        >
-          <span class="line-name">{{ item.name }}</span>
-          <span class="line-meta">
-            {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
-            <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
-          </span>
-          <span class="line-meta" style="color:#555;">
-            {{ Array.isArray(item.departments) ? item.departments.join(', ') : '' }}
-          </span>
-          <span v-if="item.needs_restock" class="line-amount amber" style="font-size:10px;">⚠ restock</span>
-          <span v-if="item.missing" class="line-amount" style="font-size:10px;color:#ef5350;">❌ missing</span>
-          <div class="inv-row-actions">
-            <button class="inv-edit-btn" @click="invOpenEdit(item)">Edit</button>
-            <button class="inv-del-btn" @click="invDelete(item.id)">✕</button>
+      <!-- Flat view -->
+      <template v-if="groupBy === 'none'">
+        <div class="inv-card">
+          <div class="card-header">
+            <span class="card-title">All Items</span>
+            <span class="card-badge amber">{{ filteredItems.length }}</span>
+          </div>
+          <div v-if="!filteredItems.length" class="empty-row">No items match.</div>
+          <div
+            v-for="item in filteredItems"
+            :key="item.id"
+            class="line-item"
+            :class="{ 'inv-restock': item.needs_restock }"
+          >
+            <span class="line-name">{{ item.name }}</span>
+            <span class="line-meta">
+              {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+              <template v-if="item.sub_location"> › {{ item.sub_location }}</template>
+            </span>
+            <span class="line-meta" style="color:#555;">
+              {{ Array.isArray(item.departments) ? item.departments.map(k => deptLabel(k)).join(', ') : '' }}
+            </span>
+            <span v-if="item.needs_restock" class="line-amount amber" style="font-size:10px;">⚠ restock</span>
+            <span v-if="item.missing" class="line-amount" style="font-size:10px;color:#ef5350;">❌ missing</span>
+            <div class="inv-row-actions">
+              <button class="inv-edit-btn" @click="invOpenEdit(item)">Edit</button>
+              <button class="inv-del-btn" @click="invDelete(item.id)">✕</button>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
+      <!-- Grouped view -->
+      <template v-else>
+        <div v-if="!groupedItems.length" class="inv-card">
+          <div class="empty-row" style="padding:0.4rem 0;">No items match.</div>
+        </div>
+        <div
+          v-for="[groupLabel, groupItems] in groupedItems"
+          :key="groupLabel"
+          class="inv-card"
+        >
+          <div class="card-header inv-group-header" @click="toggleGroup(groupLabel)">
+            <span class="card-title">{{ groupLabel }}</span>
+            <span class="card-badge amber">{{ groupItems.length }}</span>
+            <span class="inv-collapse-icon">{{ collapsedGroups.has(groupLabel) ? '▶' : '▼' }}</span>
+          </div>
+          <template v-if="!collapsedGroups.has(groupLabel)">
+            <div
+              v-for="item in groupItems"
+              :key="item.id + '-' + groupLabel"
+              class="line-item"
+              :class="{ 'inv-restock': item.needs_restock }"
+            >
+              <span class="line-name">{{ item.name }}</span>
+              <span class="line-meta">
+                {{ item.location?.replace(/_icon$/, '').replace(/_/g, ' ') }}
+                <template v-if="item.sub_location && groupBy !== 'sub_location'"> › {{ item.sub_location }}</template>
+              </span>
+              <span v-if="groupBy !== 'department'" class="line-meta" style="color:#555;">
+                {{ Array.isArray(item.departments) ? item.departments.map(k => deptLabel(k)).join(', ') : '' }}
+              </span>
+              <span v-if="item.needs_restock" class="line-amount amber" style="font-size:10px;">⚠ restock</span>
+              <span v-if="item.missing" class="line-amount" style="font-size:10px;color:#ef5350;">❌ missing</span>
+              <div class="inv-row-actions">
+                <button class="inv-edit-btn" @click="invOpenEdit(item)">Edit</button>
+                <button class="inv-del-btn" @click="invDelete(item.id)">✕</button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useInventory } from '@/composables/useInventory'
 
 const { deptItems: inventoryItems, createItem, updateItem, deleteItem } = useInventory()
@@ -168,6 +247,78 @@ async function invSave() {
 async function invDelete(id) {
   if (!confirm('Delete this inventory item?')) return
   await deleteItem(id)
+}
+
+// ── View controls ─────────────────────────────────────────────────────────────
+const searchQuery = ref('')
+const groupBy = ref('none')
+const filterDept = ref('')
+const filterRestock = ref(false)
+const filterMissing = ref(false)
+const sortBy = ref('name')
+const collapsedGroups = ref(new Set())
+
+function deptLabel(key) {
+  return ALL_DEPARTMENTS.find(d => d.key === key)?.label ?? key
+}
+
+const filteredItems = computed(() => {
+  let result = [...inventoryItems.value]
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q) {
+    result = result.filter(i =>
+      i.name?.toLowerCase().includes(q) ||
+      i.description?.toLowerCase().includes(q) ||
+      i.sub_location?.toLowerCase().includes(q) ||
+      i.notes?.toLowerCase().includes(q)
+    )
+  }
+  if (filterDept.value) {
+    result = result.filter(i =>
+      Array.isArray(i.departments) && i.departments.includes(filterDept.value)
+    )
+  }
+  if (filterRestock.value) result = result.filter(i => i.needs_restock)
+  if (filterMissing.value) result = result.filter(i => i.missing)
+  result.sort((a, b) => {
+    if (sortBy.value === 'sub_location') {
+      return (a.sub_location || '').localeCompare(b.sub_location || '') || a.name.localeCompare(b.name)
+    }
+    if (sortBy.value === 'location') {
+      return (a.location || '').localeCompare(b.location || '') || a.name.localeCompare(b.name)
+    }
+    return a.name.localeCompare(b.name)
+  })
+  return result
+})
+
+const groupedItems = computed(() => {
+  if (groupBy.value === 'none') return []
+  const groups = new Map()
+  for (const item of filteredItems.value) {
+    let keys = []
+    if (groupBy.value === 'department') {
+      keys = Array.isArray(item.departments) && item.departments.length
+        ? item.departments.map(k => deptLabel(k))
+        : ['Unassigned']
+    } else if (groupBy.value === 'sub_location') {
+      keys = [item.sub_location?.trim() || '(no sub-location)']
+    } else {
+      keys = [item.location?.replace(/_icon$/, '').replace(/_/g, ' ').trim() || '(no location)']
+    }
+    for (const key of keys) {
+      if (!groups.has(key)) groups.set(key, [])
+      groups.get(key).push(item)
+    }
+  }
+  return [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+})
+
+function toggleGroup(label) {
+  const next = new Set(collapsedGroups.value)
+  if (next.has(label)) next.delete(label)
+  else next.add(label)
+  collapsedGroups.value = next
 }
 </script>
 
@@ -469,5 +620,93 @@ async function invDelete(id) {
 .inv-flag-clear-btn:hover {
   border-color: #66bb6a;
   color: #66bb6a;
+}
+
+/* Toolbar */
+.inv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 900px;
+  margin: 0 auto 1px;
+  background-color: #252528;
+  padding: 0.45rem 0.75rem;
+  flex-wrap: wrap;
+}
+
+.inv-search {
+  background-color: #1f1e22;
+  border: 1px solid #3a3a3e;
+  border-radius: 3px;
+  color: #d0d0d0;
+  font-size: 11px;
+  padding: 3px 7px;
+  outline: none;
+  width: 150px;
+  min-width: 0;
+}
+
+.inv-search:focus { border-color: #ffa726; }
+
+.inv-tb-seg {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.inv-tb-lbl {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #555;
+}
+
+.inv-select {
+  background-color: #1f1e22;
+  border: 1px solid #3a3a3e;
+  border-radius: 3px;
+  color: #ccc;
+  font-size: 10px;
+  padding: 2px 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+.inv-select:focus { border-color: #ffa726; }
+
+.inv-flag-toggle {
+  font-size: 10px;
+  color: #666;
+  padding: 2px 8px;
+  border: 1px solid #3a3a3e;
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.inv-flag-toggle.active {
+  border-color: #ffa726;
+  color: #ffa726;
+}
+
+.inv-result-count {
+  margin-left: auto;
+  font-size: 10px;
+  color: #555;
+  font-weight: 600;
+}
+
+.inv-group-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.inv-group-header:hover .card-title { color: #ffa726; }
+
+.inv-collapse-icon {
+  font-size: 9px;
+  color: #555;
+  margin-left: 0.25rem;
 }
 </style>
