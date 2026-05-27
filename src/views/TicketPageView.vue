@@ -1146,6 +1146,10 @@ export default {
         let totalEarnings = 0
         referralSnapshot.forEach((docSnap) => {
           const p = docSnap.data()
+          if (p.order?.paid !== true) {
+            return
+          }
+
           const ticketType = p.order?.ticket_type
           const ticketQuantity = p.order?.original_ticket_quantity || p.order?.ticket_quantity || 0
           const earningsPerTicket =
@@ -1417,7 +1421,7 @@ export default {
 
     onMounted(() => {
       const id_code = route.params.id_code
-      referralEarnings.value = 20
+      referralEarnings.value = 0
       fetchBtcRate()
       if (id_code) {
         loadOrder(id_code)

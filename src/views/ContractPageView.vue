@@ -84,8 +84,7 @@
       </li>
       <li v-if="applicant.applicant_types.includes('Volunteer')">
         <span v-if="applicant.meal_tickets_remaining !== undefined && applicant.meal_packages">
-          {{ applicant.meal_tickets_remaining }} meal ticket{{ applicant.meal_tickets_remaining !== 1 ? 's' : '' }} remaining
-          ({{ (applicant.meal_packages * 2) - applicant.meal_tickets_remaining }} of {{ applicant.meal_packages * 2 }} used)
+          {{ formatMealTicketSummary(applicant.meal_tickets_remaining, applicant.meal_packages) }}
         </span>
         <span v-else>One complementary meal package for each festival day worked</span>
       </li>
@@ -93,7 +92,8 @@
         One complementary weekend pass for WORKSHOP*
       </li>
       <li>
-        $20 Referral bonus for every weekend pass sold using the ID_CODE:
+        Referral compensation of:<br>$20 for each paid Weekend Pass purchased<br>$10 for each paid Day Pass
+        purchased<br>using the ID_CODE:
         <strong>{{ applicant.id_code }}</strong>
       </li>
     </ul>
@@ -294,6 +294,18 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       })
+    }
+
+    const formatMealTicketSummary = (remainingTickets, mealPackages) => {
+      const totalTickets = mealPackages * 2
+      const ticketLabel = totalTickets === 1 ? 'ticket' : 'tickets'
+      const baseCopy = 'One complimentary meal package for each festival day worked'
+
+      if (remainingTickets >= totalTickets) {
+        return `${baseCopy} (${totalTickets} meal ${ticketLabel} total)`
+      }
+
+      return `${baseCopy} (${remainingTickets} of ${totalTickets} meal ${ticketLabel} remaining)`
     }
 
     const loadApplicant = async (id_code) => {
@@ -515,7 +527,8 @@ export default {
       currentDate,
       sendSMS,
       sendEmail,
-      formatDate
+      formatDate,
+      formatMealTicketSummary
     }
   }
 }
