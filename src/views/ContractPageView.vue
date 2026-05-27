@@ -302,7 +302,7 @@ export default {
       const baseCopy = 'One complimentary meal package for each festival day worked.'
 
       if (remainingTickets >= totalTickets) {
-        return `${baseCopy} Starting with (${totalTickets} meal ${ticketLabel}) for the 2 day minimum. Additional packages will be added based on your participation.`
+        return `${baseCopy} Starting with ${totalTickets} meal ${ticketLabel} for the 2 day minimum. Additional packages will be added based on your participation.`
       }
 
       return `${baseCopy} (${remainingTickets} of ${totalTickets} meal ${ticketLabel} remaining)`
