@@ -299,10 +299,10 @@ export default {
     const formatMealTicketSummary = (remainingTickets, mealPackages) => {
       const totalTickets = mealPackages * 2
       const ticketLabel = totalTickets === 1 ? 'ticket' : 'tickets'
-      const baseCopy = 'One complimentary meal package for each festival day worked'
+      const baseCopy = 'One complimentary meal package for each festival day worked.'
 
       if (remainingTickets >= totalTickets) {
-        return `${baseCopy} (${totalTickets} meal ${ticketLabel} total)`
+        return `${baseCopy} Starting with (${totalTickets} meal ${ticketLabel}) for the 2 day minimum. Additional packages will be added based on your participation.`
       }
 
       return `${baseCopy} (${remainingTickets} of ${totalTickets} meal ${ticketLabel} remaining)`
