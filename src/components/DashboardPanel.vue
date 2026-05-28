@@ -243,8 +243,7 @@
               <span v-else>Send reminder?</span>
             </button>
           </div>
-          <div class="applicant-content">
-            <div class="name-section">
+          <div class="name-section">
               <h2>
                 <!-- ACT NAME OR FULLNAME -->
                 <a
@@ -283,6 +282,8 @@
                 <strong>Types:</strong> {{ applicant.applicant_types.join(', ') }}
               </p>
             </div>
+          <div class="applicant-body">
+          <div class="applicant-content">
 
             <!-- GENRE -->
             <img
@@ -755,6 +756,7 @@
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -2396,7 +2398,17 @@ button.active-filter:hover {
 @media (min-width: 769px) {
   .applicant {
     max-height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .applicant-body {
     overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .applicant-content {
@@ -2489,6 +2501,10 @@ button.active-filter:hover {
   border-color: #c0392b;
 }
 
+.name-section {
+  position: relative;
+}
+
 .preview-section,
 .ticket-section,
 .message-section,
@@ -2526,6 +2542,12 @@ button.active-filter:hover {
 
 .applicant:hover {
   transform: scale(1.01);
+}
+
+.applicant-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .applicant-content {
