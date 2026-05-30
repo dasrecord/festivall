@@ -101,12 +101,13 @@
 
     <!-- Structured compensation object -->
     <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
-      <p v-if="applicant.rates.monetary_amount">
-        <strong>Fee:</strong> {{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}<br />
-        <strong>Balance Due:</strong> no later than 30 days after Event Date unless otherwise specified.
-      </p>
-      <p v-if="applicant.rates.non_monetary">
-        <strong>Additional Compensation:</strong> {{ applicant.rates.non_monetary }}
+      <p v-if="applicant.rates.monetary_amount || applicant.rates.non_monetary">
+        <strong>Additional Compensation:</strong>
+        <span v-if="applicant.rates.monetary_amount">${{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}</span>
+        <span v-if="applicant.rates.monetary_amount && applicant.rates.non_monetary"> — </span>
+        <span v-if="applicant.rates.non_monetary">{{ applicant.rates.non_monetary }}</span>
+        <br v-if="applicant.rates.monetary_amount" />
+        <template v-if="applicant.rates.monetary_amount"><strong>Balance Due:</strong> no later than 30 days after Event Date unless otherwise specified.</template>
       </p>
       <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff || applicant.rates.addons.shuttle || applicant.rates.addons.backline || applicant.rates.addons.accommodation)">
         <p><strong>Provided Accommodations &amp; Logistics:</strong></p>

@@ -576,7 +576,7 @@
                 <!-- Current display: structured object -->
                 <template v-if="applicant.rates && applicant.rates.monetary_currency !== undefined">
                   <p v-if="applicant.rates.monetary_amount" class="comp-current-line">
-                    <strong>Fee:</strong> {{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
+                    <strong>Fee:</strong> ${{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
                   </p>
                   <p v-if="applicant.rates.non_monetary" class="comp-current-line">
                     <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
