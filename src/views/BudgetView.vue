@@ -150,6 +150,38 @@
           <div v-if="!staffNonMonetary.length" class="empty-row">None set</div>
         </div>
 
+        <!-- Recoupable Advances -->
+        <div class="budget-card">
+          <div class="card-header">
+            <span class="card-title">Recoupable Advances</span>
+            <span class="card-badge amber">{{ fmtCAD(recoupableTotal) }}</span>
+          </div>
+          <div class="repay-note">⟳ Repaid first from ticket revenue</div>
+
+          <template v-for="person in recoupableByPerson" :key="person.name">
+            <div class="section-label">{{ person.name }} &mdash; {{ fmtCAD(person.total) }}</div>
+            <div v-for="r in person.items" :key="r.id" class="line-item">
+              <span class="line-name">{{ r.description }}</span>
+              <a
+                v-if="r.receipt_image_url || r.receipt_url"
+                :href="r.receipt_image_url || r.receipt_url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="recoup-link"
+                title="View receipt"
+              >&#128206;</a>
+              <span class="line-amount amber">{{ fmtCAD(r.amount) }}</span>
+            </div>
+          </template>
+
+          <div v-if="!recoupableItems.length" class="empty-row">No advances recorded yet</div>
+
+          <div v-if="recoupableByPerson.length > 1" class="recoup-total-row">
+            <span class="recoup-total-label">Total outstanding</span>
+            <span class="line-amount amber">{{ fmtCAD(recoupableTotal) }}</span>
+          </div>
+        </div>
+
         <!-- Infrastructure -->
         <ManualCategoryCard
           title="Infrastructure"
@@ -438,8 +470,29 @@ const manualTotal = computed(() =>
 const receiptsByCategory = (cat) => receiptItems.value.filter((r) => r.category === cat)
 
 const receiptTotal = computed(() =>
-  receiptItems.value.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+  receiptItems.value
+    .filter((r) => r.category !== 'recoupable')
+    .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
+
+const recoupableItems = computed(() =>
+  receiptItems.value.filter((r) => r.category === 'recoupable')
+)
+
+const recoupableTotal = computed(() =>
+  recoupableItems.value.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+)
+
+const recoupableByPerson = computed(() => {
+  const map = {}
+  recoupableItems.value.forEach((r) => {
+    const name = r.volunteer_name || r.id_code
+    if (!map[name]) map[name] = { name, items: [], total: 0 }
+    map[name].items.push(r)
+    map[name].total += Number(r.amount || 0)
+  })
+  return Object.values(map).sort((a, b) => b.total - a.total)
+})
 
 const totalExpenses = computed(
   () =>
@@ -753,5 +806,40 @@ h1 {
   font-weight: 400;
   color: #aaa;
   margin-top: 1px;
+}
+
+/* ── Recoupable Advances ─────────────────────────────────────────────────────── */
+.repay-note {
+  font-size: 9px;
+  color: #ffa726;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+
+.recoup-link {
+  font-size: 13px;
+  text-decoration: none;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.recoup-link:hover { opacity: 1; }
+
+.recoup-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0 0;
+  margin-top: 2px;
+  border-top: 1px solid #444;
+}
+
+.recoup-total-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #666;
 }
 </style>

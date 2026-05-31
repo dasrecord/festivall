@@ -56,7 +56,12 @@
             <option value="marketing">Marketing</option>
             <option value="food">Food</option>
             <option value="miscellaneous">Miscellaneous</option>
+            <option v-if="isAdmin" value="recoupable">Recoupable (advance)</option>
           </select>
+          <template v-if="form.category === 'recoupable'">
+            <span></span>
+            <p class="recoup-hint">Tracked as a priority repayment — paid back first from ticket revenue. Use the description to name the artist or purpose (e.g. "DJ Name — upfront advance").</p>
+          </template>
 
           <label class="field-label">Description</label>
           <input
@@ -171,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { reunion_db, reunion_storage } from '@/firebase'
 import {
   collection,
@@ -203,6 +208,7 @@ const loadingHistory = ref(false)
 let unsubHistory = null
 
 const fileInput = ref(null)
+const isAdmin = ref(false)
 
 const form = ref({
   category: 'infrastructure',
@@ -374,6 +380,10 @@ const submitAnother = () => {
   resetForm()
   step.value = 2
 }
+
+onMounted(() => {
+  isAdmin.value = !!localStorage.getItem('user')
+})
 
 onUnmounted(() => {
   if (unsubHistory) unsubHistory()
@@ -711,6 +721,15 @@ select.field-input {
   color: #555;
   padding: 1rem 0;
   text-align: center;
+}
+
+/* ── Recoupable hint ─────────────────────────────────────────────────────────── */
+.recoup-hint {
+  font-size: 10px;
+  color: #ffa726;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.85;
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────────── */
