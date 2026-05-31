@@ -97,6 +97,7 @@
             <span class="line-name">{{ a.roles?.act_name || a.contact?.fullname }}</span>
             <div class="line-right">
               <span class="line-amount red">{{ fmtAmount(a.parsedAmount, a.parsedCurrency) }}</span>
+              <span v-if="advancesByArtist[a.id_code]" class="advance-tag" :title="`${fmtCAD(advancesByArtist[a.id_code])} advanced`">adv. −{{ fmtCAD(advancesByArtist[a.id_code]) }}</span>
               <span v-if="getAddons(a.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
               <span v-if="getAddons(a.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
               <span v-if="getAddons(a.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YYZ</span>
@@ -161,7 +162,10 @@
           <template v-for="person in recoupableByPerson" :key="person.name">
             <div class="section-label">{{ person.name }} &mdash; {{ fmtCAD(person.total) }}</div>
             <div v-for="r in person.items" :key="r.id" class="line-item">
-              <span class="line-name">{{ r.description }}</span>
+              <div style="flex:1;min-width:0;">
+                <span class="line-name">{{ r.description }}</span>
+                <span v-if="r.artist_name" class="line-meta" style="display:block;">for {{ r.artist_name }}</span>
+              </div>
               <a
                 v-if="r.receipt_image_url || r.receipt_url"
                 :href="r.receipt_image_url || r.receipt_url"
@@ -494,6 +498,16 @@ const recoupableByPerson = computed(() => {
   return Object.values(map).sort((a, b) => b.total - a.total)
 })
 
+const advancesByArtist = computed(() => {
+  const map = {}
+  recoupableItems.value.forEach((r) => {
+    if (r.artist_id_code) {
+      map[r.artist_id_code] = (map[r.artist_id_code] || 0) + Number(r.amount || 0)
+    }
+  })
+  return map
+})
+
 const totalExpenses = computed(
   () =>
     artistMonetaryTotal.value +
@@ -800,6 +814,14 @@ h1 {
   opacity: 0.75;
   cursor: default;
 }
+.advance-tag {
+  font-size: 9px;
+  color: #ffa726;
+  opacity: 0.85;
+  white-space: nowrap;
+  font-weight: 400;
+}
+
 .non-cad-note {
   display: block;
   font-size: 9px;

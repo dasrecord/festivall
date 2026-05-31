@@ -59,8 +59,31 @@
             <option v-if="isAdmin" value="recoupable">Recoupable (advance)</option>
           </select>
           <template v-if="form.category === 'recoupable'">
+            <label class="field-label">Artist ID
+              <span class="optional"> (required)</span>
+            </label>
+            <div class="artist-lookup-row">
+              <input
+                v-model="artistCodeInput"
+                class="field-input"
+                placeholder="recipient's ID code"
+                :disabled="lookingUpArtist || !!resolvedArtist"
+                @keyup.enter="lookupArtist"
+              />
+              <button
+                v-if="!resolvedArtist"
+                class="ghost-btn"
+                :disabled="!artistCodeInput.trim() || lookingUpArtist"
+                @click="lookupArtist"
+              >{{ lookingUpArtist ? '…' : 'Find' }}</button>
+              <button v-else class="ghost-btn" @click="clearArtist">✕</button>
+            </div>
             <span></span>
-            <p class="recoup-hint">Tracked as a priority repayment — paid back first from ticket revenue. Use the description to name the artist or purpose (e.g. "DJ Name — upfront advance").</p>
+            <div>
+              <p v-if="resolvedArtist" class="artist-resolved">✓ {{ resolvedArtist.name }}</p>
+              <p v-else-if="artistLookupError" class="error-msg">{{ artistLookupError }}</p>
+              <p v-else class="recoup-hint">Advance must be linked to a participant in the system.</p>
+            </div>
           </template>
 
           <label class="field-label">Description</label>
@@ -210,6 +233,12 @@ let unsubHistory = null
 const fileInput = ref(null)
 const isAdmin = ref(false)
 
+// Artist lookup (recoupable only)
+const artistCodeInput = ref('')
+const lookingUpArtist = ref(false)
+const artistLookupError = ref('')
+const resolvedArtist = ref(null)
+
 const form = ref({
   category: 'infrastructure',
   description: '',
@@ -227,7 +256,8 @@ const formValid = computed(
   () =>
     form.value.description.trim() &&
     Number(form.value.amount) > 0 &&
-    attachmentPresent.value
+    attachmentPresent.value &&
+    (form.value.category !== 'recoupable' || !!resolvedArtist.value)
 )
 
 const historyTotal = computed(() =>
@@ -280,6 +310,38 @@ const validateIdCode = async () => {
   }
 }
 
+// ── Artist lookup ────────────────────────────────────────────────────────────
+const lookupArtist = async () => {
+  artistLookupError.value = ''
+  const code = artistCodeInput.value.trim().toLowerCase()
+  if (!code) return
+  lookingUpArtist.value = true
+  try {
+    const q = query(
+      collection(reunion_db, 'participants_2026'),
+      where('id_code', '==', code)
+    )
+    const snap = await getDocs(q)
+    if (snap.empty) {
+      artistLookupError.value = 'ID code not found in the system.'
+      return
+    }
+    const p = snap.docs[0].data()
+    resolvedArtist.value = { id_code: code, name: p.contact?.fullname || code }
+  } catch (e) {
+    console.error('Artist lookup error:', e)
+    artistLookupError.value = 'Lookup failed. Please try again.'
+  } finally {
+    lookingUpArtist.value = false
+  }
+}
+
+const clearArtist = () => {
+  resolvedArtist.value = null
+  artistCodeInput.value = ''
+  artistLookupError.value = ''
+}
+
 // ── File handling ─────────────────────────────────────────────────────────────
 const onFileChange = (e) => {
   form.value.file = e.target.files[0] || null
@@ -324,6 +386,10 @@ const submitReceipt = async () => {
     if (form.value.receiptUrl.trim()) docData.receipt_url = form.value.receiptUrl.trim()
     if (receipt_image_path) docData.receipt_image_path = receipt_image_path
     if (receipt_image_url) docData.receipt_image_url = receipt_image_url
+    if (form.value.category === 'recoupable' && resolvedArtist.value) {
+      docData.artist_id_code = resolvedArtist.value.id_code
+      docData.artist_name = resolvedArtist.value.name
+    }
 
     await addDoc(collection(reunion_db, 'receipts_2026'), docData)
 
@@ -374,6 +440,7 @@ const resetForm = () => {
   submitError.value = ''
   form.value = { category: 'infrastructure', description: '', amount: '', receiptUrl: '', file: null }
   if (fileInput.value) fileInput.value.value = ''
+  clearArtist()
 }
 
 const submitAnother = () => {
@@ -722,7 +789,18 @@ select.field-input {
   padding: 1rem 0;
   text-align: center;
 }
+/* ── Artist lookup ──────────────────────────────────────────────────────────── */
+.artist-lookup-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
 
+.artist-resolved {
+  font-size: 10px;
+  color: #4caf50;
+  margin: 0;
+}
 /* ── Recoupable hint ─────────────────────────────────────────────────────────── */
 .recoup-hint {
   font-size: 10px;
