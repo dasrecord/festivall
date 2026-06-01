@@ -268,7 +268,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { setDoc, doc, query, where, collection, getDocs } from 'firebase/firestore'
+import { setDoc, doc, query, where, collection, getDocs, runTransaction } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
@@ -440,6 +440,31 @@ export default {
       }
     }
 
+    const markContractNotificationsSent = async () => {
+      const participantRef = doc(reunion_db, 'participants_2026', applicant.value.id_code)
+
+      return runTransaction(reunion_db, async (transaction) => {
+        const snap = await transaction.get(participantRef)
+
+        if (!snap.exists()) {
+          return false
+        }
+
+        const existingTimestamp = snap.data()?.contract?.notification_sent_at
+        if (existingTimestamp) {
+          return false
+        }
+
+        const nowIso = new Date().toISOString()
+        transaction.update(participantRef, {
+          'contract.notification_sent_at': nowIso,
+          updatedAt: nowIso
+        })
+
+        return true
+      })
+    }
+
     const isSubmitting = ref(false)
 
     const handleSubmit = async () => {
@@ -454,7 +479,8 @@ export default {
           where('id_code', '==', applicant.value.id_code)
         )
         const guardSnap = await getDocs(guardQuery)
-        if (!guardSnap.empty && guardSnap.docs[0].data().contract?.signed === true) {
+        const alreadySigned = guardSnap.docs.some((d) => d.data().contract?.signed === true)
+        if (alreadySigned) {
           alert('Your contract has already been signed.')
           router.push({ name: 'reunionticket' })
           return
@@ -470,36 +496,43 @@ export default {
         await addOrder()
         console.log('✅ Order added')
 
-        console.log('Starting notifications...')
+        const shouldSendNotifications = await markContractNotificationsSent()
 
-        // Send notifications after all critical operations are complete
-        const notificationResults = await Promise.allSettled([
-          sendSMS(
-            applicant.value.phone,
-            `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your interactive ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
-          ),
-          sendEmail(
-            applicant.value.email,
-            'Contract Signed - Reunion 2026',
-            `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2026!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
-          ),
-          sendReunionApplications(
-            `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
-          )
-        ])
+        if (shouldSendNotifications) {
+          console.log('Starting notifications...')
 
-        console.log('Notification results:', notificationResults)
+          // Send notifications after all critical operations are complete.
+          // This block runs once per contract because of the transaction flag.
+          const notificationResults = await Promise.allSettled([
+            sendSMS(
+              applicant.value.phone,
+              `Thank you ${applicant.value.fullname} for signing your contract.\nTo access your interactive ticket, please navigate to https://festivall.ca/reunionticket and enter your ID Code: ${applicant.value.id_code}`
+            ),
+            sendEmail(
+              applicant.value.email,
+              'Contract Signed - Reunion 2026',
+              `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2026!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
+            ),
+            sendReunionApplications(
+              `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
+            )
+          ])
 
-        // Log results for debugging
-        notificationResults.forEach((result, index) => {
-          const types = ['SMS', 'Email', 'Slack']
-          const type = types[index]
-          if (result.status === 'fulfilled') {
-            console.log(`✅ ${type} sent successfully`)
-          } else {
-            console.error(`❌ ${type} failed:`, result.reason)
-          }
-        })
+          console.log('Notification results:', notificationResults)
+
+          // Log results for debugging
+          notificationResults.forEach((result, index) => {
+            const types = ['SMS', 'Email', 'Slack']
+            const type = types[index]
+            if (result.status === 'fulfilled') {
+              console.log(`✅ ${type} sent successfully`)
+            } else {
+              console.error(`❌ ${type} failed:`, result.reason)
+            }
+          })
+        } else {
+          console.log('Skipping notifications: already sent for this contract.')
+        }
 
         // Redirect regardless of notification success/failure
         router.push({ name: 'reunionticket' })
