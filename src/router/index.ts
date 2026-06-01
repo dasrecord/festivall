@@ -57,7 +57,7 @@ import ReunionArcadeAttendantManual from '@/views/ReunionArcadeAttendantManual.v
 import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 import BudgetView from '@/views/BudgetView.vue'
-import InventoryAdminView from '@/views/InventoryAdminView.vue'
+import AdminInventoryView from '@/views/AdminInventoryView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
 
@@ -182,7 +182,7 @@ const routes = [
   {
     path: '/admin/inventory',
     name: 'admin-inventory',
-    component: InventoryAdminView,
+    component: AdminInventoryView,
     meta: { requiresAuth: true }
   },
   {

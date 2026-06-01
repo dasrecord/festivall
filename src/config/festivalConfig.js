@@ -5,6 +5,8 @@ export const REUNION_FESTIVAL = {
   day: 4,         // Friday start
   endDay: 7,      // Monday end
 
+  admins: ['Prasenjit', 'Brandon','Chris'],
+
   // Pre-built Date objects for programmatic use
   startDate: new Date('2026-09-04T12:00:00'),           // scanners & check-in (local time)
   fridayDate: new Date('2026-09-04T12:00:00-06:00'),    // lineup view (Mountain Time)
