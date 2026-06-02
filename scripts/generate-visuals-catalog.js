@@ -46,15 +46,15 @@ const LIBRARIES = [
   {
     key: 'video',
     folder: 'VIDEO_LIBRARY',
-    // matches "CLIP_ (1).mov", "CLIP_ (88).mp4", etc.
-    matchRegex: /^CLIP_\s*\(\d+\)\.(mov|mp4)$/i,
+    // matches "CLIP_(1).mov", "CLIP_(88).mp4", etc.
+    matchRegex: /^CLIP_\(\d+\)\.(mov|mp4)$/i,
     sortKey: (filename) => parseInt(filename.match(/\((\d+)\)/)[1], 10),
   },
   {
     key: 'mask',
     folder: 'MASK_LIBRARY',
-    matchRegex: /^masks-\d+\.(mov|mp4)$/i,
-    sortKey: (filename) => parseInt(filename.match(/(\d+)/)[1], 10),
+    matchRegex: /^MASK_\(\d+\)\.(mov|mp4)$/i,
+    sortKey: (filename) => parseInt(filename.match(/\((\d+)\)/)[1], 10),
   },
 ]
 
