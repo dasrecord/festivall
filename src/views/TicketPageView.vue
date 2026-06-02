@@ -837,6 +837,30 @@
             </span>
           </p>
         </div>
+
+        <!-- Artist self-service chips -->
+        <div
+          v-if="isArtistEditEligible || isVisualsPickerEligible"
+          class="artist-chips"
+          style="grid-column: span 2;"
+        >
+          <button
+            v-if="isArtistEditEligible"
+            type="button"
+            class="artist-chip"
+            @click="showEditArtistModal = true"
+          >
+            ✏️ Edit My Artist Info
+          </button>
+          <button
+            v-if="isVisualsPickerEligible"
+            type="button"
+            class="artist-chip"
+            @click="showVisualsPickerModal = true"
+          >
+            🎞️ Choose Your Visuals
+          </button>
+        </div>
         <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
           <RouterLink to="/reunionlocation">
             <p>
@@ -887,6 +911,22 @@
 
     <PosterSplash v-if="activePoster" :src="activePoster" @dismissed="activePoster = null" />
 
+    <EditArtistInfoModal
+      v-if="showEditArtistModal"
+      :order="order"
+      :application-data="order.application_data || {}"
+      @close="showEditArtistModal = false"
+      @saved="onArtistInfoSaved"
+    />
+
+    <VisualsPickerModal
+      v-if="showVisualsPickerModal"
+      :order="order"
+      :application-data="order.application_data || {}"
+      @close="showVisualsPickerModal = false"
+      @saved="onVisualsSelectionSaved"
+    />
+
     <div class="qr-code">
       <canvas ref="qrCanvas"></canvas>
     </div>
@@ -899,7 +939,7 @@
 </template>
 
 <script>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { collection, getDocs, query, where, updateDoc, arrayUnion } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
@@ -938,6 +978,8 @@ import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import PosterSplash from '@/components/PosterSplash.vue'
+import EditArtistInfoModal from '@/components/EditArtistInfoModal.vue'
+import VisualsPickerModal from '@/components/VisualsPickerModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
@@ -945,7 +987,9 @@ export default {
   name: 'TicketPageView',
   components: {
     CountdownTimer,
-    PosterSplash
+    PosterSplash,
+    EditArtistInfoModal,
+    VisualsPickerModal
   },
 
   setup() {
@@ -971,6 +1015,8 @@ export default {
     const isAdHocSubmitting = ref(false)
     const showTransferModal = ref(false)
     const isTransferSubmitting = ref(false)
+    const showEditArtistModal = ref(false)
+    const showVisualsPickerModal = ref(false)
     const transferForm = ref({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const btcRate = ref(0)
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
@@ -1299,7 +1345,12 @@ export default {
             applicant_types: p.roles?.applicant_types || [],
             payment_type: p.order?.payment_type || '',
             rates: p.application?.data?.rates || '',
-            settimes: p.application?.data?.settimes || [],
+            // Settimes are stored at the document root (written by DashboardPanel's
+            // updateSettime as `settimes: [...]`), with a legacy fallback to
+            // application.data.settimes for older records.
+            settimes: p.settimes || p.application?.data?.settimes || [],
+            // Raw application.data for self-edit modals (read-only snapshot)
+            application_data: p.application?.data || {},
             // Volunteer shift data
             volunteer_claimed_slots: p.volunteer?.claimed_slots || []
           }
@@ -1419,6 +1470,59 @@ export default {
       }
     })
 
+    // ── Artist self-service eligibility ─────────────────────────────────────
+    const beforeEditCutoff = () => new Date() < REUNION_FESTIVAL.artistEditing.editCutoff
+
+    const isArtistEditEligible = computed(() =>
+      !!order.value?.applicant_types?.includes('Artist') && beforeEditCutoff()
+    )
+
+    // A settime falls in the nighttime window if its LOCAL hour:minute is inside
+    // [start, end). The window is wrap-around (e.g. 20:50–04:00 crosses midnight).
+    const isInNighttimeWindow = (isoTime) => {
+      const { start, end } = REUNION_FESTIVAL.visuals.nighttimeWindow
+      const d = new Date(isoTime)
+      if (isNaN(d.getTime())) return false
+      // Format in Mountain Time regardless of viewer locale.
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Regina', hour12: false,
+        hour: '2-digit', minute: '2-digit',
+      }).formatToParts(d)
+      const hh = parts.find((p) => p.type === 'hour').value
+      const mm = parts.find((p) => p.type === 'minute').value
+      const minutes = parseInt(hh, 10) * 60 + parseInt(mm, 10)
+      const [sH, sM] = start.split(':').map(Number)
+      const [eH, eM] = end.split(':').map(Number)
+      const startMin = sH * 60 + sM
+      const endMin   = eH * 60 + eM
+      return startMin <= endMin
+        ? minutes >= startMin && minutes < endMin
+        : minutes >= startMin || minutes < endMin
+    }
+
+    const isVisualsPickerEligible = computed(() => {
+      if (!order.value?.applicant_types?.includes('Artist')) return false
+      if (!beforeEditCutoff()) return false
+      const settimes = order.value?.settimes || []
+      return settimes.some(isInNighttimeWindow)
+    })
+
+    // After a successful save, merge changes into the local order so the UI
+    // reflects them without a full reload.
+    const onArtistInfoSaved = ({ values }) => {
+      if (!order.value) return
+      order.value.application_data = { ...order.value.application_data, ...values }
+      if ('rates' in values) order.value.rates = values.rates
+    }
+
+    const onVisualsSelectionSaved = (visuals_selection) => {
+      if (!order.value) return
+      order.value.application_data = {
+        ...order.value.application_data,
+        visuals_selection,
+      }
+    }
+
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 0
@@ -1454,6 +1558,12 @@ export default {
       isAdHocSubmitting,
       showTransferModal,
       isTransferSubmitting,
+      showEditArtistModal,
+      showVisualsPickerModal,
+      isArtistEditEligible,
+      isVisualsPickerEligible,
+      onArtistInfoSaved,
+      onVisualsSelectionSaved,
       transferForm,
       submitTransfer,
       btcRate,
@@ -1688,6 +1798,33 @@ a:hover {
 
 .links .poster-tile:hover p {
   text-decoration: underline;
+}
+
+.artist-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.artist-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  color: var(--reunion-frog-green);
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.artist-chip:hover {
+  background: var(--reunion-frog-green);
+  color: white;
 }
 
 .qr-code {

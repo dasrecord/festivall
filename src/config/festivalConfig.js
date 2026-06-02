@@ -13,7 +13,7 @@ export const REUNION_FESTIVAL = {
   saturdayDate: new Date('2026-09-05T12:00:00-06:00'),
   sundayDate: new Date('2026-09-06T12:00:00-06:00'),
   mondayDate: new Date('2026-09-07T12:00:00-06:00'),
-  lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
+  lineupRevealDate: new Date(2026, 5, 1),               // Aug 1: lineup link becomes visible
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
   gateCloseTime: '2:00 AM',                            // Nightly Front Gate closing time
 
@@ -126,6 +126,39 @@ export const REUNION_FESTIVAL = {
       duration: 4,
       repeat: true
     }
+  },
+
+  // Artist self-service editing (TicketPageView "Edit Artist Info" modal)
+  artistEditing: {
+    // Fields under application.data.* that artists may self-edit
+    editableFields: [
+      'mix_track_url',
+      'act_description',
+      'bio',
+      'social_url',
+      'act_website',
+      'press_kit_url',
+      'logo_url',
+    ],
+    // Logo upload constraints
+    maxLogoMB: 5,
+    allowedLogoMimes: ['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'],
+    // Hard cutoff: 1 month before festival start. After this date, edits & visuals
+    // selection are blocked (chips hide, save fails fast with a friendly message).
+    editCutoff: new Date('2026-08-04T00:00:00-06:00'),
+  },
+
+  // Visuals picker (TicketPageView "Choose Your Visuals" modal)
+  visuals: {
+    // Nighttime window: a settime starting between these local hours qualifies the artist
+    // for the Visuals picker. Wrap-around aware (start > end means it crosses midnight).
+    // Local Mountain Time (America/Regina).
+    nighttimeWindow: { start: '20:50', end: '04:00' },
+    // Min/max picks per library
+    selectionLimits: {
+      video: { min: 1, max: 5 },
+      mask:  { min: 1, max: 2 },
+    },
   },
 }
 
