@@ -1288,14 +1288,14 @@ onMounted(async () => {
             <p class="bio-act-name">{{ currentAct.act_name || currentAct.workshop_title }}</p>
             <p class="bio-genre">▶ NOW PLAYING<template v-if="currentAct.genre">&nbsp;· {{ currentAct.genre }}</template></p>
             <p v-if="currentAct.act_description" class="bio-text">{{ currentAct.act_description }}</p>
-            <p v-else class="bio-text bio-empty">No bio available.</p>
+            <p v-else class="bio-text bio-empty">No description available.</p>
           </template>
           <template v-if="upcomingAct">
             <hr v-if="currentAct" class="bio-divider" />
             <p class="bio-act-name">{{ upcomingAct.act_name || upcomingAct.workshop_title }}</p>
             <p class="bio-genre bio-genre--upcoming">▷ UP NEXT&nbsp;· {{ formatSettime(upcomingAct.settime) }}<template v-if="upcomingAct.genre">&nbsp;· {{ upcomingAct.genre }}</template></p>
             <p v-if="upcomingAct.act_description" class="bio-text">{{ upcomingAct.act_description }}</p>
-            <p v-else class="bio-text bio-empty">No bio available.</p>
+            <p v-else class="bio-text bio-empty">No description available.</p>
           </template>
         </div>
       </Transition>

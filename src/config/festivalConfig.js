@@ -134,7 +134,7 @@ export const REUNION_FESTIVAL = {
     editableFields: [
       'mix_track_url',
       'act_description',
-      'bio',
+      'genre',
       'social_url',
       'act_website',
       'press_kit_url',
@@ -156,8 +156,8 @@ export const REUNION_FESTIVAL = {
     nighttimeWindow: { start: '20:50', end: '04:00' },
     // Min/max picks per library
     selectionLimits: {
-      video: { min: 1, max: 5 },
-      mask:  { min: 1, max: 2 },
+      video: { min: 1, max: 6 },
+      mask:  { min: 1, max: 3 },
     },
   },
 }

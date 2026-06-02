@@ -26,15 +26,32 @@
         <small>SoundCloud / Mixcloud / Spotify / YouTube link preferred. Direct file links also OK.</small>
         <input type="url" v-model.trim="form.mix_track_url" placeholder="https://soundcloud.com/..." />
 
-        <!-- Act description -->
-        <label>Act Description <span class="char-count">({{ form.act_description.length }}/500)</span></label>
-        <small>The stage announcer reads this — keep it punchy.</small>
-        <textarea v-model="form.act_description" maxlength="500" rows="3" />
+        <!-- Act description / Bio (single canonical field) -->
+        <label>Artist Bio / Description <span class="char-count">({{ form.act_description.length }}/1000)</span></label>
+        <small>Shown on the lineup page and the map's Now Playing card. The stage announcer also reads this — keep the opening punchy.</small>
+        <textarea v-model="form.act_description" maxlength="1000" rows="5" />
 
-        <!-- Bio -->
-        <label>Bio <span class="char-count">({{ form.bio.length }}/1000)</span></label>
-        <small>Longer biography used in press &amp; promo materials.</small>
-        <textarea v-model="form.bio" maxlength="1000" rows="5" />
+        <!-- Genre -->
+        <label>Genre</label>
+        <small>Shown on the lineup page and the Now Playing card.</small>
+        <select v-model="form.genre">
+          <option value="" disabled>Select your genre</option>
+          <option value="House">House</option>
+          <option value="Techno">Techno</option>
+          <option value="Trance">Trance</option>
+          <option value="Drum and Bass">Drum and Bass</option>
+          <option value="Hip Hop">Hip Hop</option>
+          <option value="Garage">Garage</option>
+          <option value="Dubstep">Dubstep</option>
+          <option value="Ambient">Ambient</option>
+          <option value="Electro">Electro</option>
+          <option value="Synthwave">Synthwave</option>
+          <option value="Future Bass">Future Bass</option>
+          <option value="Trap">Trap</option>
+          <option value="Hardstyle">Hardstyle</option>
+          <option value="Progressive">Progressive</option>
+          <option value="Chillout">Chillout</option>
+        </select>
 
         <!-- Social / Website / Press kit -->
         <label>Social URL</label>
@@ -51,8 +68,9 @@
         <!-- Logo -->
         <label>Logo / Artwork</label>
         <small>
-          📐 <strong>Vector (SVG) preferred.</strong> Otherwise a high-resolution PNG
-          (≥&nbsp;1500&nbsp;px) with a <strong>transparent alpha channel</strong>.
+          <img :src="vectors_icon" alt="" class="inline-icon" />
+          <strong>Vector (SVG) preferred.</strong> Otherwise a high-resolution PNG
+          (≥1500&nbsp;px) with a <strong>transparent alpha channel</strong>.
           Avoid JPG for logos — alpha is lost. Max {{ maxLogoMB }} MB.
         </small>
         <input
@@ -112,6 +130,7 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { sendReunionApplications } from '/scripts/notifications.js'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
 import dj_icon from '@/assets/images/icons/dj.png'
+import vectors_icon from '@/assets/images/icons/vectors.png'
 
 const MIME_TO_EXT = {
   'image/png': 'png',
@@ -136,7 +155,7 @@ export default {
     const initial = {
       mix_track_url:   props.applicationData.mix_track_url   || '',
       act_description: props.applicationData.act_description || '',
-      bio:             props.applicationData.bio             || '',
+      genre:           props.applicationData.genre           || '',
       social_url:      props.applicationData.social_url      || '',
       act_website:     props.applicationData.act_website     || '',
       press_kit_url:   props.applicationData.press_kit_url   || '',
@@ -233,6 +252,7 @@ export default {
     return {
       festivall_emblem_white,
       dj_icon,
+      vectors_icon,
       form,
       fileInput,
       selectedFileName,
@@ -342,9 +362,17 @@ export default {
   margin-bottom: 4px;
 }
 
+.edit-form small .inline-icon {
+  height: 1.6em;
+  width: auto;
+  vertical-align: -5px;
+  margin: 0 6px 0 0;
+}
+
 .edit-form input[type='url'],
 .edit-form input[type='text'],
-.edit-form textarea {
+.edit-form textarea,
+.edit-form select {
   width: 100%;
   padding: 0.5rem;
   border-radius: 8px;
@@ -356,11 +384,42 @@ export default {
   box-sizing: border-box;
 }
 
+.edit-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
 .edit-form textarea { resize: vertical; min-height: 60px; }
 
 .file-input {
+  color: #bbb;
+  font-size: 0.85rem;
+  padding: 0.4rem;
+  border-radius: 8px;
+  border: 1px dashed var(--reunion-frog-green);
+  background: #111;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.file-input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 6px;
+  background: var(--reunion-frog-green);
   color: white;
   font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.file-input::file-selector-button:hover {
+  background: transparent;
+  color: var(--reunion-frog-green);
 }
 
 .char-count {
