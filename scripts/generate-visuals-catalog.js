@@ -46,15 +46,14 @@ const LIBRARIES = [
   {
     key: 'video',
     folder: 'VIDEO_LIBRARY',
-    // matches "CLIP_ (1).mov", "CLIP_ (88).mov", etc.
-    // Anything else (e.g. the "Cosmos Alley" promo) is intentionally ignored.
-    matchRegex: /^CLIP_\s*\(\d+\)\.mov$/i,
+    // matches "CLIP_ (1).mov", "CLIP_ (88).mp4", etc.
+    matchRegex: /^CLIP_\s*\(\d+\)\.(mov|mp4)$/i,
     sortKey: (filename) => parseInt(filename.match(/\((\d+)\)/)[1], 10),
   },
   {
     key: 'mask',
     folder: 'MASK_LIBRARY',
-    matchRegex: /^masks-\d+\.mov$/i,
+    matchRegex: /^masks-\d+\.(mov|mp4)$/i,
     sortKey: (filename) => parseInt(filename.match(/(\d+)/)[1], 10),
   },
 ]
@@ -137,17 +136,29 @@ const generateForLibrary = (lib) => {
   }
   ensureDir(outSubdir)
 
-  const entries = readdirSync(sourceDir)
+  const allMatches = readdirSync(sourceDir)
     .filter((name) => !name.startsWith('._'))      // skip AppleDouble metadata
-    .filter((name) => lib.matchRegex.test(name))   // only matching .mov files
+    .filter((name) => lib.matchRegex.test(name))
+
+  // Dedupe by basename-without-extension, preferring .mov over .mp4 when both
+  // exist (DXV .mov has alpha; .mp4 is a render-out copy).
+  const byBase = new Map()
+  for (const name of allMatches) {
+    const base = name.replace(/\.(mov|mp4)$/i, '')
+    const existing = byBase.get(base)
+    if (!existing || (/\.mov$/i.test(name) && /\.mp4$/i.test(existing))) {
+      byBase.set(base, name)
+    }
+  }
+  const entries = [...byBase.values()]
 
   const items = []
   let generated = 0
   let skipped = 0
 
   for (const filename of entries) {
-    // ID and thumb filename mirror the source basename (sans .mov extension).
-    const basename = filename.replace(/\.mov$/i, '')
+    // ID and thumb filename mirror the source basename (sans extension).
+    const basename = filename.replace(/\.(mov|mp4)$/i, '')
     const id = basename
     const inputPath = join(sourceDir, filename)
     const thumbName = `${basename}.webp`

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-02T18:32:47.054Z",
+  "generated_at": "2026-06-02T19:09:20.412Z",
   "video": [
     {
       "id": "CLIP_ (1)",
@@ -567,6 +567,46 @@
       "id": "masks-7",
       "filename": "masks-7.mov",
       "thumb": "/visuals/thumbs/mask/masks-7.webp"
+    },
+    {
+      "id": "masks-8",
+      "filename": "masks-8.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-8.webp"
+    },
+    {
+      "id": "masks-9",
+      "filename": "masks-9.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-9.webp"
+    },
+    {
+      "id": "masks-10",
+      "filename": "masks-10.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-10.webp"
+    },
+    {
+      "id": "masks-11",
+      "filename": "masks-11.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-11.webp"
+    },
+    {
+      "id": "masks-12",
+      "filename": "masks-12.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-12.webp"
+    },
+    {
+      "id": "masks-13",
+      "filename": "masks-13.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-13.webp"
+    },
+    {
+      "id": "masks-14",
+      "filename": "masks-14.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-14.webp"
+    },
+    {
+      "id": "masks-15",
+      "filename": "masks-15.mp4",
+      "thumb": "/visuals/thumbs/mask/masks-15.webp"
     }
   ]
 }
