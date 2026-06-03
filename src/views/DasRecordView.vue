@@ -9,7 +9,7 @@
             physician | consultant | innovator | systems administrator<br />
             process automation specialist
           </p>
-          <a href="/docs/PD_CV_2024.pdf" download class="section-link"> downloadable cv </a>
+          <RouterLink to="/medprep/cv" class="section-link">curriculum vitae</RouterLink>
         </div>
       </div>
     </div>

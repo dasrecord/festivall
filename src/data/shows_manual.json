@@ -1,0 +1,71 @@
+{
+  "_comment": "Manually-curated shows that were missing from the Google Calendar CSV export. Merged into shows.json by scripts/parse-show-history.js. Skipped: '2023-07-09 Prasenjit Das and Jimi' (Google Meet 1:1, not a show) and '2023-07-09 Bitcoin Consultation (tentative)' (coffee-shop meeting). For multi-day events, list only Day 1 and set 'days': N.",
+  "shows": [
+    {
+      "date": "2023-08-13",
+      "title": "Bacchus Lounge",
+      "venue": "Earls Kitchen + Bar, 610 2nd Ave N, Saskatoon, SK S7K 2C7, Canada",
+      "time": "14:00 – 17:00",
+      "tags": ["tour"]
+    },
+    {
+      "date": "2023-12-17",
+      "title": "Reunion Dance Temple Takeover",
+      "venue": "Cosmo Seniors Centre, Saskatoon, SK, Canada",
+      "time": "10:00 – 12:00"
+    },
+    {
+      "date": "2023-08-18",
+      "title": "Bokeh On The Plaza",
+      "venue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00",
+      "tags": ["tour"]
+    },
+    {
+      "date": "2024-03-22",
+      "title": "Bokeh on the Plaza",
+      "venue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00"
+    },
+    {
+      "date": "2024-04-13",
+      "title": "Bokeh on the Plaza",
+      "venue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00"
+    },
+    {
+      "date": "2022-07-06",
+      "title": "Bitcoin Meet Up 003",
+      "venue": "Vancouver, BC",
+      "time": "20:00 – 00:30",
+      "days": 2
+    },
+    {
+      "date": "2022-08-10",
+      "title": "Bitcoin Meet Up 004",
+      "venue": "Vancouver, BC",
+      "time": "20:00 – 00:30",
+      "days": 2
+    },
+    {
+      "date": "2022-11-09",
+      "title": "Bitcoin Meet Up 006 w/ Bitcoin Mechanic",
+      "venue": "The Beaumont Studios, 316 W 5th Ave, Vancouver, BC, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2
+    },
+    {
+      "date": "2023-07-25",
+      "title": "Bitcoin Event: Mix & Mingle w/ live music",
+      "venue": "The Art Party, 328 W Hastings St #110, Vancouver, BC V6B 1K6, Canada",
+      "time": "18:00 – 21:00"
+    },
+    {
+      "date": "2023-11-18",
+      "title": "Bitcoin Fun Times",
+      "venue": "The Beaumont Studios, 316 W 5th Ave, Vancouver, BC, Canada",
+      "time": "22:00 – 03:00",
+      "days": 2
+    }
+  ]
+}

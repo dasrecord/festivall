@@ -14,10 +14,6 @@
         </li>
         <li>
           <img :src="headphones_icon" alt="headphones icon" class="icon" />
-          resident DJ at Finn's @ The Parktown Hotel
-        </li>
-        <li>
-          <img :src="headphones_icon" alt="headphones icon" class="icon" />
           rotation DJ @ Bokeh on the Plaza
         </li>
         <li>

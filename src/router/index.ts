@@ -64,6 +64,7 @@ import MedPrepView from '@/views/MedPrepView.vue'
 import MedPrepApplicationView from '@/views/MedPrepApplicationView.vue'
 import MedPrepAdminView from '@/views/MedPrepAdminView.vue'
 import MedPrepContractView from '@/views/MedPrepContractView.vue'
+import MedPrepCVView from '@/views/MedPrepCVView.vue'
 
 
 const routes = [
@@ -525,6 +526,12 @@ const routes = [
     path: '/medprep/apply',
     name: 'medprep-apply',
     component: MedPrepApplicationView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/medprep/cv',
+    name: 'medprep-cv',
+    component: MedPrepCVView,
     meta: { showHeader: false }
   },
   {

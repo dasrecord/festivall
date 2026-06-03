@@ -1,0 +1,2535 @@
+{
+  "stats": {
+    "total": 210,
+    "uniqueVenues": 68,
+    "uniqueCities": 11,
+    "yearRange": "2015–2026",
+    "generated": "2026-06-03T05:32:10.415Z"
+  },
+  "shows": [
+    {
+      "date": "2015-10-10",
+      "displayDate": "Oct 10, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-16",
+      "displayDate": "Oct 16, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-17",
+      "displayDate": "Oct 17, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-23",
+      "displayDate": "Oct 23, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-24",
+      "displayDate": "Oct 24, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-30",
+      "displayDate": "Oct 30, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-10-31",
+      "displayDate": "Oct 31, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-06",
+      "displayDate": "Nov 6, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-07",
+      "displayDate": "Nov 7, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-13",
+      "displayDate": "Nov 13, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-14",
+      "displayDate": "Nov 14, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-20",
+      "displayDate": "Nov 20, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-21",
+      "displayDate": "Nov 21, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-27",
+      "displayDate": "Nov 27, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-11-28",
+      "displayDate": "Nov 28, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-04",
+      "displayDate": "Dec 4, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-05",
+      "displayDate": "Dec 5, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-11",
+      "displayDate": "Dec 11, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-12",
+      "displayDate": "Dec 12, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-18",
+      "displayDate": "Dec 18, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-19",
+      "displayDate": "Dec 19, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-25",
+      "displayDate": "Dec 25, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2015-12-26",
+      "displayDate": "Dec 26, 2015 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-01",
+      "displayDate": "Jan 1, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-02",
+      "displayDate": "Jan 2, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-08",
+      "displayDate": "Jan 8, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-09",
+      "displayDate": "Jan 9, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-15",
+      "displayDate": "Jan 15, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-16",
+      "displayDate": "Jan 16, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-22",
+      "displayDate": "Jan 22, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-23",
+      "displayDate": "Jan 23, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-29",
+      "displayDate": "Jan 29, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-01-30",
+      "displayDate": "Jan 30, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-05",
+      "displayDate": "Feb 5, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-06",
+      "displayDate": "Feb 6, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-12",
+      "displayDate": "Feb 12, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-13",
+      "displayDate": "Feb 13, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-19",
+      "displayDate": "Feb 19, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-20",
+      "displayDate": "Feb 20, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-26",
+      "displayDate": "Feb 26, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-02-27",
+      "displayDate": "Feb 27, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-04",
+      "displayDate": "Mar 4, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-05",
+      "displayDate": "Mar 5, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-11",
+      "displayDate": "Mar 11, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-12",
+      "displayDate": "Mar 12, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-18",
+      "displayDate": "Mar 18, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-25",
+      "displayDate": "Mar 25, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-26",
+      "displayDate": "Mar 26, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-03-30",
+      "displayDate": "Mar 30, 2016",
+      "title": "DJ gig with Edward",
+      "venue": "Prairie Sun Brewery",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Prairie Sun Brewery, 2020 Quebec Ave, Saskatoon, SK S7K 1W5, Canada",
+      "time": "23:00 – 00:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-04-01",
+      "displayDate": "Apr 1, 2016 (2d)",
+      "title": "Freehouse Gig",
+      "venue": "Spadina Freehouse",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Spadina Freehouse, 608 Spadina Crescent E, Saskatoon, SK S7K 3G8, Canada",
+      "time": "21:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-04-01",
+      "displayDate": "Apr 1, 2016 (2d)",
+      "title": "FreeHouse Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-04-02",
+      "displayDate": "Apr 2, 2016 (2d)",
+      "title": "Residency Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Avenue South, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-04-22",
+      "displayDate": "Apr 22, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-04-23",
+      "displayDate": "Apr 23, 2016",
+      "title": "Pink Wig Gig with Mo Love",
+      "venue": "Delta Bessborough",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Delta Bessborough, 601 Spadina Crescent E, Saskatoon, SK S7K 3G8, Canada",
+      "time": "20:00 – 21:30",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-04-23",
+      "displayDate": "Apr 23, 2016",
+      "title": "Gear rental for \"\"Neighbor\"\" Gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "All day",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-04-27",
+      "displayDate": "Apr 27, 2016",
+      "title": "Gig",
+      "venue": "Prairie Sun Brewery",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Prairie Sun Brewery, 2020 Quebec Ave, Saskatoon, SK S7K 1W5, Canada",
+      "time": "22:00 – 23:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-04-30",
+      "displayDate": "Apr 30, 2016",
+      "title": "DJ Gig at Ryde YXE",
+      "venue": "705 Broadway Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "705 Broadway Ave, Saskatoon, SK S7N 1B3, Canada",
+      "time": "19:00 – 20:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-04-30",
+      "displayDate": "Apr 30, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-06",
+      "displayDate": "May 6, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Legacy Lounge",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Legacy Lounge, 2404 8 St E, Saskatoon, SK S7H 0V6, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-07",
+      "displayDate": "May 7, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-12",
+      "displayDate": "May 12, 2016 (2d)",
+      "title": "Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "21:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-13",
+      "displayDate": "May 13, 2016 (2d)",
+      "title": "Angels Gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "21:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-13",
+      "displayDate": "May 13, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-14",
+      "displayDate": "May 14, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-20",
+      "displayDate": "May 20, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-21",
+      "displayDate": "May 21, 2016",
+      "title": "Gig with Yvo, Felipe,",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "17:00 – 23:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-05-27",
+      "displayDate": "May 27, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-05-28",
+      "displayDate": "May 28, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-03",
+      "displayDate": "Jun 3, 2016",
+      "title": "LifeCycle Gig with Morgan",
+      "venue": "1002 Broadway Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "1002 Broadway Ave, Saskatoon, SK S7N 1B9, Canada",
+      "time": "17:45 – 18:45",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-06-03",
+      "displayDate": "Jun 3, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-04",
+      "displayDate": "Jun 4, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-08",
+      "displayDate": "Jun 8, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Una Pizza + Wine",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Una Pizza + Wine, 707 Broadway Ave, Saskatoon, SK S7N 1B3, Canada",
+      "time": "22:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-09",
+      "displayDate": "Jun 9, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "22:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-10",
+      "displayDate": "Jun 10, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-17",
+      "displayDate": "Jun 17, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-18",
+      "displayDate": "Jun 18, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-24",
+      "displayDate": "Jun 24, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-25",
+      "displayDate": "Jun 25, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-06-30",
+      "displayDate": "Jun 30, 2016",
+      "title": "DJ gig",
+      "venue": "Waskesiu Lake",
+      "city": "Waskesiu Lake, SK",
+      "fullVenue": "Waskesiu Lake, SK S0J, Canada",
+      "time": "18:00 – 21:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-07-01",
+      "displayDate": "Jul 1, 2016",
+      "title": "DJ gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-07-01",
+      "displayDate": "Jul 1, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "20:00 – 13:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-07-09",
+      "displayDate": "Jul 9, 2016",
+      "title": "DJ gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-07-09",
+      "displayDate": "Jul 9, 2016",
+      "title": "Ska Band Gig",
+      "venue": "614 11th St E",
+      "city": "Saskatoon, SK",
+      "fullVenue": "614 11th St E, Saskatoon, SK S7N 0G3, Canada",
+      "time": "20:00 – 21:30",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-07-16",
+      "displayDate": "Jul 16, 2016",
+      "title": "Piano Gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "17:00 – 18:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-07-16",
+      "displayDate": "Jul 16, 2016 (2d)",
+      "title": "DJ Gig @ Una Pizza",
+      "venue": "Una Pizza + Wine",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Una Pizza + Wine, 707 Broadway Ave, Saskatoon, SK S7N 1B3, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-07-16",
+      "displayDate": "Jul 16, 2016 (2d)",
+      "title": "DJ Gig with Anthony",
+      "venue": "TCU Place",
+      "city": "Saskatoon, SK",
+      "fullVenue": "TCU Place, 35 22nd Street East, Saskatoon, SK S7K 0C8, Canada",
+      "time": "23:30 – 03:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-07-29",
+      "displayDate": "Jul 29, 2016 (2d)",
+      "title": "DJ Gig",
+      "venue": "Una Pizza + Wine",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Una Pizza + Wine, 707 Broadway Ave, Saskatoon, SK S7N 1B3, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-07-30",
+      "displayDate": "Jul 30, 2016 (2d)",
+      "title": "DJ Gig",
+      "venue": "Capitol Music Club Events",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Capitol Music Club Events, 244 1st Avenue North, Saskatoon, SK S7K 1X2, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-07-31",
+      "displayDate": "Jul 31, 2016 (2d)",
+      "title": "DJ Gig",
+      "venue": "Una Pizza + Wine",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Una Pizza + Wine, 707 Broadway Ave, Saskatoon, SK S7N 1B3, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2016-08-06",
+      "displayDate": "Aug 6, 2016",
+      "title": "DJ Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-08-11",
+      "displayDate": "Aug 11, 2016",
+      "title": "Dinner Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "18:00 – 22:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-08-13",
+      "displayDate": "Aug 13, 2016",
+      "title": "DJ Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "18:00 – 22:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-08-17",
+      "displayDate": "Aug 17, 2016",
+      "title": "DJ Gig for Bike Rave",
+      "venue": "130 Blackburn Crescent",
+      "city": "Saskatoon, SK",
+      "fullVenue": "130 Blackburn Crescent, Saskatoon, SK S7V 1E7, Canada",
+      "time": "20:30 – 23:30",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-08-19",
+      "displayDate": "Aug 19, 2016",
+      "title": "Folkfest Gig",
+      "venue": "2101 Lansdowne Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "2101 Lansdowne Ave, Saskatoon, SK S7J 1G6, Canada",
+      "time": "All day",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-08-20",
+      "displayDate": "Aug 20, 2016",
+      "title": "Piano Gig for Harrison & Leah",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "17:00 – 18:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-08-20",
+      "displayDate": "Aug 20, 2016",
+      "title": "DJ Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-08-26",
+      "displayDate": "Aug 26, 2016",
+      "title": "Live Sound & DJ Gig",
+      "venue": "Waskesiu Lake",
+      "city": "Waskesiu Lake, SK",
+      "fullVenue": "Waskesiu Lake, Prince Albert National Park, SK S0J, Canada",
+      "time": "18:00 – 22:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-08-27",
+      "displayDate": "Aug 27, 2016",
+      "title": "DJ Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "20:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-03",
+      "displayDate": "Sep 3, 2016 (2d)",
+      "title": "DJ Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-06",
+      "displayDate": "Sep 6, 2016",
+      "title": "Beer Gardens Gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "15:00 – 16:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-09-10",
+      "displayDate": "Sep 10, 2016",
+      "title": "DJ Gig - Broadway Street Fair",
+      "venue": "Broadway Avenue",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Broadway Avenue, Broadway Ave, Saskatoon, SK, Canada",
+      "time": "10:00 – 14:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-09-11",
+      "displayDate": "Sep 11, 2016",
+      "title": "Live Sound Gig",
+      "venue": "The Grazing Goat",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Grazing Goat, 210 20 Street West, Saskatoon, SK S7M 0W9, Canada",
+      "time": "19:00 – 22:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-09-16",
+      "displayDate": "Sep 16, 2016 (2d)",
+      "title": "DJ gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-17",
+      "displayDate": "Sep 17, 2016",
+      "title": "Sask Expo DJ Gig",
+      "venue": "Prairieland Park",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Prairieland Park, 503 Ruth St W, Saskatoon, SK S7J 0S6, Canada",
+      "time": "10:00 – 18:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-18",
+      "displayDate": "Sep 18, 2016",
+      "title": "Sask Expo DJ Gig",
+      "venue": "Prairieland Park",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Prairieland Park, 503 Ruth St W, Saskatoon, SK S7J 0S6, Canada",
+      "time": "10:00 – 17:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-30",
+      "displayDate": "Sep 30, 2016",
+      "title": "LifeCycle Gig",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "19:00 – 20:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-09-30",
+      "displayDate": "Sep 30, 2016 (2d)",
+      "title": "DJ Gig",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-10-01",
+      "displayDate": "Oct 1, 2016",
+      "title": "Wedding DJ Gig",
+      "venue": "German Cultural Centre",
+      "city": "Grasswood, SK",
+      "fullVenue": "German Cultural Centre, 1B1 Canada, 160 Cartwright Ave, Grasswood, SK S7T, Canada",
+      "time": "20:00 – 23:30",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-10-07",
+      "displayDate": "Oct 7, 2016",
+      "title": "LifeCycle Gig",
+      "venue": "1002 Broadway Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "1002 Broadway Ave, Saskatoon, SK S7N 1B9",
+      "time": "19:30 – 20:30",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-10-08",
+      "displayDate": "Oct 8, 2016",
+      "title": "Science Centre Gig",
+      "venue": "Saskatchewan Science Centre",
+      "city": "Regina, SK",
+      "fullVenue": "Saskatchewan Science Centre, 2903 Powerhouse Dr, Regina, SK S4N 0A1, Canada",
+      "time": "12:00 – 18:00",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-10-10",
+      "displayDate": "Oct 10, 2016",
+      "title": "La Coka Nostra Gig",
+      "venue": "Saskatoon Event Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Saskatoon Event Centre, 1201 Alberta Ave, Saskatoon, SK S7K 7Y6, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-10-15",
+      "displayDate": "Oct 15, 2016",
+      "title": "DJ gig",
+      "venue": "Capitol Music Club Events",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Capitol Music Club Events, 244 1st Avenue North, Saskatoon, SK S7K 1X2, Canada",
+      "time": "22:00 – 23:30",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-10-16",
+      "displayDate": "Oct 16, 2016",
+      "title": "Full Moon Gig",
+      "venue": "Free Flow Dance Center",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Free Flow Dance Center, 224 25 St W, Saskatoon, SK S7L 0C4, Canada",
+      "time": "19:30 – 22:30",
+      "days": 1,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-10-28",
+      "displayDate": "Oct 28, 2016",
+      "title": "LifeCycle Gig",
+      "venue": "1002 Broadway Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "1002 Broadway Ave, Saskatoon, SK S7N 1B9, Canada",
+      "time": "19:00 – 20:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-11-12",
+      "displayDate": "Nov 12, 2016 (2d)",
+      "title": "gig",
+      "venue": "Cosmopolitan Senior Citizens Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Cosmopolitan Senior Citizens Centre, 614 11th St E, Saskatoon, SK S7N 0G3, Canada",
+      "time": "19:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "isthisarave",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-11-18",
+      "displayDate": "Nov 18, 2016",
+      "title": "Protective Services Piano Gig",
+      "venue": "TCU Place",
+      "city": "Saskatoon, SK",
+      "fullVenue": "TCU Place, 35 22nd Street East, Saskatoon, SK S7K 0C8, Canada",
+      "time": "17:00 – 20:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2016-11-18",
+      "displayDate": "Nov 18, 2016 (2d)",
+      "title": "Album Fundraiser Gig",
+      "venue": "Vangelis Tavern",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Vangelis Tavern, 801 Broadway Ave, Saskatoon, SK S7N 1B5, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-11-19",
+      "displayDate": "Nov 19, 2016 (2d)",
+      "title": "Private Party Gig",
+      "venue": "Dino's Bar and Grill",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Dino's Bar and Grill, 906 Central Ave, Saskatoon, SK S7N 1R3, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-11-26",
+      "displayDate": "Nov 26, 2016 (2d)",
+      "title": "Respect the Elements",
+      "venue": "Vangelis Tavern",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Vangelis Tavern, 801 Broadway Ave, Saskatoon, SK S7N 1B5, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2016-11-28",
+      "displayDate": "Nov 28, 2016",
+      "title": "Mo' Love Gig AIDS Fundraiser",
+      "venue": "TCU Place",
+      "city": "Saskatoon, SK",
+      "fullVenue": "TCU Place, 35 22 St E, Saskatoon, SK S7K 0C8, Canada",
+      "time": "18:00 – 19:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2016-12-02",
+      "displayDate": "Dec 2, 2016",
+      "title": "School of Public Health",
+      "venue": "TCU Place",
+      "city": "Saskatoon, SK",
+      "fullVenue": "TCU Place, 35 22 St E, Saskatoon, SK S7K 0C8, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-12-03",
+      "displayDate": "Dec 3, 2016 (2d)",
+      "title": "Highschool Fundraiser",
+      "venue": "O'Brians Event Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "O'Brians Event Centre, 241 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2016-12-08",
+      "displayDate": "Dec 8, 2016",
+      "title": "Piano/DJ",
+      "venue": "120 2 Ave N",
+      "city": "Saskatoon, SK",
+      "fullVenue": "120 2 Ave N, Saskatoon, SK S7K 2B2",
+      "time": "17:30 – 20:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2016-12-30",
+      "displayDate": "Dec 30, 2016",
+      "title": "DJ Spin LifeCYCLE",
+      "venue": "1002 Broadway Ave",
+      "city": "Saskatoon, SK",
+      "fullVenue": "1002 Broadway Ave, Saskatoon, SK S7N 1B9, Canada",
+      "time": "19:00 – 20:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2016-12-31",
+      "displayDate": "Dec 31, 2016",
+      "title": "NYE",
+      "venue": "Capitol Music Club Events",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Capitol Music Club Events, 244 1st Avenue North, Saskatoon, SK S7K 1X2, Canada",
+      "time": "21:00 – 22:15",
+      "days": 1,
+      "tags": [
+        "gig",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-12-31",
+      "displayDate": "Dec 31, 2016 (2d)",
+      "title": "New Year's",
+      "venue": "244 1st Ave N",
+      "city": "Saskatoon, SK",
+      "fullVenue": "244 1st Ave N, Saskatoon, SK S7K 1X2, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2016-12-31",
+      "displayDate": "Dec 31, 2016",
+      "title": "New Year's",
+      "venue": "O'Brians Event Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "O'Brians Event Centre, 241 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "23:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2017-02-06",
+      "displayDate": "Feb 6, 2017",
+      "title": "http://example-url.com",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "03:17 – 07:17",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-02-10",
+      "displayDate": "Feb 10, 2017",
+      "title": "Full Moon in Leo: dance party & more",
+      "venue": "Yerrama Yoga Sanctuary",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Yerrama Yoga Sanctuary, 219 21st St E A, Saskatoon, SK S7K 0B7, Canada",
+      "time": "19:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig",
+        "livestream"
+      ]
+    },
+    {
+      "date": "2017-02-24",
+      "displayDate": "Feb 24, 2017 (2d)",
+      "title": "Elysium 90's Party",
+      "venue": "Cosmopolitan Senior Citizens Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Cosmopolitan Senior Citizens Centre, 614 11th St E, Saskatoon, SK S7N 0G3, Canada",
+      "time": "18:30 – 00:30",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-03-06",
+      "displayDate": "Mar 6, 2017",
+      "title": "Live Piano Yoga",
+      "venue": "Yerrama Yoga Sanctuary",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Yerrama Yoga Sanctuary, 219 21st St E A, Saskatoon, SK S7K 0B7, Canada",
+      "time": "12:00 – 13:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-03-08",
+      "displayDate": "Mar 8, 2017",
+      "title": "Live Piano Yoga",
+      "venue": "Yerrama Yoga Sanctuary",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Yerrama Yoga Sanctuary, 219 21st St E A, Saskatoon, SK S7K 0B7, Canada",
+      "time": "12:00 – 13:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-03-24",
+      "displayDate": "Mar 24, 2017 (2d)",
+      "title": "Melody Bar",
+      "venue": "Melody Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Melody Bar, 255 3 Ave S, Saskatoon, SK S7K 1M3, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-03-25",
+      "displayDate": "Mar 25, 2017",
+      "title": "Skylab Opening Set",
+      "venue": "Capitol Music Club",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Capitol Music Club, 244 1st Avenue North, Saskatoon, SK S7K 1X2, Canada",
+      "time": "20:30 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-03-29",
+      "displayDate": "Mar 29, 2017",
+      "title": "UofS Engineering Showcase",
+      "venue": "Marquis Hall",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Marquis Hall, 97 Campus Dr, Saskatoon, SK S7N 4L3, Canada",
+      "time": "15:30 – 21:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-04-06",
+      "displayDate": "Apr 6, 2017",
+      "title": "Melody Bar",
+      "venue": "Melody Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Melody Bar, 255 3 Ave S, Saskatoon, SK S7K 1M3, Canada",
+      "time": "20:30 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-04-08",
+      "displayDate": "Apr 8, 2017",
+      "title": "Melody Bar",
+      "venue": "Melody Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Melody Bar, 255 3 Ave S, Saskatoon, SK S7K 1M3, Canada",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-04-14",
+      "displayDate": "Apr 14, 2017",
+      "title": "Melody Bar",
+      "venue": "Melody Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Melody Bar, 255 3 Ave S, Saskatoon, SK S7K 1M3, Canada",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-04-14",
+      "displayDate": "Apr 14, 2017 (2d)",
+      "title": "Pink Moon",
+      "venue": "Village Guitar & Amp Co.",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Village Guitar & Amp Co., 432 432 20th Street West, Saskatoon, SK S7M 0X4, Canada",
+      "time": "21:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-04-23",
+      "displayDate": "Apr 23, 2017 (2d)",
+      "title": "Celph Titled & Apathy",
+      "venue": "Saskatoon Event Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Saskatoon Event Centre, 1201 Alberta Ave, Saskatoon, SK S7K 7Y6, Canada",
+      "time": "21:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-05-06",
+      "displayDate": "May 6, 2017",
+      "title": "Half Cut",
+      "venue": "416 21st St E",
+      "city": "Saskatoon, SK",
+      "fullVenue": "416 21st St E, Saskatoon, SK S7K 0C2, Canada",
+      "time": "19:30 – 23:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-05-08",
+      "displayDate": "May 8, 2017",
+      "title": "Geoff English & Blaze On3",
+      "venue": "The Underground Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Underground Cafe, 430 20 St W, Saskatoon, SK S7M 0X4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-05-11",
+      "displayDate": "May 11, 2017",
+      "title": "Brothers Grim",
+      "venue": "The Underground Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Underground Cafe, 430 20 St W, Saskatoon, SK S7M 0X4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-06-01",
+      "displayDate": "Jun 1, 2017",
+      "title": "Prairie Scene",
+      "venue": "Flint",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Flint, 259 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "19:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-06-24",
+      "displayDate": "Jun 24, 2017 (2d)",
+      "title": "Doom Squad",
+      "venue": "Vangelis Tavern",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Vangelis Tavern, 801 Broadway Ave, Saskatoon, SK S7N 1B5, Canada",
+      "time": "20:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-07-15",
+      "displayDate": "Jul 15, 2017",
+      "title": "Sean Cruz's Wedding",
+      "venue": "Prairieland Park",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Prairieland Park, Ruth Street West, Saskatoon, SK, Canada",
+      "time": "17:00 – 18:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-11-24",
+      "displayDate": "Nov 24, 2017 (2d)",
+      "title": "Starstruck : A Night In Hollywood",
+      "venue": "Engineering Student Centre",
+      "city": "Vancouver, BC",
+      "fullVenue": "Engineering Student Centre, UBC Engineering Courtyard, 2335 Engineering Rd, Vancouver, BC V6T 1Z4, Canada",
+      "time": "23:00 – 04:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2017-12-22",
+      "displayDate": "Dec 22, 2017",
+      "title": "Melody Bar",
+      "venue": "Melody Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Melody Bar, 255 3 Ave S, Saskatoon, SK S7K 1M3, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2018-02-03",
+      "displayDate": "Feb 3, 2018 (2d)",
+      "title": "Fertility",
+      "venue": "The Cambrian Hall",
+      "city": "Vancouver, BC",
+      "fullVenue": "The Cambrian Hall, 215 E 17th Ave, Vancouver, BC V5V 1A6, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2018-07-27",
+      "displayDate": "Jul 27, 2018 (4d)",
+      "title": "Blessed Coast Festival",
+      "venue": "Cheekye",
+      "city": "Squamish, BC",
+      "fullVenue": "Cheekye, Squamish, BC V0N 1H0, Canada",
+      "time": "All day",
+      "days": 4,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2018-12-22",
+      "displayDate": "Dec 22, 2018 (2d)",
+      "title": "Live @ Bacchus Lounge",
+      "venue": "610 2nd Ave N",
+      "city": "Saskatoon, SK",
+      "fullVenue": "610 2nd Ave N, Saskatoon, SK S7K 2C8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-02-16",
+      "displayDate": "Feb 16, 2019",
+      "title": "MAPS Canada Presents: Healing Trauma & Addiction with Psychedelic-Assisted Therapy, ft. Gabor Maté, Joanna Simundic, and Trevor Millar",
+      "venue": "6133 University Blvd",
+      "city": "Vancouver, BC",
+      "fullVenue": "6133 University Blvd, Vancouver, BC V6T 1Z1, Canada",
+      "time": "19:30 – 23:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-06-01",
+      "displayDate": "Jun 1, 2019",
+      "title": "House Party",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-06-21",
+      "displayDate": "Jun 21, 2019",
+      "title": "Solstice Festival",
+      "venue": "52.671446",
+      "city": "-106.116100",
+      "fullVenue": "52.671446, -106.116100",
+      "time": "19:00 – 20:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-07-19",
+      "displayDate": "Jul 19, 2019 (2d)",
+      "title": "Off Topic",
+      "venue": "Cafe Deux Soleils",
+      "city": "Vancouver, BC",
+      "fullVenue": "Cafe Deux Soleils, 2096 Commercial Dr, Vancouver, BC V5N 4B2, Canada",
+      "time": "23:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-07-29",
+      "displayDate": "Jul 29, 2019",
+      "title": "Falconetti's",
+      "venue": "Falconetti's East Side Grill",
+      "city": "Vancouver, BC",
+      "fullVenue": "Falconetti's East Side Grill, 1812 Commercial Dr, Vancouver, BC V5N 4A5, Canada",
+      "time": "18:00 – 22:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2019-11-08",
+      "displayDate": "Nov 8, 2019 (2d)",
+      "title": "Cafe Deux Soleils",
+      "venue": "Cafe Deux Soleils @ 2096 Commercial Dr",
+      "city": "Vancouver, BC",
+      "fullVenue": "Cafe Deux Soleils @ 2096 Commercial Dr, Vancouver, BC V5N 4B2, Canada",
+      "time": "22:00 – 01:30",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2020-06-19",
+      "displayDate": "Jun 19, 2020",
+      "title": "Valhalla Fest Stream",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "22:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2021-08-31",
+      "displayDate": "Aug 31, 2021",
+      "title": "Quini Wine Tasting",
+      "venue": "Lonsdale Quay Hotel",
+      "city": "Vancouver, BC",
+      "fullVenue": "Lonsdale Quay Hotel, 123 Carrie Cates Ct, North Vancouver, BC V7M 3K7, Canada",
+      "time": "17:00 – 20:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2021-09-04",
+      "displayDate": "Sep 4, 2021",
+      "title": "Valhalla Fest",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "13:00 – 14:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2021-09-17",
+      "displayDate": "Sep 17, 2021 (4d)",
+      "title": "Equinox Festival",
+      "venue": "near Elstow",
+      "city": "Elstow, SK",
+      "fullVenue": "near Elstow, SK",
+      "time": "13:00",
+      "days": 4,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2022-07-06",
+      "displayDate": "Jul 6, 2022 (2d)",
+      "title": "Bitcoin Meet Up 003",
+      "venue": "Vancouver",
+      "city": "Vancouver, BC",
+      "fullVenue": "Vancouver, BC",
+      "time": "20:00 – 00:30",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2022-08-10",
+      "displayDate": "Aug 10, 2022 (2d)",
+      "title": "Bitcoin Meet Up 004",
+      "venue": "Vancouver",
+      "city": "Vancouver, BC",
+      "fullVenue": "Vancouver, BC",
+      "time": "20:00 – 00:30",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2022-11-09",
+      "displayDate": "Nov 9, 2022 (2d)",
+      "title": "Bitcoin Meet Up 006 w/ Bitcoin Mechanic",
+      "venue": "The Beaumont Studios",
+      "city": "Vancouver, BC",
+      "fullVenue": "The Beaumont Studios, 316 W 5th Ave, Vancouver, BC, Canada",
+      "time": "21:00 – 01:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2023-05-28",
+      "displayDate": "May 28, 2023",
+      "title": "Corduroy",
+      "venue": "Corduroy Restaurant",
+      "city": "Vancouver, BC",
+      "fullVenue": "Corduroy Restaurant, 1943 Cornwall Ave, Vancouver, BC V6J 1C8, Canada",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2023-06-04",
+      "displayDate": "Jun 4, 2023",
+      "title": "Corduroy",
+      "venue": "Corduroy Restaurant",
+      "city": "Vancouver, BC",
+      "fullVenue": "Corduroy Restaurant, 1943 Cornwall Ave, Vancouver, BC V6J 1C8, Canada",
+      "time": "19:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2023-06-17",
+      "displayDate": "Jun 17, 2023 (2d)",
+      "title": "Bulkley Valley Brewery",
+      "venue": "Bulkley Valley Brewery",
+      "city": "Smithers, BC",
+      "fullVenue": "Bulkley Valley Brewery, 3860 1 Ave, Smithers, BC V0J 2N2, Canada",
+      "time": "22:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig",
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-07-01",
+      "displayDate": "Jul 1, 2023 (2d)",
+      "title": "Canada Day",
+      "venue": "Corduroy Restaurant",
+      "city": "Vancouver, BC",
+      "fullVenue": "Corduroy Restaurant, 1943 Cornwall Ave, Vancouver, BC V6J 1C8, Canada",
+      "time": "23:00 – 03:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2023-07-25",
+      "displayDate": "Jul 25, 2023",
+      "title": "Bitcoin Event: Mix & Mingle w/ live music",
+      "venue": "The Art Party",
+      "city": "Vancouver, BC",
+      "fullVenue": "The Art Party, 328 W Hastings St #110, Vancouver, BC V6B 1K6, Canada",
+      "time": "18:00 – 21:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2023-08-04",
+      "displayDate": "Aug 4, 2023 (3d)",
+      "title": "Vibes Festival",
+      "venue": "56010 Range Rd 152",
+      "city": "YELLOWHEAD COUNTY, AB",
+      "fullVenue": "56010 Range Rd 152, YELLOWHEAD COUNTY, AB T7E 3R7",
+      "time": "All day",
+      "days": 3,
+      "tags": [
+        "gig",
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-08-11",
+      "displayDate": "Aug 11, 2023 (2d)",
+      "title": "SK Wellness",
+      "venue": "3902 Millar Ave #20",
+      "city": "Saskatoon, SK",
+      "fullVenue": "3902 Millar Ave #20, Saskatoon, SK S7P 0B1, Canada",
+      "time": "21:00 – 03:00",
+      "days": 2,
+      "tags": [
+        "gig",
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-08-12",
+      "displayDate": "Aug 12, 2023 (2d)",
+      "title": "Congress Beer House",
+      "venue": "Congress Beer House",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Congress Beer House, 215 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "22:00 – 02:00",
+      "days": 2,
+      "tags": [
+        "gig",
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-08-13",
+      "displayDate": "Aug 13, 2023",
+      "title": "Bacchus Lounge",
+      "venue": "Earls Kitchen + Bar",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Earls Kitchen + Bar, 610 2nd Ave N, Saskatoon, SK S7K 2C7, Canada",
+      "time": "14:00 – 17:00",
+      "days": 1,
+      "tags": [
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-08-18",
+      "displayDate": "Aug 18, 2023",
+      "title": "Bokeh On The Plaza",
+      "venue": "Bokeh on the Plaza",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "tour"
+      ]
+    },
+    {
+      "date": "2023-11-18",
+      "displayDate": "Nov 18, 2023 (2d)",
+      "title": "Bitcoin Fun Times",
+      "venue": "The Beaumont Studios",
+      "city": "Vancouver, BC",
+      "fullVenue": "The Beaumont Studios, 316 W 5th Ave, Vancouver, BC, Canada",
+      "time": "22:00 – 03:00",
+      "days": 2,
+      "tags": []
+    },
+    {
+      "date": "2023-11-26",
+      "displayDate": "Nov 26, 2023",
+      "title": "Corduroy",
+      "venue": "Corduroy Restaurant",
+      "city": "Vancouver, BC",
+      "fullVenue": "Corduroy Restaurant, 1943 Cornwall Ave, Vancouver, BC V6J 1C8, Canada",
+      "time": "16:00 – 19:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2023-12-17",
+      "displayDate": "Dec 17, 2023",
+      "title": "Reunion Dance Temple Takeover",
+      "venue": "Cosmo Seniors Centre",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Cosmo Seniors Centre, Saskatoon, SK, Canada",
+      "time": "10:00 – 12:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2024-03-22",
+      "displayDate": "Mar 22, 2024",
+      "title": "Bokeh on the Plaza",
+      "venue": "Bokeh on the Plaza",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2024-04-13",
+      "displayDate": "Apr 13, 2024",
+      "title": "Bokeh on the Plaza",
+      "venue": "Bokeh on the Plaza",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": []
+    },
+    {
+      "date": "2024-11-02",
+      "displayDate": "Nov 2, 2024",
+      "title": "Bokeh On the Plaza",
+      "venue": "Bokeh on the Plaza",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bokeh on the Plaza, 480 2 Ave S, Saskatoon, SK S7K 5R4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-02-15",
+      "displayDate": "Feb 15, 2025 (2d)",
+      "title": "BPES Music Show",
+      "venue": "Lakeview Church",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Lakeview Church, 19 Glazier Rd, Saskatoon, SK S7K 3J8, Canada",
+      "time": "18:00 – 12:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-02-21",
+      "displayDate": "Feb 21, 2025",
+      "title": "Finn's",
+      "venue": "Finns Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finns Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "20:30 – 23:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-03-08",
+      "displayDate": "Mar 8, 2025",
+      "title": "Sound Tech",
+      "venue": "Finns Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finns Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "16:30 – 21:30",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-05-30",
+      "displayDate": "May 30, 2025",
+      "title": "Finn's ft Doctor Yvo",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-05-31",
+      "displayDate": "May 31, 2025",
+      "title": "Finn's ft. Joiboi",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-01",
+      "displayDate": "Jun 1, 2025",
+      "title": "Market",
+      "venue": "Gather Local Market",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Gather Local Market, 414 Avenue B S, Saskatoon, SK S7M 5G9, Canada",
+      "time": "13:00 – 17:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-13",
+      "displayDate": "Jun 13, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-14",
+      "displayDate": "Jun 14, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-20",
+      "displayDate": "Jun 20, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-21",
+      "displayDate": "Jun 21, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-27",
+      "displayDate": "Jun 27, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-27",
+      "displayDate": "Jun 27, 2025",
+      "title": "Finns ft. Kris Jones",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-28",
+      "displayDate": "Jun 28, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-06-28",
+      "displayDate": "Jun 28, 2025",
+      "title": "Finns ft. Snakeman",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-07-18",
+      "displayDate": "Jul 18, 2025",
+      "title": "Finns",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-07-19",
+      "displayDate": "Jul 19, 2025",
+      "title": "Finns",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-07-25",
+      "displayDate": "Jul 25, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-07-26",
+      "displayDate": "Jul 26, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "20:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-08-02",
+      "displayDate": "Aug 2, 2025",
+      "title": "Finn's",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-08-08",
+      "displayDate": "Aug 8, 2025 (2d)",
+      "title": "Boiler Room",
+      "venue": "Night Market YXE",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Night Market YXE, 251 3 Ave S, Saskatoon, SK S7K 1M4, Canada",
+      "time": "22:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-08-16",
+      "displayDate": "Aug 16, 2025",
+      "title": "Finn's",
+      "venue": "Finn's Irish Pub",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Finn's Irish Pub, Core Neighborhood Area, 924 Spadina Crescent E, Saskatoon, SK S7K 3H5, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-08-21",
+      "displayDate": "Aug 21, 2025",
+      "title": "Rhythm & Roots Asian Festival",
+      "venue": "19 Glazier Rd",
+      "city": "Saskatoon, SK",
+      "fullVenue": "19 Glazier Rd, Saskatoon, SK S7K 3J8, Canada",
+      "time": "21:30 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-08-22",
+      "displayDate": "Aug 22, 2025",
+      "title": "Bon Temps ft. Will Wallace",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-09-13",
+      "displayDate": "Sep 13, 2025",
+      "title": "Bon Temps",
+      "venue": "Bon Temps Cafe",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Bon Temps Cafe, 223 2 Ave S, Saskatoon, SK S7K 0B4, Canada",
+      "time": "21:00 – 00:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2025-10-17",
+      "displayDate": "Oct 17, 2025",
+      "title": "Green Room",
+      "venue": "Green Room",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Green Room, 243 2 Ave S, Saskatoon, SK S7K 1K8, Canada",
+      "time": "21:00 – 23:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2026-03-07",
+      "displayDate": "Mar 7, 2026 (2d)",
+      "title": "Midnight Oil / Birthday Jam",
+      "venue": "The Midnight Oil",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Midnight Oil, 204 3 Ave S, Saskatoon, SK S7K 1M1, Canada",
+      "time": "20:00 – 12:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2026-04-20",
+      "displayDate": "Apr 20, 2026",
+      "title": "Green Moon",
+      "venue": "The Green Moon - Curated Cannabis",
+      "city": "Saskatoon, SK",
+      "fullVenue": "The Green Moon - Curated Cannabis, 610 Duchess St, Saskatoon, SK S7K 0R1, Canada",
+      "time": "13:00 – 17:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2026-06-06",
+      "displayDate": "Jun 6, 2026 (2d)",
+      "title": "Holy Cross 20YR Reunion",
+      "venue": "Holy Cross High School",
+      "city": "Saskatoon, SK",
+      "fullVenue": "Holy Cross High School, 2115 Mceown Ave, Saskatoon, SK S7J 3K8, Canada",
+      "time": "18:00 – 01:00",
+      "days": 2,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2026-06-20",
+      "displayDate": "Jun 20, 2026",
+      "title": "Soundtech",
+      "venue": "",
+      "city": "",
+      "fullVenue": "",
+      "time": "18:00 – 22:00",
+      "days": 1,
+      "tags": [
+        "gig"
+      ]
+    },
+    {
+      "date": "2026-07-30",
+      "displayDate": "Jul 30, 2026 (3d)",
+      "title": "Emotion Festival",
+      "venue": "Besant Campground",
+      "city": "Caron No. 162, SK",
+      "fullVenue": "Besant Campground, SK-1, Caron No. 162, SK S0H 3E0, Canada",
+      "time": "All day",
+      "days": 3,
+      "tags": [
+        "gig"
+      ]
+    }
+  ]
+}
