@@ -286,3 +286,37 @@ export const sendReunionDevops = async (message) => {
     console.error('There was a problem with the axios operation:', error);
   }
 }
+
+export const sendMedPrep = async (message) => {
+  if (!message) {
+    console.error('Message is required.');
+    return;
+  }
+
+  const payload = {
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: message
+        }
+      }
+    ]
+  };
+
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    const response = await axios.post(
+      'https://relayproxy.vercel.app/festivall_notifications',
+      payload,
+      { headers }
+    );
+    console.log('Response data:', response.data);
+  } catch (error) {
+    console.error('There was a problem with the axios operation:', error);
+  }
+}

@@ -60,6 +60,10 @@ import BudgetView from '@/views/BudgetView.vue'
 import AdminInventoryView from '@/views/AdminInventoryView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
+import MedPrepView from '@/views/MedPrepView.vue'
+import MedPrepApplicationView from '@/views/MedPrepApplicationView.vue'
+import MedPrepAdminView from '@/views/MedPrepAdminView.vue'
+import MedPrepContractView from '@/views/MedPrepContractView.vue'
 
 
 const routes = [
@@ -510,6 +514,30 @@ const routes = [
     name: 'bitcoin-wallet',
     component: BitcoinWalletView,
     meta: { showHeader: false }
+  },
+  {
+    path: '/medprep',
+    name: 'medprep',
+    component: MedPrepView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/medprep/apply',
+    name: 'medprep-apply',
+    component: MedPrepApplicationView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/medprep/contract/:id',
+    name: 'medprep-contract',
+    component: MedPrepContractView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/admin/medprep',
+    name: 'medprep-admin',
+    component: MedPrepAdminView,
+    meta: { requiresAuth: true, showHeader: false }
   }
 ]
 
