@@ -171,50 +171,37 @@
     margin: 0 0 14px;
   }
 
-  /* ─── Tier grid (now in left col, 2x2) ─── */
-  .tiers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+  /* ─── Archetype list ─── */
+  .archetypes {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
   }
-  .tier {
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    padding: 12px 14px;
+  .archetype {
+    border-left: 2px solid var(--border);
+    padding: 7px 12px;
   }
-  .tier.featured {
-    border-color: var(--gold);
-    background: var(--bg-accent);
-  }
-  .tier h3 {
+  .archetype .label {
     font-family: 'Oswald', sans-serif;
-    font-size: 10.5pt;
+    font-size: 9.5pt;
     color: var(--text-strong);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin: 0 0 5px;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin-bottom: 2px;
   }
-  .tier .for {
-    font-size: 8.5pt;
+  .archetype .label em {
+    color: var(--gold);
+    font-style: normal;
+  }
+  .archetype .sub {
+    font-size: 7.5pt;
     color: var(--text-muted);
     font-weight: 300;
     line-height: 1.4;
-    margin: 0 0 10px;
-    min-height: 24px;
-  }
-  .tier .price {
-    font-size: 9pt;
-    color: var(--gold);
-    font-family: 'Oswald', sans-serif;
-    letter-spacing: 0.05em;
-  }
-  .tier .price .total {
-    color: var(--text-strong);
-    font-weight: 600;
   }
   /* ─── Pricing structure panel ─── */
   .pricing-structure {
-    margin-top: 14px;
+    margin-top: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
@@ -444,38 +431,37 @@
   <div class="headline">
     <p class="big">A real doctor. <strong>On your side.</strong><br/>From application to acceptance.</p>
     <p class="sub">
-      Students I've worked with have been accepted to <strong>M.D., D.M.D., and Residency programs</strong>
-      across Canada. I don't write your essays — I draw out your story until you can.
-      Remote coaching across Canada · Based in Saskatoon.
+      My students have received offers from <strong>M.D., D.M.D., and Residency programs</strong> across Canada.
+      I've sat where you're sitting — and I only take on students I genuinely believe I can help.
     </p>
   </div>
 
   <!-- BODY -->
   <div class="body">
 
-    <!-- LEFT: PROGRAMS -->
+    <!-- LEFT: ARCHETYPES -->
     <div class="col left">
-      <h2>The Programs</h2>
-      <div class="tiers">
-        <div class="tier">
-          <h3>The Blueprint</h3>
-          <p class="for">2+ years out · Build the foundation</p>
-          <div class="price">From <span class="total">$500</span> deposit</div>
+      <h2>Sound Like You?</h2>
+      <div class="archetypes">
+        <div class="archetype">
+          <div class="label">Your grades are okay — <em>but you know you have more to offer?</em></div>
+          <div class="sub">Strong drive and experiences. The numbers just need work.</div>
         </div>
-        <div class="tier featured">
-          <h3>The Campaign ★</h3>
-          <p class="for">One full application cycle</p>
-          <div class="price">From <span class="total">$750</span> deposit</div>
+        <div class="archetype">
+          <div class="label">Your academic record is airtight — <em>but you freeze when it counts?</em></div>
+          <div class="sub">The strength is there. Interviews or soft skills are the gap.</div>
         </div>
-        <div class="tier">
-          <h3>The Return</h3>
-          <p class="for">Reapplying after a rejection</p>
-          <div class="price">From <span class="total">$500</span> deposit</div>
+        <div class="archetype">
+          <div class="label">You've applied before — <em>and you came close?</em></div>
+          <div class="sub">Not a first-timer. You know what went wrong. Let's fix it.</div>
         </div>
-        <div class="tier">
-          <h3>The Full Ride</h3>
-          <p class="for">Multi-year · through CaRMS</p>
-          <div class="price">From <span class="total">$1,500</span> deposit</div>
+        <div class="archetype">
+          <div class="label">You're early in your premed journey — <em>and want to start right?</em></div>
+          <div class="sub">Still in undergrad. Want a real roadmap, not generic advice.</div>
+        </div>
+        <div class="archetype">
+          <div class="label">Your path here was unconventional — <em>and you have a story to tell?</em></div>
+          <div class="sub">Career change, mature student, non-traditional background. All the more reason.</div>
         </div>
       </div>
       <div class="pricing-structure">
@@ -497,6 +483,7 @@
         <div class="cred"><strong>Practicing Physician</strong><span class="by">WELL Health · Vancouver</span></div>
         <div class="cred"><strong>Clinical Skills Faculty</strong><span class="by">U of S College of Medicine</span></div>
       </div>
+
     </div>
 
     <!-- RIGHT: CTA -->
@@ -512,12 +499,15 @@
       <div class="promise">
         <div class="label">My Promise</div>
         <p>
-          I personally review every application. If I don't think I can genuinely help you,
+          I personally review every application. If I don't think I can help you,
           I'll say so — and I'll try to steer you somewhere better.
         </p>
       </div>
     </div>
 
+  </div>
+  <div class="footnote">
+Not affiliated with any admissions committee.
   </div>
 
   <!-- TEAR-OFF STRIPS -->
@@ -534,9 +524,7 @@
     <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
   </div>
 
-  <div class="footnote">
-    Dr. Prasenjit Das, MD · Not affiliated with any university admissions committee · COI disclosure at festivall.ca/medprep
-  </div>
+
 
 </div>
 
