@@ -6,8 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
+  /* ─── Local fonts ─── */
+  @font-face {
+    font-family: 'Organda MN';
+    src: url('/fonts/Organda-MN-Regular.otf') format('opentype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Organda MN';
+    src: url('/fonts/Organda-MN-Bold.otf') format('opentype');
+    font-weight: 700;
+  }
+
   /* ─── Theme tokens — defaults from the 2026 poster palette ─── */
   /* Default: light (cream poster) — matches the printed feel */
   :root,
@@ -109,7 +121,7 @@
     border-bottom: 1px solid var(--border);
   }
   .eyebrow {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 11pt;
     letter-spacing: 0.32em;
     text-transform: uppercase;
@@ -117,8 +129,8 @@
     margin-bottom: 8px;
   }
   .location {
-    font-family: 'Oswald', sans-serif;
-    font-size: 14pt;
+    font-family: 'Organda MN', sans-serif;
+    font-size: 16pt;
     color: var(--navy);
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -135,8 +147,8 @@
     border-bottom: 1px solid var(--border);
   }
   .pillars-row {
-    font-family: 'Cinzel', serif;
-    font-size: 13pt;
+    font-family: 'Organda MN', sans-serif;
+    font-size: 16pt;
     font-weight: 600;
     color: var(--navy);
     letter-spacing: 0.18em;
@@ -157,7 +169,7 @@
   .col.left { border-right: 1px solid var(--border); }
 
   h2 {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 12pt;
     color: var(--orange);
     letter-spacing: 0.14em;
@@ -181,14 +193,14 @@
   }
   .ticket-row:last-child { border-bottom: none; }
   .ticket-name {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 12pt;
     color: var(--text-strong);
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
   .ticket-price {
-    font-family: 'Cinzel', serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 14pt;
     font-weight: 700;
     color: var(--navy);
@@ -199,7 +211,7 @@
     padding: 10px 12px;
     background: var(--bg-accent);
     border-left: 3px solid var(--gold);
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 10pt;
     letter-spacing: 0.06em;
     color: var(--text-dim);
@@ -224,7 +236,7 @@
   }
   .highlight strong {
     display: block;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 9pt;
     color: var(--frog);
     letter-spacing: 0.08em;
@@ -248,7 +260,7 @@
     height: 1.85in;
   }
   .cta-line {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 11pt;
     color: var(--text-strong);
     letter-spacing: 0.1em;
@@ -256,7 +268,7 @@
     margin: 2px 0;
   }
   .url {
-    font-family: 'Cinzel', serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 14pt;
     font-weight: 700;
     color: var(--orange);
@@ -293,7 +305,7 @@
     left: 50%;
     transform: translate(-50%, -50%) rotate(-90deg);
     transform-origin: center;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     white-space: nowrap;
     text-align: center;
     line-height: 1.2;
@@ -322,7 +334,7 @@
     font-weight: 400;
     padding: 5px 0 7px;
     border-top: 1px solid var(--border-soft);
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
@@ -340,7 +352,7 @@
   .ctrl-btn {
     background: #c25439;
     color: #f4ead0;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 11pt;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -372,7 +384,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 9.5pt;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -385,7 +397,7 @@
     color: #1d2c47;
     border: none;
     padding: 8px 10px;
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Organda MN', sans-serif;
     font-size: 12pt;
     letter-spacing: 0.06em;
     width: 100%;
@@ -568,6 +580,8 @@
     btn.textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
     try { localStorage.setItem('reunion-flyer-theme', next); } catch (e) {}
   }
+
+
   try {
     const saved = localStorage.getItem('reunion-flyer-theme');
     if (saved === 'dark') toggleTheme();
