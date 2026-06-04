@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dr. Prasenjit Das — Med School Coaching Flyer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ─── Theme tokens ─── */
+  /* Default: dark */
+  :root,
+  .page[data-theme="dark"] {
+    --bg:           #0d0d0d;
+    --bg-elev:      #141414;
+    --bg-tear:      #0a0a0a;
+    --bg-accent:    #141208;
+    --text:         #e8e8e8;
+    --text-strong:  #ffffff;
+    --text-muted:   #888888;
+    --text-dim:     #b0b0b0;
+    --gold:         #c9a227;
+    --gold-soft:    #e0b52e;
+    --border:       #2a2a2a;
+    --border-soft:  #1a1a1a;
+    --dashed:       #555555;
+    --shadow:       0 8px 40px rgba(0,0,0,0.5);
+  }
+  .page[data-theme="light"] {
+    --bg:           #ffffff;
+    --bg-elev:      #f6f4ec;
+    --bg-tear:      #f9f7ee;
+    --bg-accent:    #fbf5dc;
+    --text:         #1a1a1a;
+    --text-strong:  #000000;
+    --text-muted:   #6b6b6b;
+    --text-dim:     #3a3a3a;
+    --gold:         #a07908;
+    --gold-soft:    #8a6707;
+    --border:       #d8d2bf;
+    --border-soft:  #e9e4d2;
+    --dashed:       #9c9580;
+    --shadow:       0 8px 40px rgba(0,0,0,0.15);
+  }
+
+  /* ─── Print setup: US Letter, single page ─── */
+  @page {
+    size: Letter portrait;
+    margin: 0;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #2a2a2a;
+    font-family: 'Inter', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.body-light { background: #d8d4c8; }
+  .page {
+    width: 8.5in;
+    height: 11in;
+    margin: 24px auto;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  @media print {
+    body { background: #fff !important; }
+    .page { margin: 0; box-shadow: none; }
+    .no-print { display: none !important; }
+  }
+
+  /* ─── Header band ─── */
+  .header {
+    padding: 0.26in 0.55in 0.18in;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.32in;
+  }
+  .portrait {
+    width: 1.3in;
+    height: 1.3in;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+    flex-shrink: 0;
+  }
+  .header-text { flex: 1; }
+  .badge {
+    display: inline-block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9pt;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 3px 10px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28pt;
+    color: var(--text-strong);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin: 0 0 5px;
+    line-height: 1;
+  }
+  h1 .md { color: var(--gold); }
+  .subtitle {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  /* ─── Headline ─── */
+  .headline {
+    padding: 0.16in 0.55in 0.14in;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .headline .big {
+    font-family: 'Oswald', sans-serif;
+    font-size: 21pt;
+    color: var(--text-strong);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .headline .big strong { color: var(--gold); }
+  .headline .sub {
+    font-size: 10.5pt;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.55;
+    margin: 0 auto;
+    max-width: 6.5in;
+  }
+  .headline .sub strong { color: var(--gold); font-weight: 500; }
+
+  /* ─── Body grid ─── */
+  .body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 0;
+  }
+  .col {
+    padding: 0.16in 0.45in 0.12in;
+  }
+  .col.left { border-right: 1px solid var(--border); }
+
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  /* ─── Tier grid (now in left col, 2x2) ─── */
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .tier {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+  }
+  .tier.featured {
+    border-color: var(--gold);
+    background: var(--bg-accent);
+  }
+  .tier h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10.5pt;
+    color: var(--text-strong);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 5px;
+  }
+  .tier .for {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.4;
+    margin: 0 0 10px;
+    min-height: 24px;
+  }
+  .tier .price {
+    font-size: 9pt;
+    color: var(--gold);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .tier .price .total {
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+  /* ─── Pricing structure panel ─── */
+  .pricing-structure {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+  .pricing-cell {
+    padding: 10px 12px;
+  }
+  .pricing-cell + .pricing-cell {
+    border-left: 1px solid var(--border);
+  }
+  .pricing-cell .step {
+    font-family: 'Oswald', sans-serif;
+    font-size: 7.5pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .pricing-cell .what-it-is {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10pt;
+    color: var(--text-strong);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .pricing-cell .detail {
+    font-size: 8pt;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .pricing-cell.success .what-it-is { color: var(--gold); }
+
+  /* ─── Compact credentials strip (bottom of left col) ─── */
+  .col.left { display: flex; flex-direction: column; }
+  .creds-strip {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+  }
+  .creds-strip .cred {
+    font-size: 8pt;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.35;
+  }
+  .creds-strip .cred strong {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 8.5pt;
+    color: var(--text-strong);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 1px;
+  }
+  .creds-strip .cred .by { color: var(--gold); font-weight: 500; }
+
+  /* ─── Right column / CTA ─── */
+  .cta-block { text-align: center; }
+  .qr-wrap {
+    background: #fff;
+    padding: 12px;
+    display: inline-block;
+    margin: 6px auto 12px;
+  }
+  .qr-wrap img {
+    display: block;
+    width: 1.75in;
+    height: 1.75in;
+  }
+  .cta-line {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11pt;
+    color: var(--text-strong);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 4px 0;
+  }
+  .url {
+    font-family: 'Oswald', sans-serif;
+    font-size: 15pt;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    margin: 6px 0 4px;
+    line-height: 1.15;
+  }
+  .url-note {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 0 0 16px;
+  }
+  .promise {
+    background: var(--bg-accent);
+    border-left: 2px solid var(--gold);
+    padding: 12px 14px;
+    text-align: left;
+    margin-top: 10px;
+  }
+  .promise .label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 9pt;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .promise p {
+    font-size: 9pt;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ─── Tear-off strips ─── */
+  .tear-off {
+    border-top: 1px dashed var(--dashed);
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    height: 1.7in;
+    flex-shrink: 0;
+    background: var(--bg-tear);
+    padding-top: 0.09in;
+    padding-bottom: 0.09in;
+  }
+  .strip {
+    border-left: 1px dashed var(--dashed);
+    position: relative;
+    overflow: hidden;
+  }
+  .strip:first-child { border-left: none; }
+  .strip-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transform-origin: center;
+    font-family: 'Oswald', sans-serif;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .strip .what {
+    display: block;
+    color: var(--gold);
+    font-size: 12pt;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .strip .who {
+    display: block;
+    color: var(--text-strong);
+    font-size: 7pt;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    margin-bottom: 3px;
+  }
+
+  /* ─── Footer ─── */
+  .footnote {
+    text-align: center;
+    font-size: 7.5pt;
+    color: var(--text-muted);
+    font-weight: 300;
+    padding: 5px 0 7px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  /* ─── Controls ─── */
+  .controls {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .ctrl-btn {
+    background: #c9a227;
+    color: #0d0d0d;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border: none;
+    cursor: pointer;
+  }
+  .ctrl-btn.secondary {
+    background: transparent;
+    color: #c9a227;
+    border: 1px solid #c9a227;
+  }
+  .ctrl-btn:hover { background: #e0b52e; color: #0d0d0d; }
+  .ctrl-btn.secondary:hover { background: #c9a227; color: #0d0d0d; }
+</style>
+</head>
+<body>
+
+<div class="controls no-print">
+  <button class="ctrl-btn secondary" onclick="toggleTheme()" id="themeBtn">Light Mode</button>
+  <button class="ctrl-btn" onclick="window.print()">Print</button>
+</div>
+
+<div class="page" id="flyerPage" data-theme="dark">
+
+  <!-- HEADER -->
+  <div class="header">
+    <img class="portrait" src="/medprep-flyer-portrait.jpg" alt="Dr. Prasenjit Das"
+         onerror="this.src='https://festivall.ca/assets/Prasenjit.jpg'; this.onerror=null;" />
+    <div class="header-text">
+      <div class="badge">3–5 Students / Year · By Application Only</div>
+      <h1>Dr. Prasenjit Das<span class="md">, MD</span></h1>
+      <p class="subtitle">Medical School Admissions Coaching</p>
+    </div>
+  </div>
+
+  <!-- HEADLINE -->
+  <div class="headline">
+    <p class="big">A real doctor. <strong>On your side.</strong><br/>From application to acceptance.</p>
+    <p class="sub">
+      Students I've worked with have been accepted to <strong>M.D., D.M.D., and Residency programs</strong>
+      across Canada. I don't write your essays — I draw out your story until you can.
+      Remote coaching across Canada · Based in Saskatoon.
+    </p>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- LEFT: PROGRAMS -->
+    <div class="col left">
+      <h2>The Programs</h2>
+      <div class="tiers">
+        <div class="tier">
+          <h3>The Blueprint</h3>
+          <p class="for">2+ years out · Build the foundation</p>
+          <div class="price">From <span class="total">$500</span> deposit</div>
+        </div>
+        <div class="tier featured">
+          <h3>The Campaign ★</h3>
+          <p class="for">One full application cycle</p>
+          <div class="price">From <span class="total">$750</span> deposit</div>
+        </div>
+        <div class="tier">
+          <h3>The Return</h3>
+          <p class="for">Reapplying after a rejection</p>
+          <div class="price">From <span class="total">$500</span> deposit</div>
+        </div>
+        <div class="tier">
+          <h3>The Full Ride</h3>
+          <p class="for">Multi-year · through CaRMS</p>
+          <div class="price">From <span class="total">$1,500</span> deposit</div>
+        </div>
+      </div>
+      <div class="pricing-structure">
+        <div class="pricing-cell">
+          <div class="step">Step 1</div>
+          <div class="what-it-is">Commitment Deposit</div>
+          <p class="detail">A modest fee on acceptance into the program. Secures your spot and my time.</p>
+        </div>
+        <div class="pricing-cell success">
+          <div class="step">Step 2</div>
+          <div class="what-it-is">Success Premium</div>
+          <p class="detail">Paid only upon a confirmed offer of admission. My incentives, aligned with yours.</p>
+        </div>
+      </div>
+
+      <div class="creds-strip">
+        <div class="cred"><strong>Doctor of Medicine</strong><span class="by">University of Saskatchewan</span></div>
+        <div class="cred"><strong>Family Medicine Residency</strong><span class="by">UBC · Rural &amp; Remote</span></div>
+        <div class="cred"><strong>Practicing Physician</strong><span class="by">WELL Health · Vancouver</span></div>
+        <div class="cred"><strong>Clinical Skills Faculty</strong><span class="by">U of S College of Medicine</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CTA -->
+    <div class="col right cta-block">
+      <h2 style="text-align:center;">Apply</h2>
+      <div class="qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&amp;margin=0&amp;data=https%3A%2F%2Ffestivall.ca%2Fmedprep%2Fapply" alt="QR code to apply" />
+      </div>
+      <p class="cta-line">Scan to Apply</p>
+      <div class="url">festivall.ca/medprep</div>
+      <p class="url-note">Full details, tiers, FAQ &amp; intake form</p>
+
+      <div class="promise">
+        <div class="label">My Promise</div>
+        <p>
+          I personally review every application. If I don't think I can genuinely help you,
+          I'll say so — and I'll try to steer you somewhere better.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TEAR-OFF STRIPS -->
+  <div class="tear-off">
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">MED SCHOOL COACHING</span><span class="what">festivall.ca/medprep</span></div></div>
+  </div>
+
+  <div class="footnote">
+    Dr. Prasenjit Das, MD · Not affiliated with any university admissions committee · COI disclosure at festivall.ca/medprep
+  </div>
+
+</div>
+
+<script>
+  function toggleTheme() {
+    const pg = document.getElementById('flyerPage');
+    const btn = document.getElementById('themeBtn');
+    const next = pg.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    pg.setAttribute('data-theme', next);
+    document.body.classList.toggle('body-light', next === 'light');
+    btn.textContent = next === 'dark' ? 'Light Mode' : 'Dark Mode';
+    try { localStorage.setItem('medprep-flyer-theme', next); } catch (e) {}
+  }
+  // Restore last choice
+  try {
+    const saved = localStorage.getItem('medprep-flyer-theme');
+    if (saved === 'light') toggleTheme();
+  } catch (e) {}
+</script>
+
+</body>
+</html>

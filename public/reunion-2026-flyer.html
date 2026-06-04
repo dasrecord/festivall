@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Reunion 2026 — Printable Flyer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ─── Theme tokens — defaults from the 2026 poster palette ─── */
+  /* Default: light (cream poster) — matches the printed feel */
+  :root,
+  .page[data-theme="light"] {
+    --bg:           #f4ead0;   /* cream */
+    --bg-elev:      #ece0bf;
+    --bg-tear:      #e6d8b0;
+    --bg-accent:    #faf1d8;
+    --text:         #1d2c47;   /* deep navy from poster */
+    --text-strong:  #15233a;
+    --text-muted:   #5a6478;
+    --text-dim:     #2d3a55;
+    --frog:         #767a44;   /* festival frog green */
+    --orange:       #c25439;   /* poster terracotta */
+    --orange-soft:  #d96a4e;
+    --navy:         #1d2c47;
+    --gold:         #c9a227;
+    --border:       #c8b78a;
+    --border-soft:  #e1d5ad;
+    --dashed:       #9c8d61;
+    --shadow:       0 8px 40px rgba(0,0,0,0.18);
+  }
+  .page[data-theme="dark"] {
+    --bg:           #0d0d0d;
+    --bg-elev:      #1a1a1a;
+    --bg-tear:      #0a0a0a;
+    --bg-accent:    #1a1408;
+    --text:         #e8e8e8;
+    --text-strong:  #ffffff;
+    --text-muted:   #999999;
+    --text-dim:     #c0c0c0;
+    --frog:         #b8be6e;
+    --orange:       #e0784d;
+    --orange-soft:  #f08a5a;
+    --navy:         #6a85b8;
+    --gold:         #c9a227;
+    --border:       #2a2a2a;
+    --border-soft:  #1a1a1a;
+    --dashed:       #555555;
+    --shadow:       0 8px 40px rgba(0,0,0,0.6);
+  }
+
+  @page { size: Letter portrait; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #b8a578;
+    font-family: 'Inter', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.body-dark { background: #2a2a2a; }
+
+  .page {
+    width: 8.5in;
+    height: 11in;
+    margin: 24px auto;
+    background: var(--bg);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  @media print {
+    body { background: #fff !important; }
+    .page { margin: 0; box-shadow: none; }
+    .no-print { display: none !important; }
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 3.15in;
+    flex: 0 0 3.15in;
+    overflow: hidden;
+    border-bottom: 3px solid var(--orange);
+  }
+  .hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 5%;
+    display: block;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%);
+    pointer-events: none;
+  }
+
+  /* ─── Subtitle band ─── */
+  .title-band {
+    padding: 0.14in 0.5in 0.12in;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11pt;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 8px;
+  }
+  .location {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14pt;
+    color: var(--navy);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: 500;
+  }
+  .location .pin { color: var(--orange); }
+
+  /* ─── Pillars (Music · Dancing · Camping / Family · Friends · Food) ─── */
+  .pillars {
+    padding: 0.12in 0.5in;
+    text-align: center;
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--border);
+  }
+  .pillars-row {
+    font-family: 'Cinzel', serif;
+    font-size: 13pt;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 0.18em;
+    line-height: 1.6;
+    text-transform: uppercase;
+  }
+  .pillars-row + .pillars-row { color: var(--frog); }
+  .pillars-row .dot { color: var(--orange); margin: 0 8px; font-weight: 700; }
+
+  /* ─── Body grid ─── */
+  .body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 0;
+  }
+  .col { padding: 0.22in 0.45in 0.18in; }
+  .col.left { border-right: 1px solid var(--border); }
+
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    color: var(--orange);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+
+  /* ─── Tickets ─── */
+  .ticket-list {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+  }
+  .ticket-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .ticket-row:last-child { border-bottom: none; }
+  .ticket-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    color: var(--text-strong);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .ticket-price {
+    font-family: 'Cinzel', serif;
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.03em;
+  }
+  .btc-note {
+    margin-top: 6px;
+    padding: 10px 12px;
+    background: var(--bg-accent);
+    border-left: 3px solid var(--gold);
+    font-family: 'Oswald', sans-serif;
+    font-size: 10pt;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .btc-note strong { color: var(--gold); font-weight: 600; }
+
+  /* ─── Highlights strip ─── */
+  .highlights {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+  }
+  .highlight {
+    font-size: 8.5pt;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.4;
+  }
+  .highlight strong {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9pt;
+    color: var(--frog);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+
+  /* ─── Right column / CTA ─── */
+  .cta-block { text-align: center; }
+  .qr-wrap {
+    background: #fff;
+    padding: 12px;
+    display: inline-block;
+    margin: 4px auto 10px;
+    border: 1px solid var(--border);
+  }
+  .qr-wrap img {
+    display: block;
+    width: 1.85in;
+    height: 1.85in;
+  }
+  .cta-line {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11pt;
+    color: var(--text-strong);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 2px 0;
+  }
+  .url {
+    font-family: 'Cinzel', serif;
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 0.03em;
+    margin: 4px 0 4px;
+    line-height: 1.15;
+  }
+  .url-note {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 0 0 12px;
+  }
+  /* ─── Tear-off strips ─── */
+  .tear-off {
+    border-top: 1px dashed var(--dashed);
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    height: 1.7in;
+    flex-shrink: 0;
+    background: var(--bg-tear);
+    padding-top: 0.09in;
+    padding-bottom: 0.09in;
+  }
+  .strip {
+    border-left: 1px dashed var(--dashed);
+    position: relative;
+    overflow: hidden;
+  }
+  .strip:first-child { border-left: none; }
+  .strip-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transform-origin: center;
+    font-family: 'Oswald', sans-serif;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .strip .who {
+    display: block;
+    color: var(--navy);
+    font-size: 7pt;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    margin-bottom: 3px;
+  }
+  .strip .what {
+    display: block;
+    color: var(--orange);
+    font-size: 12pt;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* ─── Footer ─── */
+  .footnote {
+    text-align: center;
+    font-size: 7.5pt;
+    color: var(--text-muted);
+    font-weight: 400;
+    padding: 5px 0 7px;
+    border-top: 1px solid var(--border-soft);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .footnote .heart { color: var(--orange); }
+
+  /* ─── Controls ─── */
+  .controls {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .ctrl-btn {
+    background: #c25439;
+    color: #f4ead0;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border: none;
+    cursor: pointer;
+  }
+  .ctrl-btn.secondary {
+    background: transparent;
+    color: #c25439;
+    border: 1px solid #c25439;
+  }
+  .ctrl-btn:hover { background: #d96a4e; color: #fff; }
+  .ctrl-btn.secondary:hover { background: #c25439; color: #f4ead0; }
+
+  /* ─── Generator panel ─── */
+  .generator {
+    width: 8.5in;
+    margin: 0 auto 18px;
+    background: #1d2c47;
+    color: #f4ead0;
+    padding: 18px 24px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .generator label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c9a227;
+    flex: 1;
+    min-width: 160px;
+  }
+  .generator input {
+    background: #f4ead0;
+    color: #1d2c47;
+    border: none;
+    padding: 8px 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12pt;
+    letter-spacing: 0.06em;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .generator input::placeholder { color: #8a7a60; }
+  .generator .hint {
+    font-size: 8pt;
+    color: #8faac4;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+    margin-top: 3px;
+  }
+  .generator .gen-url {
+    flex: 2;
+    min-width: 260px;
+    font-family: 'Inter', sans-serif;
+    font-size: 8.5pt;
+    color: #c9a227;
+    word-break: break-all;
+    background: rgba(255,255,255,0.06);
+    padding: 8px 10px;
+    align-self: flex-end;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .generator .gen-url strong { display: block; color: #8faac4; font-size: 8pt; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<div class="controls no-print">
+  <button class="ctrl-btn secondary" onclick="toggleTheme()" id="themeBtn">Dark Mode</button>
+  <button class="ctrl-btn" onclick="window.print()">Print</button>
+</div>
+
+<div class="generator no-print">
+  <label>
+    Your Artist ID Code
+    <input type="text" id="genRef" maxlength="5" placeholder="AB3DE" oninput="updateQR()" />
+    <span class="hint">5-char code · auto-fills referral on checkout</span>
+  </label>
+  <label>
+    Poster Location
+    <input type="text" id="genLoc" placeholder="USask Campus" oninput="updateQR()" />
+    <span class="hint">e.g. Broadway Café, Downtown Library, Midtown Mall</span>
+  </label>
+  <div class="gen-url" id="genUrlDisplay">
+    <strong>Generated URL</strong>
+    https://festivall.ca/reuniontickets
+  </div>
+</div>
+
+<div class="page" id="flyerPage" data-theme="light">
+
+  <!-- HERO IMAGE -->
+  <div class="hero">
+    <img src="/reunion_2026_preview.png" alt="Reunion 2026 — frog on a lily pad" />
+    <div class="hero-overlay"></div>
+  </div>
+
+  <!-- TITLE BAND -->
+  <div class="title-band">
+    <div class="eyebrow">A Grassroots Electronic Music Festival</div>
+    <p class="location"><span class="pin">◆</span> 30 Minutes from Saskatoon, SK <span class="pin">◆</span></p>
+  </div>
+
+  <!-- PILLARS -->
+  <div class="pillars">
+    <div class="pillars-row">Music <span class="dot">·</span> Dancing <span class="dot">·</span> Camping</div>
+    <div class="pillars-row">Family <span class="dot">·</span> Friends <span class="dot">·</span> Food</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- LEFT: TICKETS + HIGHLIGHTS -->
+    <div class="col left">
+      <h2>Tickets</h2>
+      <ul class="ticket-list">
+        <li class="ticket-row">
+          <span class="ticket-name">Weekend Pass</span>
+          <span class="ticket-price">$200 CAD</span>
+        </li>
+        <li class="ticket-row">
+          <span class="ticket-name">Day Pass</span>
+          <span class="ticket-price">$100 CAD</span>
+        </li>
+        <li class="ticket-row">
+          <span class="ticket-name">Meal Plan</span>
+          <span class="ticket-price">$30 / day</span>
+        </li>
+      </ul>
+      <div class="btc-note">
+        ₿ &nbsp; <strong>25% off</strong> when you pay with Bitcoin
+      </div>
+
+      <div class="highlights">
+        <div class="highlight"><strong>Custom Soundsystem</strong>Built by our crew, for our crew.</div>
+        <div class="highlight"><strong>On-site Camping</strong>All weekend, under prairie sky.</div>
+        <div class="highlight"><strong>Family-Friendly</strong>Kids welcome. Community first.</div>
+        <div class="highlight"><strong>Art &amp; Workshops</strong>Installations, talks, & play.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: CTA -->
+    <div class="col right cta-block">
+      <h2 style="text-align:center;">Get Your Pass</h2>
+      <div class="qr-wrap">
+        <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=https%3A%2F%2Ffestivall.ca%2Freuniontickets" alt="QR code to buy tickets" />
+      </div>
+      <p class="cta-line">Scan to Buy</p>
+      <div class="url" id="qrUrlLabel">festivall.ca/<br/>reuniontickets</div>
+    </div>
+
+  </div>
+
+  <!-- TEAR-OFF STRIPS -->
+  <div class="tear-off">
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+    <div class="strip"><div class="strip-inner"><span class="who">REUNION 2026 · SEPT 4–7</span><span class="what">festivall.ca/reunion</span></div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footnote">
+    Made with <span class="heart">♥</span> on the prairie &nbsp;·&nbsp; festivall.ca/reunion
+  </div>
+
+</div>
+
+<script>
+  function slugify(str) {
+    return str.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  }
+
+  function updateQR() {
+    const ref   = document.getElementById('genRef').value.trim();
+    const loc   = document.getElementById('genLoc').value.trim();
+
+    let path = 'https://festivall.ca/reuniontickets';
+    if (ref) path += '/' + ref;
+
+    const params = new URLSearchParams();
+    params.set('utm_source', 'flyer');
+    params.set('utm_medium', 'print');
+    params.set('utm_campaign', 'reunion2026');
+    if (loc) params.set('utm_content', slugify(loc));
+
+    const fullUrl = path + '?' + params.toString();
+
+    // Update QR image
+    document.getElementById('qrImg').src =
+      'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' +
+      encodeURIComponent(fullUrl);
+
+    // Update printed URL label (keep it short)
+    const shortPath = ref ? 'festivall.ca/reuniontickets/' + ref : 'festivall.ca/reuniontickets';
+    document.getElementById('qrUrlLabel').innerHTML = shortPath.replace('festivall.ca/', 'festivall.ca/<br/>');
+
+    // Update generator URL display
+    document.getElementById('genUrlDisplay').innerHTML =
+      '<strong>Generated URL</strong>' + fullUrl;
+  }
+
+  function toggleTheme() {
+    const pg = document.getElementById('flyerPage');
+    const btn = document.getElementById('themeBtn');
+    const next = pg.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    pg.setAttribute('data-theme', next);
+    document.body.classList.toggle('body-dark', next === 'dark');
+    btn.textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+    try { localStorage.setItem('reunion-flyer-theme', next); } catch (e) {}
+  }
+  try {
+    const saved = localStorage.getItem('reunion-flyer-theme');
+    if (saved === 'dark') toggleTheme();
+  } catch (e) {}
+</script>
+
+</body>
+</html>

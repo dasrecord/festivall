@@ -107,7 +107,7 @@
       <div class="section-inner">
         <h2>How I Coach</h2>
         <p>
-          <strong>I don't write your essays. I interrogate your story until you can.</strong>
+          <strong>I don't write your essays. I draw out your story until you can.</strong>
           You will do more work with me than without me. That is the point.
         </p>
         <p>
@@ -672,7 +672,7 @@ const faqs = [
   },
   {
     q: 'How do I know if I\'m a fit before applying?',
-    a: 'You don\'t need to. The intake form is the fit assessment. If after reading your application I don\'t think I can move the needle for you, I\'ll tell you — and I\'ll usually suggest where to spend your money instead.',
+    a: 'You don\'t need to. The intake form is the fit assessment. If after reading your application I don\'t think I can genuinely help you, I\'ll say so — and I\'ll try to steer you somewhere better.',
   },
 ]
 </script>
