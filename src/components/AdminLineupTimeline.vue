@@ -3,44 +3,48 @@
     <div class="alt-header">
       <span class="alt-day-label">{{ day }}</span>
       <div class="alt-actions">
-        <span v-if="unsavedCount > 0" class="unsaved-badge">{{ unsavedCount }} unsaved</span>
-        <button
-          v-if="selectedIds.size > 0"
-          class="alt-delete-sel-btn"
-          @click="deleteSelected"
-        >Delete {{ selectedIds.size === 1 ? '1 set' : selectedIds.size + ' sets' }}</button>
-        <button
-          v-if="unsavedCount > 0"
-          class="alt-discard-btn"
-          @click="resetChanges"
-        >Discard</button>
-        <button
-          class="alt-save-btn"
-          :disabled="saving || unsavedCount === 0"
-          @click="handleSave"
-        >
-          <span v-if="saving">Saving…</span>
-          <span v-else>Save Changes</span>
-        </button>
-        <span v-if="saveError" class="save-error">{{ saveError }}</span>
+        <!-- Selection mode -->
+        <template v-if="selectedIds.size > 0">
+          <button class="alt-delete-sel-btn" @click="deleteSelected">
+            Delete {{ selectedIds.size === 1 ? '1 set' : selectedIds.size + ' sets' }}
+          </button>
+          <button class="alt-cancel-sel-btn" @click="selectedIds.clear()">Cancel</button>
+        </template>
+        <!-- Edit mode -->
+        <template v-else>
+          <span v-if="unsavedCount > 0" class="unsaved-badge">{{ unsavedCount }} unsaved</span>
+          <button v-if="unsavedCount > 0" class="alt-discard-btn" @click="resetChanges">Discard</button>
+          <button
+            class="alt-save-btn"
+            :disabled="saving || unsavedCount === 0"
+            @click="handleSave"
+          >
+            <span v-if="saving">Saving…</span>
+            <span v-else>Save Changes</span>
+          </button>
+          <span v-if="saveError" class="save-error">{{ saveError }}</span>
+        </template>
       </div>
     </div>
 
-    <!-- ── Act chips — drag any act down into the timeline ── -->
+    <!-- ── Act chips ── -->
     <div class="alt-chips">
-      <span class="alt-chips-label">DRAG TO ADD ↓</span>
-      <div class="alt-chips-scroll">
+      <div class="alt-chips-wrap">
         <div
           v-for="act in chipActs"
           :key="act.id"
           class="alt-chip"
+          :class="{ 'chip-pending': pendingChipId === act.id }"
           draggable="true"
           @dragstart="onChipDragStart($event, act.id)"
+          @click="onChipTap(act.id)"
         >
           {{ act.act_name }}
           <span v-if="act.daySetCount > 0" class="alt-chip-badge">×{{ act.daySetCount }}</span>
         </div>
       </div>
+      <span v-if="pendingChipId" class="chip-pending-hint">↓ tap timeline to place</span>
+      <p class="alt-instructions">Tap or drag a chip onto the timeline to add a set</p>
     </div>
 
     <div class="alt-scroll" ref="scrollRef">
@@ -63,6 +67,7 @@
           @dragover.prevent="onChipDragOver"
           @dragleave="onChipDragLeave"
           @drop="onChipDrop"
+          @click="onTimelineClick"
         >
           <div class="alt-grid">
             <div
@@ -246,6 +251,8 @@ watch(
 )
 
 // ── Chip panel ───────────────────────────────────────────────────────────────
+const pendingChipId = ref(null)  // for tap-to-place on touch
+
 const chipActs = computed(() =>
   [...props.allEvents]
     .filter(ev => ev.act_name && ev.act_name.trim())
@@ -365,10 +372,28 @@ function cascadeOverlaps(draggedBlockId = null) {
   })
 }
 
-// ── Chip drag-to-timeline (HTML5 DnD) ────────────────────────────────────────
+// ── Chip drag-to-timeline (HTML5 DnD) + tap-to-place (touch) ───────────────────
 const scrollRef    = ref(null)
 const actsAreaRef  = ref(null)
 const chipGhostTop = ref(null)
+
+// Tap a chip to arm it, then tap the timeline to place it
+function onChipTap(eventId) {
+  if (pendingChipId.value === eventId) {
+    pendingChipId.value = null  // deselect if tapping same chip
+  } else {
+    pendingChipId.value = eventId
+  }
+}
+
+function onTimelineClick(e) {
+  if (!pendingChipId.value || !actsAreaRef.value) return
+  // Ignore clicks on existing blocks
+  if (e.target.closest('.alt-block')) return
+  const rect = actsAreaRef.value.getBoundingClientRect()
+  addBlockFromChip(pendingChipId.value, e.clientY - rect.top)
+  pendingChipId.value = null
+}
 
 function onChipDragStart(e, eventId) {
   e.dataTransfer.setData('eventId', eventId)
@@ -430,17 +455,31 @@ function deleteBlock(blockId) {
   selectedIds.value = new Set([...selectedIds.value].filter(id => id !== blockId))
   const block = localBlocks.value.find(b => b.blockId === blockId)
   if (!block) return
-  // Mark the event as needing a save (the slot will simply be absent in handleSave)
-  markUnsaved(blockId)
+  if (blockId.includes('::new::')) {
+    // Never persisted — just remove from unsaved tracking entirely
+    const next = new Set(unsavedIds.value)
+    next.delete(blockId)
+    unsavedIds.value = next
+  } else {
+    // Existed in Firestore — mark so handleSave removes the settime
+    markUnsaved(blockId)
+  }
   localBlocks.value = localBlocks.value.filter(b => b.blockId !== blockId)
-  // Unset interact on the removed element
   nextTick(bindInteract)
 }
 
 function deleteSelected() {
+  const next = new Set(unsavedIds.value)
   for (const blockId of selectedIds.value) {
-    markUnsaved(blockId)
+    if (blockId.includes('::new::')) {
+      // Never persisted — just drop from tracking
+      next.delete(blockId)
+    } else {
+      // Existed in Firestore — mark for removal on save
+      next.add(blockId)
+    }
   }
+  unsavedIds.value = next
   localBlocks.value = localBlocks.value.filter(b => !selectedIds.value.has(b.blockId))
   selectedIds.value = new Set()
   nextTick(bindInteract)
@@ -829,8 +868,8 @@ onUnmounted(() => {
   flex: 1;
   padding: 0.15rem 0.4rem;
   overflow: hidden;
-  pointer-events: none;
   min-height: 0;
+  cursor: pointer;
 }
 
 .alt-block-time {
@@ -859,38 +898,35 @@ onUnmounted(() => {
 
 /* ── Chip panel ─────────────────────────────────────────────────────────────── */
 .alt-chips {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 0.75rem;
   background: #0d0d0d;
   border-bottom: 1px solid #2a2a2a;
-  min-height: 40px;
+  padding: 0.4rem 0.75rem;
 }
 
-.alt-chips-label {
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: #666;
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-  flex-shrink: 0;
+.chip-pending-hint {
+  display: block;
+  font-size: 0.65rem;
+  color: #f5c518;
+  padding: 0.2rem 0;
+  animation: blink 1s step-end infinite;
 }
 
-.alt-chips-scroll {
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.alt-chips-wrap {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
-  overflow-x: auto;
-  flex: 1;
-  padding-bottom: 2px;
+  padding: 0 0 0.4rem;
 }
 
-.alt-chips-scroll::-webkit-scrollbar {
-  height: 3px;
-}
-.alt-chips-scroll::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 2px;
+.alt-instructions {
+  margin: 0.25rem 0 0;
+  font-size: 0.62rem;
+  color: #777;
+  line-height: 1.4;
 }
 
 .alt-chip {
@@ -908,6 +944,14 @@ onUnmounted(() => {
   cursor: grab;
   user-select: none;
   transition: background 0.12s, border-color 0.12s;
+}
+
+.alt-chip.chip-pending {
+  background: #2a4a0a;
+  border-color: #f5c518;
+  color: #f5c518;
+  outline: 1px dashed #f5c518;
+  outline-offset: 2px;
 }
 
 .alt-chip:hover {
@@ -1002,5 +1046,20 @@ onUnmounted(() => {
 
 .alt-delete-sel-btn:hover {
   background: #e04040;
+}
+
+.alt-cancel-sel-btn {
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  color: #888;
+  border: 1px solid #444;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.alt-cancel-sel-btn:hover {
+  color: #ccc;
+  border-color: #666;
 }
 </style>
