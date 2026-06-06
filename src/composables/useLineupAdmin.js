@@ -16,9 +16,14 @@ export function useLineupAdmin() {
     saveError.value = null
     try {
       const batch = writeBatch(reunion_db)
-      for (const { id, settimes, set_durations } of updates) {
+      for (const { id, settimes, set_durations, set_types } of updates) {
         const ref = doc(reunion_db, REUNION_FESTIVAL.participantsCollection, id)
-        batch.update(ref, { settimes: settimes.map(t => new Date(t)), set_durations })
+        const payload = {
+          settimes: settimes.map(t => new Date(t)),
+          set_durations
+        }
+        if (set_types) payload.set_types = set_types
+        batch.update(ref, payload)
       }
       await batch.commit()
     } catch (err) {

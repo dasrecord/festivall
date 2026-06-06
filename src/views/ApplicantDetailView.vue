@@ -539,12 +539,19 @@
             <h2>Manage Set Times</h2>
             <div v-if="applicant.settimes && applicant.settimes.length" class="existing-settimes">
               <div v-for="(settime, index) in applicant.settimes" :key="index" class="settime-item">
-                <span>{{ new Date(settime).toLocaleString() }}</span>
+                <span>
+                  <strong style="font-size:0.72rem; text-transform:uppercase; color:#888; margin-right:0.4rem;">{{ (applicant.set_types && applicant.set_types[index]) || 'act' }}</strong>
+                  {{ new Date(settime.toDate ? settime.toDate() : settime).toLocaleString() }}
+                </span>
                 <button @click="removeSettime(index)" class="remove-btn">Remove</button>
               </div>
             </div>
             <div class="add-settime">
               <input type="datetime-local" v-model="newSettime" class="settime-input" />
+              <select v-model="newSettimeType" class="settime-type-select">
+                <option value="act">Artist</option>
+                <option v-if="applicant.workshop_title || (applicant.applicant_types && applicant.applicant_types.includes('Workshop'))" value="workshop">Workshop</option>
+              </select>
               <button @click="addSettime" class="add-btn">Add Set Time</button>
             </div>
           </div>
@@ -620,6 +627,7 @@ export default {
     const compNonMonetary = ref('')
     const compAddons = ref({ tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false })
     const newSettime = ref('')
+    const newSettimeType = ref('act')
     const contractEmailBody = ref('')
     const ticketEmailBody = ref('')
     const declineEmailBody = ref('')
@@ -706,7 +714,9 @@ export default {
             statement: docData.application?.data?.statement || '',
             bio: docData.bio || '',
             comments: docData.comments || '',
-            settimes: docData.settimes || [],
+            settimes:      docData.settimes || [],
+            set_durations: docData.set_durations || [],
+            set_types:     docData.set_types || [],
             // Contract and order data (if exists)
             contract_signed: docData.contract?.signed || false,
             ticket_type: docData.order?.ticket_type || '',
@@ -997,14 +1007,26 @@ export default {
       }
 
       try {
-        const currentSettimes = applicant.value.settimes || []
-        const updatedSettimes = [...currentSettimes, newSettime.value]
+        const currentSettimes   = applicant.value.settimes      || []
+        const currentDurations  = applicant.value.set_durations || currentSettimes.map(() => 60)
+        const currentTypes      = applicant.value.set_types     || currentSettimes.map(() => 'act')
+
+        const updatedSettimes   = [...currentSettimes, newSettime.value]
+        const updatedDurations  = [...currentDurations, 60]
+        const updatedTypes      = [...currentTypes, newSettimeType.value || 'act']
 
         const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
-        await updateDoc(docRef, { settimes: updatedSettimes })
+        await updateDoc(docRef, {
+          settimes:      updatedSettimes,
+          set_durations: updatedDurations,
+          set_types:     updatedTypes
+        })
 
-        applicant.value.settimes = updatedSettimes
+        applicant.value.settimes      = updatedSettimes
+        applicant.value.set_durations = updatedDurations
+        applicant.value.set_types     = updatedTypes
         newSettime.value = ''
+        newSettimeType.value = 'act'
         console.log('Set time added for:', applicant.value.fullname)
       } catch (error) {
         console.error('Error adding set time:', error)
@@ -1014,13 +1036,23 @@ export default {
     const removeSettime = async (index) => {
       if (confirm('Are you sure you want to remove this set time?')) {
         try {
-          const updatedSettimes = [...applicant.value.settimes]
+          const updatedSettimes   = [...applicant.value.settimes]
+          const updatedDurations  = [...(applicant.value.set_durations || updatedSettimes.map(() => 60))]
+          const updatedTypes      = [...(applicant.value.set_types     || updatedSettimes.map(() => 'act'))]
           updatedSettimes.splice(index, 1)
+          updatedDurations.splice(index, 1)
+          updatedTypes.splice(index, 1)
 
           const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
-          await updateDoc(docRef, { settimes: updatedSettimes })
+          await updateDoc(docRef, {
+            settimes:      updatedSettimes,
+            set_durations: updatedDurations,
+            set_types:     updatedTypes
+          })
 
-          applicant.value.settimes = updatedSettimes
+          applicant.value.settimes      = updatedSettimes
+          applicant.value.set_durations = updatedDurations
+          applicant.value.set_types     = updatedTypes
           console.log('Set time removed for:', applicant.value.fullname)
         } catch (error) {
           console.error('Error removing set time:', error)
@@ -1247,7 +1279,7 @@ export default {
       compNonMonetary,
       compAddons,
       newSettime,
-      mealTickets,
+      newSettimeType,
       confirmPaymentReceived,
       revokeTicket,
       remindPayment,
@@ -1684,6 +1716,18 @@ h1 {
   display: flex;
   gap: 0.35rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.settime-type-select {
+  font-size: 0.78rem;
+  background: #1f1e22;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  height: 30px;
+  flex-shrink: 0;
 }
 
 /* Input Styles */

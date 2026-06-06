@@ -629,17 +629,22 @@
               "
               class="settime-section"
             >
-              <input type="datetime-local" v-model="applicant.newSettime" />
-              <img
-                @click="
-                  updateSettime(applicant.id_code, applicant.newSettime),
-                    (applicant.newSettime = '')
-                "
-                :src="lineup_icon"
-                alt="Add Settime"
-                class="action-icon"
-                style="width: auto; height: 32px"
-              />
+              <div class="settime-add-row">
+                <input type="datetime-local" v-model="applicant.newSettime" />
+                <select v-model="applicant.newSettimeType" class="settime-type-select">
+                  <option value="act">Artist</option>
+                </select>
+                <img
+                  @click="
+                    updateSettime(applicant.id_code, applicant.newSettime, applicant.newSettimeType || 'act'),
+                      (applicant.newSettime = '')
+                  "
+                  :src="lineup_icon"
+                  alt="Add Settime"
+                  class="action-icon"
+                  style="width: auto; height: 32px"
+                />
+              </div>
 
               <div v-for="(settime, index) in applicant.settimes || []" :key="index">
                 <p
@@ -648,9 +653,10 @@
                   @click="triggerSettimeRemove(applicant.id_code, index)"
                 >
                   <span v-if="!settimeRemovePending.has(`${applicant.id_code}-${index}`)">
+                    <strong style="font-size:0.7rem; text-transform:uppercase; color:#888; margin-right:0.3rem;">{{ (applicant.set_types && applicant.set_types[index]) || 'act' }}</strong>
                     Settime {{ index + 1 }}:
                     {{
-                      new Date(settime).toLocaleString([], {
+                      new Date(settime.toDate ? settime.toDate() : settime).toLocaleString([], {
                         hour: '2-digit',
                         minute: '2-digit',
                         year: 'numeric',
@@ -1450,20 +1456,27 @@ export default {
       }
     }
 
-    const updateSettime = async (id_code, newSettime) => {
+    const updateSettime = async (id_code, newSettime, newType = 'act') => {
       try {
         const docRef = doc(reunion_db, currentCollection.value, id_code)
 
         // Fetch the current document to get the existing set times
         const docSnap = await getDoc(docRef)
-        const existingSettimes = docSnap.exists() ? docSnap.data().settimes || [] : []
+        const existing = docSnap.exists() ? docSnap.data() : {}
+        const existingSettimes   = existing.settimes   || []
+        const existingDurations  = existing.set_durations || existingSettimes.map(() => 60)
+        const existingTypes      = existing.set_types    || existingSettimes.map(() => 'act')
 
         // Add the new set time to the array
-        const updatedSettimes = [...existingSettimes, newSettime]
+        const updatedSettimes   = [...existingSettimes, newSettime]
+        const updatedDurations  = [...existingDurations, 60]
+        const updatedTypes      = [...existingTypes, newType]
 
         // Update the document with the new array of set times
         await updateDoc(docRef, {
-          settimes: updatedSettimes
+          settimes:      updatedSettimes,
+          set_durations: updatedDurations,
+          set_types:     updatedTypes
         })
 
         // Update both applicants and filteredApplicants arrays
@@ -1471,7 +1484,9 @@ export default {
           if (applicant.id_code === id_code) {
             return {
               ...applicant,
-              settimes: updatedSettimes,
+              settimes:      updatedSettimes,
+              set_durations: updatedDurations,
+              set_types:     updatedTypes,
               newSettime: '' // Clear the input field
             }
           }
@@ -1491,14 +1506,21 @@ export default {
 
         // Fetch the current document to get the existing set times
         const docSnap = await getDoc(docRef)
-        const existingSettimes = docSnap.exists() ? docSnap.data().settimes || [] : []
+        const existing = docSnap.exists() ? docSnap.data() : {}
+        const existingSettimes  = existing.settimes   || []
+        const existingDurations = existing.set_durations || existingSettimes.map(() => 60)
+        const existingTypes     = existing.set_types    || existingSettimes.map(() => 'act')
 
         // Remove the set time at the specified index
-        const updatedSettimes = existingSettimes.filter((_, i) => i !== index)
+        const updatedSettimes   = existingSettimes.filter((_, i)  => i !== index)
+        const updatedDurations  = existingDurations.filter((_, i) => i !== index)
+        const updatedTypes      = existingTypes.filter((_, i)     => i !== index)
 
         // Update the document with the new array of set times
         await updateDoc(docRef, {
-          settimes: updatedSettimes
+          settimes:      updatedSettimes,
+          set_durations: updatedDurations,
+          set_types:     updatedTypes
         })
 
         // Update both applicants and filteredApplicants arrays
@@ -1506,7 +1528,9 @@ export default {
           if (applicant.id_code === id_code) {
             return {
               ...applicant,
-              settimes: updatedSettimes
+              settimes:      updatedSettimes,
+              set_durations: updatedDurations,
+              set_types:     updatedTypes
             }
           }
           return applicant
@@ -2591,6 +2615,24 @@ button.active-filter:hover {
 
 .settime-section > div {
   grid-column: 1 / -1;
+}
+
+.settime-add-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+}
+
+.settime-type-select {
+  font-size: 0.78rem;
+  background: #1a1a1a;
+  color: #ccc;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  height: 32px;
 }
 
 .settime-section p {

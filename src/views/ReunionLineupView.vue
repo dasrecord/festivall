@@ -137,8 +137,9 @@ const fetchEvents = async (signedOnly = true) => {
       return {
         id: docSnap.id,
         ...data,
-        act_name: roles.act_name || appData.workshop_title || data.act_name || data.workshop_title || '',
+        act_name: roles.act_name || data.act_name || '',
         workshop_title: appData.workshop_title || data.workshop_title || '',
+        is_workshop: !!(appData.workshop_title || data.workshop_title) && !(roles.act_name || data.act_name),
         mix_track_url: appData.mix_track_url || data.mix_track_url || '',
         social_url: appData.social_url || data.social_url || '',
         genre: appData.genre || data.genre || '',
@@ -147,6 +148,7 @@ const fetchEvents = async (signedOnly = true) => {
           appData.workshop_description ||
           data.act_description ||
           '',
+        set_types: Array.isArray(data.set_types) ? data.set_types : [],
         settimes: Array.isArray(data.settimes)
           ? data.settimes.map((t) => {
               if (t && typeof t.toDate === 'function') return t.toDate().toISOString()

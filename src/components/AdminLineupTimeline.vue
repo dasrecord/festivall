@@ -32,14 +32,15 @@
       <div class="alt-chips-wrap">
         <div
           v-for="act in chipActs"
-          :key="act.id"
+          :key="act.chipId"
           class="alt-chip"
-          :class="{ 'chip-pending': pendingChipId === act.id }"
+          :class="{ 'chip-pending': pendingChipId === act.chipId, 'chip-workshop': act.chipId.endsWith('::workshop') }"
           draggable="true"
-          @dragstart="onChipDragStart($event, act.id)"
-          @click="onChipTap(act.id)"
+          @dragstart="onChipDragStart($event, act.chipId)"
+          @click="onChipTap(act.chipId)"
         >
-          {{ act.act_name }}
+          <img :src="act.chipId.endsWith('::workshop') ? workshop_icon : dj_icon" class="chip-icon" />
+          {{ act.label }}
           <span v-if="act.daySetCount > 0" class="alt-chip-badge">×{{ act.daySetCount }}</span>
         </div>
       </div>
@@ -100,8 +101,11 @@
             >
               <div class="resize-top" />
               <div class="alt-block-content" @click="toggleSelect(block.blockId)">
+                <div class="alt-block-header">
+                  <img :src="block.type === 'workshop' ? workshop_icon : dj_icon" class="block-type-icon" />
+                  <div class="alt-block-name">{{ block.act_name }}</div>
+                </div>
                 <div class="alt-block-time">{{ formatBlockTime(block) }}</div>
-                <div class="alt-block-name">{{ block.act_name }}</div>
                 <div v-if="block.genre" class="alt-block-genre">{{ block.genre }}</div>
               </div>
               <button class="alt-block-delete" @click.stop="deleteBlock(block.blockId)" title="Remove set">×</button>
@@ -126,6 +130,8 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import interact from 'interactjs'
 import { useLineupAdmin } from '@/composables/useLineupAdmin'
+import dj_icon from '@/assets/images/icons/dj.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 
 const props = defineProps({
   events:    { type: Array, required: true },   // day-filtered events
@@ -225,10 +231,14 @@ function buildBlocks(events) {
     const durations = Array.isArray(ev.set_durations)
       ? ev.set_durations
       : ev.settimes.map(() => 60)
+    const types = Array.isArray(ev.set_types)
+      ? ev.set_types
+      : ev.settimes.map(() => ev.is_workshop ? 'workshop' : 'act')
     for (let i = 0; i < ev.settimes.length; i++) {
       blocks.push({
         blockId:  `${ev.id}::${ev.settimes[i]}`,
         eventId:  ev.id,
+        type:     types[i] || (ev.is_workshop ? 'workshop' : 'act'),
         settime:  ev.settimes[i],
         duration: durations[i] || 60,
         act_name: ev.act_name,
@@ -253,15 +263,32 @@ watch(
 // ── Chip panel ───────────────────────────────────────────────────────────────
 const pendingChipId = ref(null)  // for tap-to-place on touch
 
-const chipActs = computed(() =>
-  [...props.allEvents]
-    .filter(ev => ev.act_name && ev.act_name.trim())
-    .map(ev => ({
-      ...ev,
-      daySetCount: localBlocks.value.filter(b => b.eventId === ev.id).length
-    }))
-    .sort((a, b) => a.act_name.localeCompare(b.act_name))
-)
+const chipActs = computed(() => {
+  const chips = []
+  for (const ev of props.allEvents) {
+    const actName      = ev.act_name?.trim()
+    const workshopName = ev.workshop_title?.trim()
+    if (actName) {
+      chips.push({
+        chipId:      `${ev.id}::act`,
+        eventId:     ev.id,
+        label:       actName,
+        genre:       ev.genre || '',
+        daySetCount: localBlocks.value.filter(b => b.eventId === ev.id && b.type !== 'workshop').length
+      })
+    }
+    if (workshopName && workshopName !== actName) {
+      chips.push({
+        chipId:      `${ev.id}::workshop`,
+        eventId:     ev.id,
+        label:       workshopName,
+        genre:       '',
+        daySetCount: localBlocks.value.filter(b => b.eventId === ev.id && b.type === 'workshop').length
+      })
+    }
+  }
+  return chips.sort((a, b) => a.label.localeCompare(b.label))
+})
 
 // ── Block styles & display ──────────────────────────────────────────────────
 function blockStyle(block) {
@@ -422,18 +449,23 @@ function onChipDrop(e) {
   chipGhostTop.value = null
 }
 
-function addBlockFromChip(eventId, dropPx) {
-  const ev = props.allEvents.find(e => e.id === eventId)
+function addBlockFromChip(chipId, dropPx) {
+  const [docId, type] = chipId.split('::')
+  const ev = props.allEvents.find(e => e.id === docId)
   if (!ev) return
+  const label = type === 'workshop'
+    ? (ev.workshop_title?.trim() || ev.act_name)
+    : (ev.act_name || ev.workshop_title)
   const snapped = Math.max(0, Math.round(dropPx / SNAP_PX) * SNAP_PX)
-  const blockId = `${eventId}::new::${++nextNewId}`
+  const blockId = `${docId}::new::${++nextNewId}`
   localBlocks.value.push({
     blockId,
-    eventId,
+    eventId: docId,
+    type:    type === 'workshop' ? 'workshop' : 'act',
     settime:  pixelToTime(snapped),
     duration: 60,
-    act_name: ev.act_name,
-    genre:    ev.genre,
+    act_name: label,
+    genre:    type === 'act' ? (ev.genre || '') : '',
     isNew:    true
   })
   markUnsaved(blockId)
@@ -445,6 +477,7 @@ function addBlockFromChip(eventId, dropPx) {
 const selectedIds = ref(new Set())
 
 function toggleSelect(blockId) {
+  if (dragOccurred) return  // swallow click fired after a drag
   const s = new Set(selectedIds.value)
   if (s.has(blockId)) s.delete(blockId)
   else                s.add(blockId)
@@ -487,6 +520,7 @@ function deleteSelected() {
 
 // ── interact.js ───────────────────────────────────────────────────────────────
 const interactInstances = []
+let dragOccurred = false  // set true during drag; cleared after mouseup so click is suppressed
 
 function bindInteract() {
   interactInstances.forEach(i => { try { i.unset() } catch (_) {} })
@@ -501,8 +535,9 @@ function bindInteract() {
       .draggable({
         ignoreFrom: '.resize-top, .resize-bottom',
         listeners: {
-          start() {},
+          start() { dragOccurred = false },
           move(e) {
+            dragOccurred = true
             const t = parseFloat(el.style.top) || 0
             const newTop = Math.max(0, t + e.dy)
             el.style.top = `${newTop}px`
@@ -519,14 +554,17 @@ function bindInteract() {
             if (snapGuideEl.value) snapGuideEl.value.style.display = 'none'
             updateBlockSettime(bid, pixelToTime(snapped))
             nextTick(() => { el.style.top = `${timeToPixel(localBlocks.value.find(b => b.blockId === bid)?.settime)}px` })
+            // Clear flag after click event has fired
+            setTimeout(() => { dragOccurred = false }, 0)
           }
         }
       })
       .resizable({
         edges: { top: '.resize-top', bottom: '.resize-bottom' },
         listeners: {
-          start() {},
+          start() { dragOccurred = false },
           move(e) {
+            dragOccurred = true
             const curH = parseFloat(el.style.height) || 60 * PX_PER_MIN
             const curT = parseFloat(el.style.top)    || 0
             if (e.edges.bottom) {
@@ -573,6 +611,8 @@ function bindInteract() {
                 el.style.height = `${b.duration * PX_PER_MIN}px`
               }
             })
+            // Clear flag after click event has fired
+            setTimeout(() => { dragOccurred = false }, 0)
           }
         }
       })
@@ -617,9 +657,12 @@ async function handleSave() {
     const origDurs = Array.isArray(orig.set_durations)
       ? orig.set_durations
       : orig.settimes.map(() => 60)
+    const origTypes = Array.isArray(orig.set_types)
+      ? orig.set_types
+      : orig.settimes.map(() => orig.is_workshop ? 'workshop' : 'act')
     // Keep settimes that belong to OTHER days
     const outside = orig.settimes
-      .map((t, i) => ({ settime: t, duration: origDurs[i] || 60 }))
+      .map((t, i) => ({ settime: t, duration: origDurs[i] || 60, type: origTypes[i] || 'act' }))
       .filter(({ settime }) => {
         const d = new Date(settime)
         return d < dayStart || d >= dayEnd
@@ -627,13 +670,14 @@ async function handleSave() {
     // All blocks for this event currently on this day
     const dayBlocks = localBlocks.value
       .filter(b => b.eventId === eid)
-      .map(b => ({ settime: b.settime, duration: b.duration }))
+      .map(b => ({ settime: b.settime, duration: b.duration, type: b.type || 'act' }))
     const combined = [...outside, ...dayBlocks]
       .sort((a, b) => new Date(a.settime) - new Date(b.settime))
     updates.push({
       id:            eid,
       settimes:      combined.map(p => p.settime),
-      set_durations: combined.map(p => p.duration)
+      set_durations: combined.map(p => p.duration),
+      set_types:     combined.map(p => p.type)
     })
   }
 
@@ -879,6 +923,20 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
+.alt-block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  overflow: hidden;
+}
+
+.block-type-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
 .alt-block-name {
   font-size: 0.78rem;
   font-weight: 700;
@@ -932,7 +990,7 @@ onUnmounted(() => {
 .alt-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   padding: 0.2rem 0.6rem;
   background: #1a2f1a;
   border: 1px solid var(--reunion-frog-green);
@@ -944,6 +1002,23 @@ onUnmounted(() => {
   cursor: grab;
   user-select: none;
   transition: background 0.12s, border-color 0.12s;
+}
+
+.chip-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.alt-chip.chip-workshop {
+  background: #1a1f2f;
+  border-color: #6080c0;
+  color: #aac0f0;
+}
+
+.alt-chip.chip-workshop:hover {
+  background: #222a40;
 }
 
 .alt-chip.chip-pending {

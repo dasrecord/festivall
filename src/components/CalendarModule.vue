@@ -22,6 +22,13 @@
             <span class="time-line-label">NOW</span>
           </div>
 
+          <!-- Type icon -->
+          <img
+            :src="item.is_workshop ? workshop_icon : dj_icon"
+            class="type-icon"
+            :alt="item.is_workshop ? 'Workshop' : 'DJ'"
+          />
+
           <!-- Single set time -->
           <div class="event-time">
             <h3 class="set-time">
@@ -65,12 +72,20 @@
                 {{ isStarred(slotKey(item)) ? '★' : '☆' }}
               </button>
             </div>
-            <p v-if="item.genre">Genre: {{ item.genre }}</p>
-            <p>
-              {{
-                item.act_description || item.workshop_description || 'No description available'
-              }}
-            </p>
+            <p v-if="item.genre" class="event-genre">{{ item.genre }}</p>
+            <div
+              class="event-desc"
+              :class="{ expanded: expandedSlots.has(slotKey(item)) }"
+            >
+              {{ item.act_description || item.workshop_description || '' }}
+            </div>
+            <button
+              v-if="(item.act_description || item.workshop_description)"
+              class="expand-btn"
+              @click="toggleExpand(slotKey(item))"
+            >
+              {{ expandedSlots.has(slotKey(item)) ? 'Less ▲' : 'More ▼' }}
+            </button>
           </div>
         </div>
       </template>
@@ -83,6 +98,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import link_icon from '@/assets/images/icons/link.png'
 import listen_icon from '@/assets/images/icons/mix_track.png'
+import dj_icon from '@/assets/images/icons/dj.png'
+import workshop_icon from '@/assets/images/icons/workshop.png'
 import { useLineupState } from '@/composables/useLineupState'
 
 const { toggleStar, isStarred } = useLineupState()
@@ -120,8 +137,19 @@ onUnmounted(() => {
 const flatSlots = computed(() => {
   const slots = []
   for (const event of props.events) {
-    for (const settime of event.settimes) {
-      slots.push({ ...event, settimes: [settime] })
+    const types = Array.isArray(event.set_types) ? event.set_types : []
+    for (let i = 0; i < event.settimes.length; i++) {
+      const slotType = types[i] || (event.is_workshop ? 'workshop' : 'act')
+      const isWorkshop = slotType === 'workshop'
+      slots.push({
+        ...event,
+        settimes:   [event.settimes[i]],
+        is_workshop: isWorkshop,
+        // For dual participants, pick the right display name per slot
+        act_name: isWorkshop
+          ? (event.workshop_title || event.act_name)
+          : (event.act_name || event.workshop_title)
+      })
     }
   }
   slots.sort((a, b) => new Date(a.settimes[0]).getTime() - new Date(b.settimes[0]).getTime())
@@ -155,6 +183,15 @@ const currentSlotIndex = computed(() => timeLineInsertIndex.value)
 
 // Per-slot unique key used for starring
 const slotKey = (item) => `${item.id}::${item.settimes[0]}`
+
+// Collapsible descriptions
+const expandedSlots = ref(new Set())
+function toggleExpand(key) {
+  const s = new Set(expandedSlots.value)
+  if (s.has(key)) s.delete(key)
+  else s.add(key)
+  expandedSlots.value = s
+}
 
 // Time formatting
 const formatTime = (timestamp) => {
@@ -197,13 +234,16 @@ const formatTime = (timestamp) => {
 .event-item {
   position: relative;
   display: grid;
-  grid-template-columns: 2fr 3fr;
-  gap: 0.3rem;
-  margin-top: 0.5rem;
-  padding: 1rem;
+  grid-template-columns: 40px 1.6fr 3fr;
+  align-items: start;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  min-height: 80px;
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 .time-line {
@@ -248,6 +288,15 @@ const formatTime = (timestamp) => {
   gap: 0.5rem;
 }
 
+.type-icon {
+  /* margin-left: 1rem; */
+  width: 32px;
+  height: 32px;
+  opacity: 0.75;
+  flex-shrink: 0;
+  align-self: center;
+}
+
 .star-btn {
   background: none;
   border: none;
@@ -269,38 +318,81 @@ const formatTime = (timestamp) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 100px;
+  min-width: 80px;
+  gap: 0.25rem;
 }
 
 .event-details {
   flex: 1;
+  min-width: 0;
 }
 
 .event-details h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
+}
+
+.event-genre {
+  font-size: 0.72rem;
+  color: #aaa;
+  margin: 0 0 0.2rem;
+}
+
+.event-desc {
+  font-size: 0.8rem;
+  color: #ccc;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.event-desc.expanded {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.68rem;
+  cursor: pointer;
+  padding: 0.15rem 0;
+  margin-top: 0.1rem;
+}
+
+.expand-btn:hover {
+  color: #ccc;
 }
 
 .set-time {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
+  margin: 0;
 }
 
 .artist-name {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
+  margin: 0 0 0.3rem;
 }
 
 .mix-track-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem;
   border-radius: 4px;
   text-decoration: none;
   color: white;
   border: 1px solid rgba(0, 255, 0);
   cursor: pointer;
-  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .icon {
