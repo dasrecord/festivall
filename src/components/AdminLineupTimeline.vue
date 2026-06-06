@@ -5,6 +5,11 @@
       <div class="alt-actions">
         <span v-if="unsavedCount > 0" class="unsaved-badge">{{ unsavedCount }} unsaved</span>
         <button
+          v-if="selectedIds.size > 0"
+          class="alt-delete-sel-btn"
+          @click="deleteSelected"
+        >Delete {{ selectedIds.size === 1 ? '1 set' : selectedIds.size + ' sets' }}</button>
+        <button
           v-if="unsavedCount > 0"
           class="alt-discard-btn"
           @click="resetChanges"
@@ -80,15 +85,21 @@
               :key="block.blockId"
               :ref="(el) => setBlockRef(el, block.blockId)"
               class="alt-block"
-              :class="{ unsaved: unsavedIds.has(block.blockId), 'is-new': block.isNew }"
+              :class="{
+                unsaved:  unsavedIds.has(block.blockId),
+                'is-new': block.isNew,
+                selected: selectedIds.has(block.blockId)
+              }"
               :style="blockStyle(block)"
+              @click.self="toggleSelect(block.blockId)"
             >
               <div class="resize-top" />
-              <div class="alt-block-content">
+              <div class="alt-block-content" @click="toggleSelect(block.blockId)">
                 <div class="alt-block-time">{{ formatBlockTime(block) }}</div>
                 <div class="alt-block-name">{{ block.act_name }}</div>
                 <div v-if="block.genre" class="alt-block-genre">{{ block.genre }}</div>
               </div>
+              <button class="alt-block-delete" @click.stop="deleteBlock(block.blockId)" title="Remove set">×</button>
               <div class="resize-bottom" />
             </div>
             <!-- Snap guide: direct DOM, non-reactive so it never triggers re-render during drag -->
@@ -405,6 +416,36 @@ function addBlockFromChip(eventId, dropPx) {
   nextTick(bindInteract)
 }
 
+// ── Selection & deletion ────────────────────────────────────────────────────
+const selectedIds = ref(new Set())
+
+function toggleSelect(blockId) {
+  const s = new Set(selectedIds.value)
+  if (s.has(blockId)) s.delete(blockId)
+  else                s.add(blockId)
+  selectedIds.value = s
+}
+
+function deleteBlock(blockId) {
+  selectedIds.value = new Set([...selectedIds.value].filter(id => id !== blockId))
+  const block = localBlocks.value.find(b => b.blockId === blockId)
+  if (!block) return
+  // Mark the event as needing a save (the slot will simply be absent in handleSave)
+  markUnsaved(blockId)
+  localBlocks.value = localBlocks.value.filter(b => b.blockId !== blockId)
+  // Unset interact on the removed element
+  nextTick(bindInteract)
+}
+
+function deleteSelected() {
+  for (const blockId of selectedIds.value) {
+    markUnsaved(blockId)
+  }
+  localBlocks.value = localBlocks.value.filter(b => !selectedIds.value.has(b.blockId))
+  selectedIds.value = new Set()
+  nextTick(bindInteract)
+}
+
 // ── interact.js ───────────────────────────────────────────────────────────────
 const interactInstances = []
 
@@ -507,14 +548,23 @@ const { saving, saveError, batchUpdateSettimes } = useLineupAdmin()
 function resetChanges() {
   localBlocks.value = buildBlocks(props.events)
   unsavedIds.value  = new Set()
+  selectedIds.value = new Set()
   nextTick(bindInteract)
 }
 
 async function handleSave() {
   const modified = localBlocks.value.filter(b => unsavedIds.value.has(b.blockId))
-  if (!modified.length) return
+  // Also include events where blocks were deleted (they have unsaved blockIds no longer in localBlocks)
+  const deletedEventIds = [...unsavedIds.value]
+    .filter(bid => !localBlocks.value.find(b => b.blockId === bid))
+    .map(bid => bid.split('::')[0])
+  const allAffectedEventIds = [...new Set([
+    ...modified.map(b => b.eventId),
+    ...deletedEventIds
+  ])]
+  if (!allAffectedEventIds.length) return
 
-  const eventIds = [...new Set(modified.map(b => b.eventId))]
+  const eventIds = allAffectedEventIds
   const dayStart = new Date(props.date)
   dayStart.setHours(DAY_START_H, 0, 0, 0)
   const dayEnd = new Date(props.date)
@@ -901,8 +951,56 @@ onUnmounted(() => {
   border-radius: 2px;
 }
 
-/* ── New block highlight ────────────────────────────────────────────────────── */
 .alt-block.is-new {
   border-style: dashed;
+}
+
+.alt-block.selected {
+  outline: 2px solid #f5c518;
+  outline-offset: 1px;
+}
+
+/* ── Per-block delete button ───────────────────────────────────────────────── */
+.alt-block-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: rgba(200, 50, 50, 0.7);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alt-block:hover .alt-block-delete {
+  opacity: 1;
+}
+
+/* ── Delete selected header button ────────────────────────────────────────── */
+.alt-delete-sel-btn {
+  padding: 0.35rem 0.9rem;
+  background: #c03030;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.alt-delete-sel-btn:hover {
+  background: #e04040;
 }
 </style>
