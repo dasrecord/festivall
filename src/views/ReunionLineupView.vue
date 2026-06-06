@@ -24,37 +24,45 @@
     <div class="main-stage">
       <!-- Toggle Buttons -->
       <div class="toggle-buttons">
-        <button v-if="isDev" class="today-btn" @click="toggleDay('today')">⚡ TODAY</button>
         <button @click="toggleDay('friday')">Friday</button>
         <button @click="toggleDay('saturday')">Saturday</button>
         <button @click="toggleDay('sunday')">Sunday</button>
         <button @click="toggleDay('monday')">Monday</button>
       </div>
+      <div v-if="isAdmin" class="admin-mode-badge">
+        ⚙ ADMIN MODE
+        <button
+          class="admin-filter-toggle"
+          :class="{ active: showAllActs }"
+          @click="showAllActs = !showAllActs"
+        >
+          {{ showAllActs ? 'ALL ACTS' : 'SIGNED ONLY' }}
+        </button>
+      </div>
       <div class="days">
-        <!-- Dev: today's real date events for testing now-playing -->
-        <div v-if="showDays.today" class="day">
-          <h2>TODAY (TEST)</h2>
-          <lineup-day :events="getTodayEvents" :loading="loading" class="setinfo" />
-        </div>
         <!-- Day sections with filtered events -->
         <div v-if="showDays.friday" class="day">
-          <h2>FRIDAY</h2>
-          <lineup-day :events="getFridayEvents" :loading="loading" class="setinfo" />
+          <h2 v-if="!isAdmin">FRIDAY</h2>
+          <AdminLineupTimeline v-if="isAdmin" :events="getFridayEvents" :all-events="events" :date="REUNION_FESTIVAL.fridayDate" day="FRIDAY" />
+          <lineup-day v-else :events="getFridayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.saturday" class="day">
-          <h2>SATURDAY</h2>
-          <lineup-day :events="getSaturdayEvents" :loading="loading" class="setinfo" />
+          <h2 v-if="!isAdmin">SATURDAY</h2>
+          <AdminLineupTimeline v-if="isAdmin" :events="getSaturdayEvents" :all-events="events" :date="REUNION_FESTIVAL.saturdayDate" day="SATURDAY" />
+          <lineup-day v-else :events="getSaturdayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.sunday" class="day">
-          <h2>SUNDAY</h2>
-          <lineup-day :events="getSundayEvents" :loading="loading" class="setinfo" />
+          <h2 v-if="!isAdmin">SUNDAY</h2>
+          <AdminLineupTimeline v-if="isAdmin" :events="getSundayEvents" :all-events="events" :date="REUNION_FESTIVAL.sundayDate" day="SUNDAY" />
+          <lineup-day v-else :events="getSundayEvents" :loading="loading" class="setinfo" />
         </div>
 
         <div v-if="showDays.monday" class="day">
-          <h2>MONDAY</h2>
-          <lineup-day :events="getMondayEvents" :loading="loading" class="setinfo" />
+          <h2 v-if="!isAdmin">MONDAY</h2>
+          <AdminLineupTimeline v-if="isAdmin" :events="getMondayEvents" :all-events="events" :date="REUNION_FESTIVAL.mondayDate" day="MONDAY" />
+          <lineup-day v-else :events="getMondayEvents" :loading="loading" class="setinfo" />
         </div>
       </div>
     </div>
@@ -62,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import LineupDay from '@/components/CalendarModule.vue'
@@ -72,6 +80,8 @@ import { reunion_analytics } from '@/firebase'
 import { useLineupState } from '@/composables/useLineupState'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { useHead } from '@vueuse/head'
+import { useReunionAdmin } from '@/composables/useReunionAdmin'
+import AdminLineupTimeline from '@/components/AdminLineupTimeline.vue'
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
 const { year, month, day, endDay } = REUNION_FESTIVAL
@@ -95,15 +105,15 @@ useHead({
 })
 
 const { isStarred, updateCurrentAct } = useLineupState()
+const { isAdmin } = useReunionAdmin()
 
-const isDev = import.meta.env.DEV
+const showAllActs = ref(false)  // admin toggle: all vs signed-only
 
 // Reactive state
 const loading = ref(false)
 const events = ref([])
 
 const showDays = reactive({
-  today: false,
   friday: false,
   saturday: false,
   sunday: false,
@@ -111,10 +121,13 @@ const showDays = reactive({
 })
 
 // Fetch events from Firestore
-const fetchEvents = async () => {
+const fetchEvents = async (signedOnly = true) => {
   loading.value = true
   try {
-    const q = query(collection(reunion_db, 'participants_2026'), where('contract.signed', '==', true))
+    const col = collection(reunion_db, 'participants_2026')
+    const q = signedOnly
+      ? query(col, where('contract.signed', '==', true))
+      : query(col)
     const snapshot = await getDocs(q)
     events.value = snapshot.docs.map((docSnap) => {
       const data = docSnap.data()
@@ -124,7 +137,7 @@ const fetchEvents = async () => {
       return {
         id: docSnap.id,
         ...data,
-        act_name: roles.act_name || data.act_name || '',
+        act_name: roles.act_name || appData.workshop_title || data.act_name || data.workshop_title || '',
         workshop_title: appData.workshop_title || data.workshop_title || '',
         mix_track_url: appData.mix_track_url || data.mix_track_url || '',
         social_url: appData.social_url || data.social_url || '',
@@ -199,7 +212,6 @@ const getFridayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.fridayDat
 const getSaturdayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.saturdayDate))
 const getSundayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.sundayDate))
 const getMondayEvents = computed(() => getEventsByDay(REUNION_FESTIVAL.mondayDate))
-const getTodayEvents = computed(() => getEventsByDay(new Date()))
 
 // ── My Schedule ───────────────────────────────────────────────────────────────
 const myScheduleOpen = ref(false)
@@ -239,10 +251,14 @@ onMounted(() => {
     page_location: window.location.href
   })
 
-  fetchEvents().then(() => {
+  fetchEvents(!showAllActs.value).then(() => {
     updateCurrentAct(events.value)
     nowPlayingInterval = setInterval(() => updateCurrentAct(events.value), 60_000)
   })
+})
+
+watch(showAllActs, (val) => {
+  fetchEvents(!val)
 })
 
 onUnmounted(() => {
@@ -264,6 +280,21 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+@media (min-width: 860px) {
+  .days {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .day {
+    flex: 1;
+    min-width: 380px;
+    width: auto;
+    margin-bottom: 0;
+  }
 }
 
 .day {
@@ -307,12 +338,6 @@ p {
 .toggle-buttons button:hover {
   background-color: white;
   color: black;
-}
-
-.toggle-buttons .today-btn {
-  background-color: #430789;
-  outline: 2px dashed #fff;
-  outline-offset: -3px;
 }
 
 .main-stage {
@@ -376,5 +401,42 @@ p {
   color: #aaa;
   font-weight: normal;
   font-size: 0.9rem;
+}
+
+.admin-mode-badge {
+  background: #430789;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem 0.25rem 0.9rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-filter-toggle {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: background 0.15s;
+}
+
+.admin-filter-toggle.active {
+  background: #f5c518;
+  color: #000;
+  border-color: #f5c518;
+}
+
+.admin-filter-toggle:hover {
+  background: rgba(255,255,255,0.3);
 }
 </style>
