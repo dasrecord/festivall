@@ -22,6 +22,7 @@
     "seed-inventory": "node ./scripts/seed-inventory.js --write",
     "seed-pending-meal-purchases": "node ./scripts/seed-pending-meal-purchases.js --write",
     "import-applicants": "node ./scripts/import-applicants.js",
+    "patch-resolume-visuals": "node ./scripts/patch-resolume-visuals.js",
     "import-applicants-write": "node ./scripts/import-applicants.js --write"
   },
   "dependencies": {
@@ -53,6 +54,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/tsconfig": "^0.5.1",
+    "@xmldom/xmldom": "^0.9.10",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "npm-run-all2": "^6.1.1",
