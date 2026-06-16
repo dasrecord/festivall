@@ -42,8 +42,13 @@
       <section v-if="summary" id="summary" class="cv-section">
         <h2>Professional Summary</h2>
         <p class="cv-summary">{{ summary }}</p>
-      </section>
 
+        <!-- PHILOSOPHY / APPROACH -->
+      </section>
+      <section v-if="philosophy" id="philosophy" class="cv-section">
+        <h2>Philosophy</h2>
+        <p class="cv-philosophy">{{ philosophy }}</p>
+      </section>
       <!-- EMPLOYMENT HISTORY -->
       <section v-if="employment.length" id="employment" class="cv-section">
         <h2>Employment History</h2>
@@ -241,7 +246,7 @@ useHead({
 const lastUpdated = 'June 2026'
 
 const contact = {
-  location: 'Saskatoon, SK, Canada (clinical work in Vancouver, BC)',
+  location: 'Saskatoon, SK & Vancouver, BC',
   email: 'medprep@festivall.ca',
   website: 'https://festivall.ca/medprep',
   websiteLabel: 'festivall.ca/medprep',
@@ -251,7 +256,9 @@ const contact = {
 // ── EDIT BELOW — paste your CV content into these arrays ─────
 // ══════════════════════════════════════════════════════════════
 
-const summary = ''
+const summary = 'Physician polymath with a passion for creativity, technology, and interdisciplinary work. Experienced in clinical care, medical education, music production, live performance, and software development. Dedicated to lifelong learning and making meaningful contributions across diverse fields.'
+
+const philosophy = '"Skill is hitting a target that no one else can hit; while genius is hitting a target that no one else can see." — Arthur Schopenhauer'
 // e.g. 'Physician with a appointment at the U of S College of Medicine.
 //       Software developer, composer, and festival organizer. Interdisciplinary by design.'
 
