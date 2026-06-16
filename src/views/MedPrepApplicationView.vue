@@ -396,7 +396,7 @@
             <div class="checkbox-text">
               <strong>Conflict of Interest Acknowledgment</strong>
               <span>
-                I acknowledge that Dr. Prasenjit Das is a faculty member at the University of
+                I acknowledge that Dr. Prasenjit Das occasionally teaches at the University of
                 Saskatchewan College of Medicine. If I am accepted into this program and am
                 applying to the U of S College of Medicine, I agree to submit a formal recusal
                 request to ensure Dr. Das is not involved in evaluating my application, to avoid

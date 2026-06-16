@@ -49,8 +49,8 @@
         </p>
         <p>
           Admissions committees do not reward transcripts. They reward <strong>people</strong>.
-          The applicants who get in are the ones who can articulate why medicine — and not law, not research,
-          not anything else they considered — and who have the texture of a real life to back that story up.
+          The applicants who get in are the ones who can articulate why medicine - and not law, not research,
+          not anything else they considered - and who have the texture of a real life to back that story up.
         </p>
         <p>
           Most coaches are former pre-meds who became coaches. I'm a working physician who happens to
@@ -134,7 +134,7 @@
           <div class="selection-col">
             <h3>What Excites Me</h3>
             <ul>
-              <li>A real reason for medicine — not "I like science and helping people"</li>
+              <li>A real reason for medicine - not "I like science and helping people"</li>
               <li>Evidence you've done hard things and finished them</li>
               <li>An honest assessment of your weak spots</li>
               <li>Non-traditional paths, second-career applicants, late bloomers</li>
@@ -146,7 +146,7 @@
             <ul>
               <li>Looking for someone to write your essays</li>
               <li>Unwilling to be told hard truths</li>
-              <li>No demonstrated commitment to medicine yet — start with The Blueprint instead</li>
+              <li>No demonstrated commitment to medicine yet - start with The Blueprint instead</li>
               <li>Treating this as a transaction rather than a partnership</li>
             </ul>
           </div>
@@ -211,19 +211,19 @@
       </div>
     </section>
 
-    <!-- COI DISCLOSURE (moved up — trust before price) -->
+    <!-- COI DISCLOSURE (moved up - trust before price) -->
     <section class="coi">
       <div class="section-inner">
         <h2>Conflict of Interest: Read This First</h2>
         <p>
-          I am a faculty member at the University of Saskatchewan College of Medicine. To be
+          I occasionally teach at the University of Saskatchewan College of Medicine. To be
           clear: I am <strong>not</strong> a member of the admissions committee, and I have no
           role in evaluating applications to the program.
         </p>
         <p>
           Where the conflict actually lives is downstream. If you are accepted to the U of S
           College of Medicine and become my student, I cannot be involved in your academic
-          assessments — clinical evaluations, exams, supervisory grading, or any decision
+          assessments - clinical evaluations, exams, supervisory grading, or any decision
           that affects your standing in the program.
         </p>
         <p>
@@ -281,7 +281,7 @@
         <p class="tier-footnote">
           The commitment deposit is non-refundable and reserves your spot. The success premium is
           only owed upon a confirmed written offer of acceptance. Installment plans available on
-          request after acceptance — most students draw it from their professional student line of credit.
+          request after acceptance - most students draw it from their professional student line of credit.
         </p>
       </div>
     </section>
@@ -359,40 +359,40 @@ const credentials = [
   {
     icon: '🏥',
     title: 'Family Medicine Residency, UBC',
-    sub: 'Trained in a demanding rural, remote & northern British Columbia program — generalism where it actually matters.',
+    sub: 'Trained in a demanding rural, remote & northern British Columbia program - generalism where it actually matters.',
   },
   {
     icon: '🔬',
     title: 'BSc Physiology, with Distinction',
-    sub: 'University of Saskatchewan — the scientific foundation before medicine.',
+    sub: 'University of Saskatchewan - the scientific foundation before medicine.',
   },
   {
-    icon: '👨‍⚕️',
+    icon: '🩺',
     title: 'Practicing Family Physician',
-    sub: 'WELL Health — hybrid practice between Vancouver, BC and Saskatoon, SK.',
+    sub: 'WELL Health - hybrid practice between Vancouver, BC and Saskatoon, SK.',
   },
   {
     icon: '📚',
     title: 'Clinical Skills Teaching, U of S',
-    sub: 'Taught medical students at the College of Medicine — I know what the people on the other side of your interview are looking for.',
+    sub: 'Taught medical students at the College of Medicine - I know what the people on the other side of your interview are looking for.',
   },
   {
     icon: '⚖️',
     title: 'Also Accepted to Law, U of S',
-    sub: 'Same year as my MD acceptance. Chose medicine — but I know exactly what elite competitive admissions looks like across more than one discipline.',
+    sub: 'Same year as my MD acceptance. Chose medicine - but I know exactly what elite competitive admissions looks like across more than one discipline.',
   },
   {
-    icon: '�',
+    icon: '🔍',
     title: 'Research Associate, History of Medicine',
-    sub: 'Worked under Dr. Erika Dyck (Tier 1 Canada Research Chair) — academic rigour outside the clinic, which is exactly what strong applicants demonstrate.',
+    sub: 'Worked under Dr. Erika Dyck (Tier 1 Canada Research Chair) - academic rigour outside the clinic, which is exactly what strong applicants demonstrate.',
   },
   {
     icon: '🎪',
     title: 'Co-Founder, Reunion Festival',
-    sub: 'Built and run an annual independent music festival. Real-world leadership, logistics, and team-building — the texture admissions committees love and rarely see.',
+    sub: 'Built and run an annual independent music festival. Real-world leadership, logistics, and team-building - the texture admissions committees love and rarely see.',
   },
   {
-    icon: '�📌',
+    icon: '📌',
     title: 'Unmatched, Then Matched',
     sub: 'Went unmatched in my first residency cycle. Came back stronger. I know both sides of that letter.',
   },
@@ -490,19 +490,19 @@ const testimonials = [
     name: 'Aaron Cruz',
     title: 'Registered Social Worker · Counsellor · Post-Secondary Instructor',
     quote:
-      "If you need a helping hand, guide, or knowledge on any given topic, Prasun is the man. His foundational training, knowledge, and work ethic come from achieving his Medical Doctorate — but he is much more than a doctor.",
+      "If you need a helping hand, guide, or knowledge on any given topic, Prasun is the man. His foundational training, knowledge, and work ethic come from achieving his Medical Doctorate - but he is much more than a doctor.",
   },
   {
     name: 'Daniel Martell-Gardiner',
     title: 'Senior Music Industry Executive & Strategist',
     quote:
-      'Prasenjit Das is a highly intuitive musician, composer and accomplished pianist. His unique performance ability within the live arena and in studios can light up even the most near-complete projects. This young man knows no bounds — formidable, and a real thing of beauty to behold.',
+      'Prasenjit Das is a highly intuitive musician, composer and accomplished pianist. His unique performance ability within the live arena and in studios can light up even the most near-complete projects. This young man knows no bounds - formidable, and a real thing of beauty to behold.',
   },
   {
     name: 'Brandon Brown',
     title: 'Curator at SolSask · Owner at Crow Carpentry',
     quote:
-      "From small one-night events for 50 people to a multi-day music festival with over 40 change-overs, Prasun is one of the most passionate, committed individuals I've ever had the pleasure of working with. Technical, funky, astute, professional — truly a visionary.",
+      "From small one-night events for 50 people to a multi-day music festival with over 40 change-overs, Prasun is one of the most passionate, committed individuals I've ever had the pleasure of working with. Technical, funky, astute, professional - truly a visionary.",
   },
   {
     name: 'Brandon Kazakoff',
@@ -514,7 +514,7 @@ const testimonials = [
     name: 'Dale Monette, CPA, CA, MPAcc',
     title: 'Executive Leadership · Growth Catalyst · Entrepreneur',
     quote:
-      'Prasun is a very accomplished individual — he is blessed with a truly inspiring mind.',
+      'Prasun is a very accomplished individual - he is blessed with a truly inspiring mind.',
   },
   {
     name: 'Kala Sidhu',
@@ -581,28 +581,28 @@ const deliverables = [
   },
   {
     label: 'Essay / personal statement drafts',
-    blueprint: '—',
+    blueprint: '-',
     campaign: 'Up to 4 rounds',
     return_: 'Up to 3 rounds',
     fullride: 'Up to 6 rounds',
   },
   {
     label: 'Mock interviews (panel / structured)',
-    blueprint: '—',
+    blueprint: '-',
     campaign: '3 sessions',
     return_: '4 sessions',
     fullride: '6 sessions',
   },
   {
     label: 'MMI practice (standardized stations)',
-    blueprint: '—',
+    blueprint: '-',
     campaign: '2 sessions',
     return_: '3 sessions',
     fullride: '4 sessions',
   },
   {
     label: 'Standardized-patient practice',
-    blueprint: '—',
+    blueprint: '-',
     campaign: 'Best-effort *',
     return_: 'Best-effort *',
     fullride: 'Best-effort * (priority)',
@@ -630,9 +630,9 @@ const deliverables = [
   },
   {
     label: 'CaRMS / residency strategy',
-    blueprint: '—',
-    campaign: '—',
-    return_: '—',
+    blueprint: '-',
+    campaign: '-',
+    return_: '-',
     fullride: 'Included',
   },
 ]
@@ -648,7 +648,7 @@ const faqs = [
   },
   {
     q: 'What happens if I don\'t get accepted?',
-    a: 'You owe only the commitment deposit. The success premium is structured this way deliberately — my incentives are aligned with your outcome, not your enrollment.',
+    a: 'You owe only the commitment deposit. The success premium is structured this way deliberately - my incentives are aligned with your outcome, not your enrollment.',
   },
   {
     q: 'Why is pricing split into a deposit and a success premium?',
@@ -664,7 +664,7 @@ const faqs = [
   },
   {
     q: 'Will you write or edit my application essays for me?',
-    a: 'I will not write a single sentence of your application. I will read, question, push back, and challenge you to make it sharper. The voice on the page has to be yours — admissions readers can tell, and so can interviewers.',
+    a: 'I will not write a single sentence of your application. I will read, question, push back, and challenge you to make it sharper. The voice on the page has to be yours - admissions readers can tell, and so can interviewers.',
   },
   {
     q: 'Where are you based? Is this in-person or remote?',
@@ -672,7 +672,7 @@ const faqs = [
   },
   {
     q: 'How do I know if I\'m a fit before applying?',
-    a: 'You don\'t need to. The intake form is the fit assessment. If after reading your application I don\'t think I can genuinely help you, I\'ll say so — and I\'ll try to steer you somewhere better.',
+    a: 'You don\'t need to. The intake form is the fit assessment. If after reading your application I don\'t think I can genuinely help you, I\'ll say so - and I\'ll try to steer you somewhere better.',
   },
 ]
 </script>

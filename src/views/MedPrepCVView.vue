@@ -146,7 +146,7 @@
               :class="{ 'is-open': isYearOpen(group.year) }"
             >
               <button type="button" class="show-year-head" @click="toggleYear(group.year)">
-                <span class="show-year-caret">{{ isYearOpen(group.year) ? '–' : '+' }}</span>
+                <span class="show-year-caret">{{ isYearOpen(group.year) ? '-' : '+' }}</span>
                 <span class="show-year-label">{{ group.year }}</span>
                 <span class="show-year-count">{{ group.shows.length }}</span>
               </button>
@@ -234,7 +234,7 @@ import { useHead } from '@vueuse/head'
 useHead({
   title: 'CV — Dr. Prasenjit Das, MD | MedPrep',
   meta: [
-    { name: 'description', content: 'Curriculum vitae for Dr. Prasenjit Das, MD — physician, faculty member at the University of Saskatchewan College of Medicine, composer, DJ, and festival organizer.' },
+    { name: 'description', content: 'Curriculum vitae for Dr. Prasenjit Das, MD — physician, freelance clinical teacher at the University of Saskatchewan College of Medicine, composer, DJ, and festival organizer.' },
   ]
 })
 
@@ -270,26 +270,26 @@ const employment: Employment[] = [
     role: 'Family Physician',
     org: 'WELL Health Medical Clinics',
     location: 'Vancouver, BC (in-person + virtual)',
-    dates: 'Jul 2021 – Present',
+    dates: 'Jul 2021 - Present',
     text: 'Full-scope family medicine: in-person clinical work in Vancouver supplemented by virtual care delivered remotely',
   },
   {
     role: 'Family Medicine Resident (Postgraduate)',
     org: 'University of British Columbia, Faculty of Medicine',
     location: 'British Columbia',
-    dates: 'Jul 2017 – Sep 2020',
+    dates: 'Jul 2017 - Sep 2020',
   },
   {
     role: 'Clinical Skills Teacher',
     org: 'University of Saskatchewan, Undergraduate Medical Education',
     location: 'Saskatoon, SK',
-    dates: 'Sep 2016 – Jun 2017',
+    dates: 'Sep 2016 - Jun 2017',
   },
   {
     role: 'Vice President, Talent',
     org: 'Rapture Events',
     location: 'Vancouver, BC',
-    dates: 'Jun 2015 – Jun 2017',
+    dates: 'Jun 2015 - Jun 2017',
   },
   {
     role: 'Music Editor and A&R',
@@ -327,24 +327,24 @@ const employment: Employment[] = [
   {
     role: 'Songwriter & Co-Producer',
     org: 'Mike Saint Jules (internationally acclaimed producer/DJ)',
-    dates: '2016 – Present',
+    dates: '2016 - Present',
   },
   {
     role: 'Medical Office Assistant',
     org: 'Erindale Health Centre',
     location: 'Saskatoon, SK',
-    dates: '2009 – 2013',
+    dates: '2009 - 2013',
   },
   {
     role: 'Deputy Returning Officer',
-    org: 'Elections Canada — Saskatoon–Blackstrap',
+    org: 'Elections Canada — Saskatoon-Blackstrap',
     location: 'Saskatoon, SK',
     dates: '2011',
   },
   {
     role: 'Piano Teacher',
     location: 'Saskatoon, SK',
-    dates: '2005 – 2009',
+    dates: '2005 - 2009',
     text: 'Taught students aged 4 and older, including autistic and special-needs children.',
   },
 ]
@@ -362,19 +362,19 @@ const education: Education[] = [
     credential: 'Doctor of Medicine (MD)',
     institution: 'University of Saskatchewan, College of Medicine',
     location: 'Saskatoon, SK',
-    dates: 'Sep 2011 – May 2015',
+    dates: 'Sep 2011 - May 2015',
   },
   {
     credential: 'B.Sc. Physiology, with Distinction',
     institution: 'University of Saskatchewan',
     location: 'Saskatoon, SK',
-    dates: 'Sep 2007 – May 2011',
+    dates: 'Sep 2007 - May 2011',
   },
   {
     credential: 'Advanced Placement Program',
     institution: 'Walter Murray Collegiate Institute',
     location: 'Saskatoon, SK',
-    dates: 'Sep 2003 – May 2007',
+    dates: 'Sep 2003 - May 2007',
   },
 ]
 
@@ -386,7 +386,7 @@ const academicHonors: Honor[] = [
     body: 'Winner, Michael Smith Science Challenge — ranked top 3% of science and physics student competitors in Canada. Presented by the Faculty of Science.',
   },
   {
-    title: 'University of Regina “Cum Honore – Health” Award',
+    title: 'University of Regina “Cum Honore - Health” Award',
     body: 'For Science Innovation: "Pharmacogenomics — the Healthcare Superhero."',
   },
   {
@@ -459,7 +459,7 @@ const musicalAwards: Honor[] = [
   },
   {
     title: 'DJ Performance with Naughty by Nature',
-    body: 'Shared stage with the Grammy Award–winning group. Vancouver, BC.',
+    body: 'Shared stage with the Grammy Award-winning group. Vancouver, BC.',
   },
   {
     title: 'Highest Mark in Saskatchewan, Royal Conservatory of Music',
@@ -627,7 +627,6 @@ const currentActivities = [
   { label: 'Composer & producer', detail: 'for the internationally acclaimed Mike Saint-Jules' },
   { label: 'DevOps engineer', detail: 'for independent electronic music festivals' },
   { label: 'Freelance graphic designer', detail: 'for brands and startups' },
-  { label: 'Faculty prospect', detail: 'University of Saskatchewan, College of Medicine' },
   { label: 'Festival organizer', detail: 'Reunion Festival — independent SK electronic music festival' },
 ]
 
