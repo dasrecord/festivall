@@ -52,7 +52,7 @@
     <p v-if="applicant.applicant_types.includes('Workshop')">
       <strong>Event Hours for WORKSHOP Services:</strong>
       One 60-90min workshop during Event Date entitled<br />
-      {{ applicant.workshop_title }} - {{ applicant.workshop_description }}<br />
+      {{ applicant.workshop_title }}<br />
       <strong>Workshop Time of WORKSHOP Services:</strong>
       to be determined no later than 14 days before Event Date
     </p>
