@@ -823,25 +823,44 @@ onUnmounted(() => {
 
 /* ─── Mobile ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  /* Two-row bar: row 1 = back + search + actions, row 2 = days + toggles */
-  .gm-page           { --gm-bar-h: 88px; }
+  .gm-page { --gm-bar-h: 88px; }
+
+  /* Grid bar: 3 cols, 2 rows — explicit placement, no flex-wrap trickery */
   .gm-bar {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
     height: auto;
     padding: 0.35rem 0.55rem;
     gap: 0.3rem 0.45rem;
-    align-content: center;
+    align-items: center;
   }
-  .gm-title          { display: none; }
-  .gm-back           { order: 1; flex-shrink: 0; }
-  .gm-search-wrap    { order: 2; flex: 1; min-width: 100px; max-width: none; }
-  .gm-actions        { order: 3; flex-shrink: 0; }
-  /* Row 2: days + label toggles share the full width */
-  .gm-days           { order: 4; width: 100%; flex-wrap: wrap; }
-  .gm-label-toggles  { order: 5; display: flex; margin-left: auto; }
+  /* Row 1 */
+  .gm-title         { display: none; }
+  .gm-back          { grid-column: 1; grid-row: 1; }
+  .gm-search-wrap   { grid-column: 2; grid-row: 1; max-width: none; }
+  .gm-actions       { grid-column: 3; grid-row: 1; }
+  /* Row 2 */
+  .gm-days          { grid-column: 1 / 3; grid-row: 2; flex-wrap: nowrap; overflow-x: auto; }
+  .gm-label-toggles { grid-column: 3;     grid-row: 2; display: flex; }
 
-  .gm-legend         { display: none; }
-  .gm-physics        { display: none; }
+  .gm-legend  { display: none; }
+  .gm-physics { display: none; }
+
+  /* Uniform button sizing across the bar */
+  .gm-day,
+  .gm-label-toggle {
+    padding: 0 0.55rem;
+    font-size: 0.72rem;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+  }
+  .gm-icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
 
   .gm-panel {
     left: 0.5rem; right: 0.5rem; bottom: 0.5rem;
