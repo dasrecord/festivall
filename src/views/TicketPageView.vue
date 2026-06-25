@@ -861,7 +861,7 @@
             🎞️ Choose Your Visuals
           </button>
         </div>
-        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
           <RouterLink to="/reunionlocation">
             <p>
               <img :src="location_icon" style="height: auto; width: 20px" alt="Location Icon" />
@@ -884,6 +884,12 @@
             <p>
               <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
               Grounds Map
+            </p>
+          </RouterLink>
+          <RouterLink :to="{ path: '/reuniongenremap', query: { id_code: order.id_code } }">
+            <p>
+              <img :src="genre_map_icon" style="height: auto; width: 32px" alt="Genre Map" />
+              Genre Map
             </p>
           </RouterLink>
         </div>
@@ -962,6 +968,7 @@ import dj_icon from '@/assets/images/icons/dj.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
 import location_icon from '@/assets/images/icons/location.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
+import genre_map_icon from '@/assets/images/icons/genre_map.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import quiz_icon from '@/assets/images/icons/quiz.png'
 import radio_icon from '@/assets/images/icons/radio.png'
@@ -1583,6 +1590,7 @@ export default {
       dj_icon,
       location_icon,
       map_icon,
+      genre_map_icon,
       lineup_icon,
       quiz_icon,
       currentAct,

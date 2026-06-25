@@ -1,0 +1,859 @@
+<template>
+  <div class="gm-page">
+
+    <!-- ── Top bar ── -->
+    <div class="gm-bar">
+      <RouterLink to="/" class="gm-back">←</RouterLink>
+      <span class="gm-title">The Sound of Reunion {{ REUNION_FESTIVAL.year }}</span>
+
+      <!-- Search -->
+      <div class="gm-search-wrap">
+        <input
+          ref="searchInputRef"
+          v-model="searchQuery"
+          class="gm-search"
+          placeholder="Search artist or genre…"
+          autocomplete="off"
+          @input="onSearch"
+          @blur="onSearchBlur"
+        />
+      </div>
+
+      <!-- Day filter -->
+      <div class="gm-days">
+        <button :class="['gm-day', { active: activeDay === null }]" @click="setDay(null)">All</button>
+        <button
+          v-for="d in availableDays"
+          :key="d.key"
+          :class="['gm-day', { active: activeDay === d.key }]"
+          @click="setDay(d.key)"
+        >{{ d.label }}</button>
+      </div>
+
+      <!-- Label toggles -->
+      <div class="gm-label-toggles">
+        <button
+          :class="['gm-label-toggle', { active: showGenreLabels }]"
+          @click="showGenreLabels = !showGenreLabels"
+          title="Toggle genre / subgenre labels"
+        >Genres</button>
+        <button
+          :class="['gm-label-toggle', { active: showArtistLabels }]"
+          @click="showArtistLabels = !showArtistLabels"
+          title="Toggle artist name labels"
+        >Artists</button>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="gm-actions">
+        <button class="gm-icon-btn" title="Screenshot" @click="doScreenshot">📸</button>
+        <button class="gm-icon-btn" title="Reset camera" @click="doReset">⟳</button>
+      </div>
+    </div>
+
+    <!-- ── Search dropdown (Teleported to escape bar overflow clipping) ── -->
+    <Teleport to="body">
+      <div
+        v-if="searchResults.length && searchQuery.trim()"
+        class="gm-dropdown-portal"
+        :style="dropdownStyle"
+      >
+        <div
+          v-for="r in searchResults"
+          :key="r.id"
+          class="gm-dropdown-item"
+          @mousedown.prevent="selectResult(r)"
+        >
+          <span class="gm-dropdown-icon">{{ r.tier === 'artist' ? '👤' : r.tier === 'pillar' ? '⬟' : '◆' }}</span>
+          {{ r.label }}
+          <span v-if="r.tier === 'artist' && r.artist?.genre" class="gm-dropdown-sub">{{ r.artist.genre }}</span>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- ── Canvas ── -->
+    <div ref="graphContainer" class="gm-canvas">
+
+      <!-- Stats overlay (top-right of canvas) -->
+      <div class="gm-stats" v-if="!loading && graphData.nodes.length">
+        {{ artistCount }} artists ·
+        {{ subgenreCount }} subgenres ·
+        {{ PILLARS.length }} families
+        <span v-if="activeDay"> · {{ activeDayLabel }}</span>
+      </div>
+
+      <!-- Legend (bottom-left overlay) -->
+      <div class="gm-legend" v-if="!loading && !error">
+        <div v-for="p in PILLARS" :key="p.id" class="gm-legend-row">
+          <span class="gm-dot" :style="{ background: p.color }"></span>
+          <span>{{ p.label }}</span>
+        </div>
+        <div class="gm-legend-row">
+          <span class="gm-dot" style="background:#636E72"></span>
+          <span>Other</span>
+        </div>
+        <div class="gm-legend-tiers">
+          <span class="gm-tier"><span class="gm-tier-dot gm-td-pillar"></span> Family</span>
+          <span class="gm-tier"><span class="gm-tier-dot gm-td-sub"></span> Subgenre</span>
+          <span class="gm-tier"><span class="gm-tier-dot gm-td-artist"></span> Artist</span>
+        </div>
+      </div>
+
+      <!-- Physics controls (bottom-right overlay) -->
+      <div class="gm-physics">
+        <button class="gm-physics-toggle" @click="showPhysics = !showPhysics">
+          ⚙ {{ showPhysics ? '▲' : '▼' }}
+        </button>
+        <div v-if="showPhysics" class="gm-physics-body">
+          <label class="gm-slider-row">
+            <span class="gm-slider-label">Repulsion</span>
+            <input type="range" v-model.number="chargeStrength" min="-500" max="-10" step="10" @input="applyPhysics" />
+            <span class="gm-slider-val">{{ chargeStrength }}</span>
+          </label>
+          <label class="gm-slider-row">
+            <span class="gm-slider-label">Link dist</span>
+            <input type="range" v-model.number="linkDistance" min="10" max="200" step="5" @input="applyPhysics" />
+            <span class="gm-slider-val">{{ linkDistance }}</span>
+          </label>
+          <button class="gm-reheat" @click="reheat">↺ Reheat</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Loading overlay ── -->
+    <div v-if="loading" class="gm-loading">
+      <div class="gm-spinner"></div>
+      <p>Loading genre map…</p>
+    </div>
+
+    <!-- ── Error overlay ── -->
+    <div v-if="error && !loading" class="gm-error">
+      <p>⚠ {{ error }}</p>
+      <button @click="reload">Retry</button>
+    </div>
+
+    <!-- ── Hover tooltip (Teleported so it clears all z-index stacks) ── -->
+    <Teleport to="body">
+      <div
+        v-if="hoveredNode && !focusedNode"
+        class="gm-tooltip"
+        :style="{ left: tipX + 'px', top: tipY + 'px' }"
+      >
+        <div class="gm-tip-name">{{ hoveredNode.label }}</div>
+        <div class="gm-tip-sub">
+          <template v-if="hoveredNode.tier === 'artist'">
+            {{ hoveredNode.artist?.genre || '—' }}
+            <span v-if="hoveredNode.artist?.act_type"> · {{ hoveredNode.artist.act_type }}</span>
+          </template>
+          <template v-else-if="hoveredNode.tier === 'pillar'">Genre Family</template>
+          <template v-else>Subgenre</template>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- ── Focus panel ── -->
+    <Transition name="gm-panel-slide">
+      <div v-if="focusedNode" class="gm-panel">
+        <button class="gm-panel-close" @click="doClose">×</button>
+
+        <!-- Artist -->
+        <template v-if="focusedNode.tier === 'artist'">
+          <p class="gm-panel-eyebrow">Artist</p>
+          <h2 class="gm-panel-name">{{ focusedNode.label }}</h2>
+          <p v-if="focusedNode.artist?.act_type" class="gm-panel-meta">{{ focusedNode.artist.act_type }}</p>
+          <div v-if="focusedNode.artist?.genre" class="gm-panel-tag" :style="{ borderColor: focusedNode.color, color: focusedNode.color }">
+            {{ focusedNode.artist.genre }}
+          </div>
+          <p v-if="focusedNode.artist?.act_description" class="gm-panel-bio">
+            {{ truncate(focusedNode.artist.act_description, 240) }}
+          </p>
+          <div class="gm-panel-links">
+            <a v-if="focusedNode.artist?.mix_track_url" :href="focusedNode.artist.mix_track_url" target="_blank" rel="noopener" class="gm-panel-link">🎧 Listen</a>
+            <a v-if="focusedNode.artist?.social_url"    :href="focusedNode.artist.social_url"    target="_blank" rel="noopener" class="gm-panel-link">🔗 Socials</a>
+          </div>
+        </template>
+
+        <!-- Pillar -->
+        <template v-else-if="focusedNode.tier === 'pillar'">
+          <p class="gm-panel-eyebrow">Genre Family</p>
+          <h2 class="gm-panel-name" :style="{ color: focusedNode.color }">{{ focusedNode.label }}</h2>
+          <div class="gm-panel-origin" v-if="focusedNode.origin">
+            <span>📍 {{ focusedNode.origin }}</span>
+            <span v-if="focusedNode.era"> · {{ focusedNode.era }}</span>
+          </div>
+          <div class="gm-panel-bpm" v-if="focusedNode.bpm">
+            <span class="gm-panel-bpm-label">BPM</span> {{ focusedNode.bpm }}
+          </div>
+          <p v-if="focusedNode.description" class="gm-panel-bio">{{ focusedNode.description }}</p>
+          <div v-if="focusedNode.dna" class="gm-panel-dna">
+            <span class="gm-panel-dna-label">DNA</span> {{ focusedNode.dna }}
+          </div>
+          <div v-if="pillarConnections(focusedNode.id).length" class="gm-panel-connections">
+            <div class="gm-panel-conn-title">Connected Families</div>
+            <div v-for="conn in pillarConnections(focusedNode.id)" :key="conn.otherId" class="gm-panel-conn-row">
+              <span class="gm-panel-conn-dot" :style="{ background: conn.color }"></span>
+              <span class="gm-panel-conn-name">{{ conn.label }}</span>
+              <span class="gm-panel-conn-dna">{{ conn.dna }}</span>
+            </div>
+          </div>
+        </template>
+
+        <!-- Subgenre -->
+        <template v-else-if="focusedNode.tier === 'subgenre'">
+          <p class="gm-panel-eyebrow">Subgenre</p>
+          <h2 class="gm-panel-name" :style="{ color: focusedNode.color }">{{ focusedNode.label }}</h2>
+          <div v-if="focusedNode.pillar" class="gm-panel-origin">
+            <span class="gm-panel-conn-dot" :style="{ background: focusedNode.color }"></span>
+            Part of {{ PILLAR_MAP[focusedNode.pillar]?.label || focusedNode.pillar }}
+          </div>
+          <div class="gm-panel-bpm" v-if="focusedNode.bpm">
+            <span class="gm-panel-bpm-label">BPM</span> {{ focusedNode.bpm }}
+          </div>
+          <p v-if="focusedNode.description" class="gm-panel-bio">{{ focusedNode.description }}</p>
+        </template>
+      </div>
+    </Transition>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useReunionGenreGraphData } from '@/composables/useReunionGenreGraphData'
+import { useReunionGenreGraph3D }    from '@/composables/useReunionGenreGraph3D'
+import { PILLARS, PILLAR_MAP, PILLAR_BRIDGES } from '@/config/reunionGenreTaxonomy'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+
+// ── State ──────────────────────────────────────────────────────────────────────
+const graphContainer  = ref(null)
+const searchInputRef  = ref(null)
+const searchQuery     = ref('')
+const searchResults   = ref([])
+const dropdownStyle   = ref({})
+const activeDay       = ref(null)
+const showPhysics     = ref(false)
+const chargeStrength  = ref(-150)
+const linkDistance    = ref(60)
+const tipX            = ref(0)
+const tipY            = ref(0)
+
+// ── Composables ────────────────────────────────────────────────────────────────
+const {
+  loading, error, rawArtists, graphData, fetchArtists, getAvailableDays, filterByDay,
+} = useReunionGenreGraphData()
+
+const {
+  graphInstance, hoveredNode, focusedNode,
+  showGenreLabels, showArtistLabels,
+  initGraph, updateGraphData, updatePhysics,
+  focusNodeById, clearFocus, takeScreenshot, resize, destroy,
+} = useReunionGenreGraph3D()
+
+// ── Computed ───────────────────────────────────────────────────────────────────
+const availableDays  = computed(() => getAvailableDays())
+const activeDayLabel = computed(() => availableDays.value.find(d => d.key === activeDay.value)?.label)
+const artistCount    = computed(() => graphData.value.nodes.filter(n => n.tier === 'artist').length)
+const subgenreCount  = computed(() => graphData.value.nodes.filter(n => n.tier === 'subgenre').length)
+
+// ── Helpers ─────────────────────────────────────────────────────────────────────
+const truncate = (str, max) =>
+  str && str.length > max ? str.slice(0, max) + '…' : str
+
+// ── Search ──────────────────────────────────────────────────────────────────────
+const computeDropdownPos = () => {
+  if (!searchInputRef.value) return
+  const rect = searchInputRef.value.getBoundingClientRect()
+  dropdownStyle.value = {
+    position: 'fixed',
+    top:      rect.bottom + 4 + 'px',
+    left:     rect.left   + 'px',
+    width:    rect.width  + 'px',
+    zIndex:   9998,
+  }
+}
+
+const onSearch = () => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) { searchResults.value = []; return }
+  searchResults.value = graphData.value.nodes
+    .filter(n => n.label?.toLowerCase().includes(q))
+    .slice(0, 8)
+  computeDropdownPos()
+}
+
+const onSearchBlur = () => {
+  // Small delay to let mousedown fire on dropdown items first
+  setTimeout(() => { searchResults.value = [] }, 150)
+}
+
+// ── Genre connections helper (for pillar focus panel) ───────────────────────────
+const pillarConnections = (pillarId) => {
+  return PILLAR_BRIDGES
+    .filter(b => b.source === pillarId || b.target === pillarId)
+    .map(b => {
+      const otherId = b.source === pillarId ? b.target : b.source
+      const other   = PILLAR_MAP[otherId]
+      return { otherId, label: other?.label || otherId, color: other?.color || '#888', dna: b.dna }
+    })
+}
+
+const selectResult = (node) => {
+  searchQuery.value   = ''
+  searchResults.value = []
+  focusNodeById(node.id)
+}
+
+// ── Day filter ──────────────────────────────────────────────────────────────────
+const setDay = (key) => {
+  activeDay.value = key
+  filterByDay(key)
+}
+
+// ── Physics ─────────────────────────────────────────────────────────────────────
+const applyPhysics = () =>
+  updatePhysics({ chargeStrength: chargeStrength.value, linkDistance: linkDistance.value })
+
+const reheat = () => {
+  if (graphInstance.value) graphInstance.value.d3ReheatSimulation()
+}
+
+// ── Actions ──────────────────────────────────────────────────────────────────────
+const doScreenshot = () => takeScreenshot()
+const doReset      = () => clearFocus()
+const doClose      = () => clearFocus()
+const reload       = () => fetchArtists()
+
+// ── Mouse tracking (for tooltip position) ────────────────────────────────────────
+const onMouseMove = (e) => {
+  tipX.value = e.clientX + 15
+  tipY.value = e.clientY + 12
+}
+
+// ── Window resize ────────────────────────────────────────────────────────────────
+const onResize = () => {
+  if (graphContainer.value) {
+    resize(graphContainer.value.clientWidth, graphContainer.value.clientHeight)
+  }
+}
+
+// ── Graph init/update ─────────────────────────────────────────────────────────────
+// Track whether the graph has been initialized so we know to call init vs update
+let graphReady = false
+
+watch(graphData, async (newData) => {
+  if (!newData.nodes.length || !graphContainer.value) return
+
+  if (!graphReady) {
+    graphReady = true
+    await initGraph(graphContainer.value, newData, {
+      chargeStrength: chargeStrength.value,
+      linkDistance:   linkDistance.value,
+    })
+  } else {
+    updateGraphData(newData)
+  }
+})
+
+// ── Lifecycle ────────────────────────────────────────────────────────────────────
+onMounted(async () => {
+  window.addEventListener('mousemove', onMouseMove)
+  window.addEventListener('resize',    onResize)
+  await fetchArtists()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onMouseMove)
+  window.removeEventListener('resize',    onResize)
+  destroy()
+})
+</script>
+
+<style scoped>
+/* ─── Root ──────────────────────────────────────────────────────────────────── */
+.gm-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a12;
+  color: #f0f4f8;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+/* ─── Top bar ────────────────────────────────────────────────────────────────── */
+.gm-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.75rem;
+  height: 52px;
+  background: rgba(10, 10, 18, 0.96);
+  border-bottom: 1px solid rgba(74, 144, 217, 0.2);
+  z-index: 20;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.gm-bar::-webkit-scrollbar { display: none; }
+
+.gm-back {
+  color: var(--festivall-baby-blue, #4a90d9);
+  text-decoration: none;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.gm-back:hover { background: rgba(74,144,217,0.15); }
+
+.gm-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--festivall-baby-blue, #4a90d9);
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* Search */
+.gm-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 120px;
+  max-width: 260px;
+}
+.gm-search {
+  width: 100%;
+  padding: 0.32rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(74,144,217,0.35);
+  background: rgba(255,255,255,0.06);
+  color: #f0f4f8;
+  font-size: 0.78rem;
+  box-sizing: border-box;
+  outline: none;
+}
+.gm-search:focus { border-color: var(--festivall-baby-blue, #4a90d9); }
+.gm-search::placeholder { color: #666; }
+
+/* Day strip */
+.gm-days { display: flex; gap: 0.25rem; flex-shrink: 0; }
+.gm-day {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  border-radius: 20px;
+  border: 1px solid rgba(74,144,217,0.3);
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.gm-day:hover { color: white; border-color: var(--festivall-baby-blue, #4a90d9); }
+.gm-day.active { background: var(--festivall-baby-blue, #4a90d9); color: white; border-color: transparent; }
+
+/* Label toggles */
+.gm-label-toggles { display: flex; gap: 0.2rem; flex-shrink: 0; }
+.gm-label-toggle {
+  padding: 0.18rem 0.45rem;
+  font-size: 0.65rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.gm-label-toggle:hover { color: #aaa; border-color: rgba(255,255,255,0.3); }
+.gm-label-toggle.active {
+  background: rgba(255,255,255,0.1);
+  color: #ddd;
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* Action buttons */
+.gm-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+.gm-icon-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(74,144,217,0.3);
+  background: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background 0.15s;
+}
+.gm-icon-btn:hover { background: rgba(74,144,217,0.18); }
+
+/* ─── Canvas ──────────────────────────────────────────────────────────────────── */
+.gm-canvas {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Stats overlay */
+.gm-stats {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.28);
+  pointer-events: none;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+/* ─── Legend ──────────────────────────────────────────────────────────────────── */
+.gm-legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(10,10,18,0.82);
+  border: 1px solid rgba(74,144,217,0.18);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+.gm-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  color: #ccc;
+  padding: 0.08rem 0;
+}
+.gm-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gm-legend-tiers {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.45rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.62rem;
+  color: #777;
+}
+.gm-tier { display: flex; align-items: center; gap: 0.25rem; }
+.gm-tier-dot { border-radius: 50%; display: inline-block; flex-shrink: 0; background: rgba(255,255,255,0.6); }
+.gm-td-pillar { width: 13px; height: 13px; }
+.gm-td-sub    { width: 8px;  height: 8px; }
+.gm-td-artist { width: 5px;  height: 5px; background: rgba(255,255,255,0.35); }
+
+/* ─── Physics controls ──────────────────────────────────────────────────────────── */
+.gm-physics {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(10,10,18,0.82);
+  border: 1px solid rgba(74,144,217,0.18);
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  min-width: 170px;
+}
+.gm-physics-toggle {
+  font-size: 0.68rem;
+  color: #999;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  text-align: right;
+}
+.gm-physics-toggle:hover { color: white; }
+.gm-physics-body { margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.gm-slider-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 30px;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.64rem;
+  color: #999;
+  cursor: default;
+}
+.gm-slider-label { font-size: 0.64rem; }
+.gm-slider-val   { text-align: right; font-size: 0.62rem; color: #666; }
+.gm-slider-row input[type="range"] {
+  accent-color: var(--festivall-baby-blue, #4a90d9);
+  margin: 0; padding: 0;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+.gm-reheat {
+  font-size: 0.65rem;
+  background: rgba(74,144,217,0.1);
+  border: 1px solid rgba(74,144,217,0.28);
+  color: var(--festivall-baby-blue, #4a90d9);
+  border-radius: 4px;
+  padding: 0.18rem 0.5rem;
+  cursor: pointer;
+  align-self: flex-end;
+}
+.gm-reheat:hover { background: rgba(74,144,217,0.22); }
+
+/* ─── Loading ─────────────────────────────────────────────────────────────────── */
+.gm-loading {
+  position: absolute;
+  inset: 52px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(10,10,18,0.9);
+  z-index: 30;
+  color: #888;
+}
+.gm-spinner {
+  width: 38px; height: 38px;
+  border: 3px solid rgba(74,144,217,0.15);
+  border-top-color: var(--festivall-baby-blue, #4a90d9);
+  border-radius: 50%;
+  animation: gmSpin 0.7s linear infinite;
+}
+@keyframes gmSpin { to { transform: rotate(360deg); } }
+
+/* ─── Error ───────────────────────────────────────────────────────────────────── */
+.gm-error {
+  position: absolute;
+  inset: 52px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  z-index: 30;
+  color: #ef5350;
+  font-size: 0.85rem;
+}
+.gm-error button {
+  padding: 0.35rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ef5350;
+  background: transparent;
+  color: #ef5350;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* ─── Tooltip ──────────────────────────────────────────────────────────────────── */
+.gm-tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(10,10,18,0.93);
+  border: 1px solid rgba(74,144,217,0.32);
+  border-radius: 8px;
+  padding: 0.4rem 0.65rem;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  max-width: 220px;
+}
+.gm-tip-name { font-size: 0.82rem; font-weight: 600; color: #f0f4f8; margin-bottom: 0.12rem; }
+.gm-tip-sub  { font-size: 0.68rem; color: #aaa; }
+
+/* ─── Focus panel ───────────────────────────────────────────────────────────────── */
+.gm-panel {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(380px, calc(100% - 2rem));
+  background: rgba(10,10,18,0.96);
+  border: 1px solid rgba(74,144,217,0.3);
+  border-radius: 14px;
+  padding: 1rem 1.1rem 0.9rem;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+}
+.gm-panel-close {
+  position: absolute;
+  top: 0.55rem; right: 0.6rem;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.07);
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gm-panel-close:hover { background: rgba(255,255,255,0.14); color: white; }
+.gm-panel-eyebrow {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #666;
+  margin: 0 0 0.2rem;
+}
+.gm-panel-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--festivall-baby-blue, #4a90d9);
+  padding-right: 1.5rem;
+}
+.gm-panel-meta { font-size: 0.72rem; color: #777; margin: 0 0 0.3rem; }
+.gm-panel-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  padding: 0.14rem 0.48rem;
+  border-radius: 20px;
+  border: 1px solid;
+  margin-bottom: 0.5rem;
+}
+.gm-panel-bio {
+  font-size: 0.76rem;
+  color: #ccc;
+  margin: 0 0 0.45rem;
+  line-height: 1.55;
+}
+.gm-panel-origin {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: #999;
+  margin: 0 0 0.35rem;
+}
+.gm-panel-bpm {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: #bbb;
+  margin-bottom: 0.4rem;
+}
+.gm-panel-bpm-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #555;
+}
+.gm-panel-dna {
+  font-size: 0.68rem;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+  padding-left: 0.4rem;
+  border-left: 2px solid rgba(255,255,255,0.1);
+}
+.gm-panel-dna-label {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+  font-style: normal;
+  margin-right: 0.3rem;
+}
+.gm-panel-connections {
+  margin-top: 0.55rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.gm-panel-conn-title {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+.gm-panel-conn-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  color: #aaa;
+  padding: 0.12rem 0;
+}
+.gm-panel-conn-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  position: relative;
+  top: -0.05em;
+}
+.gm-panel-conn-name { color: #ccc; font-weight: 500; flex-shrink: 0; }
+.gm-panel-conn-dna  { color: #555; font-size: 0.62rem; font-style: italic; }
+.gm-panel-links { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.gm-panel-link {
+  font-size: 0.72rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+  border: 1px solid rgba(74,144,217,0.38);
+  color: var(--festivall-baby-blue, #4a90d9);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.gm-panel-link:hover {
+  background: var(--festivall-baby-blue, #4a90d9);
+  color: white;
+}
+
+/* ─── Panel transition ────────────────────────────────────────────────────────── */
+.gm-panel-slide-enter-active,
+.gm-panel-slide-leave-active { transition: opacity 0.2s, transform 0.2s; }
+.gm-panel-slide-enter-from,
+.gm-panel-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+}
+
+/* ─── Mobile ────────────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .gm-title        { display: none; }
+  .gm-legend       { display: none; }
+  .gm-physics      { display: none; }
+  .gm-label-toggles { display: none; }
+  .gm-panel    { left: 0.5rem; right: 0.5rem; bottom: 0.5rem; width: auto; transform: none; }
+  .gm-panel-slide-enter-from,
+  .gm-panel-slide-leave-to { transform: translateY(10px); }
+}
+</style>
+
+<!-- Non-scoped: styles for elements Teleported outside this component -->
+<style>
+.gm-dropdown-portal {
+  background: #14142a;
+  border: 1px solid rgba(74,144,217,0.38);
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+.gm-dropdown-portal .gm-dropdown-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.44rem 0.7rem;
+  font-size: 0.8rem;
+  color: #ddd;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.gm-dropdown-portal .gm-dropdown-item:hover { background: rgba(74,144,217,0.18); }
+.gm-dropdown-portal .gm-dropdown-icon { font-size: 0.65rem; color: #777; flex-shrink: 0; }
+.gm-dropdown-portal .gm-dropdown-sub  { font-size: 0.65rem; color: #555; margin-left: auto; }
+</style>

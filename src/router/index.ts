@@ -65,6 +65,7 @@ import MedPrepApplicationView from '@/views/MedPrepApplicationView.vue'
 import MedPrepAdminView from '@/views/MedPrepAdminView.vue'
 import MedPrepContractView from '@/views/MedPrepContractView.vue'
 import MedPrepCVView from '@/views/MedPrepCVView.vue'
+import ReunionGenreMapView from '@/views/ReunionGenreMapView.vue'
 
 
 const routes = [
@@ -341,6 +342,11 @@ const routes = [
     path: '/reunionlineup',
     name: 'reunionlineup',
     component: ReunionLineupView
+  },
+  {
+    path: '/reuniongenremap',
+    name: 'reuniongenremap',
+    component: ReunionGenreMapView
   },
   {
     path: '/reunioncontact',
