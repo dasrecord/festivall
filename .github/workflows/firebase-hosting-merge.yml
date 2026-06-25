@@ -27,9 +27,19 @@ jobs:
           VITE_APP_FESTIVALL_MESSAGING_SENDER_ID: ${{ secrets.VITE_APP_FESTIVALL_MESSAGING_SENDER_ID }}
           VITE_APP_FESTIVALL_APP_ID: ${{ secrets.VITE_APP_FESTIVALL_APP_ID }}
           VITE_APP_FESTIVALL_MEASUREMENT_ID: ${{ secrets.VITE_APP_FESTIVALL_MEASUREMENT_ID }}
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FESTIVALL_6969 }}'
-          channelId: live
-          projectId: festivall-6969
+      - name: Deploy to Firebase Hosting
+        env:
+          FIREBASE_SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FESTIVALL_6969 }}
+        run: |
+          echo "$FIREBASE_SA_JSON" > /tmp/svcaccount.json
+          set +e
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/svcaccount.json \
+            npx firebase-tools deploy --only hosting --project festivall-6969 2>&1 | tee /tmp/deploy.log
+          STATUS=${PIPESTATUS[0]}
+          set -e
+          rm -f /tmp/svcaccount.json
+          if [ $STATUS -ne 0 ] && grep -q "is the current active version" /tmp/deploy.log; then
+            echo "✅ Release already processed on first attempt (network retry false-positive). Deploy succeeded."
+            exit 0
+          fi
+          exit $STATUS
