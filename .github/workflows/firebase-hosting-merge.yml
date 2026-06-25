@@ -25,18 +25,9 @@ jobs:
           VITE_APP_FESTIVALL_MESSAGING_SENDER_ID: ${{ secrets.VITE_APP_FESTIVALL_MESSAGING_SENDER_ID }}
           VITE_APP_FESTIVALL_APP_ID: ${{ secrets.VITE_APP_FESTIVALL_APP_ID }}
           VITE_APP_FESTIVALL_MEASUREMENT_ID: ${{ secrets.VITE_APP_FESTIVALL_MEASUREMENT_ID }}
-      - name: Deploy to Firebase Hosting
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FESTIVALL_6969 }}' > /tmp/sa-key.json
-          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa-key.json
-          deploy_output=$(npx firebase-tools deploy --only hosting --project festivall-6969 2>&1)
-          exit_code=$?
-          echo "$deploy_output"
-          rm -f /tmp/sa-key.json
-          if [ $exit_code -ne 0 ]; then
-            if echo "$deploy_output" | grep -q "current active version"; then
-              echo "Version already deployed — site is up to date, treating as success."
-              exit 0
-            fi
-            exit $exit_code
-          fi
+      - uses: FirebaseExtended/action-hosting-deploy@v0.9
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FESTIVALL_6969 }}'
+          channelId: live
+          projectId: festivall-6969
