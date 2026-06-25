@@ -47,7 +47,7 @@ export default {
           const participantData = querySnapshot.docs[0].data()
           const participantEmail = (participantData.contact?.email || '').toLowerCase().trim()
 
-          const enteredEmail = prompt('For security, please enter the email address associated with this ticket.')
+          const enteredEmail = prompt('For security, please enter the email address associated with this ticket here:')
           if (enteredEmail === null) return // user cancelled
 
           if (enteredEmail.toLowerCase().trim() !== participantEmail) {

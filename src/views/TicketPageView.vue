@@ -1270,7 +1270,7 @@ export default {
         const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
         if (!isAdmin && !storedAuth) {
           const email = prompt(
-            'For security, please enter the email address associated with this ticket:'
+            'For security, please enter the email address associated with this ticket here:'
           )
           if (!email) {
             router.push({ name: 'EnterIDCode' })
