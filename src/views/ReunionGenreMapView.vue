@@ -82,41 +82,57 @@
         <span v-if="activeDay"> · {{ activeDayLabel }}</span>
       </div>
 
-      <!-- Legend (bottom-left overlay) -->
-      <div class="gm-legend" v-if="!loading && !error">
-        <div v-for="p in PILLARS" :key="p.id" class="gm-legend-row">
-          <span class="gm-dot" :style="{ background: p.color }"></span>
-          <span>{{ p.label }}</span>
-        </div>
-        <div class="gm-legend-row">
-          <span class="gm-dot" style="background:#636E72"></span>
-          <span>Other</span>
-        </div>
-        <div class="gm-legend-tiers">
-          <span class="gm-tier"><span class="gm-tier-dot gm-td-pillar"></span> Family</span>
-          <span class="gm-tier"><span class="gm-tier-dot gm-td-sub"></span> Subgenre</span>
-          <span class="gm-tier"><span class="gm-tier-dot gm-td-artist"></span> Artist</span>
-        </div>
-      </div>
+    </div>
 
-      <!-- Physics controls (bottom-right overlay) -->
-      <div class="gm-physics">
-        <button class="gm-physics-toggle" @click="showPhysics = !showPhysics">
-          ⚙ {{ showPhysics ? '▲' : '▼' }}
-        </button>
-        <div v-if="showPhysics" class="gm-physics-body">
-          <label class="gm-slider-row">
-            <span class="gm-slider-label">Repulsion</span>
-            <input type="range" v-model.number="chargeStrength" min="-500" max="-10" step="10" @input="applyPhysics" />
-            <span class="gm-slider-val">{{ chargeStrength }}</span>
-          </label>
-          <label class="gm-slider-row">
-            <span class="gm-slider-label">Link dist</span>
-            <input type="range" v-model.number="linkDistance" min="10" max="200" step="5" @input="applyPhysics" />
-            <span class="gm-slider-val">{{ linkDistance }}</span>
-          </label>
-          <button class="gm-reheat" @click="reheat">↺ Reheat</button>
-        </div>
+    <!-- ── Legend — outside canvas so WebGL stacking context can't bury it ── -->
+    <div class="gm-legend" v-if="!loading && !error">
+      <div v-for="p in PILLARS" :key="p.id" class="gm-legend-row">
+        <span class="gm-dot" :style="{ background: p.color }"></span>
+        <span>{{ p.label }}</span>
+      </div>
+      <div class="gm-legend-row">
+        <span class="gm-dot" style="background:#636E72"></span>
+        <span>Other</span>
+      </div>
+      <div class="gm-legend-tiers">
+        <span class="gm-tier"><span class="gm-tier-dot gm-td-pillar"></span> Family</span>
+        <span class="gm-tier"><span class="gm-tier-dot gm-td-sub"></span> Subgenre</span>
+        <span class="gm-tier"><span class="gm-tier-dot gm-td-artist"></span> Artist</span>
+      </div>
+    </div>
+
+    <!-- ── Physics — outside canvas so WebGL stacking context can't bury it ── -->
+    <div class="gm-physics">
+      <button class="gm-physics-toggle" @click="showPhysics = !showPhysics">
+        ⚙ {{ showPhysics ? '▲' : '▼' }}
+      </button>
+      <div v-if="showPhysics" class="gm-physics-body">
+        <label class="gm-slider-row">
+          <span class="gm-slider-label">Repulsion</span>
+          <input type="range" v-model.number="chargeStrength" min="-600" max="-10" step="10" @input="applyPhysics" />
+          <span class="gm-slider-val">{{ chargeStrength }}</span>
+        </label>
+        <label class="gm-slider-row">
+          <span class="gm-slider-label">Link dist</span>
+          <input type="range" v-model.number="linkDistance" min="10" max="300" step="5" @input="applyPhysics" />
+          <span class="gm-slider-val">{{ linkDistance }}</span>
+        </label>
+        <label class="gm-slider-row">
+          <span class="gm-slider-label">Link pull</span>
+          <input type="range" v-model.number="linkStrength" min="0" max="2" step="0.05" @input="applyPhysics" />
+          <span class="gm-slider-val">{{ linkStrength.toFixed(2) }}</span>
+        </label>
+        <label class="gm-slider-row">
+          <span class="gm-slider-label">Friction</span>
+          <input type="range" v-model.number="velocityDecay" min="0.05" max="0.95" step="0.05" @input="applyPhysics" />
+          <span class="gm-slider-val">{{ velocityDecay.toFixed(2) }}</span>
+        </label>
+        <label class="gm-slider-row">
+          <span class="gm-slider-label">Gravity</span>
+          <input type="range" v-model.number="gravityStrength" min="0" max="0.5" step="0.01" @input="applyPhysics" />
+          <span class="gm-slider-val">{{ gravityStrength.toFixed(2) }}</span>
+        </label>
+        <button class="gm-reheat" @click="reheat">↺ Reheat</button>
       </div>
     </div>
 
@@ -219,22 +235,25 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { useReunionGenreGraphData } from '@/composables/useReunionGenreGraphData'
 import { useReunionGenreGraph3D }    from '@/composables/useReunionGenreGraph3D'
 import { PILLARS, PILLAR_MAP, PILLAR_BRIDGES } from '@/config/reunionGenreTaxonomy'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
-// ── State ──────────────────────────────────────────────────────────────────────
+const route = useRoute()
 const graphContainer  = ref(null)
 const searchInputRef  = ref(null)
 const searchQuery     = ref('')
 const searchResults   = ref([])
 const dropdownStyle   = ref({})
 const activeDay       = ref(null)
-const showPhysics     = ref(false)
+const showPhysics     = ref(true)
 const chargeStrength  = ref(-150)
 const linkDistance    = ref(60)
+const linkStrength    = ref(1)
+const velocityDecay   = ref(0.4)
+const gravityStrength = ref(0.05)
 const tipX            = ref(0)
 const tipY            = ref(0)
 
@@ -312,7 +331,13 @@ const setDay = (key) => {
 
 // ── Physics ─────────────────────────────────────────────────────────────────────
 const applyPhysics = () =>
-  updatePhysics({ chargeStrength: chargeStrength.value, linkDistance: linkDistance.value })
+  updatePhysics({
+    chargeStrength: chargeStrength.value,
+    linkDistance:   linkDistance.value,
+    linkStrength:   linkStrength.value,
+    velocityDecay:  velocityDecay.value,
+    gravityStrength: gravityStrength.value,
+  })
 
 const reheat = () => {
   if (graphInstance.value) graphInstance.value.d3ReheatSimulation()
@@ -350,6 +375,11 @@ watch(graphData, async (newData) => {
       chargeStrength: chargeStrength.value,
       linkDistance:   linkDistance.value,
     })
+    // Auto-focus artist if ?id=<id_code> is in the URL
+    const idCode = route.query.id_code
+    if (idCode) {
+      setTimeout(() => focusNodeById(`artist_${idCode}`), 1200)
+    }
   } else {
     updateGraphData(newData)
   }
@@ -516,14 +546,14 @@ onUnmounted(() => {
 
 /* ─── Legend ──────────────────────────────────────────────────────────────────── */
 .gm-legend {
-  position: absolute;
+  position: fixed;
   bottom: 1rem;
   left: 1rem;
   background: rgba(10,10,18,0.82);
   border: 1px solid rgba(74,144,217,0.18);
   border-radius: 10px;
   padding: 0.55rem 0.75rem;
-  z-index: 10;
+  z-index: 50;
   backdrop-filter: blur(8px);
   user-select: none;
 }
@@ -557,14 +587,14 @@ onUnmounted(() => {
 
 /* ─── Physics controls ──────────────────────────────────────────────────────────── */
 .gm-physics {
-  position: absolute;
+  position: fixed;
   bottom: 1rem;
   right: 1rem;
   background: rgba(10,10,18,0.82);
   border: 1px solid rgba(74,144,217,0.18);
   border-radius: 10px;
   padding: 0.45rem 0.7rem;
-  z-index: 10;
+  z-index: 50;
   backdrop-filter: blur(8px);
   min-width: 170px;
 }
@@ -845,7 +875,8 @@ onUnmounted(() => {
   .gm-label-toggles { grid-column: 3;     grid-row: 2; display: flex; }
 
   .gm-legend  { display: none; }
-  .gm-physics { display: none; }
+  /* Physics: move to top-right on mobile so focus panel can't cover it */
+  .gm-physics { min-width: 0; bottom: auto; top: calc(var(--gm-bar-h) + 0.5rem); }
 
   /* Uniform button sizing across the bar */
   .gm-day,

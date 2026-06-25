@@ -43,7 +43,9 @@ export function useReunionGenreGraph3D() {
         sprite.borderRadius    = 2
         sprite.position.y      = 14
       }
-      sprite.raycast = () => {}   // ← prevent sprite from absorbing mouse events
+      sprite.raycast = () => {}                   // ← prevent sprite from absorbing mouse events
+      sprite.material.depthTest = false            // ← always render on top of geometry
+      sprite.renderOrder = 999                     // ← paint after all other scene objects
       return sprite
     }
     if (node.tier === 'artist' && showArtist) {
@@ -54,7 +56,9 @@ export function useReunionGenreGraph3D() {
       sprite.padding         = 1
       sprite.borderRadius    = 1.5
       sprite.position.y      = 7
-      sprite.raycast = () => {}   // ← prevent sprite from absorbing mouse events
+      sprite.raycast = () => {}                    // ← prevent sprite from absorbing mouse events
+      sprite.material.depthTest = false            // ← always render on top of geometry
+      sprite.renderOrder = 999                     // ← paint after all other scene objects
       return sprite
     }
     // Invisible placeholder — replaces previous sprite so it's removed from the scene
@@ -150,13 +154,22 @@ export function useReunionGenreGraph3D() {
     if (graphInstance.value) graphInstance.value.graphData(newData)
   }
 
-  const updatePhysics = ({ chargeStrength, linkDistance } = {}) => {
+  const updatePhysics = ({ chargeStrength, linkDistance, linkStrength, velocityDecay, gravityStrength } = {}) => {
     if (!graphInstance.value) return
-    const cf = graphInstance.value.d3Force('charge')
-    if (cf && chargeStrength !== undefined) cf.strength(chargeStrength)
-    const lf = graphInstance.value.d3Force('link')
-    if (lf && linkDistance  !== undefined) lf.distance(linkDistance)
-    graphInstance.value.d3ReheatSimulation()
+    const g = graphInstance.value
+    const cf = g.d3Force('charge')
+    if (cf && chargeStrength  !== undefined) cf.strength(chargeStrength)
+    const lf = g.d3Force('link')
+    if (lf && linkDistance    !== undefined) lf.distance(linkDistance)
+    if (lf && linkStrength    !== undefined) lf.strength(linkStrength)
+    if (velocityDecay         !== undefined) g.d3VelocityDecay(velocityDecay)
+    const xf = g.d3Force('x'); const yf = g.d3Force('y'); const zf = g.d3Force('z')
+    if (gravityStrength !== undefined) {
+      if (xf) xf.strength(gravityStrength)
+      if (yf) yf.strength(gravityStrength)
+      if (zf) zf.strength(gravityStrength)
+    }
+    g.d3ReheatSimulation()
   }
 
   const focusNodeById = (nodeId) => {
