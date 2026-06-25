@@ -380,6 +380,7 @@ onUnmounted(() => {
   color: #f0f4f8;
   font-family: inherit;
   overflow: hidden;
+  --gm-bar-h: 52px;   /* updated at mobile breakpoint */
 }
 
 /* ─── Top bar ────────────────────────────────────────────────────────────────── */
@@ -612,7 +613,7 @@ onUnmounted(() => {
 /* ─── Loading ─────────────────────────────────────────────────────────────────── */
 .gm-loading {
   position: absolute;
-  inset: 52px 0 0 0;
+  inset: var(--gm-bar-h) 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -634,7 +635,7 @@ onUnmounted(() => {
 /* ─── Error ───────────────────────────────────────────────────────────────────── */
 .gm-error {
   position: absolute;
-  inset: 52px 0 0 0;
+  inset: var(--gm-bar-h) 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -822,11 +823,31 @@ onUnmounted(() => {
 
 /* ─── Mobile ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .gm-title        { display: none; }
-  .gm-legend       { display: none; }
-  .gm-physics      { display: none; }
-  .gm-label-toggles { display: none; }
-  .gm-panel    { left: 0.5rem; right: 0.5rem; bottom: 0.5rem; width: auto; transform: none; }
+  /* Two-row bar: row 1 = back + search + actions, row 2 = days + toggles */
+  .gm-page           { --gm-bar-h: 88px; }
+  .gm-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.35rem 0.55rem;
+    gap: 0.3rem 0.45rem;
+    align-content: center;
+  }
+  .gm-title          { display: none; }
+  .gm-back           { order: 1; flex-shrink: 0; }
+  .gm-search-wrap    { order: 2; flex: 1; min-width: 100px; max-width: none; }
+  .gm-actions        { order: 3; flex-shrink: 0; }
+  /* Row 2: days + label toggles share the full width */
+  .gm-days           { order: 4; width: 100%; flex-wrap: wrap; }
+  .gm-label-toggles  { order: 5; display: flex; margin-left: auto; }
+
+  .gm-legend         { display: none; }
+  .gm-physics        { display: none; }
+
+  .gm-panel {
+    left: 0.5rem; right: 0.5rem; bottom: 0.5rem;
+    width: auto;
+    transform: none;
+  }
   .gm-panel-slide-enter-from,
   .gm-panel-slide-leave-to { transform: translateY(10px); }
 }
