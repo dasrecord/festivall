@@ -942,6 +942,29 @@
   <div v-else>
     <p>Loading...</p>
   </div>
+
+  <!-- Email Verification Modal -->
+  <div v-if="showEmailVerifyModal" class="modal" @click.self="cancelEmailVerify">
+    <div class="modal-content" @click.stop>
+      <div class="modal-close" @click="cancelEmailVerify"></div>
+      <img :src="festivall_emblem_white" style="height: 64px; width: auto" alt="Festivall Emblem" />
+      <h2>🔐 Verify Your Identity</h2>
+      <h3>Please enter the email address associated with this ticket.</h3>
+      <div style="width:100%;text-align:left;">
+        <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Email Address:</label>
+        <input
+          type="email"
+          v-model="emailVerifyInput"
+          placeholder="you@example.com"
+          @keyup.enter="submitEmailVerify"
+          autofocus
+          style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid var(--reunion-frog-green);background:#1a1a1a;color:white;font-size:1rem;margin-bottom:0.75rem;-webkit-text-fill-color:white;"
+        />
+      </div>
+      <button @click="submitEmailVerify">Continue</button>
+      <button @click="cancelEmailVerify" style="background:transparent;color:white;border-color:white;margin-top:0.5rem;">Cancel</button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -1029,6 +1052,24 @@ export default {
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
     const pendingMealPurchases = ref([])
     const activePoster = ref(null)
+
+    // Email verification modal (replaces browser prompt())
+    const showEmailVerifyModal = ref(false)
+    const emailVerifyInput = ref('')
+    let _emailVerifyResolve = null
+    const promptEmail = () => new Promise((resolve) => {
+      emailVerifyInput.value = ''
+      _emailVerifyResolve = resolve
+      showEmailVerifyModal.value = true
+    })
+    const submitEmailVerify = () => {
+      showEmailVerifyModal.value = false
+      _emailVerifyResolve?.(emailVerifyInput.value.trim())
+    }
+    const cancelEmailVerify = () => {
+      showEmailVerifyModal.value = false
+      _emailVerifyResolve?.(null)
+    }
 
       // Efficient team manual links map
       const teamManuals = {
@@ -1269,9 +1310,7 @@ export default {
         const isAdmin = !!festivall_auth.currentUser
         const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
         if (!isAdmin && !storedAuth) {
-          const email = prompt(
-            'For security, please enter the email address associated with this ticket here:'
-          )
+          const email = await promptEmail()
           if (!email) {
             router.push({ name: 'EnterIDCode' })
             return
@@ -1605,6 +1644,10 @@ export default {
       poster2026,
       poster2025,
       poster2024,
+      showEmailVerifyModal,
+      emailVerifyInput,
+      submitEmailVerify,
+      cancelEmailVerify,
     }
   }
 }

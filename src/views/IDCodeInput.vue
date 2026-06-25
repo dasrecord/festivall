@@ -12,6 +12,28 @@
     </form>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
+
+  <!-- Email Verification Modal -->
+  <div v-if="showEmailVerifyModal" class="ev-modal" @click.self="cancelEmailVerify">
+    <div class="ev-modal-content" @click.stop>
+      <button class="ev-close" @click="cancelEmailVerify">✕</button>
+      <h2 style="color:var(--reunion-frog-green);margin:0 0 0.5rem;">🔐 Verify Your Identity</h2>
+      <p style="color:#ccc;margin:0 0 1.25rem;font-size:0.95rem;">Enter the email address associated with this ticket.</p>
+      <div style="width:100%;text-align:left;">
+        <label style="color:white;font-size:0.9rem;display:block;margin-bottom:4px;">Email Address:</label>
+        <input
+          type="email"
+          v-model="emailVerifyInput"
+          placeholder="you@example.com"
+          @keyup.enter="submitEmailVerify"
+          autofocus
+          class="ev-input"
+        />
+      </div>
+      <button class="ev-btn" @click="submitEmailVerify">Continue</button>
+      <button class="ev-btn ev-btn-cancel" @click="cancelEmailVerify">Cancel</button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -31,6 +53,23 @@ export default {
     const router = useRouter()
     const route = useRoute()
 
+    const showEmailVerifyModal = ref(false)
+    const emailVerifyInput = ref('')
+    let _emailVerifyResolve = null
+    const promptEmail = () => new Promise((resolve) => {
+      emailVerifyInput.value = ''
+      _emailVerifyResolve = resolve
+      showEmailVerifyModal.value = true
+    })
+    const submitEmailVerify = () => {
+      showEmailVerifyModal.value = false
+      _emailVerifyResolve?.(emailVerifyInput.value.trim())
+    }
+    const cancelEmailVerify = () => {
+      showEmailVerifyModal.value = false
+      _emailVerifyResolve?.(null)
+    }
+
     const checkIdCode = async () => {
       try {
         // Convert to lowercase since UUIDs are stored in lowercase
@@ -47,7 +86,7 @@ export default {
           const participantData = querySnapshot.docs[0].data()
           const participantEmail = (participantData.contact?.email || '').toLowerCase().trim()
 
-          const enteredEmail = prompt('For security, please enter the email address associated with this ticket here:')
+          const enteredEmail = await promptEmail()
           if (enteredEmail === null) return // user cancelled
 
           if (enteredEmail.toLowerCase().trim() !== participantEmail) {
@@ -87,7 +126,11 @@ export default {
       frog_image,
       idCode,
       errorMessage,
-      checkIdCode
+      checkIdCode,
+      showEmailVerifyModal,
+      emailVerifyInput,
+      submitEmailVerify,
+      cancelEmailVerify,
     }
   }
 }
@@ -141,5 +184,74 @@ button:hover {
 .error {
   color: red;
   margin-top: 1rem;
+}
+
+/* Email verification modal */
+.ev-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+.ev-modal-content {
+  background: #111;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem 1.25rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.ev-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.ev-input {
+  width: 100%;
+  max-width: 100% !important;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--reunion-frog-green);
+  background: #1a1a1a;
+  color: white;
+  -webkit-text-fill-color: white;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+.ev-btn {
+  width: 80%;
+  max-width: 220px;
+  padding: 0.65rem 1.5rem;
+  background: var(--reunion-frog-green);
+  color: white;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.ev-btn-cancel {
+  background: transparent;
+  color: white;
+  border-color: white;
+  margin-top: 0.4rem;
 }
 </style>
