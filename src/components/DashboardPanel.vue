@@ -140,14 +140,19 @@
           Inventory
         </RouterLink>
 
+        <RouterLink to="/reunionreceipttracker" class="scanner-link">
+          <img :src="receipt_icon" alt="Receipt Tracker" class="action-icon" style="width: 30px" />
+          Receipt Tracker
+        </RouterLink>
+
         <RouterLink to="/reunionmap" class="scanner-link">
           <img :src="map_icon" alt="Grounds Map" class="action-icon" style="width: 32px" />
           Grounds Map
         </RouterLink>
 
-        <RouterLink to="/reunionreceipttracker" class="scanner-link">
-          <img :src="receipt_icon" alt="Receipt Tracker" class="action-icon" style="width: 30px" />
-          Receipt Tracker
+        <RouterLink to="/reuniongenremap" class="scanner-link">
+          <img :src="genre_map_icon" alt="Genre Map" class="action-icon" style="width: 32px" />
+          Genre Map
         </RouterLink>
       </div>
     </div>
@@ -803,6 +808,7 @@ import task_icon from '@/assets/images/icons/task.png'
 import budget_icon from '@/assets/images/icons/budget.png'
 import inventory_icon from '@/assets/images/icons/inventory.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
+import genre_map_icon from '@/assets/images/icons/genre_map.png'
 import receipt_icon from '@/assets/images/icons/receipt.png'
 
 export default {
@@ -2261,6 +2267,7 @@ export default {
       budget_icon,
       inventory_icon,
       map_icon,
+      genre_map_icon,
       receipt_icon,
       sendEmail,
       compensation_icon,
