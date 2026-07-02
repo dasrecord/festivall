@@ -18,7 +18,6 @@ export const GENRE_COLORS = {
   trance:   '#B388FF',
   dubstep:  '#7A8CFF',
   ambient:  '#7CF8D5',
-  other:    '#6F7D8C',
 }
 
 export const PILLARS = [

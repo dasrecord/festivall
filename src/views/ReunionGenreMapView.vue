@@ -45,8 +45,6 @@
         >Artists</button>
       </div>
 
-      <button class="gm-intro-open" title="Open intro slides" @click="openIntroModal">Intro</button>
-
       <!-- Action buttons -->
       <div class="gm-actions">
         <button class="gm-icon-btn gm-help-btn" title="How this map works" @click="openIntroModal">?</button>
@@ -94,12 +92,8 @@
         <span class="gm-dot" :style="{ background: p.color }"></span>
         <span>{{ p.label }}</span>
       </div>
-      <div class="gm-legend-row">
-        <span class="gm-dot" style="background:#636E72"></span>
-        <span>Other</span>
-      </div>
       <div class="gm-legend-tiers">
-        <span class="gm-tier"><span class="gm-tier-dot gm-td-pillar"></span> Family</span>
+        <span class="gm-tier"><span class="gm-tier-dot gm-td-pillar"></span> Genre</span>
         <span class="gm-tier"><span class="gm-tier-dot gm-td-sub"></span> Subgenre</span>
         <span class="gm-tier"><span class="gm-tier-dot gm-td-artist"></span> Artist</span>
       </div>
@@ -840,27 +834,6 @@ onUnmounted(() => {
   border-color: rgba(130, 220, 255, 0.85);
 }
 
-.gm-intro-open {
-  padding: 0.2rem 0.62rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  border-radius: 999px;
-  border: 1px solid rgba(130, 220, 255, 0.82);
-  background: linear-gradient(135deg, rgba(97, 213, 255, 0.28), rgba(88, 255, 235, 0.24));
-  color: #dcf4ff;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.gm-intro-open:hover {
-  background: linear-gradient(135deg, rgba(97, 213, 255, 0.4), rgba(88, 255, 235, 0.34));
-}
-
 /* Action buttons */
 .gm-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
 .gm-icon-btn {
@@ -1401,15 +1374,14 @@ onUnmounted(() => {
   /* Row 1 */
   .gm-title         { display: none; }
   .gm-back          { grid-column: 1; grid-row: 1; }
-  .gm-search-wrap   { grid-column: 2; grid-row: 1; max-width: none; }
-  .gm-intro-open    { grid-column: 3; grid-row: 1; justify-self: end; margin-top: 0; }
+  .gm-search-wrap   { grid-column: 2 / 4; grid-row: 1; max-width: none; }
   .gm-actions       { grid-column: 4; grid-row: 1; }
   /* Row 2 */
   .gm-days          { grid-column: 1 / 4; grid-row: 2; flex-wrap: nowrap; overflow-x: auto; }
   .gm-label-toggles { grid-column: 4;     grid-row: 2; display: flex; justify-self: end; }
 
   .gm-actions { gap: 0.18rem; }
-  .gm-help-btn { display: none; }
+  .gm-help-btn { display: inline-flex; }
 
   .gm-legend  { display: none; }
   /* Physics: move to top-right on mobile so focus panel can't cover it */
@@ -1467,12 +1439,6 @@ onUnmounted(() => {
     width: 30px;
     height: 30px;
     font-size: 0.85rem;
-  }
-
-  .gm-intro-open {
-    padding: 0 0.55rem;
-    height: 30px;
-    font-size: 0.68rem;
   }
 
   .gm-panel {
