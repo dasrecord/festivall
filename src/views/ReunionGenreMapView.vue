@@ -184,9 +184,14 @@
           <p class="gm-panel-eyebrow">Artist</p>
           <h2 class="gm-panel-name">{{ focusedNode.label }}</h2>
           <p v-if="focusedNode.artist?.act_type" class="gm-panel-meta">{{ focusedNode.artist.act_type }}</p>
-          <div v-if="focusedNode.artist?.genre" class="gm-panel-tag" :style="{ borderColor: focusedNode.color, color: focusedNode.color }">
+          <button
+            v-if="focusedNode.artist?.genre"
+            class="gm-panel-tag gm-panel-tag-btn"
+            :style="{ borderColor: focusedNode.color, color: focusedNode.color }"
+            @click="focusArtistGenre(focusedNode.artist.genre)"
+          >
             {{ focusedNode.artist.genre }}
-          </div>
+          </button>
           <p v-if="focusedNode.artist?.act_description" class="gm-panel-bio">
             {{ truncate(focusedNode.artist.act_description, 240) }}
           </p>
@@ -215,8 +220,16 @@
             <div class="gm-panel-conn-title">Connected Genres</div>
             <div v-for="conn in pillarConnections(focusedNode.id)" :key="conn.otherId" class="gm-panel-conn-row">
               <span class="gm-panel-conn-dot" :style="{ background: conn.color }"></span>
-              <span class="gm-panel-conn-name">{{ conn.label }}</span>
+              <button class="gm-panel-conn-link" @click="focusNodeById(conn.otherId)">{{ conn.label }}</button>
               <span class="gm-panel-conn-dna">{{ conn.dna }}</span>
+            </div>
+          </div>
+          <div v-if="focusedPillarArtists.length" class="gm-panel-connections">
+            <div class="gm-panel-conn-title">Connected Artists ({{ focusedPillarArtists.length }})</div>
+            <div v-for="artistNode in focusedPillarArtists" :key="artistNode.id" class="gm-panel-conn-row">
+              <span class="gm-panel-conn-dot" :style="{ background: artistNode.color || '#7adfff' }"></span>
+              <button class="gm-panel-conn-link" @click="focusNodeById(artistNode.id)">{{ artistNode.label }}</button>
+              <span v-if="artistNode.artist?.act_type" class="gm-panel-conn-dna">{{ artistNode.artist.act_type }}</span>
             </div>
           </div>
         </template>
@@ -227,12 +240,23 @@
           <h2 class="gm-panel-name" :style="{ color: focusedNode.color }">{{ focusedNode.label }}</h2>
           <div v-if="focusedNode.pillar" class="gm-panel-origin">
             <span class="gm-panel-conn-dot" :style="{ background: focusedNode.color }"></span>
-            Part of {{ PILLAR_MAP[focusedNode.pillar]?.label || focusedNode.pillar }}
+            <span>Part of</span>
+            <button class="gm-panel-conn-link" @click="focusNodeById(focusedNode.pillar)">
+              {{ PILLAR_MAP[focusedNode.pillar]?.label || focusedNode.pillar }}
+            </button>
           </div>
           <div class="gm-panel-bpm" v-if="focusedNode.bpm">
             <span class="gm-panel-bpm-label">BPM</span> {{ focusedNode.bpm }}
           </div>
           <p v-if="focusedNode.description" class="gm-panel-bio">{{ focusedNode.description }}</p>
+          <div v-if="focusedSubgenreArtists.length" class="gm-panel-connections">
+            <div class="gm-panel-conn-title">Connected Artists ({{ focusedSubgenreArtists.length }})</div>
+            <div v-for="artistNode in focusedSubgenreArtists" :key="artistNode.id" class="gm-panel-conn-row">
+              <span class="gm-panel-conn-dot" :style="{ background: artistNode.color || '#7adfff' }"></span>
+              <button class="gm-panel-conn-link" @click="focusNodeById(artistNode.id)">{{ artistNode.label }}</button>
+              <span v-if="artistNode.artist?.act_type" class="gm-panel-conn-dna">{{ artistNode.artist.act_type }}</span>
+            </div>
+          </div>
         </template>
       </div>
     </Transition>
@@ -283,7 +307,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useReunionGenreGraphData } from '@/composables/useReunionGenreGraphData'
 import { useReunionGenreGraph3D }    from '@/composables/useReunionGenreGraph3D'
-import { PILLARS, PILLAR_MAP, PILLAR_BRIDGES } from '@/config/reunionGenreTaxonomy'
+import { PILLARS, PILLAR_MAP, PILLAR_BRIDGES, resolveGenreToNodeId } from '@/config/reunionGenreTaxonomy'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const route = useRoute()
@@ -397,6 +421,50 @@ const pillarConnections = (pillarId) => {
       return { otherId, label: other?.label || otherId, color: other?.color || '#888', dna: b.dna }
     })
 }
+
+const readNodeId = (nodeRef) => (typeof nodeRef === 'object' && nodeRef !== null ? nodeRef.id : nodeRef)
+
+const linkedArtistsForTargets = (targetIds) => {
+  const targets = new Set(targetIds)
+  const artistIds = new Set()
+
+  graphData.value.links.forEach(link => {
+    const src = readNodeId(link.source)
+    const dst = readNodeId(link.target)
+    if (targets.has(dst) && typeof src === 'string' && src.startsWith('artist_')) artistIds.add(src)
+    if (targets.has(src) && typeof dst === 'string' && dst.startsWith('artist_')) artistIds.add(dst)
+  })
+
+  const byId = new Map(graphData.value.nodes.map(n => [n.id, n]))
+  return [...artistIds]
+    .map(id => byId.get(id))
+    .filter(Boolean)
+    .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+}
+
+const linkedArtistsForPillar = (pillarId) => {
+  const subgenreIds = graphData.value.nodes
+    .filter(n => n.tier === 'subgenre' && n.pillar === pillarId)
+    .map(n => n.id)
+  return linkedArtistsForTargets([pillarId, ...subgenreIds])
+}
+
+const linkedArtistsForSubgenre = (subgenreId) => linkedArtistsForTargets([subgenreId])
+
+const focusArtistGenre = (genreLabel) => {
+  const targetId = resolveGenreToNodeId(genreLabel)
+  if (targetId) focusNodeById(targetId)
+}
+
+const focusedPillarArtists = computed(() => {
+  if (focusedNode.value?.tier !== 'pillar') return []
+  return linkedArtistsForPillar(focusedNode.value.id)
+})
+
+const focusedSubgenreArtists = computed(() => {
+  if (focusedNode.value?.tier !== 'subgenre') return []
+  return linkedArtistsForSubgenre(focusedNode.value.id)
+})
 
 const selectResult = (node) => {
   searchQuery.value   = ''
@@ -1071,6 +1139,14 @@ onUnmounted(() => {
   border: 1px solid;
   margin-bottom: 0.5rem;
 }
+.gm-panel-tag-btn {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.gm-panel-tag-btn:hover {
+  background: rgba(97, 213, 255, 0.12);
+}
 .gm-panel-bio {
   font-size: 0.76rem;
   color: #ccc;
@@ -1145,6 +1221,19 @@ onUnmounted(() => {
 }
 .gm-panel-conn-name { color: #ccc; font-weight: 500; flex-shrink: 0; }
 .gm-panel-conn-dna  { color: #555; font-size: 0.62rem; font-style: italic; }
+.gm-panel-conn-link {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: #d7ecff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+.gm-panel-conn-link:hover { color: #9fdaff; }
 .gm-panel-links { display: flex; gap: 0.45rem; flex-wrap: wrap; }
 .gm-panel-link {
   font-size: 0.72rem;
