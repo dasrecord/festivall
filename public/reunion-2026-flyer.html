@@ -799,7 +799,7 @@
         <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=https%3A%2F%2Ffestivall.ca%2Freuniontickets" alt="QR code to buy tickets" />
       </div>
       <p class="cta-line">Scan to Buy</p>
-      <div class="url" id="qrUrlLabel">festivall.ca/<br/>reuniontickets</div>
+      <div class="url" id="qrUrlLabel">festivall.ca/reuniontickets</div>
     </div>
 
   </div>
@@ -842,7 +842,6 @@
   <div class="back-content">
     <div class="back-label">Poster Location</div>
     <div class="back-location" id="backLocation">—</div>
-    <div class="back-date">September 4–7, 2026</div>
     <div class="back-footer">
     </div>
     <div class="back-emblems">
@@ -941,9 +940,8 @@
       'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' +
       encodeURIComponent(fullUrl);
 
-    // Update printed URL label (keep it short)
-    const shortPath = ref ? 'festivall.ca/reuniontickets/' + ref : 'festivall.ca/reuniontickets';
-    document.getElementById('qrUrlLabel').innerHTML = shortPath.replace('festivall.ca/', 'festivall.ca/<br/>');
+    // Update printed URL label (simple path without parameters)
+    document.getElementById('qrUrlLabel').innerHTML = 'festivall.ca/reuniontickets';
 
     // Update generator URL display
     document.getElementById('genUrlDisplay').innerHTML =
@@ -1144,8 +1142,7 @@
           'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=' +
           encodeURIComponent(fullUrl);
         
-        const shortPath = batchRef ? 'festivall.ca/reuniontickets/' + batchRef : 'festivall.ca/reuniontickets';
-        frontClone.querySelector('#qrUrlLabel').innerHTML = shortPath.replace('festivall.ca/', 'festivall.ca/<br/>');
+        frontClone.querySelector('#qrUrlLabel').innerHTML = 'festivall.ca/reuniontickets';
         
         // Clone back page
         const backClone = originalBack.cloneNode(true);
