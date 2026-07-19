@@ -4,6 +4,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 import PosterSplash from './components/PosterSplash.vue'
+import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
@@ -42,8 +43,8 @@ watch(
       const shown = parseInt(sessionStorage.getItem(BITCOIN_BLOCK_PARTY_STORAGE_KEY) || '0')
       posterSrc.value = bitcoinBlockPartyPoster
       posterHint.value = ''
-      posterHintTitle.value = 'Bitcoin Block Party 2026'
-      posterHintBody.value = 'Tap the poster to enter. Pinch or scroll to zoom.'
+      posterHintTitle.value = BBP.splash?.title || `${BBP.name} ${BBP.year}`
+      posterHintBody.value = BBP.splash?.hintBody || 'Tap the poster to enter. Pinch or scroll to zoom.'
       showBitcoinBlockPartyInfo.value = true
       activePosterStorageKey.value = BITCOIN_BLOCK_PARTY_STORAGE_KEY
       showPoster.value = shown < 3

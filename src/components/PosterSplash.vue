@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 
 const props = withDefaults(defineProps<{
   src: string
@@ -39,6 +40,43 @@ const zoomStyle = computed(() => ({
   transformOrigin: '0 0',
   cursor: isDragging.value ? 'grabbing' : mapScale.value > 1 ? 'grab' : 'default',
 }))
+
+function findItinerary(label: string) {
+  return BBP.itinerary.find((item) => item.label.toLowerCase().includes(label.toLowerCase()))
+}
+
+const speakerTimeRange = computed(() => {
+  const speaker = findItinerary('speakers')
+  const secondFilm = BBP.screenings?.[1]
+  if (!speaker?.time) return 'TBA'
+  if (!secondFilm?.time) return speaker.time
+
+  const end = secondFilm.time.split('-')[0]?.trim()
+  return end ? `${speaker.time} - ${end}` : speaker.time
+})
+
+const djTimeRange = computed(() => {
+  const dj = findItinerary('djs')
+  const close = findItinerary('doors close')
+  if (!dj?.time) return 'TBA'
+  if (!close?.time) return dj.time
+  return `${dj.time} - ${close.time}`
+})
+
+const bbpSplashRows = computed(() => {
+  const firstFilm = BBP.screenings?.[0]
+  const secondFilm = BBP.screenings?.[1]
+
+  return [
+    { time: findItinerary('doors open')?.time || 'TBA', label: 'Doors Open' },
+    { time: firstFilm?.time || findItinerary('film screening')?.time || 'TBA', label: firstFilm?.title ? `Film: ${firstFilm.title}` : 'Film Screening' },
+    { time: speakerTimeRange.value, label: 'Speakers' },
+    { time: secondFilm?.time || 'TBA', label: secondFilm?.title ? `Film: ${secondFilm.title}` : 'Film Screening' },
+    { time: findItinerary('dinner')?.time || 'TBA', label: 'Dinner' },
+    { time: findItinerary('acknowledgements')?.time || '~6:00 PM', label: 'Prizes + Sponsor Thank-You' },
+    { time: djTimeRange.value, label: 'DJs & Mixer' },
+  ]
+})
 
 function clampTranslate(tx: number, ty: number, s: number) {
   if (!posterContainer.value) return { tx, ty }
@@ -207,21 +245,17 @@ onBeforeUnmount(() => {
             <!-- Fallback if fetch fails -->
             <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
             <div v-if="props.showBitcoinBlockPartyInfo" class="bbp-splash-info">
-              <p class="bbp-splash-eyebrow">Vancouver, BC · Free Admission</p>
-              <p class="bbp-splash-date">Sunday, August 23, 2026</p>
-              <p class="bbp-splash-venue">Dunsmuir Plaza · 12:00 PM - 8:00 PM</p>
+              <p class="bbp-splash-eyebrow">{{ BBP.splash?.eyebrow || `${BBP.city} · Free Admission` }}</p>
+              <p class="bbp-splash-date">{{ BBP.date }}</p>
+              <p class="bbp-splash-venue">{{ BBP.venue }} · {{ BBP.startTime }} - {{ BBP.endTime }}</p>
               <div class="bbp-splash-divider"></div>
               <p class="bbp-splash-schedule-title">Day Schedule</p>
               <div class="bbp-splash-schedule">
-                <div><span>12:00 PM</span><span>Doors Open</span></div>
-                <div><span>2:00 - 3:00 PM</span><span>Film Screening</span></div>
-                <div><span>3:00 - 4:00 PM</span><span>Speakers</span></div>
-                <div><span>4:00 - 5:00 PM</span><span>Film: What is the Problem</span></div>
-                <div><span>5:00 - 6:00 PM</span><span>Dinner</span></div>
-                <div><span>~6:00 PM</span><span>Prizes + Sponsor Thank-You</span></div>
-                <div><span>6:00 - 8:00 PM</span><span>DJs & Mixer</span></div>
+                <div v-for="(row, idx) in bbpSplashRows" :key="`bbp-splash-${idx}`">
+                  <span>{{ row.time }}</span><span>{{ row.label }}</span>
+                </div>
               </div>
-              <p class="bbp-splash-url">festivall.ca/bitcoinblockparty</p>
+              <p class="bbp-splash-url">{{ BBP.splash?.ctaUrlLabel || 'festivall.ca/bitcoinblockparty' }}</p>
             </div>
           </div>
         </div>

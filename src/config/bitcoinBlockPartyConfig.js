@@ -13,6 +13,14 @@ export const BITCOIN_BLOCK_PARTY = {
   city: 'Vancouver, BC',
   contactEmail: 'party@vanbitcoin.ca',
 
+  // ── Splash poster metadata ───────────────────────────────────────────────
+  splash: {
+    title: 'Bitcoin Block Party 2026',
+    hintBody: 'Tap the poster to enter. Pinch or scroll to zoom.',
+    eyebrow: 'Vancouver, BC · Free Admission',
+    ctaUrlLabel: 'festivall.ca/bitcoinblockparty',
+  },
+
   // ── Admins ────────────────────────────────────────────────────────────────
   admins: [
     { name: 'Leo Weese',    bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
@@ -20,6 +28,7 @@ export const BITCOIN_BLOCK_PARTY = {
     { name: 'Jennifer Zee',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Roger Huang',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Prasenjit Das', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
   ],
 
   // ── Itinerary ─────────────────────────────────────────────────────────────
@@ -60,18 +69,6 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Archive / previous years ─────────────────────────────────────────────
   archive: [
     {
-      year: 2025,
-      title: 'Bitcoin Block Party 2025',
-      venue: 'The Beaumont Studios, Vancouver, BC',
-      summary: 'Community meetup format with live music, speaker sessions, and Bitcoin-first vendors.',
-      performers: [
-        { name: 'Das Record', role: 'DJ Set', note: 'Ambient Instrumental' },
-      ],
-      speakers: [
-        { name: 'Vancouver Bitcoin Organizers', topic: 'Local Bitcoin adoption' },
-      ],
-    },
-    {
       year: 2024,
       title: 'Bitcoin Block Party 2024',
       venue: 'The Beaumont Studios, Vancouver, BC',
@@ -82,6 +79,24 @@ export const BITCOIN_BLOCK_PARTY = {
       ],
       speakers: [
         { name: 'Local Bitcoin Builders', topic: 'Self-custody and payments' },
+      ],
+    },
+    {
+      year: 2023,
+      title: 'Bitcoin Block Party 2023',
+      venue: 'The Beaumont Studios, Vancouver, BC',
+      summary: 'Community meetup format with live music, speaker sessions, and Bitcoin-first vendors.',
+      performers: [
+        { name: 'Paulina Gemini', role: 'DJ Set', note: 'House' },
+        { name: 'STAR x DUST', role: 'DJ Set', note: 'House' },
+        { name: 'Kris Jones', role: 'DJ Set', note: 'House' },
+      ],
+      speakers: [
+        { name: 'Will', topic: 'NOSTR' },
+        { name: 'Seb', topic: 'Looking Glass Education' },
+        { name: 'Kent Draper', topic: 'CCO, Iris Energy' },
+        { name: 'Colin', topic: 'MintGreen' },
+        { name: 'Scott Dedels', topic: 'BlockRewards' },
       ],
     },
   ],
