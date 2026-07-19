@@ -225,7 +225,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div class="poster-hint">
+        <div class="poster-hint" :class="{ 'poster-hint--bbp': props.showBitcoinBlockPartyInfo }">
           <span class="countdown">{{ secondsLeft }}</span>
           <span class="poster-hint-copy">
             <strong v-if="props.hintTitle">{{ props.hintTitle }}</strong>
@@ -381,18 +381,26 @@ onBeforeUnmount(() => {
 
 .poster-hint {
   position: fixed;
-  bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.9rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   pointer-events: none;
+  background: rgba(0, 0, 0, 1);
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  white-space: nowrap;
+}
+.poster-hint--bbp {
+  bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+  align-items: flex-start;
   background: rgba(0, 0, 0, 0.92);
   border: 1px solid rgba(255,255,255,0.18);
   padding: 0.75rem 1rem;
@@ -403,10 +411,14 @@ onBeforeUnmount(() => {
 }
 
 .poster-hint-copy {
+  display: inline;
+  min-width: 0;
+  line-height: inherit;
+}
+.poster-hint--bbp .poster-hint-copy {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  min-width: 0;
   line-height: 1.35;
 }
 .poster-hint-copy strong {

@@ -55,7 +55,7 @@ export const BITCOIN_BLOCK_PARTY = {
   dj: {
     name: 'MoriMori',
     shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
-    url: null,
+    url: 'https://www.instagram.com/morimoribeats/'
   },
 
   // ── Sponsor tiers (from pitch deck) ───────────────────────────────────────
@@ -118,6 +118,38 @@ export const BITCOIN_BLOCK_PARTY = {
       displayName: 'Zeus',
       shortDescription: 'SATOSHI presenting sponsor. Bitcoin payments infrastructure.',
       url: 'https://zeusln.com',
+      status: 'confirmed',
+    },
+    {
+      id: 'funk',
+      tier: 'whale',
+      displayName: 'FUNK',
+      shortDescription: 'Whale sponsor. Coffee bar and event host.',
+      url: 'https://funk.coffee/',
+      status: 'confirmed',
+    },
+    {
+      id: 'coincards',
+      tier: 'bull',
+      displayName: 'Coincards',
+      shortDescription: 'Bull sponsor. Bitcoin gift cards and payments.',
+      url: 'https://coincards.com/',
+      status: 'confirmed',
+    },
+    {
+      id: 'printprint',
+      tier: 'bull',
+      displayName: 'PrintPrint',
+      shortDescription: 'Bull sponsor. Local print production and creative services.',
+      url: 'https://printprint.ca/',
+      status: 'confirmed',
+    },
+    {
+      id: 'block_rewards',
+      tier: 'bull',
+      displayName: 'Block Rewards',
+      shortDescription: 'Bull sponsor. Bitcoin rewards and education.',
+      url: 'https://blockrewards.ca/',
       status: 'confirmed',
     },
     // Add more sponsors here as confirmed

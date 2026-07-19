@@ -38,12 +38,22 @@
         <div class="bbpmap-modal">
           <button class="bbpmap-modal-close" @click="closeZoneModal">✕</button>
 
-          <!-- Tier badge -->
-          <span v-if="activeZone.tier && activeZone.tier !== 'info'" class="bbpmap-modal-tier">
-            {{ activeZone.tier }}
-          </span>
+          <div class="bbpmap-modal-heading">
+            <img
+              v-if="activeZoneIcon"
+              :src="activeZoneIcon"
+              :alt="`${activeZone.displayName} icon`"
+              class="bbpmap-modal-icon"
+            />
+            <div>
+              <!-- Tier badge -->
+              <span v-if="activeZone.tier && activeZone.tier !== 'info'" class="bbpmap-modal-tier">
+                {{ tierLabel(activeZone.tier) }}
+              </span>
 
-          <h2 class="bbpmap-modal-title">{{ activeZone.displayName }}</h2>
+              <h2 class="bbpmap-modal-title">{{ activeZone.displayName }}</h2>
+            </div>
+          </div>
           <p class="bbpmap-modal-desc">{{ activeZone.shortDescription }}</p>
 
           <!-- type: admin — team bios + contact -->
@@ -121,6 +131,15 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import mapSvgUrl from '@/assets/images/bitcoin_block_party/bitcoin_blockparty_map_bg.svg?url'
+import barIcon from '@/assets/images/icons/bar.png'
+import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
+import bullIcon from '@/assets/images/icons/bull.png'
+import djIcon from '@/assets/images/icons/dj.png'
+import foodIcon from '@/assets/images/icons/food.png'
+import frontGateIcon from '@/assets/images/icons/front_gate.png'
+import projectorIcon from '@/assets/images/icons/projector.png'
+import vendorIcon from '@/assets/images/icons/vendor.png'
+import whaleIcon from '@/assets/images/icons/whale.png'
 
 useHead({
   title: `Venue Map — Bitcoin Block Party ${BBP.year}`,
@@ -131,6 +150,22 @@ useHead({
 const inlineSvgContent = ref('')
 const mapContainer     = ref(null)
 const mapSvgContainer  = ref(null)
+
+const zoneIcons = {
+  admin: frontGateIcon,
+  bar: barIcon,
+  bull: bullIcon,
+  dj: djIcon,
+  food: foodIcon,
+  front_gate: frontGateIcon,
+  movie_screening: projectorIcon,
+  satoshi: bitcoinIcon,
+  screenings: projectorIcon,
+  sponsor: bitcoinIcon,
+  tba: bitcoinIcon,
+  vendor: vendorIcon,
+  whale: whaleIcon,
+}
 
 async function loadSvg() {
   try {
@@ -154,6 +189,26 @@ const KNOWN_ZONE_IDS = new Set([
   ...Array.from({ length: 3 }, (_v, i) => `whale_${i}`),
 ])
 
+const whaleSponsors = BBP.sponsors.filter(s => s.status === 'confirmed' && s.tier === 'whale')
+const bullSponsors = BBP.sponsors.filter(s => s.status === 'confirmed' && (s.tier === 'bull' || s.tier === 'tba'))
+
+function sponsorZoneData(sponsor) {
+  return {
+    type: 'sponsor',
+    tier: sponsor.tier,
+    icon: sponsor.tier,
+    displayName: sponsor.displayName,
+    shortDescription: sponsor.shortDescription || '',
+    url: sponsor.url || null,
+  }
+}
+
+function tierLabel(tierId) {
+  if (tierId === 'tba') return 'Tier TBA'
+  const tier = BBP.sponsorTiers.find(t => t.id === tierId)
+  return tier ? tier.name : tierId
+}
+
 function zoneDataForId(id) {
   // Strip 'map_zone_' prefix if present
   const key = id.replace(/^map_zone_/, '')
@@ -170,6 +225,7 @@ function zoneDataForId(id) {
       return {
         type: 'vendor',
         tier: vendor.tier,
+        icon: 'vendor',
         displayName: vendor.displayName,
         shortDescription: vendor.shortDescription || '',
         url: vendor.url || null,
@@ -178,6 +234,7 @@ function zoneDataForId(id) {
     return {
       type: 'info',
       tier: 'vendor',
+      icon: 'vendor',
       displayName: `Vendor Booth ${parseInt(vendorMatch[1]) + 1}`,
       shortDescription: 'Available vendor booth. All vendors at the event accept Bitcoin.',
       url: null,
@@ -187,19 +244,12 @@ function zoneDataForId(id) {
   // Sponsor bull slots (bull_0..bull_4) → look up in BBP.sponsors
   const bullMatch = key.match(/^bull_(\d+)$/)
   if (bullMatch) {
-    const sponsor = BBP.sponsors[parseInt(bullMatch[1])]
-    if (sponsor) {
-      return {
-        type: 'sponsor',
-        tier: sponsor.tier,
-        displayName: sponsor.displayName,
-        shortDescription: sponsor.shortDescription || '',
-        url: sponsor.url || null,
-      }
-    }
+    const sponsor = bullSponsors[parseInt(bullMatch[1])]
+    if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
       tier: 'sponsor',
+      icon: 'bull',
       displayName: `Sponsor Zone ${parseInt(bullMatch[1]) + 1}`,
       shortDescription: 'Reserved sponsor activation area.',
       url: null,
@@ -209,9 +259,12 @@ function zoneDataForId(id) {
   // Whale slots (whale_0..whale_2) — reserved for future use
   const whaleMatch = key.match(/^whale_(\d+)$/)
   if (whaleMatch) {
+    const sponsor = whaleSponsors[parseInt(whaleMatch[1])]
+    if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
       tier: 'sponsor',
+      icon: 'whale',
       displayName: `Whale Sponsor Zone ${parseInt(whaleMatch[1]) + 1}`,
       shortDescription: 'Reserved premium sponsor activation area.',
       url: null,
@@ -240,6 +293,14 @@ function setupZoneListeners() {
 
 // ── Active zone modal ─────────────────────────────────────────────────────────
 const activeZone = ref(null)
+
+const activeZoneIcon = computed(() => {
+  if (!activeZone.value) return null
+  return zoneIcons[activeZone.value.icon]
+    || zoneIcons[activeZone.value.tier]
+    || zoneIcons[activeZone.value.type]
+    || null
+})
 
 function handleZoneClick(id) {
   const data = zoneDataForId(id)
@@ -532,6 +593,23 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.bbpmap-modal-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-right: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.bbpmap-modal-icon {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  padding: 0.35rem;
+  border-radius: 12px;
+  background: var(--bbp-teal);
+  border: 1px solid rgba(7,94,114,0.42);
 }
 .bbpmap-modal-tier {
   display: inline-block;
