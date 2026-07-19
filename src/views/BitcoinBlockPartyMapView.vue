@@ -508,17 +508,17 @@ onBeforeUnmount(() => {
   z-index: 10;
 }
 .bbpmap-nav-back {
-  color: var(--bbp-tan);
+  color: var(--bbp-teal);
   text-decoration: none;
   font-size: 0.85rem;
   white-space: nowrap;
   transition: color 0.1s;
 }
-.bbpmap-nav-back:hover { color: var(--bbp-cream); }
+.bbpmap-nav-back:hover { color: var(--bbp-orange); }
 .bbpmap-nav-title {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--bbp-cream);
+  color: var(--bbp-teal);
 }
 .bbpmap-zoom-btns {
   display: flex;
@@ -526,8 +526,8 @@ onBeforeUnmount(() => {
 }
 .bbpmap-zoom-btns button {
   background: rgba(255,255,255,0.08);
-  color: var(--bbp-cream);
-  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--bbp-teal);
+  border: 1px solid rgba(7,94,114,0.35);
   border-radius: 4px;
   width: 32px;
   height: 32px;
@@ -536,7 +536,7 @@ onBeforeUnmount(() => {
   line-height: 1;
   transition: background 0.1s;
 }
-.bbpmap-zoom-btns button:hover { background: rgba(255,255,255,0.15); }
+.bbpmap-zoom-btns button:hover { background: rgba(7,94,114,0.14); }
 
 /* ── Map container ───────────────────────────────────────────────────────────── */
 .bbpmap-container {
