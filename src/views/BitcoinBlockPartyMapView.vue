@@ -147,19 +147,20 @@ async function loadSvg() {
 // Zones are identified by SVG element IDs that start with 'map_zone_'
 // or that match a known feature ID in BBP.mapZones.
 const KNOWN_ZONE_IDS = new Set([
-  'front_gate', 'presenting_area', 'movie_screening', 'dj',
+  'front_gate', 'presenting_area', 'presentation_area', 'movie_screening', 'dj',
   'food_truck_0', 'food_truck_1', 'bar',
-  // vendor_0..6 populated dynamically from sponsors/vendors
-  ...BBP.vendors.map((_v, i) => `vendor_${i}`),
-  ...BBP.sponsors.map((_s, i) => `bull_${i}`),
+  ...Array.from({ length: 7 }, (_v, i) => `vendor_${i}`),
+  ...Array.from({ length: 5 }, (_v, i) => `bull_${i}`),
+  ...Array.from({ length: 3 }, (_v, i) => `whale_${i}`),
 ])
 
 function zoneDataForId(id) {
   // Strip 'map_zone_' prefix if present
   const key = id.replace(/^map_zone_/, '')
+  const configKey = key === 'presentation_area' ? 'presenting_area' : key
 
   // Direct match in config mapZones
-  if (BBP.mapZones[key]) return BBP.mapZones[key]
+  if (BBP.mapZones[configKey]) return BBP.mapZones[configKey]
 
   // Vendor slots (vendor_0..vendor_6) → look up in BBP.vendors
   const vendorMatch = key.match(/^vendor_(\d+)$/)
@@ -174,7 +175,13 @@ function zoneDataForId(id) {
         url: vendor.url || null,
       }
     }
-    return { type: 'info', tier: 'vendor', displayName: 'Vendor', shortDescription: 'Bitcoin-accepted vendor.', url: null }
+    return {
+      type: 'info',
+      tier: 'vendor',
+      displayName: `Vendor Booth ${parseInt(vendorMatch[1]) + 1}`,
+      shortDescription: 'Available vendor booth. All vendors at the event accept Bitcoin.',
+      url: null,
+    }
   }
 
   // Sponsor bull slots (bull_0..bull_4) → look up in BBP.sponsors
@@ -190,13 +197,25 @@ function zoneDataForId(id) {
         url: sponsor.url || null,
       }
     }
-    return { type: 'info', tier: 'sponsor', displayName: 'Sponsor', shortDescription: '', url: null }
+    return {
+      type: 'info',
+      tier: 'sponsor',
+      displayName: `Sponsor Zone ${parseInt(bullMatch[1]) + 1}`,
+      shortDescription: 'Reserved sponsor activation area.',
+      url: null,
+    }
   }
 
   // Whale slots (whale_0..whale_2) — reserved for future use
   const whaleMatch = key.match(/^whale_(\d+)$/)
   if (whaleMatch) {
-    return { type: 'info', tier: 'info', displayName: 'Feature Zone', shortDescription: '', url: null }
+    return {
+      type: 'info',
+      tier: 'sponsor',
+      displayName: `Whale Sponsor Zone ${parseInt(whaleMatch[1]) + 1}`,
+      shortDescription: 'Reserved premium sponsor activation area.',
+      url: null,
+    }
   }
 
   return null
@@ -242,7 +261,7 @@ const cssVars = computed(() => ({
 }))
 
 // ── Pan & zoom ────────────────────────────────────────────────────────────────
-const MIN_SCALE = 0.5
+const MIN_SCALE = 1
 const MAX_SCALE = 8
 
 const mapScale      = ref(1)
@@ -452,6 +471,8 @@ onBeforeUnmount(() => {
   display: inline-block;
   width: 100%;
   height: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
 }
 .bbpmap-svg-wrapper :deep(svg) {
   display: block;

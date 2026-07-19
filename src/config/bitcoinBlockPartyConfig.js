@@ -15,22 +15,22 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Admins ────────────────────────────────────────────────────────────────
   admins: [
-    { name: 'Leo',    bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Kurtis', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Jenn',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Curtis', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Leo Weese',    bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Kurtis Warren', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Jennifer Zee',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Roger',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
   ],
 
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
     { time: '12:00 PM',         label: 'Doors Open' },
-    { time: '2:00 – 3:00 PM',   label: 'Film Screening',            note: 'Title TBA' },
-    { time: '3:00 – 4:00 PM',   label: 'Speakers' },
-    { time: '4:00 – 5:00 PM',   label: 'Film Screening',            note: '"What is the Problem"' },
-    { time: '5:00 – 6:00 PM',   label: 'Dinnerish' },
+    { time: '2:00 - 3:00 PM',   label: 'Film Screening',            note: 'Title TBA' },
+    { time: '3:00 - 4:00 PM',   label: 'Speakers' },
+    { time: '4:00 - 5:00 PM',   label: 'Film Screening',            note: '"What is the Problem"' },
+    { time: '5:00 - 6:00 PM',   label: 'Dinner' },
     { time: '~6:00 PM',         label: 'Prize Announcements + Sponsor Thank-You + FUNK' },
-    { time: '6:00 – 8:00 PM',   label: 'DJs & Mixer' },
+    { time: '6:00 - 8:00 PM',   label: 'DJs & Mixer' },
     { time: '8:00 PM',          label: 'Doors Close' },
   ],
 
@@ -38,13 +38,13 @@ export const BITCOIN_BLOCK_PARTY = {
   screenings: [
     {
       id: 'screening_1',
-      time: '2:00 – 3:00 PM',
+      time: '2:00 - 3:00 PM',
       title: 'TBA',
       description: 'Title to be announced. Stay tuned.',
     },
     {
       id: 'screening_2',
-      time: '4:00 – 5:00 PM',
+      time: '4:00 - 5:00 PM',
       title: 'What is the Problem',
       description:
         'A documentary exploring the fundamental problems with the current financial system and why Bitcoin is the solution.',
@@ -53,7 +53,7 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── DJ (for map popup) ────────────────────────────────────────────────────
   dj: {
-    name: 'TBA',
+    name: 'MoriMori',
     shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
     url: null,
   },
