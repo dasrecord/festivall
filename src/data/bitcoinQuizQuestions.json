@@ -1,0 +1,121 @@
+[
+  {
+    "text": "Welcome to the Bitcoin Block Party Quiz!\nTest your Bitcoin knowledge for a chance to win prizes.",
+    "type": "information",
+    "category": "Bitcoin Block Party Quiz"
+  },
+  {
+    "text": "When was the Bitcoin whitepaper published?",
+    "subtext": "Hint: It was published on Halloween — October 31st — the year the global financial crisis hit.",
+    "answer": "2008-10-31",
+    "type": "date",
+    "category": "Bitcoin History",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "When was the Bitcoin Genesis Block mined?",
+    "subtext": "Hint: January 3rd of the year Bitcoin was born — just months after the whitepaper.",
+    "answer": "2009-01-03",
+    "type": "date",
+    "category": "Bitcoin History",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "When was Bitcoin Pizza Day?",
+    "subtext": "Hint: May 22nd of the year programmer Laszlo Hanyecz paid 10,000 BTC for two pizzas.",
+    "answer": "2010-05-22",
+    "type": "date",
+    "category": "Bitcoin Culture",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "How many bitcoin did the first 2 pizzas cost?",
+    "subtext": "Hint: A round number in the tens of thousands — now worth hundreds of millions of dollars.",
+    "answer": "10000",
+    "type": "text",
+    "category": "Bitcoin Culture",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "How many blocks is Bitcoin's difficulty adjustment interval?",
+    "subtext": "Hint: Bitcoin recalibrates mining difficulty every ___ blocks — roughly every two weeks.",
+    "answer": "2016",
+    "type": "text",
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "How many blocks is the halvening interval?",
+    "subtext": "Hint: The block reward cuts in half every ___ blocks — roughly every four years.",
+    "answer": "210000",
+    "type": "text",
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What is the current block subsidy in BTC?",
+    "subtext": "Hint: After the 4th halving in April 2024, miners now earn ___ BTC per block.",
+    "answer": "3.125",
+    "type": "text",
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "How many minutes is the average Bitcoin block time?",
+    "subtext": "Hint: Bitcoin's protocol targets one new block every ___ minutes on average.",
+    "answer": "10",
+    "type": "text",
+    "category": "Bitcoin Basics",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What hash algorithm does Bitcoin use for Proof of Work?",
+    "subtext": "Choose the algorithm Bitcoin miners compute trillions of times per second.",
+    "answer": "SHA-256",
+    "type": "multiple-choice",
+    "options": ["SHA-256", "SHA-512", "Scrypt", "Keccak-256"],
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What is the Bitcoin supply cap?",
+    "subtext": "Hint: A fixed number hard-coded into the protocol — 21 followed by six zeros.",
+    "answer": "21000000",
+    "type": "text",
+    "category": "Bitcoin Basics",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What is the consensus mechanism of Bitcoin?",
+    "subtext": "Choose how Bitcoin nodes agree on the valid chain.",
+    "answer": "Proof of Work",
+    "type": "multiple-choice",
+    "options": ["Proof of Work", "Proof of Stake", "Delegated Proof of Stake", "Proof of Authority"],
+    "category": "Bitcoin Basics",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "In which block number is the Bitcoin whitepaper embedded in the blockchain?",
+    "subtext": "Hint: A developer encoded the full PDF into fake pay-to-public-key-hash addresses. Block number is in the 230,000s.",
+    "answer": "230009",
+    "type": "text",
+    "category": "Bitcoin History",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "Complete the Genesis Block message:\n\"Chancellor on brink of ______ _______ ___ _____\"",
+    "subtext": "Hint: A January 3, 2009 UK newspaper headline about government bank bailouts. Fill in the four missing words.",
+    "answer": "second bailout for banks",
+    "type": "text",
+    "category": "Bitcoin Origins",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "Proof of Work — Mine a valid hash!\nFind a SHA-256 hash of any input string with at least 3 leading zeros.\nThis is how every Bitcoin block is discovered.",
+    "answer": null,
+    "type": "mining",
+    "target_zeros": 3,
+    "category": "Proof of Work",
+    "iconKey": "trivia"
+  }
+]

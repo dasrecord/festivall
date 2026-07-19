@@ -53,6 +53,7 @@ const PUBLIC_PATHS = [
   '/reunionlineup', '/reuniontickets', '/reunionapplication', '/reunionfaq', '/reunionamenities',
   '/reunionfamily', '/reunionteam', '/reunionsoundsystem',
   '/art-and-photography', '/coding-and-webdev', '/soundtech', '/reunioncontact',
+  '/bitcoinblockparty', '/bitcoinblockpartymap', '/bitcoinquiz', '/bitcoin-wallet',
 ]
 
 useHead(computed(() => ({

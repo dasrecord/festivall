@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<title>Bitcoin Block Party 2026 — Print Assets</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+<style>
+
+/* ─── BBP Palette ─────────────────────────────────────────────────── */
+:root {
+  --bbp-purple:  #512656;
+  --bbp-teal:    #075e72;
+  --bbp-orange:  #c83f0f;
+  --bbp-tan:     #bcbaa5;
+  --bbp-cream:   #f4f2e6;
+  --bbp-dark:    #1a0b1e;
+}
+
+/* ─── Global ─────────────────────────────────────────────────────── */
+@page { size: Letter portrait; margin: 0; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #2a1f2e;
+  font-family: 'Inter', sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ─── Control bar (hidden when printing) ─────────────────────────── */
+#control-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: #110d14;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: #ccc;
+}
+#control-bar label { font-weight: 600; white-space: nowrap; }
+#control-bar select,
+#control-bar button {
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: #eee;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+#control-bar button.print-btn {
+  background: #c83f0f;
+  border-color: #c83f0f;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.35rem 1rem;
+}
+.ctrl-sep { color: rgba(255,255,255,0.18); }
+
+/* ─── Preset container ───────────────────────────────────────────── */
+.presets-area {
+  padding-top: 52px;  /* clear control bar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+/* Active preset = visible; inactive = hidden */
+.preset-wrapper { display: none; }
+.preset-wrapper.active { display: block; }
+
+/* ─── Generic print page ──────────────────────────────────────────── */
+.page {
+  background: var(--bbp-purple);
+  color: var(--bbp-cream);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.5);
+}
+
+/* ─── PRESET 1 — Poster 11×17 ────────────────────────────────────── */
+/* SVG viewBox 0 0 792 1224 = 11in×17in at 72dpi */
+.page--poster {
+  width: 11in;
+  height: 17in;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--bbp-purple);
+}
+.poster-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* SVG is exactly the same AR as the page */
+  display: block;
+  pointer-events: none;
+}
+/* Overlay is pinned to the bbp_text_safe_area_body zone:
+   x=118.72/792=15.0%  y=383.49/1224=31.3%
+   w=554.55/792=70.0%  h=457.02/1224=37.3% */
+.poster-overlay {
+  position: absolute;
+  left:   15.0%;
+  top:    31.3%;
+  width:  70.0%;
+  height: 37.3%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  overflow: hidden;
+}
+.poster-eyebrow {
+  font-size: 13pt;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bbp-tan);
+  margin: 0 0 0.4rem;
+}
+.poster-date-block {
+  font-size: 28pt;
+  font-weight: 700;
+  color: var(--bbp-cream);
+  margin: 0 0 0.15rem;
+  line-height: 1.2;
+}
+.poster-venue-block {
+  font-size: 17pt;
+  color: var(--bbp-tan);
+  margin: 0 0 0.6rem;
+  letter-spacing: 0.03em;
+}
+.poster-divider {
+  width: 2in;
+  height: 2px;
+  background: var(--bbp-teal);
+  margin: 0 0 0.6rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.poster-schedule-title {
+  font-size: 11pt;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--bbp-teal);
+  margin: 0 0 0.4rem;
+}
+.poster-schedule {
+  width: 100%;
+  margin: 0 0 0.6rem;
+}
+.poster-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13pt;
+  padding: 0.18rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  gap: 0.5rem;
+}
+.poster-schedule-time { color: var(--bbp-teal); font-weight: 700; white-space: nowrap; }
+.poster-schedule-label { color: var(--bbp-teal); text-align: right; }
+.poster-cta-row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.poster-cta-url {
+  font-size: 16pt;
+  font-weight: 700;
+  color: var(--bbp-orange);
+  letter-spacing: 0.04em;
+}
+.poster-cta-contact {
+  font-size: 13pt;
+  color: var(--bbp-tan);
+}
+.poster-sponsor-row {
+  margin-top: auto;
+  font-size: 10pt;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  padding-top: 0.3rem;
+}
+.poster-sponsor-name { color: rgba(255,255,255,0.7); font-weight: 600; }
+
+/* ─── PRESET 2 — Handout 5.5×8.5 ────────────────────────────────── */
+.page--handout {
+  width: 5.5in;
+  min-height: 8.5in;
+  padding: 0.55in 0.5in;
+}
+.handout-header {
+  text-align: center;
+  margin-bottom: 0.4in;
+}
+.handout-eyebrow {
+  font-size: 8pt;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bbp-teal);
+  margin: 0 0 0.2rem;
+}
+.handout-title {
+  font-size: 38pt;
+  font-weight: 900;
+  line-height: 0.95;
+  margin: 0;
+  color: var(--bbp-cream);
+}
+.handout-date {
+  font-size: 12pt;
+  font-weight: 700;
+  color: var(--bbp-cream);
+  margin: 0.2rem 0 0.1rem;
+}
+.handout-venue {
+  font-size: 9pt;
+  color: var(--bbp-tan);
+  margin: 0;
+}
+.handout-divider {
+  height: 1px;
+  background: var(--bbp-teal);
+  margin: 0.25in 0;
+  opacity: 0.5;
+}
+.handout-section-title {
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--bbp-teal);
+  margin: 0 0 0.15rem;
+}
+.handout-schedule-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 8.5pt;
+  padding: 0.12rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.handout-sched-time  { color: var(--bbp-teal); font-weight: 700; min-width: 1.1in; font-size: 8pt; }
+.handout-sched-label { color: var(--bbp-cream); }
+.handout-body {
+  font-size: 8.5pt;
+  line-height: 1.65;
+  color: var(--bbp-tan);
+  margin: 0.2in 0;
+}
+.handout-cta {
+  text-align: center;
+  margin-top: 0.25in;
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--bbp-orange);
+}
+.handout-wallet-note {
+  text-align: center;
+  margin-top: 0.15in;
+  font-size: 7.5pt;
+  color: var(--bbp-tan);
+}
+.handout-footer {
+  text-align: center;
+  margin-top: 0.3in;
+  font-size: 7pt;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ─── PRESET 3 — Schedule poster 8.5×11 ──────────────────────────── */
+.page--schedule {
+  width: 8.5in;
+  height: 11in;
+  padding: 0.75in 0.8in;
+  display: flex;
+  flex-direction: column;
+}
+.schedule-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 0.4in;
+}
+.schedule-header-left h1 {
+  font-size: 36pt;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1;
+}
+.schedule-header-left p {
+  font-size: 11pt;
+  color: var(--bbp-teal);
+  margin: 0.15rem 0 0;
+  font-weight: 600;
+}
+.schedule-header-right {
+  text-align: right;
+  font-size: 9pt;
+  color: var(--bbp-tan);
+  line-height: 1.6;
+}
+.schedule-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.schedule-table-header {
+  display: grid;
+  grid-template-columns: 1.6in 1fr;
+  gap: 0.5rem;
+  padding: 0.1in 0;
+  border-bottom: 2px solid var(--bbp-teal);
+  margin-bottom: 0.1in;
+}
+.schedule-table-header span {
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--bbp-teal);
+  font-weight: 700;
+}
+.schedule-entry {
+  display: grid;
+  grid-template-columns: 1.6in 1fr;
+  gap: 0.5rem;
+  padding: 0.15in 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  align-items: start;
+}
+.sched-time {
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--bbp-teal);
+}
+.sched-label {
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--bbp-cream);
+}
+.sched-note {
+  display: block;
+  font-size: 8.5pt;
+  font-weight: 400;
+  color: var(--bbp-tan);
+  margin-top: 0.1rem;
+}
+.schedule-footer {
+  margin-top: auto;
+  padding-top: 0.3in;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.schedule-footer-url {
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--bbp-orange);
+}
+.schedule-footer-brand {
+  font-size: 7pt;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ─── PRESET 4 — Directional 8.5×11 landscape ────────────────────── */
+.page--directional {
+  width: 11in;
+  height: 8.5in;
+  padding: 0.5in 0.7in;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6in;
+}
+.directional-arrow {
+  font-size: 120pt;
+  color: var(--bbp-orange);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.directional-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1in;
+}
+.directional-event {
+  font-size: 14pt;
+  font-weight: 900;
+  color: var(--bbp-teal);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.directional-main {
+  font-size: 54pt;
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--bbp-cream);
+}
+.directional-venue {
+  font-size: 18pt;
+  font-weight: 600;
+  color: var(--bbp-tan);
+  margin-top: 0.1in;
+}
+.directional-date {
+  font-size: 13pt;
+  color: var(--bbp-cream);
+  margin-top: 0.05in;
+}
+
+/* ─── PRESET 5 — No Liquor Sign 8.5×5.5 ─────────────────────────── */
+.page--noliquor {
+  width: 8.5in;
+  height: 5.5in;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5in;
+  background: var(--bbp-dark);
+}
+.noliquor-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2in;
+  max-width: 6in;
+}
+.noliquor-icon {
+  font-size: 80pt;
+  line-height: 1;
+}
+.noliquor-headline {
+  font-size: 30pt;
+  font-weight: 900;
+  color: var(--bbp-cream);
+  line-height: 1.05;
+}
+.noliquor-rule {
+  font-size: 13pt;
+  font-weight: 600;
+  color: var(--bbp-orange);
+  padding: 0.1in 0.3in;
+  border: 2px solid var(--bbp-orange);
+  border-radius: 4px;
+}
+.noliquor-body {
+  font-size: 10pt;
+  color: var(--bbp-tan);
+  line-height: 1.6;
+  max-width: 4.5in;
+}
+.noliquor-contact {
+  font-size: 9pt;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ─── Screen preview scale ──────────────────────────────────────── */
+@media screen {
+  .page--poster      { zoom: 0.55; }
+  .page--schedule    { zoom: 0.75; }
+  .page--directional { zoom: 0.65; }
+}
+
+/* ─── Print rules ────────────────────────────────────────────────── */
+@media print {
+  #control-bar, .presets-area > *:not(.preset-wrapper.active) { display: none !important; }
+  .presets-area { padding: 0; gap: 0; }
+  .preset-wrapper.active { display: block; }
+  .page { box-shadow: none; }
+  html, body { background: white; }
+}
+
+/* ─── Light / Dark theme ─────────────────────────────────────────── */
+[data-theme="light"] body { background: #d9d6c5; }
+
+[data-theme="light"] .page { background: var(--bbp-cream); }
+[data-theme="light"] .page--noliquor { background: var(--bbp-cream); }
+
+/* Hide poster SVG artwork in light mode (it has a dark background baked in) */
+[data-theme="light"] .poster-bg { display: none; }
+
+/* Poster — flip text colours */
+[data-theme="light"] .poster-eyebrow         { color: var(--bbp-teal); }
+[data-theme="light"] .poster-date-block       { color: var(--bbp-dark); }
+[data-theme="light"] .poster-venue-block      { color: var(--bbp-teal); }
+[data-theme="light"] .poster-schedule-row     { border-bottom-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .poster-schedule-label   { color: var(--bbp-dark); }
+[data-theme="light"] .poster-cta-contact      { color: var(--bbp-dark); }
+[data-theme="light"] .poster-sponsor-row      { color: rgba(0,0,0,0.4); }
+[data-theme="light"] .poster-sponsor-name     { color: rgba(0,0,0,0.7); }
+
+/* Handout */
+[data-theme="light"] .handout-title          { color: var(--bbp-dark); }
+[data-theme="light"] .handout-date           { color: var(--bbp-dark); }
+[data-theme="light"] .handout-venue          { color: var(--bbp-teal); }
+[data-theme="light"] .handout-divider        { opacity: 0.35; }
+[data-theme="light"] .handout-schedule-row   { border-bottom-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .handout-sched-label    { color: var(--bbp-dark); }
+[data-theme="light"] .handout-body           { color: var(--bbp-teal); }
+[data-theme="light"] .handout-wallet-note    { color: var(--bbp-teal); }
+[data-theme="light"] .handout-footer         { color: rgba(0,0,0,0.3); }
+
+/* Schedule */
+[data-theme="light"] .schedule-header-left h1  { color: var(--bbp-dark); }
+[data-theme="light"] .schedule-header-right    { color: var(--bbp-teal); }
+[data-theme="light"] .schedule-table-header    { border-bottom-color: var(--bbp-teal); }
+[data-theme="light"] .schedule-entry           { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .sched-label              { color: var(--bbp-dark); }
+[data-theme="light"] .sched-note               { color: var(--bbp-teal); }
+[data-theme="light"] .schedule-footer          { border-top-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .schedule-footer-brand    { color: rgba(0,0,0,0.3); }
+
+/* Directional */
+[data-theme="light"] .directional-event  { color: var(--bbp-teal); }
+[data-theme="light"] .directional-main   { color: var(--bbp-dark); }
+[data-theme="light"] .directional-venue  { color: var(--bbp-teal); }
+[data-theme="light"] .directional-date   { color: var(--bbp-dark); }
+
+/* No Liquor */
+[data-theme="light"] .noliquor-headline  { color: var(--bbp-dark); }
+[data-theme="light"] .noliquor-body      { color: var(--bbp-teal); }
+[data-theme="light"] .noliquor-contact   { color: rgba(0,0,0,0.35); }
+</style>
+</head>
+<body>
+
+<!-- ─── Control bar ──────────────────────────────────────────────── -->
+<div id="control-bar">
+  <label for="preset-select">Preset:</label>
+  <select id="preset-select" onchange="switchPreset(this.value)">
+    <option value="poster">Poster (11×17)</option>
+    <option value="handout">Handout (5.5×8.5)</option>
+    <option value="schedule">Schedule Poster (8.5×11)</option>
+    <option value="directional">Directional Sign (11×8.5 landscape)</option>
+    <option value="noliquor">No Liquor Zone Sign</option>
+  </select>
+  <span class="ctrl-sep">|</span>
+  <button class="print-btn" onclick="window.print()">🖨 Print</button>
+  <span class="ctrl-sep">|</span>
+  <button id="theme-toggle" onclick="toggleTheme()">☀ Light Mode</button>
+  <span style="margin-left:auto;color:rgba(255,255,255,0.3);font-size:0.78rem;">Bitcoin Block Party 2026 · Powered by Festivall</span>
+</div>
+
+<!-- ─── Presets ───────────────────────────────────────────────────── -->
+<div class="presets-area">
+
+  <!-- ── PRESET 1: Poster ────────────────────────────────────────── -->
+  <div class="preset-wrapper active" id="preset-poster">
+    <div class="page page--poster">
+      <img
+        class="poster-bg"
+        src="/bitcoin_block_party_2026_bg.svg"
+        alt=""
+        aria-hidden="true"
+        onerror="this.style.display='none'"
+      />
+      <!-- The SVG artwork already contains "Bitcoin Block Party" (title zone)
+           and "2026" (year zone) as vector text. This overlay targets only
+           the body safe area: x=15% y=31.3% w=70% h=37.3% of the 11×17 page. -->
+      <div class="poster-overlay">
+        <p class="poster-eyebrow">Vancouver, BC &nbsp;·&nbsp; Free Admission</p>
+        <p class="poster-date-block">Sunday, August 23, 2026</p>
+        <p class="poster-venue-block">Dunsmuir Plaza &nbsp;·&nbsp; 12:00 PM – 8:00 PM</p>
+        <div class="poster-divider"></div>
+        <p class="poster-schedule-title">Day Schedule</p>
+        <div class="poster-schedule">
+          <div class="poster-schedule-row"><span class="poster-schedule-time">12:00 PM</span><span class="poster-schedule-label">Doors Open</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">2:00 – 3:00 PM</span><span class="poster-schedule-label">Film Screening</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">3:00 – 4:00 PM</span><span class="poster-schedule-label">Speakers</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">4:00 – 5:00 PM</span><span class="poster-schedule-label">Film: &ldquo;What is the Problem&rdquo;</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">5:00 – 6:00 PM</span><span class="poster-schedule-label">Dinnerish</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">~6:00 PM</span><span class="poster-schedule-label">Prizes &amp; Sponsor Thank-You</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">6:00 – 8:00 PM</span><span class="poster-schedule-label">DJs &amp; Mixer</span></div>
+          <div class="poster-schedule-row"><span class="poster-schedule-time">8:00 PM</span><span class="poster-schedule-label">Doors Close</span></div>
+        </div>
+        <div class="poster-cta-row">
+          <span class="poster-cta-url">festivall.ca/bitcoinblockparty</span>
+          <span class="poster-cta-contact">party@vanbitcoin.ca</span>
+        </div>
+        <div class="poster-sponsor-row">
+          Presenting Sponsor: <span class="poster-sponsor-name">Zeus</span>
+          &nbsp;·&nbsp; Powered by Festivall
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRESET 2: Handout ───────────────────────────────────────── -->
+  <div class="preset-wrapper" id="preset-handout">
+    <div class="page page--handout">
+      <div class="handout-header">
+        <p class="handout-eyebrow">Vancouver, BC · Free Admission</p>
+        <h1 class="handout-title">Bitcoin<br>Block Party</h1>
+        <p class="handout-date">Sunday, August 23, 2026</p>
+        <p class="handout-venue">Dunsmuir Plaza · 12:00 PM – 8:00 PM</p>
+      </div>
+      <div class="handout-divider"></div>
+      <p class="handout-section-title">Schedule</p>
+      <div class="handout-schedule-row"><span class="handout-sched-time">12:00 PM</span><span class="handout-sched-label">Doors Open</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">2:00 – 3:00 PM</span><span class="handout-sched-label">Film Screening</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">3:00 – 4:00 PM</span><span class="handout-sched-label">Speakers</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">4:00 – 5:00 PM</span><span class="handout-sched-label">Film: "What is the Problem"</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">5:00 – 6:00 PM</span><span class="handout-sched-label">Dinnerish</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">~6:00 PM</span><span class="handout-sched-label">Prizes · Sponsors · FUNK</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">6:00 – 8:00 PM</span><span class="handout-sched-label">DJs &amp; Mixer</span></div>
+      <div class="handout-schedule-row"><span class="handout-sched-time">8:00 PM</span><span class="handout-sched-label">Doors Close</span></div>
+      <div class="handout-divider"></div>
+      <p class="handout-body">
+        Free outdoor celebration of Bitcoin, community, and music in the heart of Vancouver.
+        Food trucks, speakers, two film screenings, live DJs, and Bitcoin prizes.
+        All vendors accept Bitcoin. All ages welcome.
+      </p>
+      <p class="handout-cta">festivall.ca/bitcoinblockparty</p>
+      <p class="handout-wallet-note">New to Bitcoin? Get a free wallet: festivall.ca/bitcoin-wallet</p>
+      <p class="handout-footer">Presenting Sponsor: Zeus · party@vanbitcoin.ca · Powered by Festivall</p>
+    </div>
+  </div>
+
+  <!-- ── PRESET 3: Schedule Poster ──────────────────────────────── -->
+  <div class="preset-wrapper" id="preset-schedule">
+    <div class="page page--schedule">
+      <div class="schedule-header">
+        <div class="schedule-header-left">
+          <h1>Day Schedule</h1>
+          <p>Bitcoin Block Party 2026 — Dunsmuir Plaza</p>
+        </div>
+        <div class="schedule-header-right">
+          Sunday, August 23, 2026<br>
+          12:00 PM – 8:00 PM<br>
+          Free Admission
+        </div>
+      </div>
+      <div class="schedule-table">
+        <div class="schedule-table-header">
+          <span>Time</span>
+          <span>Event</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">12:00 PM</span>
+          <span class="sched-label">Doors Open</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">2:00 – 3:00 PM</span>
+          <span class="sched-label">Film Screening<span class="sched-note">Title TBA</span></span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">3:00 – 4:00 PM</span>
+          <span class="sched-label">Speakers</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">4:00 – 5:00 PM</span>
+          <span class="sched-label">Film Screening<span class="sched-note">"What is the Problem"</span></span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">5:00 – 6:00 PM</span>
+          <span class="sched-label">Dinnerish</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">~6:00 PM</span>
+          <span class="sched-label">Prize Announcements + Sponsor Thank-You + FUNK</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">6:00 – 8:00 PM</span>
+          <span class="sched-label">DJs &amp; Mixer</span>
+        </div>
+        <div class="schedule-entry">
+          <span class="sched-time">8:00 PM</span>
+          <span class="sched-label">Doors Close</span>
+        </div>
+      </div>
+      <div class="schedule-footer">
+        <span class="schedule-footer-url">festivall.ca/bitcoinblockparty</span>
+        <span class="schedule-footer-brand">Powered by Festivall</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRESET 4: Directional Sign ─────────────────────────────── -->
+  <div class="preset-wrapper" id="preset-directional">
+    <div class="page page--directional">
+      <div class="directional-arrow">↓</div>
+      <div class="directional-text">
+        <span class="directional-event">₿ Bitcoin Block Party 2026</span>
+        <div class="directional-main">This Way →</div>
+        <div class="directional-venue">Dunsmuir Plaza, Vancouver</div>
+        <div class="directional-date">Sunday, August 23 · 12 PM – 8 PM · Free</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRESET 5: No Liquor Zone ───────────────────────────────── -->
+  <div class="preset-wrapper" id="preset-noliquor">
+    <div class="page page--noliquor">
+      <div class="noliquor-inner">
+        <div class="noliquor-icon">🚫🍺</div>
+        <h1 class="noliquor-headline">No Liquor<br>Beyond This Point</h1>
+        <p class="noliquor-rule">Licensed Consumption Area Only</p>
+        <p class="noliquor-body">
+          This is a family-friendly, all-ages event. Alcohol may only be consumed within the
+          designated licensed area. Please respect other guests and keep the event welcoming for everyone.
+        </p>
+        <p class="noliquor-contact">Concerns? Find a team member or email party@vanbitcoin.ca</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /presets-area -->
+
+<script>
+function switchPreset(value) {
+  document.querySelectorAll('.preset-wrapper').forEach(el => el.classList.remove('active'))
+  const target = document.getElementById('preset-' + value)
+  if (target) target.classList.add('active')
+}
+function toggleTheme() {
+  const html = document.documentElement
+  const goLight = html.dataset.theme !== 'light'
+  html.dataset.theme = goLight ? 'light' : 'dark'
+  document.getElementById('theme-toggle').textContent = goLight ? '🌙 Dark Mode' : '☀ Light Mode'
+}
+</script>
+</body>
+</html>

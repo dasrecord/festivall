@@ -66,6 +66,10 @@ import MedPrepAdminView from '@/views/MedPrepAdminView.vue'
 import MedPrepContractView from '@/views/MedPrepContractView.vue'
 import MedPrepCVView from '@/views/MedPrepCVView.vue'
 import ReunionGenreMapView from '@/views/ReunionGenreMapView.vue'
+import BitcoinBlockPartyView from '@/views/BitcoinBlockPartyView.vue'
+import BitcoinBlockPartyMapView from '@/views/BitcoinBlockPartyMapView.vue'
+import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
+import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
 
 
 const routes = [
@@ -551,6 +555,43 @@ const routes = [
     name: 'medprep-admin',
     component: MedPrepAdminView,
     meta: { requiresAuth: true, showHeader: false }
+  },
+  // ── Bitcoin Block Party ──────────────────────────────────────────────────
+  {
+    path: '/bitcoinblockparty',
+    name: 'bitcoin-block-party',
+    component: BitcoinBlockPartyView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockpartymap',
+    name: 'bitcoin-block-party-map',
+    component: BitcoinBlockPartyMapView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinquiz',
+    name: 'bitcoin-quiz',
+    component: BitcoinQuizView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockparty/sponsor',
+    name: 'bitcoin-block-party-sponsor',
+    component: BitcoinBlockPartyApplicationView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockparty/vendor',
+    name: 'bitcoin-block-party-vendor',
+    component: BitcoinBlockPartyApplicationView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockparty/volunteer',
+    name: 'bitcoin-block-party-volunteer',
+    component: BitcoinBlockPartyApplicationView,
+    meta: { showHeader: false }
   }
 ]
 
