@@ -69,11 +69,20 @@
     "iconKey": "trivia"
   },
   {
-    "text": "What hash algorithm does Bitcoin use for Proof of Work?",
+    "text": "What is the Bitcoin issuance schedule formula?",
+    "subtext": "Hint: Sum each 210,000-block subsidy epoch from genesis until the subsidy rounds to zero.",
+    "answer": "∑(i=0 to 32) 210,000 × floor(50 / 2^i)",
+    "type": "multiple-choice",
+    "options": ["∑(i=0 to 32) 210,000 × floor(50 / 2^i)", "∑(i=0 to 33) 210,000 × floor(50 / 2^i)", "∑(i=0 to 32) 210,000 × (50 / 2^i)", "∑(i=0 to 32) 201,600 × floor(50 / 2^i)"],
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What hash algorithm does Bitcoin use for it's consensus mechanism?",
     "subtext": "Choose the algorithm Bitcoin miners compute trillions of times per second.",
     "answer": "SHA-256",
     "type": "multiple-choice",
-    "options": ["SHA-256", "SHA-512", "Scrypt", "Keccak-256"],
+    "options": ["SHA-512", "SHA-256", "MD5", "SECP256k1"],
     "category": "Bitcoin Mining",
     "iconKey": "trivia"
   },
@@ -108,6 +117,61 @@
     "answer": "second bailout for banks",
     "type": "text",
     "category": "Bitcoin Origins",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "In Bitcoin's subsidy schedule, what does `50 * COIN >> 3` evaluate to?",
+    "subtext": "Hint: `>> 3` means three halvings from the original 50 BTC subsidy.",
+    "answer": "6.25 BTC",
+    "type": "multiple-choice",
+    "options": ["6.25 BTC", "6 BTC", "12.5 BTC", "3.125 BTC"],
+    "category": "Bitcoin Math",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "Convert binary `101010` to decimal.",
+    "subtext": "Hint: Add the powers of two represented by the 1 bits.",
+    "answer": "42",
+    "type": "multiple-choice",
+    "options": ["40", "41", "42", "43"],
+    "category": "Bitcoin Math",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "What is `101010 XOR 110011` in binary?",
+    "subtext": "Hint: XOR outputs 1 only when the two input bits are different.",
+    "answer": "011001",
+    "type": "xor",
+    "left": "101010",
+    "right": "110011",
+    "category": "Bitcoin Math",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "How many bytes are in a SHA-256 digest?",
+    "subtext": "Hint: SHA-256 outputs 256 bits. Divide by 8 to get bytes.",
+    "answer": "32",
+    "type": "multiple-choice",
+    "options": ["16", "32", "64", "128"],
+    "category": "Bitcoin Mining",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "When a Bitcoin block hash is shown on a block explorer, how is it displayed compared with the raw internal bytes?",
+    "subtext": "Hint: Bitcoin stores many hashes internally in little-endian form, but explorers show them in the human-readable reversed order.",
+    "answer": "The bytes are reversed",
+    "type": "multiple-choice",
+    "options": ["The bytes are reversed", "The bytes are unchanged", "Each bit is flipped", "It is converted to Base58"],
+    "category": "Bitcoin Internals",
+    "iconKey": "trivia"
+  },
+  {
+    "text": "In Bitcoin's Merkle tree, how are two child transaction hashes combined into a parent hash?",
+    "subtext": "Hint: Bitcoin concatenates the two 32-byte child hashes, then applies SHA-256 twice.",
+    "answer": "double-SHA256(left hash || right hash)",
+    "type": "multiple-choice",
+    "options": ["double-SHA256(left hash || right hash)", "SHA256(left hash XOR right hash)", "RIPEMD160(SHA256(left hash || right hash))", "double-SHA256(right hash || left hash)"],
+    "category": "Bitcoin Internals",
     "iconKey": "trivia"
   },
   {

@@ -94,13 +94,13 @@
           class="bbpquiz-dot"
           :class="{
             'bbpquiz-dot--current':    currentIndex === i,
-            'bbpquiz-dot--done':       answers[i] && q.type !== 'information',
+            'bbpquiz-dot--done':       answerIsComplete(q, i),
             'bbpquiz-dot--info':       q.type === 'information',
           }"
           @click="goTo(i)"
           :title="q.category || 'Q' + (getQuestionNumber(i) || '')"
         >{{ q.type === 'information' ? '' : (getQuestionNumber(i) || '?') }}</span>
-        <span class="bbpquiz-nav-score">{{ calculateScore() }} / {{ scoredCount }}</span>
+        <span class="bbpquiz-nav-score">{{ answeredCount }} / {{ scoredCount }}</span>
         <button class="bbpquiz-lb-btn-sm" @click="openLeaderboard">🏆</button>
       </div>
 
@@ -145,7 +145,7 @@
             class="bbpquiz-input"
             placeholder="Type your answer…"
             @input="handleInput(i)"
-            @keyup.enter="checkAnswer(i)"
+            @keyup.enter="goTo(Math.min(i + 1, questions.length - 1))"
           />
 
           <!-- Date picker -->
@@ -154,7 +154,7 @@
             v-model="answers[i]"
             type="date"
             class="bbpquiz-input bbpquiz-date-input"
-            @change="checkAnswer(i)"
+            @change="handleInput(i)"
           />
 
           <!-- Multiple choice -->
@@ -164,13 +164,34 @@
               :key="opt"
               class="bbpquiz-option"
               :class="{
-                'bbpquiz-option--selected': answers[i] === opt && !feedback[i],
-                'bbpquiz-option--correct':  feedback[i] && opt === q.answer,
-                'bbpquiz-option--wrong':    feedback[i] === 'incorrect' && answers[i] === opt,
+                'bbpquiz-option--selected': answers[i] === opt,
               }"
               :disabled="!!lockedAnswers[i]"
               @click="selectOption(i, opt)"
             >{{ opt }}</button>
+          </div>
+
+          <!-- XOR calculator -->
+          <div v-if="q.type === 'xor'" class="bbpquiz-xor">
+            <div class="bbpquiz-xor-row">
+              <span class="bbpquiz-xor-label">A</span>
+              <span v-for="(bit, bitIndex) in q.left" :key="`left-${bitIndex}`" class="bbpquiz-xor-bit">{{ bit }}</span>
+            </div>
+            <div class="bbpquiz-xor-row">
+              <span class="bbpquiz-xor-label">B</span>
+              <span v-for="(bit, bitIndex) in q.right" :key="`right-${bitIndex}`" class="bbpquiz-xor-bit">{{ bit }}</span>
+            </div>
+            <div class="bbpquiz-xor-row bbpquiz-xor-row--answer">
+              <span class="bbpquiz-xor-label">A XOR B</span>
+              <button
+                v-for="(_bit, bitIndex) in q.answer"
+                :key="`xor-${bitIndex}`"
+                type="button"
+                class="bbpquiz-xor-cell"
+                :class="{ 'bbpquiz-xor-cell--set': xorBitValue(i, bitIndex) !== '·' }"
+                @click="toggleXorBit(i, bitIndex, q.answer.length)"
+              >{{ xorBitValue(i, bitIndex) }}</button>
+            </div>
           </div>
 
           <!-- Mining / SHA-256 challenge -->
@@ -181,31 +202,31 @@
                 type="text"
                 class="bbpquiz-input"
                 placeholder="Enter any message or number…"
+                :disabled="!!lockedAnswers[i]"
+                @input="autoMine(i, q.target_zeros || 3)"
                 @keyup.enter="mine(i, q.target_zeros || 3)"
               />
               <button
                 class="bbpquiz-mine-btn"
                 @click="mine(i, q.target_zeros || 3)"
                 :disabled="!!miningLoading[i] || !!lockedAnswers[i]"
-              >{{ lockedAnswers[i] ? '✓ Mined!' : miningLoading[i] ? 'Hashing…' : '⛏ Mine' }}</button>
+              >{{ lockedAnswers[i] ? '✓ Mined!' : miningLoading[i] ? 'Hashing…' : 'Hash now' }}</button>
             </div>
-            <div v-if="miningHash[i]" class="bbpquiz-mining-result" :class="{ 'bbpquiz-mining-result--valid': miningValid[i] }">
+            <div
+              v-if="miningHash[i]"
+              class="bbpquiz-mining-result"
+              :class="{
+                'bbpquiz-mining-result--near': leadingZeroCount(miningHash[i]) > 0 && !miningValid[i],
+                'bbpquiz-mining-result--valid': miningValid[i],
+              }"
+            >
               <span class="bbpquiz-hash-label">SHA-256:</span>
-              <code class="bbpquiz-hash"><span v-if="miningValid[i]" class="bbpquiz-hash-zeros">{{ miningHash[i].slice(0, q.target_zeros || 3) }}</span>{{ miningHash[i].slice(miningValid[i] ? (q.target_zeros || 3) : 0) }}</code>
+              <code class="bbpquiz-hash"><span v-if="leadingZeroCount(miningHash[i])" class="bbpquiz-hash-zeros">{{ miningHash[i].slice(0, leadingZeroCount(miningHash[i])) }}</span>{{ miningHash[i].slice(leadingZeroCount(miningHash[i])) }}</code>
               <p v-if="miningValid[i]" class="bbpquiz-mining-success">✓ Valid hash found — you mined a block!</p>
-              <p v-else class="bbpquiz-mining-fail">No leading zeros yet — try a different message.</p>
+              <p v-else class="bbpquiz-mining-fail">{{ miningProgressMessage(miningHash[i], q.target_zeros || 3) }}</p>
             </div>
             <p v-if="miningAttempts[i]" class="bbpquiz-mining-attempts">{{ miningAttempts[i] }} attempt{{ miningAttempts[i] === 1 ? '' : 's' }}</p>
           </div>
-
-          <!-- Feedback (not shown for mining — its own UI handles it) -->
-          <p
-            v-if="feedback[i] && q.type !== 'mining'"
-            class="bbpquiz-feedback"
-            :class="feedback[i] === 'correct' ? 'bbpquiz-feedback--correct' : 'bbpquiz-feedback--wrong'"
-          >
-            {{ feedback[i] === 'correct' ? 'Correct!' : q.type === 'multiple-choice' ? 'Incorrect.' : 'Incorrect — try again.' }}
-          </p>
 
           <!-- Controls -->
           <div class="bbpquiz-controls">
@@ -397,12 +418,23 @@ const hasContactMethod = computed(() => {
   return true
 })
 
+const answeredCount = computed(() => {
+  return questions.filter((q, i) => answerIsComplete(q, i)).length
+})
+
+function answerIsComplete(question, i) {
+  if (!question || question.type === 'information') return false
+  if (question.type === 'xor') return /^[01]+$/.test(answers.value[i] || '') && answers.value[i].length === question.answer.length
+  return !!answers.value[i]
+}
+
 // ── Mining challenge state ──────────────────────────────────────────────────────
 const miningInput    = reactive({})  // index → message string
 const miningHash     = reactive({})  // index → last computed hex
 const miningValid    = reactive({})  // index → boolean
 const miningLoading  = reactive({})  // index → boolean
 const miningAttempts = reactive({})  // index → attempt count
+const miningTimers   = {}
 
 // ── Progress persistence ──────────────────────────────────────────────────────
 const STORAGE_KEY = `bbp_quiz_progress_2026_v3`
@@ -469,7 +501,7 @@ function finish() {
 }
 
 function editAnswers() {
-  const idx = questions.findIndex((q, i) => q.type !== 'information' && !answers.value[i])
+  const idx = questions.findIndex((q, i) => q.type !== 'information' && !answerIsComplete(q, i))
   currentIndex.value = idx !== -1 ? idx : 0
   phase.value = 'quiz'
 }
@@ -495,29 +527,39 @@ function revealHint(i) {
 }
 
 // ── Answer checking ───────────────────────────────────────────────────────────
-function checkAnswer(i) {
+function isAnswerCorrect(i) {
   const q = questions[i]
-  if (!q || q.type === 'information') return
+  if (!q || q.type === 'information') return false
+  if (q.type === 'mining') return feedback.value[i] === 'correct'
   const input = (answers.value[i] || '').trim().toLowerCase()
-  if (!q.answer) return
+  if (!q.answer || !input) return false
   const correct = q.answer.toLowerCase()
   // Accept close-enough matches: strip leading 'a '/'the ', check substring for long answers
   const normalized = input.replace(/^(a |the |an )/, '')
-  const ok = input === correct || normalized === correct || correct.includes(input) && input.length > 3
-  feedback.value = { ...feedback.value, [i]: ok ? 'correct' : 'incorrect' }
-  persistProgress()
+  return input === correct || normalized === correct || correct.includes(input) && input.length > 3
 }
 
 function handleInput(i) {
-  checkAnswer(i)
+  persistProgress()
 }
 
 // ── Multiple choice ────────────────────────────────────────────────────────────────
 function selectOption(i, opt) {
   if (lockedAnswers.value[i]) return
   answers.value[i] = opt
-  checkAnswer(i)
   lockedAnswers.value = { ...lockedAnswers.value, [i]: true }
+  persistProgress()
+}
+
+function xorBitValue(i, bitIndex) {
+  const value = answers.value[i]?.[bitIndex]
+  return value === '0' || value === '1' ? value : '·'
+}
+
+function toggleXorBit(i, bitIndex, bitLength) {
+  const bits = (answers.value[i] || '').padEnd(bitLength, '_').slice(0, bitLength).split('')
+  bits[bitIndex] = bits[bitIndex] === '0' ? '1' : '0'
+  answers.value[i] = bits.join('').replace(/_+$/g, '')
   persistProgress()
 }
 
@@ -526,6 +568,23 @@ async function sha256hex(message) {
   const buf  = new TextEncoder().encode(message)
   const hash = await crypto.subtle.digest('SHA-256', buf)
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+function leadingZeroCount(hash) {
+  return (hash.match(/^0+/)?.[0] || '').length
+}
+
+function miningProgressMessage(hash, targetZeros) {
+  const zeros = leadingZeroCount(hash)
+  if (zeros === 1) return `Nice — 1 leading zero. Need ${targetZeros}.`
+  if (zeros === 2) return `Very close — 2 leading zeros. Need ${targetZeros}.`
+  return 'No leading zeros yet — try a different message.'
+}
+
+function autoMine(i, targetZeros) {
+  if (lockedAnswers.value[i]) return
+  clearTimeout(miningTimers[i])
+  miningTimers[i] = setTimeout(() => mine(i, targetZeros), 180)
 }
 
 async function mine(i, targetZeros) {
@@ -551,7 +610,7 @@ async function mine(i, targetZeros) {
 function calculateScore() {
   let score = 0
   questions.forEach((q, i) => {
-    if (q.type !== 'information' && feedback.value[i] === 'correct') score++
+    if (q.type !== 'information' && isAnswerCorrect(i)) score++
   })
   const hintPenalty = Object.keys(hintsUsed.value).length
   return Math.max(0, score - hintPenalty)
@@ -599,7 +658,7 @@ async function submitScore() {
         prompt: question.text,
         submitted_answer: answers.value[index] || null,
         mining_input: question.type === 'mining' ? (miningInput[index] || null) : null,
-        feedback: feedback.value[index] || null,
+        feedback: isAnswerCorrect(index) ? 'correct' : 'incorrect',
         hint_used: !!hintsUsed.value[index],
       }))
       .filter(entry => entry.type !== 'information')
@@ -1093,8 +1152,57 @@ const cssVars = computed(() => ({
 }
 .bbpquiz-option:disabled { cursor: default; }
 .bbpquiz-option--selected { border-color: var(--bbp-teal); background: rgba(7,94,114,0.07); }
-.bbpquiz-option--correct  { border-color: #2a8c5a; background: rgba(42,140,90,0.1);  color: #2a8c5a; font-weight: 700; }
-.bbpquiz-option--wrong    { border-color: #c94a4a; background: rgba(201,74,74,0.08); color: #c94a4a; }
+
+/* ── XOR calculator ─────────────────────────────────────────────────────────────── */
+.bbpquiz-xor {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem;
+  border: 1.5px solid var(--bbp-tan);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.58);
+}
+.bbpquiz-xor-row {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, auto) repeat(6, minmax(2rem, 1fr));
+  gap: 0.35rem;
+  align-items: center;
+}
+.bbpquiz-xor-row--answer {
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(7,94,114,0.18);
+}
+.bbpquiz-xor-label {
+  color: var(--bbp-purple);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bbpquiz-xor-bit,
+.bbpquiz-xor-cell {
+  display: grid;
+  place-items: center;
+  min-height: 2.25rem;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 800;
+}
+.bbpquiz-xor-bit {
+  background: rgba(7,94,114,0.08);
+  color: var(--bbp-teal);
+}
+.bbpquiz-xor-cell {
+  border: 1.5px solid var(--bbp-tan);
+  background: white;
+  color: var(--bbp-orange);
+  cursor: pointer;
+}
+.bbpquiz-xor-cell--set {
+  border-color: var(--bbp-teal);
+  background: rgba(7,94,114,0.1);
+}
 
 /* ── Mining challenge ────────────────────────────────────────────────────────────── */
 .bbpquiz-mining {
@@ -1129,6 +1237,10 @@ const cssVars = computed(() => ({
   border-radius: 6px;
   padding: 0.75rem 1rem;
   border: 1px solid var(--bbp-tan);
+}
+.bbpquiz-mining-result--near {
+  border-color: rgba(200,63,15,0.55);
+  background: rgba(200,63,15,0.08);
 }
 .bbpquiz-mining-result--valid {
   border-color: #2a8c5a;
