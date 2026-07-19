@@ -25,9 +25,9 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
     { time: '12:00 PM', label: 'Doors Open' },
-    { time: '2:00 PM',label: 'Film Screening',            note: 'Title TBA' },
+    { time: '2:00 PM',label: 'Film Screening',            note: '"My Trust In You Is Broken"' },
     { time: '3:00 PM',label: 'Speakers' },
-    { time: '4:00 PM',label: 'Film Screening',            note: '"What is the Problem"' },
+    { time: '4:00 PM',label: 'Film Screening',            note: '"What\'s The Problem?"' },
     { time: '5:00 PM',label: 'Dinner' },
     { time: '5:45 PM',label: 'Announcements & Acknowledgements' },
     { time: '6:00 PM',label: 'DJs & Mixer' },
@@ -39,15 +39,21 @@ export const BITCOIN_BLOCK_PARTY = {
     {
       id: 'screening_1',
       time: '2:00 - 3:00 PM',
-      title: 'TBA',
-      description: 'Title to be announced. Stay tuned.',
+      title: 'My Trust In You Is Broken',
+      description:
+        'Feature documentary by Parker Worthington that chronicles Bitcoin\'s origins as a payments system and Nicolas Dorier\'s pivotal role in creating BTCPay Server during the Block Size Wars. The film highlights merchant adoption, privacy, autonomy, and the risks of trusted third parties.',
+      director: 'Parker Worthington',
+      directorUrl: 'https://twitter.com/webworthy',
+      infoUrl: 'https://bitcoinfilmfest.com/bff2024/',
     },
     {
       id: 'screening_2',
       time: '4:00 - 5:00 PM',
-      title: 'What is the Problem',
+      title: "What's The Problem?",
       description:
-        'A documentary exploring the fundamental problems with the current financial system and why Bitcoin is the solution.',
+        'Demystifying why we all need Bitcoin. How can anyone properly value a solution if they do not understand the problem? "What\'s The Problem?" helps everyone, regardless of background, understand what the problem is. Fix the money, fix the world.',
+      creator: 'Joe Bryan',
+      creatorUrl: 'https://x.com/satmojoe',
     },
   ],
 

@@ -13,7 +13,7 @@
           <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
           <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-secondary">Take the Quiz</router-link>
           <router-link :to="BBP.routes.archive" class="bbp-btn bbp-btn-secondary">Previous Years</router-link>
-          <router-link :to="BBP.routes.wallet" class="bbp-btn bbp-btn-outline">Get a Wallet</router-link>
+          <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }" class="bbp-btn bbp-btn-outline">Get a Wallet</router-link>
           <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Become a Sponsor</router-link>
           <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Sell your Goods</router-link>
           <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Apply to Volunteer</router-link>
@@ -36,7 +36,7 @@
         <router-link :to="BBP.routes.map">Venue Map</router-link>
         <button @click="openDirections">Directions</button>
         <router-link :to="BBP.routes.quiz">Quiz</router-link>
-        <router-link :to="BBP.routes.wallet">Wallet Guide</router-link>
+        <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }">Wallet Guide</router-link>
         <router-link :to="BBP.routes.archive">Archive</router-link>
         <router-link :to="BBP.routes.sponsorApply">Sponsor</router-link>
         <router-link :to="BBP.routes.vendorApply">Vendor</router-link>
@@ -107,6 +107,27 @@
             <p class="bbp-screening-time">{{ film.time }}</p>
             <h3 class="bbp-screening-title">{{ film.title }}</h3>
             <p class="bbp-screening-desc">{{ film.description }}</p>
+            <p v-if="film.creator || film.director" class="bbp-screening-credit">
+              Created by
+              <a
+                v-if="film.creatorUrl || film.directorUrl"
+                :href="film.creatorUrl || film.directorUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ film.creator || film.director }}
+              </a>
+              <span v-else>{{ film.creator || film.director }}</span>
+            </p>
+            <a
+              v-if="film.infoUrl"
+              :href="film.infoUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bbp-screening-link"
+            >
+              More info →
+            </a>
           </div>
         </div>
       </div>
@@ -217,7 +238,7 @@
           <h2 class="bbp-section-title">New to Bitcoin?</h2>
           <p>Set up your first self-custody Bitcoin wallet in under 5 minutes with our step-by-step guide.</p>
         </div>
-        <router-link :to="BBP.routes.wallet" class="bbp-btn bbp-btn-outline">Get a Wallet →</router-link>
+        <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }" class="bbp-btn bbp-btn-outline">Get a Wallet →</router-link>
       </div>
     </section>
 
@@ -676,6 +697,26 @@ const cssVars = computed(() => ({
   color: var(--bbp-dark);
   margin: 0;
 }
+.bbp-screening-credit {
+  margin: 0.65rem 0 0;
+  font-size: 0.82rem;
+  color: var(--bbp-purple);
+}
+.bbp-screening-credit a {
+  color: var(--bbp-teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+.bbp-screening-credit a:hover { text-decoration: underline; }
+.bbp-screening-link {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  color: var(--bbp-teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+.bbp-screening-link:hover { text-decoration: underline; }
 
 /* ── Sponsors ───────────────────────────────────────────────────────────────── */
 .bbp-sponsor-cards {

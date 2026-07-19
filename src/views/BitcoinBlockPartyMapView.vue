@@ -95,6 +95,27 @@
                 <span class="bbpmap-film-time">{{ film.time }}</span>
                 <span class="bbpmap-film-title">{{ film.title }}</span>
                 <p class="bbpmap-film-desc">{{ film.description }}</p>
+                <p v-if="film.creator || film.director" class="bbpmap-film-credit">
+                  Created by
+                  <a
+                    v-if="film.creatorUrl || film.directorUrl"
+                    :href="film.creatorUrl || film.directorUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ film.creator || film.director }}
+                  </a>
+                  <span v-else>{{ film.creator || film.director }}</span>
+                </p>
+                <a
+                  v-if="film.infoUrl"
+                  :href="film.infoUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="bbpmap-modal-link"
+                >
+                  Film details →
+                </a>
               </div>
             </div>
           </template>
@@ -734,6 +755,17 @@ onBeforeUnmount(() => {
   margin: 0;
   line-height: 1.55;
 }
+.bbpmap-film-credit {
+  margin: 0.45rem 0 0;
+  font-size: 0.8rem;
+  color: var(--bbp-purple);
+}
+.bbpmap-film-credit a {
+  color: var(--bbp-teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+.bbpmap-film-credit a:hover { text-decoration: underline; }
 
 /* ── DJ modal ──────────────────────────────────────────────────────────────────── */
 .bbpmap-dj-name { font-size: 1.1rem; font-weight: 700; color: var(--bbp-teal); margin: 0 0 0.35rem; }
