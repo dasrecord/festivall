@@ -20,7 +20,64 @@
           @keyup.enter="startQuiz"
           autocomplete="off"
         />
-        <button class="bbpquiz-btn bbpquiz-btn-primary" @click="startQuiz" :disabled="!playerName.trim()">
+        <div class="bbpquiz-contact-grid">
+          <p class="bbpquiz-contact-heading">How should we contact you if you win?</p>
+          <div class="bbpquiz-contact-options">
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.email" />
+              <span>Email</span>
+            </label>
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.bitcoin" />
+              <span>Bitcoin address</span>
+            </label>
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.lightning" />
+              <span>Lightning address</span>
+            </label>
+          </div>
+
+          <label v-if="contactMethods.email" class="bbpquiz-name-label" for="bbpquiz-email">Email</label>
+          <input
+            v-if="contactMethods.email"
+            id="bbpquiz-email"
+            v-model="playerEmail"
+            class="bbpquiz-name-input"
+            type="email"
+            placeholder="you@example.com"
+            maxlength="120"
+            @keyup.enter="startQuiz"
+            autocomplete="email"
+          />
+
+          <label v-if="contactMethods.bitcoin" class="bbpquiz-name-label" for="bbpquiz-bitcoin-address">Bitcoin address</label>
+          <input
+            v-if="contactMethods.bitcoin"
+            id="bbpquiz-bitcoin-address"
+            v-model="bitcoinAddress"
+            class="bbpquiz-name-input"
+            type="text"
+            placeholder="bc1…"
+            maxlength="120"
+            @keyup.enter="startQuiz"
+            autocomplete="off"
+          />
+
+          <label v-if="contactMethods.lightning" class="bbpquiz-name-label" for="bbpquiz-lightning-address">Lightning address</label>
+          <input
+            v-if="contactMethods.lightning"
+            id="bbpquiz-lightning-address"
+            v-model="lightningAddress"
+            class="bbpquiz-name-input"
+            type="text"
+            placeholder="name@getalby.com"
+            maxlength="120"
+            @keyup.enter="startQuiz"
+            autocomplete="off"
+          />
+          <p class="bbpquiz-contact-note">Pick one, two, or all three. Only your name appears on the leaderboard.</p>
+        </div>
+        <button class="bbpquiz-btn bbpquiz-btn-primary" @click="startQuiz" :disabled="!canStartQuiz">
           Start Quiz →
         </button>
         <button class="bbpquiz-lb-btn" @click="openLeaderboard">🏆 View Leaderboard</button>
@@ -173,10 +230,64 @@
         <h2>🏆 Nice work, {{ playerName || 'Anon' }}!</h2>
         <p class="bbpquiz-score-number">{{ calculateScore() }} / {{ scoredCount }}</p>
         <p class="bbpquiz-score-prize">Top scores win Bitcoin. Submit to enter the leaderboard.</p>
+        <div class="bbpquiz-contact-grid bbpquiz-contact-grid--score">
+          <p class="bbpquiz-contact-heading">Choose where we should contact or pay you if you win.</p>
+          <div class="bbpquiz-contact-options">
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.email" />
+              <span>Email</span>
+            </label>
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.bitcoin" />
+              <span>Bitcoin address</span>
+            </label>
+            <label class="bbpquiz-contact-option">
+              <input type="checkbox" v-model="contactMethods.lightning" />
+              <span>Lightning address</span>
+            </label>
+          </div>
+
+          <label v-if="contactMethods.email" class="bbpquiz-name-label" for="bbpquiz-score-email">Email</label>
+          <input
+            v-if="contactMethods.email"
+            id="bbpquiz-score-email"
+            v-model="playerEmail"
+            class="bbpquiz-name-input"
+            type="email"
+            placeholder="you@example.com"
+            maxlength="120"
+            autocomplete="email"
+          />
+
+          <label v-if="contactMethods.bitcoin" class="bbpquiz-name-label" for="bbpquiz-score-bitcoin-address">Bitcoin address</label>
+          <input
+            v-if="contactMethods.bitcoin"
+            id="bbpquiz-score-bitcoin-address"
+            v-model="bitcoinAddress"
+            class="bbpquiz-name-input"
+            type="text"
+            placeholder="bc1…"
+            maxlength="120"
+            autocomplete="off"
+          />
+
+          <label v-if="contactMethods.lightning" class="bbpquiz-name-label" for="bbpquiz-score-lightning-address">Lightning address</label>
+          <input
+            v-if="contactMethods.lightning"
+            id="bbpquiz-score-lightning-address"
+            v-model="lightningAddress"
+            class="bbpquiz-name-input"
+            type="text"
+            placeholder="name@getalby.com"
+            maxlength="120"
+            autocomplete="off"
+          />
+          <p class="bbpquiz-contact-note">Selected private details are kept with your score entry.</p>
+        </div>
         <button
           class="bbpquiz-btn bbpquiz-btn-primary"
           @click="submitScore"
-          :disabled="scoreSubmitted || submitting"
+          :disabled="scoreSubmitted || submitting || !hasContactMethod"
         >
           {{ scoreSubmitted ? 'Submitted ✓' : submitting ? 'Submitting…' : 'Submit Score' }}
         </button>
@@ -250,6 +361,14 @@ function goTo(i) {
 // ── State ─────────────────────────────────────────────────────────────────────
 const phase        = ref('intro') // 'intro' | 'quiz' | 'score'
 const playerName   = ref('')
+const playerEmail  = ref('')
+const bitcoinAddress = ref('')
+const lightningAddress = ref('')
+const contactMethods = reactive({
+  email: false,
+  bitcoin: false,
+  lightning: false,
+})
 const currentIndex = ref(0)
 const answers      = ref(questions.map(() => ''))
 const feedback     = ref(questions.map(() => null))
@@ -260,6 +379,24 @@ const scoreSubmitted = ref(false)
 const submitting     = ref(false)
 const submitError    = ref('')
 
+const canStartQuiz = computed(() => {
+  return !!playerName.value.trim() && hasContactMethod.value
+})
+
+const selectedContactMethods = computed(() => {
+  return Object.entries(contactMethods)
+    .filter(([_key, selected]) => selected)
+    .map(([key]) => key)
+})
+
+const hasContactMethod = computed(() => {
+  if (!selectedContactMethods.value.length) return false
+  if (contactMethods.email && !playerEmail.value.trim()) return false
+  if (contactMethods.bitcoin && !bitcoinAddress.value.trim()) return false
+  if (contactMethods.lightning && !lightningAddress.value.trim()) return false
+  return true
+})
+
 // ── Mining challenge state ──────────────────────────────────────────────────────
 const miningInput    = reactive({})  // index → message string
 const miningHash     = reactive({})  // index → last computed hex
@@ -268,13 +405,17 @@ const miningLoading  = reactive({})  // index → boolean
 const miningAttempts = reactive({})  // index → attempt count
 
 // ── Progress persistence ──────────────────────────────────────────────────────
-const STORAGE_KEY = `bbp_quiz_progress_2026_v2`
+const STORAGE_KEY = `bbp_quiz_progress_2026_v3`
 
 function persistProgress() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       phase: phase.value,
       playerName: playerName.value,
+      playerEmail: playerEmail.value,
+      bitcoinAddress: bitcoinAddress.value,
+      lightningAddress: lightningAddress.value,
+      contactMethods: { ...contactMethods },
       currentIndex: currentIndex.value,
       answers: answers.value,
       feedback: feedback.value,
@@ -293,6 +434,12 @@ function loadProgress() {
     const s = JSON.parse(raw)
     if (!s) return
     playerName.value    = s.playerName || ''
+    playerEmail.value   = s.playerEmail || ''
+    bitcoinAddress.value = s.bitcoinAddress || ''
+    lightningAddress.value = s.lightningAddress || ''
+    contactMethods.email = !!s.contactMethods?.email
+    contactMethods.bitcoin = !!s.contactMethods?.bitcoin
+    contactMethods.lightning = !!s.contactMethods?.lightning
     currentIndex.value  = typeof s.currentIndex === 'number' ? s.currentIndex : 0
     answers.value       = Array.isArray(s.answers)    ? s.answers    : questions.map(() => '')
     feedback.value      = Array.isArray(s.feedback)   ? s.feedback   : questions.map(() => null)
@@ -310,7 +457,7 @@ onMounted(() => {
 
 // ── Quiz control ───────────────────────────────────────────────────────────────
 function startQuiz() {
-  if (!playerName.value.trim()) return
+  if (!canStartQuiz.value) return
   phase.value = 'quiz'
   currentIndex.value = 0
   persistProgress()
@@ -436,15 +583,37 @@ function openLeaderboard() {
 
 async function submitScore() {
   if (scoreSubmitted.value || submitting.value) return
+  if (!hasContactMethod.value) {
+    submitError.value = 'Please choose at least one contact method and fill in each selected field before submitting.'
+    return
+  }
   submitting.value = true
   submitError.value = ''
   const score = calculateScore()
   try {
+    const answerDetails = questions
+      .map((question, index) => ({
+        index,
+        type: question.type,
+        category: question.category || null,
+        prompt: question.text,
+        submitted_answer: answers.value[index] || null,
+        mining_input: question.type === 'mining' ? (miningInput[index] || null) : null,
+        feedback: feedback.value[index] || null,
+        hint_used: !!hintsUsed.value[index],
+      }))
+      .filter(entry => entry.type !== 'information')
+
     await addDoc(collection(festivall_db, BBP.collections.quizLeaderboard), {
       name:       (playerName.value || 'Anon').trim().slice(0, 40),
+      contact_methods: selectedContactMethods.value,
+      email:      contactMethods.email ? playerEmail.value.trim().slice(0, 120) : '',
+      bitcoin_address: contactMethods.bitcoin ? bitcoinAddress.value.trim().slice(0, 120) : '',
+      lightning_address: contactMethods.lightning ? lightningAddress.value.trim().slice(0, 120) : '',
       score,
       total:      scoredCount.value,
       hints_used: Object.keys(hintsUsed.value).length,
+      answers:    answerDetails,
       submitted_at: new Date().toISOString(),
     })
     scoreSubmitted.value = true
@@ -552,6 +721,64 @@ const cssVars = computed(() => ({
   transition: border-color 0.15s;
 }
 .bbpquiz-name-input:focus { border-color: var(--bbp-teal); }
+.bbpquiz-contact-grid {
+  width: 100%;
+  display: grid;
+  gap: 0.45rem;
+}
+.bbpquiz-contact-heading {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--bbp-teal);
+  text-align: left;
+  font-weight: 700;
+}
+.bbpquiz-contact-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.bbpquiz-contact-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0.55rem 0.45rem;
+  border: 1px solid var(--bbp-tan);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.7);
+  color: var(--bbp-teal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bbpquiz-contact-option:has(input:checked) {
+  border-color: var(--bbp-orange);
+  background: rgba(200,63,15,0.1);
+  color: var(--bbp-orange);
+}
+.bbpquiz-contact-option input {
+  accent-color: var(--bbp-orange);
+}
+.bbpquiz-contact-grid .bbpquiz-name-label {
+  margin-top: 0.35rem;
+}
+.bbpquiz-contact-note {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--bbp-tan);
+  text-align: left;
+}
+@media (max-width: 520px) {
+  .bbpquiz-contact-options {
+    grid-template-columns: 1fr;
+  }
+  .bbpquiz-contact-option {
+    justify-content: flex-start;
+  }
+}
 
 /* ── Buttons ─────────────────────────────────────────────────────────────────── */
 .bbpquiz-btn {

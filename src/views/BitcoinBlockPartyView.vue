@@ -10,8 +10,26 @@
         <p class="bbp-hero-venue">{{ BBP.venue }}</p>
         <div class="bbp-hero-ctas">
           <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">View Map</router-link>
+          <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
           <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-secondary">Take the Quiz</router-link>
+          <router-link :to="BBP.routes.wallet" class="bbp-btn bbp-btn-outline">Get a Wallet</router-link>
+          <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Sponsor</router-link>
+          <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Vendor</router-link>
+          <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Volunteer</router-link>
         </div>
+      </div>
+    </section>
+
+    <!-- ── QUICK ACTIONS ──────────────────────────────────────────────────── -->
+    <section class="bbp-quick-actions" aria-label="Bitcoin Block Party quick actions">
+      <div class="bbp-container bbp-quick-actions-inner">
+        <router-link :to="BBP.routes.map">Venue Map</router-link>
+        <button @click="openDirections">Directions</button>
+        <router-link :to="BBP.routes.quiz">Quiz</router-link>
+        <router-link :to="BBP.routes.wallet">Wallet Guide</router-link>
+        <router-link :to="BBP.routes.sponsorApply">Sponsor</router-link>
+        <router-link :to="BBP.routes.vendorApply">Vendor</router-link>
+        <router-link :to="BBP.routes.volunteer">Volunteer</router-link>
       </div>
     </section>
 
@@ -38,6 +56,33 @@
               <span v-if="item.note" class="bbp-schedule-note"> — {{ item.note }}</span>
             </span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DIRECTIONS ─────────────────────────────────────────────────────── -->
+    <section class="bbp-section bbp-directions">
+      <div class="bbp-container bbp-directions-inner">
+        <div class="bbp-directions-copy">
+          <h2 class="bbp-section-title">Get There</h2>
+          <p class="bbp-directions-address">{{ directionsLabel }}</p>
+          <p class="bbp-directions-note">Open directions in your preferred map app or copy the venue search.</p>
+          <div class="bbp-directions-actions">
+            <button class="bbp-btn bbp-btn-primary" @click="openDirections">Google Maps</button>
+            <a class="bbp-btn bbp-btn-outline" :href="appleMapsUrl" target="_blank" rel="noopener noreferrer">Apple Maps</a>
+            <button class="bbp-btn bbp-btn-secondary" @click="copyDirectionsQuery">
+              {{ copiedDirections ? 'Copied' : 'Copy Venue' }}
+            </button>
+          </div>
+        </div>
+        <div class="bbp-directions-map">
+          <iframe
+            :src="googleMapsEmbedUrl"
+            title="Map to Bitcoin Block Party location at FUNK Coffee Bar"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
         </div>
       </div>
     </section>
@@ -179,7 +224,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 
@@ -201,6 +246,26 @@ useHead({
 const confirmedSponsors = computed(() => BBP.sponsors.filter(s => s.status === 'confirmed'))
 const confirmedVendors  = computed(() => BBP.vendors.filter(v => v.status === 'confirmed'))
 const showSponsorCallToAction = true
+const copiedDirections = ref(false)
+const directionsLabel = computed(() => `FUNK. Coffee Bar, ${BBP.venue}, ${BBP.city}`)
+const directionsQuery = computed(() => encodeURIComponent(directionsLabel.value))
+const googleMapsUrl = computed(() => `https://www.google.com/maps/search/?api=1&query=${directionsQuery.value}`)
+const appleMapsUrl = computed(() => `https://maps.apple.com/?q=${directionsQuery.value}`)
+const googleMapsEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d868.475007062634!2d-123.1213838807658!3d49.28616521956091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54867189aefe3a9d%3A0xe72e3e82225c0f8b!2sFUNK.%20Coffee%20Bar!5e0!3m2!1sen!2sca!4v1784433137205!5m2!1sen!2sca'
+
+function openDirections() {
+  window.open(googleMapsUrl.value, '_blank', 'noopener,noreferrer')
+}
+
+async function copyDirectionsQuery() {
+  try {
+    await navigator.clipboard.writeText(directionsLabel.value)
+    copiedDirections.value = true
+    window.setTimeout(() => { copiedDirections.value = false }, 1800)
+  } catch (_) {
+    openDirections()
+  }
+}
 
 function tierLabel(tierId, kind) {
   if (kind === 'sponsor') {
@@ -278,20 +343,61 @@ const cssVars = computed(() => ({
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
 .bbp-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.75rem 1.75rem;
   border-radius: 4px;
   font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
+  border: none;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.1s;
   letter-spacing: 0.04em;
+  font-family: inherit;
 }
 .bbp-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 .bbp-btn-primary  { background: var(--bbp-orange); color: #fff; }
 .bbp-btn-secondary { background: var(--bbp-teal); color: #fff; }
 .bbp-btn-outline  { border: 2px solid var(--bbp-teal); color: var(--bbp-teal); background: transparent; }
+
+/* ── Quick actions ─────────────────────────────────────────────────────────── */
+.bbp-quick-actions {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(244,242,230,0.94);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(188,186,165,0.5);
+  border-bottom: 1px solid rgba(188,186,165,0.5);
+}
+.bbp-quick-actions-inner {
+  max-width: 980px;
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.65rem 1.5rem;
+}
+.bbp-quick-actions a,
+.bbp-quick-actions button {
+  flex: 0 0 auto;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--bbp-tan);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  color: var(--bbp-teal);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+.bbp-quick-actions a:hover,
+.bbp-quick-actions button:hover {
+  border-color: var(--bbp-orange);
+  color: var(--bbp-orange);
+}
 
 /* ── Sections ──────────────────────────────────────────────────────────────── */
 .bbp-section {
@@ -351,6 +457,54 @@ const cssVars = computed(() => ({
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.25rem;
+}
+
+/* ── Directions ─────────────────────────────────────────────────────────────── */
+.bbp-directions {
+  background: rgba(188,186,165,0.16);
+}
+.bbp-directions-inner {
+  max-width: 980px;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.15fr);
+  align-items: stretch;
+  gap: 2rem;
+}
+.bbp-directions-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.bbp-directions-address {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--bbp-dark);
+}
+.bbp-directions-note {
+  margin: 0.35rem 0 0;
+  color: var(--bbp-purple);
+  font-size: 0.95rem;
+}
+.bbp-directions-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.bbp-directions-map {
+  min-height: 320px;
+  border: 1px solid var(--bbp-tan);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.7);
+}
+.bbp-directions-map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border: 0;
 }
 .bbp-screening-card {
   background: rgba(255,255,255,0.75);
@@ -588,5 +742,7 @@ const cssVars = computed(() => ({
   .bbp-map-cta-inner,
   .bbp-quiz-cta-inner,
   .bbp-wallet-cta-inner { flex-direction: column; align-items: flex-start; }
+  .bbp-directions-inner { grid-template-columns: 1fr; }
+  .bbp-directions-actions .bbp-btn { width: 100%; }
 }
 </style>

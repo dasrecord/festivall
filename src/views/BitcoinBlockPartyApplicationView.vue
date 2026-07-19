@@ -47,6 +47,7 @@
           >
             <div class="bbpapp-tier-card-header">
               <span class="bbpapp-tier-name">{{ tier.name }}</span>
+              <span class="bbpapp-tier-label">{{ tier.label }}</span>
               <span class="bbpapp-tier-price" v-if="tier.price">${{ tier.price }} CAD</span>
               <span class="bbpapp-tier-price" v-else>Price TBA</span>
             </div>

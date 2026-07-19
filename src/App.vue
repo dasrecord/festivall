@@ -7,28 +7,60 @@ import PosterSplash from './components/PosterSplash.vue'
 import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
+import bitcoinBlockPartyPoster from '@/assets/images/bitcoin_block_party/bitcoin_block_party_2026_bg.svg?url'
 
 const POSTER_ROUTES = ['/reunion', '/reunionapplication', '/reuniontickets']
+const BITCOIN_BLOCK_PARTY_POSTER_ROUTES = ['/bitcoinblockparty']
 const STORAGE_KEY = 'posterSplashShown_2026'
+const BITCOIN_BLOCK_PARTY_STORAGE_KEY = 'bitcoinBlockPartyPosterSplashShown_2026'
 
 const route = useRoute()
 const showPoster = ref(false)
+const posterSrc = ref(poster2025)
+const posterHint = ref('This was our 2025 poster.<br>The 2026 edition is going to be Iconic')
+const posterHintTitle = ref('')
+const posterHintBody = ref('')
+const showBitcoinBlockPartyInfo = ref(false)
+const activePosterStorageKey = ref(STORAGE_KEY)
 
 watch(
   () => route.path,
   (path) => {
-    const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
-    if (POSTER_ROUTES.includes(path) && shown < 3) {
-      showPoster.value = true
+    if (POSTER_ROUTES.includes(path)) {
+      const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
+      posterSrc.value = poster2025
+      posterHint.value = 'This was our 2025 poster.<br>The 2026 edition is going to be Iconic'
+      posterHintTitle.value = ''
+      posterHintBody.value = ''
+      showBitcoinBlockPartyInfo.value = false
+      activePosterStorageKey.value = STORAGE_KEY
+      showPoster.value = shown < 3
+      return
     }
+
+    if (BITCOIN_BLOCK_PARTY_POSTER_ROUTES.includes(path)) {
+      const shown = parseInt(sessionStorage.getItem(BITCOIN_BLOCK_PARTY_STORAGE_KEY) || '0')
+      posterSrc.value = bitcoinBlockPartyPoster
+      posterHint.value = ''
+      posterHintTitle.value = 'Bitcoin Block Party 2026'
+      posterHintBody.value = 'Tap the poster to enter. Pinch or scroll to zoom.'
+      showBitcoinBlockPartyInfo.value = true
+      activePosterStorageKey.value = BITCOIN_BLOCK_PARTY_STORAGE_KEY
+      showPoster.value = shown < 3
+      return
+    }
+
+    showPoster.value = false
+    showBitcoinBlockPartyInfo.value = false
   },
   { immediate: true }
 )
 
 const onPosterDismissed = () => {
   showPoster.value = false
-  const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
-  sessionStorage.setItem(STORAGE_KEY, String(shown + 1))
+  const storageKey = activePosterStorageKey.value
+  const shown = parseInt(sessionStorage.getItem(storageKey) || '0')
+  sessionStorage.setItem(storageKey, String(shown + 1))
 }
 
 // Default global meta (individual pages override title/description via their own useHead)
@@ -93,7 +125,15 @@ useHead(computed(() => ({
     </div>
   </header>
 
-  <PosterSplash v-if="showPoster" :src="poster2025" @dismissed="onPosterDismissed" />
+  <PosterSplash
+    v-if="showPoster"
+    :src="posterSrc"
+    :hint="posterHint"
+    :hint-title="posterHintTitle"
+    :hint-body="posterHintBody"
+    :show-bitcoin-block-party-info="showBitcoinBlockPartyInfo"
+    @dismissed="onPosterDismissed"
+  />
   <RouterView />
 </template>
 

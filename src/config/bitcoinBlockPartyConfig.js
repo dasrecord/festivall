@@ -19,7 +19,7 @@ export const BITCOIN_BLOCK_PARTY = {
     { name: 'Kurtis Warren', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Jennifer Zee',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Roger',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    { name: 'Roger Huang',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
   ],
 
   // ── Itinerary ─────────────────────────────────────────────────────────────
@@ -62,8 +62,8 @@ export const BITCOIN_BLOCK_PARTY = {
   sponsorTiers: [
     {
       id: 'satoshi',
-      name: 'Satoshi',
-      label: 'Presenting Sponsor',
+      name: 'SATOSHI',
+      label: 'Presenting Sponsor - Claimed',
       price: 2100,
       perks: [
         'Prime 8-foot table (high-traffic location)',
@@ -77,10 +77,10 @@ export const BITCOIN_BLOCK_PARTY = {
       ],
     },
     {
-      id: 'hodl',
-      name: 'HODL',
-      label: 'HODL Sponsor',
-      price: null,
+      id: 'whale',
+      name: 'WHALE',
+      label: 'Limit 3',
+      price: 700,
       perks: [
         '8-foot dedicated sponsor table',
         '10-minute speaking slot (panel or solo depending on agenda)',
@@ -92,10 +92,10 @@ export const BITCOIN_BLOCK_PARTY = {
       ],
     },
     {
-      id: 'stacker',
-      name: 'Stacker',
-      label: 'Stacker Sponsor',
-      price: null,
+      id: 'bull',
+      name: 'BULL',
+      label: 'Limit 5',
+      price: 420,
       perks: [
         '4-foot sponsor table',
         '5-minute speaking slot (or panel depending on agenda)',
@@ -116,7 +116,7 @@ export const BITCOIN_BLOCK_PARTY = {
       id: 'zeus',
       tier: 'satoshi',
       displayName: 'Zeus',
-      shortDescription: 'Presenting Sponsor. Bitcoin payments infrastructure.',
+      shortDescription: 'SATOSHI presenting sponsor. Bitcoin payments infrastructure.',
       url: 'https://zeusln.com',
       status: 'confirmed',
     },
@@ -137,7 +137,7 @@ export const BITCOIN_BLOCK_PARTY = {
     },
     {
       id: 'diamond_hands',
-      name: 'Diamond Hands',
+      name: 'DIAMOND HANDS',
       label: 'Premium',
       price: 150,
       perks: [
