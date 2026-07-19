@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
                   <span>{{ row.time }}</span><span>{{ row.label }}</span>
                 </div>
               </div>
-              <p class="bbp-splash-url">{{ BBP.splash?.ctaUrlLabel || 'festivall.ca/bitcoinblockparty' }}</p>
+              <p class="bbp-splash-url">{{ BBP.splash?.ctaUrlLabel || 'bitcoinblockparty.festivall.ca' }}</p>
             </div>
           </div>
         </div>

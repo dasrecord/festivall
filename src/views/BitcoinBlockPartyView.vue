@@ -748,18 +748,22 @@ const cssVars = computed(() => ({
   min-width: 0;
 }
 .bbp-sponsor-icon-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 11px;
   display: grid;
   place-items: center;
   background: var(--bbp-teal);
   border: 1px solid rgba(7,94,114,0.42);
 }
 .bbp-sponsor-icon {
-  width: 34px;
-  height: 34px;
+  width: auto;
+  height: auto;
+  max-width: 32px;
+  max-height: 32px;
   object-fit: contain;
+  display: block;
 }
 .bbp-sponsor-name { font-size: 1.2rem; font-weight: 800; }
 .bbp-sponsor-desc {

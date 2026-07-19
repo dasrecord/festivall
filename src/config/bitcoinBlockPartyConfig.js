@@ -18,7 +18,7 @@ export const BITCOIN_BLOCK_PARTY = {
     title: 'Bitcoin Block Party 2026',
     hintBody: 'Tap the poster to enter. Pinch or scroll to zoom.',
     eyebrow: 'Vancouver, BC · Free Admission',
-    ctaUrlLabel: 'festivall.ca/bitcoinblockparty',
+    ctaUrlLabel: 'bitcoinblockparty.festivall.ca',
   },
 
   // ── Admins ────────────────────────────────────────────────────────────────

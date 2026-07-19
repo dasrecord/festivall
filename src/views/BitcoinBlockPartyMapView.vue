@@ -640,12 +640,12 @@ onBeforeUnmount(() => {
   margin-bottom: 0.5rem;
 }
 .bbpmap-modal-icon {
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
-  padding: 0.35rem;
-  border-radius: 12px;
+  padding: 0.4rem;
+  border-radius: 11px;
   background: var(--bbp-teal);
   border: 1px solid rgba(7,94,114,0.42);
 }
