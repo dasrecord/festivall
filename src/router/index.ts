@@ -67,6 +67,7 @@ import MedPrepContractView from '@/views/MedPrepContractView.vue'
 import MedPrepCVView from '@/views/MedPrepCVView.vue'
 import ReunionGenreMapView from '@/views/ReunionGenreMapView.vue'
 import BitcoinBlockPartyView from '@/views/BitcoinBlockPartyView.vue'
+import BitcoinBlockPartyArchiveView from '@/views/BitcoinBlockPartyArchiveView.vue'
 import BitcoinBlockPartyMapView from '@/views/BitcoinBlockPartyMapView.vue'
 import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
 import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
@@ -561,6 +562,12 @@ const routes = [
     path: '/bitcoinblockparty',
     name: 'bitcoin-block-party',
     component: BitcoinBlockPartyView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockparty/archive',
+    name: 'bitcoin-block-party-archive',
+    component: BitcoinBlockPartyArchiveView,
     meta: { showHeader: false }
   },
   {

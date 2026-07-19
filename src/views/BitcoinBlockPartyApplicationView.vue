@@ -80,8 +80,14 @@
         </div>
       </section>
 
+      <section v-if="form.role && !tierStepComplete" class="bbpapp-section">
+        <p class="bbpapp-gate-note">
+          Choose your {{ form.role === 'sponsor' ? 'sponsorship' : 'vendor' }} tier first to continue.
+        </p>
+      </section>
+
       <!-- Contact info (all roles) -->
-      <section v-if="form.role" class="bbpapp-section">
+      <section v-if="form.role && tierStepComplete" class="bbpapp-section">
         <h2 class="bbpapp-section-title">Your Information</h2>
 
         <div class="bbpapp-field-group">
@@ -108,7 +114,7 @@
       </section>
 
       <!-- Role-specific fields -->
-      <section v-if="form.role === 'sponsor'" class="bbpapp-section">
+      <section v-if="form.role === 'sponsor' && tierStepComplete" class="bbpapp-section">
         <h2 class="bbpapp-section-title">Sponsorship Details</h2>
         <div class="bbpapp-field-group">
           <label class="bbpapp-label" for="bbpapp-keynote">Would you like to speak? (optional)</label>
@@ -122,7 +128,7 @@
         </div>
       </section>
 
-      <section v-if="form.role === 'vendor'" class="bbpapp-section">
+      <section v-if="form.role === 'vendor' && tierStepComplete" class="bbpapp-section">
         <h2 class="bbpapp-section-title">Vendor Details</h2>
         <div class="bbpapp-field-group">
           <label class="bbpapp-label" for="bbpapp-products">What are you selling? *</label>
@@ -147,7 +153,7 @@
         </div>
       </section>
 
-      <section v-if="form.role === 'volunteer'" class="bbpapp-section">
+      <section v-if="form.role === 'volunteer' && tierStepComplete" class="bbpapp-section">
         <h2 class="bbpapp-section-title">Volunteer Details</h2>
         <div class="bbpapp-field-group">
           <label class="bbpapp-label" for="bbpapp-avail">Your availability on {{ BBP.date }}</label>
@@ -162,7 +168,7 @@
       </section>
 
       <!-- Notes (all roles) -->
-      <section v-if="form.role" class="bbpapp-section">
+      <section v-if="form.role && tierStepComplete" class="bbpapp-section">
         <div class="bbpapp-field-group">
           <label class="bbpapp-label" for="bbpapp-notes">Additional notes (optional)</label>
           <textarea id="bbpapp-notes" v-model="form.notes" class="bbpapp-textarea" rows="3"
@@ -171,7 +177,7 @@
       </section>
 
       <!-- Submit -->
-      <section v-if="form.role" class="bbpapp-section bbpapp-submit-section">
+      <section v-if="form.role && tierStepComplete" class="bbpapp-section bbpapp-submit-section">
         <p v-if="validationError" class="bbpapp-validation-error">{{ validationError }}</p>
         <button
           class="bbpapp-btn bbpapp-btn-primary"
@@ -242,6 +248,13 @@ const validationError = ref('')
 const currentRoleLabel = computed(() => {
   const role = form.value.role || roleFromRoute.value
   return roleOptions.find(o => o.value === role)?.label || 'Application'
+})
+
+const tierStepComplete = computed(() => {
+  const role = form.value.role
+  if (!role) return false
+  if (role === 'sponsor' || role === 'vendor') return !!form.value.tier
+  return true
 })
 
 useHead(computed(() => ({
@@ -500,6 +513,15 @@ const cssVars = computed(() => ({
 }
 .bbpapp-submit-note a { color: var(--bbp-teal); text-decoration: none; }
 .bbpapp-submit-note a:hover { text-decoration: underline; }
+.bbpapp-gate-note {
+  margin: 0;
+  border: 1px dashed var(--bbp-tan);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.72);
+  color: var(--bbp-dark);
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+}
 
 /* ── Success ─────────────────────────────────────────────────────────────────── */
 .bbpapp-success {

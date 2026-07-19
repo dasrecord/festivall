@@ -24,14 +24,14 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
-    { time: '12:00 PM',         label: 'Doors Open' },
-    { time: '2:00 - 3:00 PM',   label: 'Film Screening',            note: 'Title TBA' },
-    { time: '3:00 - 4:00 PM',   label: 'Speakers' },
-    { time: '4:00 - 5:00 PM',   label: 'Film Screening',            note: '"What is the Problem"' },
-    { time: '5:00 - 6:00 PM',   label: 'Dinner' },
-    { time: '~6:00 PM',         label: 'Prize Announcements + Sponsor Thank-You + FUNK' },
-    { time: '6:00 - 8:00 PM',   label: 'DJs & Mixer' },
-    { time: '8:00 PM',          label: 'Doors Close' },
+    { time: '12:00 PM', label: 'Doors Open' },
+    { time: '2:00 PM',label: 'Film Screening',            note: 'Title TBA' },
+    { time: '3:00 PM',label: 'Speakers' },
+    { time: '4:00 PM',label: 'Film Screening',            note: '"What is the Problem"' },
+    { time: '5:00 PM',label: 'Dinner' },
+    { time: '5:45 PM',label: 'Announcements & Acknowledgements' },
+    { time: '6:00 PM',label: 'DJs & Mixer' },
+    { time: '8:00 PM',label: 'Doors Close' },
   ],
 
   // ── Film Screenings (for map popup + landing) ─────────────────────────────
@@ -51,6 +51,35 @@ export const BITCOIN_BLOCK_PARTY = {
     },
   ],
 
+  // ── Archive / previous years ─────────────────────────────────────────────
+  archive: [
+    {
+      year: 2025,
+      title: 'Bitcoin Block Party 2025',
+      venue: 'The Beaumont Studios, Vancouver, BC',
+      summary: 'Community meetup format with live music, speaker sessions, and Bitcoin-first vendors.',
+      performers: [
+        { name: 'Das Record', role: 'DJ Set', note: 'Ambient Instrumental' },
+      ],
+      speakers: [
+        { name: 'Vancouver Bitcoin Organizers', topic: 'Local Bitcoin adoption' },
+      ],
+    },
+    {
+      year: 2024,
+      title: 'Bitcoin Block Party 2024',
+      venue: 'The Beaumont Studios, Vancouver, BC',
+      summary: 'Pilot-year format focused on education, community meetups, and merchant onboarding.',
+      performers: [
+        { name: 'Das Record', role: 'DJ Set', note: 'Ambient Instrumental' },
+        { name: 'MoriMori', role: 'DJ Set', note: 'Hiphop' },
+      ],
+      speakers: [
+        { name: 'Local Bitcoin Builders', topic: 'Self-custody and payments' },
+      ],
+    },
+  ],
+
   // ── DJ (for map popup) ────────────────────────────────────────────────────
   dj: {
     name: 'MoriMori',
@@ -63,8 +92,9 @@ export const BITCOIN_BLOCK_PARTY = {
     {
       id: 'satoshi',
       name: 'SATOSHI',
-      label: 'Presenting Sponsor - Claimed',
+      label: 'Presenting',
       price: 2100,
+      capacity: 1,
       perks: [
         'Prime 8-foot table (high-traffic location)',
         '20-minute keynote speaking slot (priority placement)',
@@ -79,8 +109,9 @@ export const BITCOIN_BLOCK_PARTY = {
     {
       id: 'whale',
       name: 'WHALE',
-      label: 'Limit 3',
+      label: 'Premium',
       price: 700,
+      capacity: 3,
       perks: [
         '8-foot dedicated sponsor table',
         '10-minute speaking slot (panel or solo depending on agenda)',
@@ -94,8 +125,9 @@ export const BITCOIN_BLOCK_PARTY = {
     {
       id: 'bull',
       name: 'BULL',
-      label: 'Limit 5',
+      label: 'Supporting',
       price: 420,
+      capacity: 5,
       perks: [
         '4-foot sponsor table',
         '5-minute speaking slot (or panel depending on agenda)',
@@ -162,6 +194,7 @@ export const BITCOIN_BLOCK_PARTY = {
       name: 'HODLER',
       label: 'Most Popular',
       price: 50,
+      capacity: 50,
       perks: [
         'Bring your own 6 or 8-foot table',
         'Must accept Bitcoin',
@@ -172,6 +205,7 @@ export const BITCOIN_BLOCK_PARTY = {
       name: 'DIAMOND HANDS',
       label: 'Premium',
       price: 150,
+      capacity: 25,
       perks: [
         '6-foot table provided ($25 for each additional 6-foot table)',
         'Assistance with setup and teardown',
@@ -268,9 +302,22 @@ export const BITCOIN_BLOCK_PARTY = {
     quizLeaderboard:'bbp_quiz_leaderboard_2026',
   },
 
+  // ── MC announcement generator seeds ─────────────────────────────────────
+  mc: {
+    opening: 'Welcome to Bitcoin Block Party {{year}} at {{venue}} in {{city}}.',
+    safety: 'Please stay hydrated, follow event staff directions, and keep pathways clear.',
+    sponsorIntro: 'Big thank-you to our sponsors supporting the Bitcoin community:',
+    screeningIntro: 'Film screening begins now in the presenting area.',
+    speakerIntro: 'Speaker segment is starting now at the presenting area.',
+    dinnerIntro: 'Dinner window is now open. Please make your way to food vendors.',
+    djIntro: 'DJs and mixer are now live. Enjoy the evening set.',
+    closing: 'Thank you for joining us. Safe travels and we will see you next year.',
+  },
+
   // ── Route constants ───────────────────────────────────────────────────────
   routes: {
     landing:       '/bitcoinblockparty',
+    archive:       '/bitcoinblockparty/archive',
     map:           '/bitcoinblockpartymap',
     quiz:          '/bitcoinquiz',
     wallet:        '/bitcoin-wallet',

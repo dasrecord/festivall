@@ -279,6 +279,7 @@ onMounted(() => {
   align-items: center;
   text-align: center;
 }
+
 .welcome-item {
   height: 300px;
   padding: 1rem;

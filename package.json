@@ -23,7 +23,8 @@
     "seed-pending-meal-purchases": "node ./scripts/seed-pending-meal-purchases.js --write",
     "import-applicants": "node ./scripts/import-applicants.js",
     "patch-resolume-visuals": "node ./scripts/patch-resolume-visuals.js",
-    "import-applicants-write": "node ./scripts/import-applicants.js --write"
+    "import-applicants-write": "node ./scripts/import-applicants.js --write",
+    "generate-bbp-mc": "node ./scripts/generate-bbp-mc-announcements.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",

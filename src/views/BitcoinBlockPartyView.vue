@@ -12,10 +12,20 @@
           <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">View Map</router-link>
           <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
           <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-secondary">Take the Quiz</router-link>
+          <router-link :to="BBP.routes.archive" class="bbp-btn bbp-btn-secondary">Previous Years</router-link>
           <router-link :to="BBP.routes.wallet" class="bbp-btn bbp-btn-outline">Get a Wallet</router-link>
-          <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Sponsor</router-link>
-          <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Vendor</router-link>
-          <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Volunteer</router-link>
+          <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Become a Sponsor</router-link>
+          <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Sell your Goods</router-link>
+          <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Apply to Volunteer</router-link>
+        </div>
+      </div>
+    </section>
+
+    <section class="bbp-chyron" aria-label="Live Bitcoin market status" aria-live="polite">
+      <div class="bbp-chyron-viewport">
+        <div class="bbp-chyron-track">
+          <p v-for="(item, index) in chyronItems" :key="`a-${index}`" class="bbp-chyron-item">{{ item }}</p>
+          <p v-for="(item, index) in chyronItems" :key="`b-${index}`" class="bbp-chyron-item">{{ item }}</p>
         </div>
       </div>
     </section>
@@ -27,6 +37,7 @@
         <button @click="openDirections">Directions</button>
         <router-link :to="BBP.routes.quiz">Quiz</router-link>
         <router-link :to="BBP.routes.wallet">Wallet Guide</router-link>
+        <router-link :to="BBP.routes.archive">Archive</router-link>
         <router-link :to="BBP.routes.sponsorApply">Sponsor</router-link>
         <router-link :to="BBP.routes.vendorApply">Vendor</router-link>
         <router-link :to="BBP.routes.volunteer">Volunteer</router-link>
@@ -117,9 +128,17 @@
             class="bbp-sponsor-card"
             :class="`bbp-sponsor-tier-${sponsor.tier}`"
           >
-            <span class="bbp-sponsor-tier-badge">{{ tierLabel(sponsor.tier, 'sponsor') }}</span>
-            <span class="bbp-sponsor-name">{{ sponsor.displayName }}</span>
-            <span class="bbp-sponsor-desc">{{ sponsor.shortDescription }}</span>
+            <span class="bbp-sponsor-icon-badge">
+              <img
+                :src="sponsorIconSrc(sponsor.tier)"
+                :alt="`${sponsor.displayName} sponsor icon`"
+                class="bbp-sponsor-icon"
+              />
+            </span>
+            <span class="bbp-sponsor-copy">
+              <span class="bbp-sponsor-name">{{ sponsor.displayName }}</span>
+              <span class="bbp-sponsor-desc">{{ sponsor.shortDescription }}</span>
+            </span>
           </a>
         </div>
 
@@ -224,9 +243,12 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
+import bullIcon from '@/assets/images/icons/bull.png'
+import whaleIcon from '@/assets/images/icons/whale.png'
 
 useHead({
   title: `Bitcoin Block Party ${BBP.year} — ${BBP.venue}, ${BBP.city}`,
@@ -252,6 +274,89 @@ const directionsQuery = computed(() => encodeURIComponent(directionsLabel.value)
 const googleMapsUrl = computed(() => `https://www.google.com/maps/search/?api=1&query=${directionsQuery.value}`)
 const appleMapsUrl = computed(() => `https://maps.apple.com/?q=${directionsQuery.value}`)
 const googleMapsEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d868.475007062634!2d-123.1213838807658!3d49.28616521956091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54867189aefe3a9d%3A0xe72e3e82225c0f8b!2sFUNK.%20Coffee%20Bar!5e0!3m2!1sen!2sca!4v1784433137205!5m2!1sen!2sca'
+const lockHeight = ref(null)
+const tipBlockHash = ref('')
+const btcCadRate = ref(null)
+const marketDataLoading = ref(true)
+const marketDataError = ref('')
+let marketRefreshId = null
+
+const shortBlockHash = computed(() => {
+  if (!tipBlockHash.value || tipBlockHash.value.length < 16) {
+    return tipBlockHash.value || 'Unavailable'
+  }
+  return `${tipBlockHash.value.slice(0, 10)}...${tipBlockHash.value.slice(-10)}`
+})
+
+const formattedCadRate = computed(() => {
+  if (btcCadRate.value === null) return 'Unavailable'
+  return btcCadRate.value.toLocaleString('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    maximumFractionDigits: 0,
+  })
+})
+
+const chyronItems = computed(() => {
+  const heightText = marketDataLoading.value ? 'Loading...' : lockHeight.value ?? 'Unavailable'
+  const hashText = marketDataLoading.value ? 'Loading...' : shortBlockHash.value
+  const rateText = marketDataLoading.value ? 'Loading...' : formattedCadRate.value
+  const customText = marketDataError.value || 'ADVERTISE HERE — sponsor the Bitcoin Block Party and reach thousands of Bitcoiners in Vancouver.'
+
+  return [
+    `BLOCK HEIGHT ${heightText}`,
+    `BLOCK HASH ${hashText}`,
+    `BTC/CAD ${rateText}`,
+    customText,
+  ]
+})
+
+async function loadBitcoinMarketData() {
+  marketDataLoading.value = true
+  marketDataError.value = ''
+
+  try {
+    const [heightRes, hashRes, fxRes] = await Promise.all([
+      fetch('https://mempool.space/api/blocks/tip/height'),
+      fetch('https://mempool.space/api/blocks/tip/hash'),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad'),
+    ])
+
+    if (!heightRes.ok || !hashRes.ok || !fxRes.ok) {
+      throw new Error('One or more market endpoints failed')
+    }
+
+    const [heightText, hashText, fxJson] = await Promise.all([
+      heightRes.text(),
+      hashRes.text(),
+      fxRes.json(),
+    ])
+
+    const parsedHeight = Number(heightText)
+    const parsedCad = Number(fxJson?.bitcoin?.cad)
+
+    lockHeight.value = Number.isFinite(parsedHeight) ? parsedHeight : null
+    tipBlockHash.value = hashText || ''
+    btcCadRate.value = Number.isFinite(parsedCad) ? parsedCad : null
+  } catch (error) {
+    marketDataError.value = 'Live market data unavailable right now.'
+    lockHeight.value = null
+    tipBlockHash.value = ''
+    btcCadRate.value = null
+    console.warn('Bitcoin market data fetch failed', error)
+  } finally {
+    marketDataLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadBitcoinMarketData()
+  marketRefreshId = window.setInterval(loadBitcoinMarketData, 60000)
+})
+
+onBeforeUnmount(() => {
+  if (marketRefreshId) window.clearInterval(marketRefreshId)
+})
 
 function openDirections() {
   window.open(googleMapsUrl.value, '_blank', 'noopener,noreferrer')
@@ -277,6 +382,12 @@ function tierLabel(tierId, kind) {
     return tier ? tier.name : tierId
   }
   return tierId
+}
+
+function sponsorIconSrc(tierId) {
+  if (tierId === 'whale') return whaleIcon
+  if (tierId === 'bull') return bullIcon
+  return bitcoinIcon
 }
 
 const cssVars = computed(() => ({
@@ -339,6 +450,40 @@ const cssVars = computed(() => ({
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* ── Live chyron ───────────────────────────────────────────────────────────── */
+.bbp-chyron {
+  background: rgba(7, 94, 114, 0.08);
+  border-top: 1px solid rgba(188,186,165,0.5);
+  border-bottom: 1px solid rgba(188,186,165,0.5);
+}
+.bbp-chyron-viewport {
+  max-width: 980px;
+  margin: 0 auto;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bbp-chyron-track {
+  display: inline-flex;
+  align-items: center;
+  min-width: 200%;
+  animation: bbp-chyron-scroll 32s linear infinite;
+}
+.bbp-chyron-item {
+  margin: 0;
+  padding: 0.5rem 1.6rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bbp-teal);
+  font-weight: 700;
+  border-right: 1px solid rgba(188,186,165,0.5);
+}
+
+@keyframes bbp-chyron-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
@@ -541,8 +686,8 @@ const cssVars = computed(() => ({
 }
 .bbp-sponsor-card {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: flex-start;
+  gap: 0.75rem;
   padding: 1.25rem 1.5rem;
   border-radius: 8px;
   border: 1px solid var(--bbp-tan);
@@ -551,16 +696,37 @@ const cssVars = computed(() => ({
   color: var(--bbp-teal);
   transition: background 0.15s;
   min-width: 200px;
+  max-width: 320px;
+  flex: 1 1 260px;
 }
 .bbp-sponsor-card:hover { background: rgba(255,255,255,0.95); }
-.bbp-sponsor-tier-badge {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--bbp-orange);
+.bbp-sponsor-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.bbp-sponsor-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bbp-teal);
+  border: 1px solid rgba(7,94,114,0.42);
+}
+.bbp-sponsor-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 .bbp-sponsor-name { font-size: 1.2rem; font-weight: 800; }
-.bbp-sponsor-desc { font-size: 0.85rem; color: var(--bbp-dark); }
+.bbp-sponsor-desc {
+  font-size: 0.85rem;
+  color: var(--bbp-dark);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
 /* ── Vendors ─────────────────────────────────────────────────────────────────── */
 .bbp-vendors-intro {
@@ -737,6 +903,10 @@ const cssVars = computed(() => ({
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
+  .bbp-chyron-item {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.7rem;
+  }
   .bbp-schedule-item { flex-direction: column; gap: 0.2rem; }
   .bbp-schedule-time { min-width: auto; }
   .bbp-map-cta-inner,
@@ -744,5 +914,11 @@ const cssVars = computed(() => ({
   .bbp-wallet-cta-inner { flex-direction: column; align-items: flex-start; }
   .bbp-directions-inner { grid-template-columns: 1fr; }
   .bbp-directions-actions .bbp-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbp-chyron-track {
+    animation: none;
+  }
 }
 </style>
