@@ -135,8 +135,8 @@ import barIcon from '@/assets/images/icons/bar.png'
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
 import bullIcon from '@/assets/images/icons/bull.png'
 import djIcon from '@/assets/images/icons/dj.png'
-import foodIcon from '@/assets/images/icons/food.png'
 import frontGateIcon from '@/assets/images/icons/front_gate.png'
+import mealsIcon from '@/assets/images/icons/meals.png'
 import projectorIcon from '@/assets/images/icons/projector.png'
 import vendorIcon from '@/assets/images/icons/vendor.png'
 import whaleIcon from '@/assets/images/icons/whale.png'
@@ -156,7 +156,9 @@ const zoneIcons = {
   bar: barIcon,
   bull: bullIcon,
   dj: djIcon,
-  food: foodIcon,
+  food: mealsIcon,
+  meal: mealsIcon,
+  meals: mealsIcon,
   front_gate: frontGateIcon,
   movie_screening: projectorIcon,
   satoshi: bitcoinIcon,
@@ -165,6 +167,16 @@ const zoneIcons = {
   tba: bitcoinIcon,
   vendor: vendorIcon,
   whale: whaleIcon,
+}
+
+const directZoneIcons = {
+  bar: 'bar',
+  dj: 'dj',
+  food_truck_0: 'meals',
+  food_truck_1: 'meals',
+  front_gate: 'front_gate',
+  movie_screening: 'movie_screening',
+  presenting_area: 'bitcoin',
 }
 
 async function loadSvg() {
@@ -215,7 +227,12 @@ function zoneDataForId(id) {
   const configKey = key === 'presentation_area' ? 'presenting_area' : key
 
   // Direct match in config mapZones
-  if (BBP.mapZones[configKey]) return BBP.mapZones[configKey]
+  if (BBP.mapZones[configKey]) {
+    return {
+      icon: directZoneIcons[configKey],
+      ...BBP.mapZones[configKey],
+    }
+  }
 
   // Vendor slots (vendor_0..vendor_6) → look up in BBP.vendors
   const vendorMatch = key.match(/^vendor_(\d+)$/)
