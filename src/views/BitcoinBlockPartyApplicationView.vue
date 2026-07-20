@@ -42,12 +42,19 @@
             v-for="tier in BBP.sponsorTiers"
             :key="tier.id"
             class="bbpapp-tier-card"
-            :class="{ 'bbpapp-tier-card--active': form.tier === tier.id }"
-            @click="form.tier = tier.id"
+            :class="{
+              'bbpapp-tier-card--active': form.tier === tier.id,
+              'bbpapp-tier-card--claimed': isSponsorTierClaimed(tier),
+            }"
+            :aria-disabled="isSponsorTierClaimed(tier)"
+            @click="selectSponsorTier(tier)"
           >
             <div class="bbpapp-tier-card-header">
               <span class="bbpapp-tier-name">{{ tier.name }}</span>
               <span class="bbpapp-tier-label">{{ tier.label }}</span>
+              <span class="bbpapp-tier-availability" :class="{ 'bbpapp-tier-availability--claimed': isSponsorTierClaimed(tier) }">
+                {{ sponsorTierAvailabilityLabel(tier) }}
+              </span>
               <span class="bbpapp-tier-price" v-if="tier.price">${{ tier.price }} CAD</span>
               <span class="bbpapp-tier-price" v-else>Price TBA</span>
             </div>
@@ -257,6 +264,25 @@ const tierStepComplete = computed(() => {
   return true
 })
 
+function sponsorTierClaimedCount(tier) {
+  return BBP.sponsors.filter(sponsor => sponsor.tier === tier.id && sponsor.status === 'confirmed').length
+}
+
+function isSponsorTierClaimed(tier) {
+  return sponsorTierClaimedCount(tier) >= tier.capacity
+}
+
+function sponsorTierAvailabilityLabel(tier) {
+  const claimed = sponsorTierClaimedCount(tier)
+  if (claimed >= tier.capacity) return 'Claimed'
+  return `${tier.capacity - claimed} of ${tier.capacity} left`
+}
+
+function selectSponsorTier(tier) {
+  if (isSponsorTierClaimed(tier)) return
+  form.value.tier = tier.id
+}
+
 useHead(computed(() => ({
   title: `${currentRoleLabel.value} Application — Bitcoin Block Party ${BBP.year}`,
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
@@ -274,6 +300,10 @@ function validate() {
   if (f.role === 'vendor' && !f.products?.trim()) return 'Please describe what you are selling.'
   if (f.role === 'sponsor' && !f.tier) return 'Please select a sponsorship tier.'
   if (f.role === 'vendor' && !f.tier)  return 'Please select a vendor tier.'
+  if (f.role === 'sponsor') {
+    const selectedTier = BBP.sponsorTiers.find(tier => tier.id === f.tier)
+    if (selectedTier && isSponsorTierClaimed(selectedTier)) return 'That sponsorship tier has already been claimed.'
+  }
   return ''
 }
 
@@ -406,6 +436,20 @@ const cssVars = computed(() => ({
 }
 .bbpapp-tier-card:hover { border-color: var(--bbp-teal); }
 .bbpapp-tier-card--active { border-color: var(--bbp-orange); }
+.bbpapp-tier-card--claimed {
+  position: relative;
+  border-color: rgba(188,186,165,0.8);
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(188,186,165,0.12) 0,
+    rgba(188,186,165,0.12) 8px,
+    rgba(255,255,255,0.62) 8px,
+    rgba(255,255,255,0.62) 18px
+  );
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+.bbpapp-tier-card--claimed:hover { border-color: rgba(188,186,165,0.8); }
 .bbpapp-tier-card-header {
   padding: 1rem 1.25rem 0.75rem;
   display: flex;
@@ -420,7 +464,26 @@ const cssVars = computed(() => ({
   letter-spacing: 0.1em;
   color: var(--bbp-teal);
 }
+.bbpapp-tier-availability {
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(7,94,114,0.08);
+  color: var(--bbp-teal);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bbpapp-tier-availability--claimed {
+  background: rgba(200,63,15,0.14);
+  color: var(--bbp-orange);
+}
 .bbpapp-tier-price { margin-left: auto; font-weight: 700; font-size: 0.95rem; color: var(--bbp-orange); }
+.bbpapp-tier-card--claimed .bbpapp-tier-price,
+.bbpapp-tier-card--claimed .bbpapp-tier-perks li,
+.bbpapp-tier-card--claimed .bbpapp-tier-perks li::before {
+  color: var(--bbp-tan);
+}
 .bbpapp-tier-perks {
   padding: 0.75rem 1.25rem 1rem;
   margin: 0;
