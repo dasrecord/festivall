@@ -53,7 +53,7 @@ export const BITCOIN_BLOCK_PARTY = {
         'Feature documentary by Parker Worthington that chronicles Bitcoin\'s origins as a payments system and Nicolas Dorier\'s pivotal role in creating BTCPay Server during the Block Size Wars. The film highlights merchant adoption, privacy, autonomy, and the risks of trusted third parties.',
       director: 'Parker Worthington',
       directorUrl: 'https://twitter.com/webworthy',
-      infoUrl: 'https://bitcoinfilmfest.com/bff2024/',
+      infoUrl: 'https://youtu.be/8ywHizrZfAo?si=YSLoGVJVdWACrTsZ',
     },
     {
       id: 'screening_2',
@@ -61,8 +61,9 @@ export const BITCOIN_BLOCK_PARTY = {
       title: "What's The Problem?",
       description:
         'Demystifying why we all need Bitcoin. How can anyone properly value a solution if they do not understand the problem? "What\'s The Problem?" helps everyone, regardless of background, understand what the problem is. Fix the money, fix the world.',
-      creator: 'Joe Bryan',
-      creatorUrl: 'https://x.com/satmojoe',
+      director: 'Joe Bryan',
+      directorUrl: 'https://x.com/satmojoe',
+      infoUrl: 'https://youtu.be/0g1j3k5r6xM?si=Y7J8X9n2Q4WqZ0yR',
     },
   ],
 

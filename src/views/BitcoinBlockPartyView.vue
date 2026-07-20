@@ -81,10 +81,8 @@
           <p class="bbp-directions-note">Open directions in your preferred map app or copy the venue search.</p>
           <div class="bbp-directions-actions">
             <button class="bbp-btn bbp-btn-primary" @click="openDirections">Google Maps</button>
-            <a class="bbp-btn bbp-btn-outline" :href="appleMapsUrl" target="_blank" rel="noopener noreferrer">Apple Maps</a>
-            <button class="bbp-btn bbp-btn-secondary" @click="copyDirectionsQuery">
-              {{ copiedDirections ? 'Copied' : 'Copy Venue' }}
-            </button>
+            <a class="bbp-btn bbp-btn-secondary" :href="appleMapsUrl" target="_blank" rel="noopener noreferrer">Apple Maps</a>
+
           </div>
         </div>
         <div class="bbp-directions-map">
@@ -116,7 +114,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {{ film.creator || film.director }}
+                {{ film.creator || film.director }} →
               </a>
               <span v-else>{{ film.creator || film.director }}</span>
             </p>
@@ -127,7 +125,7 @@
               rel="noopener noreferrer"
               class="bbp-screening-link"
             >
-              More info →
+              Preview →
             </a>
           </div>
         </div>
