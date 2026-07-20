@@ -9,14 +9,15 @@
         <p class="bbp-hero-time">{{ BBP.startTime }} – {{ BBP.endTime }}</p>
         <p class="bbp-hero-venue">{{ BBP.venue }}</p>
         <div class="bbp-hero-ctas">
-          <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">View Map</router-link>
           <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
-          <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-secondary">Take the Quiz</router-link>
+          <router-link :to="BBP.routes.poster" class="bbp-btn bbp-btn-secondary">See The Poster</router-link>
           <router-link :to="BBP.routes.archive" class="bbp-btn bbp-btn-secondary">Previous Years</router-link>
-          <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }" class="bbp-btn bbp-btn-outline">Get a Wallet</router-link>
           <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Become a Sponsor</router-link>
           <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Sell your Goods</router-link>
           <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Apply to Volunteer</router-link>
+          <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">View Map</router-link>
+          <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-primary">Take the Quiz</router-link>
+          <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }" class="bbp-btn bbp-btn-primary">Get a Wallet</router-link>
         </div>
       </div>
     </section>
@@ -467,10 +468,16 @@ const cssVars = computed(() => ({
 .bbp-hero-date { font-weight: 700; font-size: 1.1rem; color: var(--bbp-teal); }
 .bbp-hero-ctas {
   margin-top: 2rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+}
+.bbp-hero-ctas .bbp-btn {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 0.75rem;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 /* ── Live chyron ───────────────────────────────────────────────────────────── */

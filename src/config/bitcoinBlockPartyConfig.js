@@ -39,7 +39,7 @@ export const BITCOIN_BLOCK_PARTY = {
     { time: '4:00 PM',label: 'Film Screening',            note: '"What\'s The Problem?"' },
     { time: '5:00 PM',label: 'Dinner' },
     { time: '5:45 PM',label: 'Announcements & Acknowledgements' },
-    { time: '6:00 PM',label: 'DJs & Mixer' },
+    { time: '6:00 PM',label: 'DJs & Mixer [Morimori]' },
     { time: '8:00 PM',label: 'Doors Close' },
   ],
 
@@ -345,5 +345,6 @@ export const BITCOIN_BLOCK_PARTY = {
     vendorApply:   '/bitcoinblockparty/vendor',
     sponsorApply:  '/bitcoinblockparty/sponsor',
     volunteer:     '/bitcoinblockparty/volunteer',
+    poster:        '/bitcoinblockparty/poster',
   },
 }

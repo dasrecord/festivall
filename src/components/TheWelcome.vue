@@ -5,7 +5,7 @@ import WelcomeItem from './WelcomeItem.vue'
 import IconFestivall from './icons/IconFestivall.vue'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
 import fuse_logo from '../assets/images/fuse_logo_white.png'
-import haven_emblem from '../assets/images/haven_emblem_white.png'
+import bitcoin_block_party_emblem_white from '../assets/images/bitcoin.svg'
 import placeholder_logo from '../assets/images/placeholder_logo_white.png'
 import blessed_coast_emblem from '../assets/images/blessed_coast_emblem_white.png'
 import impact_logo from '../assets/images/impact_logo_white.png'
@@ -75,22 +75,23 @@ onMounted(() => {
       </RouterLink>
     </div>
 
-    <!-- <div class="wrapper">
-      <RouterLink to="/haven" @click="trackBrandClick('Haven')">
+    <div class="wrapper">
+      <RouterLink to="/bitcoinblockparty" @click="trackBrandClick('Bitcoin Block Party')">
         <WelcomeItem class="welcome-item">
           <template #icon>
             <IconFestivall />
           </template>
-          <template #heading><RouterLink to="/haven">Haven</RouterLink></template>
+          <template #heading><RouterLink to="/bitcoinblockparty">Bitcoin Block Party</RouterLink></template>
           <template #description>
-            Electronic music has a new home in the heart of the Canadian Prairies.
+            A free, family-friendly event celebrating Bitcoin and the future of decentralized finance. 
+            Join us for a day of education, networking, and fun activities for all ages.
           </template>
           <template #logo>
-            <img :src="haven_emblem" alt="haven_emblem" class="haven_emblem" />
+            <img :src="bitcoin_block_party_emblem_white" alt="bitcoin block party" class="bitcoin-block-party-emblem" />
           </template>
         </WelcomeItem>
       </RouterLink>
-    </div> -->
+    </div>
     <div class="wrapper">
       <RouterLink to="/placeholder" @click="trackBrandClick('Placeholder')">
         <WelcomeItem class="welcome-item">
@@ -257,6 +258,7 @@ onMounted(() => {
         </WelcomeItem>
       </RouterLink>
     </div>
+
   </div>
 </template>
 
@@ -319,6 +321,10 @@ onMounted(() => {
   width: 85%;
 }
 .starcrossed-emblem {
+  width: 100%;
+}
+
+.bitcoin-block-party-emblem {
   width: 100%;
 }
 </style>

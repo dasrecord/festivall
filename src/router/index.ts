@@ -69,6 +69,7 @@ import ReunionGenreMapView from '@/views/ReunionGenreMapView.vue'
 import BitcoinBlockPartyView from '@/views/BitcoinBlockPartyView.vue'
 import BitcoinBlockPartyArchiveView from '@/views/BitcoinBlockPartyArchiveView.vue'
 import BitcoinBlockPartyMapView from '@/views/BitcoinBlockPartyMapView.vue'
+import BitcoinBlockPartyPosterView from '@/views/BitcoinBlockPartyPosterView.vue'
 import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
 import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
 
@@ -568,6 +569,12 @@ const routes = [
     path: '/bitcoinblockparty/archive',
     name: 'bitcoin-block-party-archive',
     component: BitcoinBlockPartyArchiveView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/bitcoinblockparty/poster',
+    name: 'bitcoin-block-party-poster',
+    component: BitcoinBlockPartyPosterView,
     meta: { showHeader: false }
   },
   {

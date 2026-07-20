@@ -86,7 +86,7 @@ const PUBLIC_PATHS = [
   '/reunionlineup', '/reuniontickets', '/reunionapplication', '/reunionfaq', '/reunionamenities',
   '/reunionfamily', '/reunionteam', '/reunionsoundsystem',
   '/art-and-photography', '/coding-and-webdev', '/soundtech', '/reunioncontact',
-  '/bitcoinblockparty', '/bitcoinblockparty/archive', '/bitcoinblockpartymap', '/bitcoinquiz', '/bitcoin-wallet',
+  '/bitcoinblockparty', '/bitcoinblockparty/archive', '/bitcoinblockparty/poster', '/bitcoinblockpartymap', '/bitcoinquiz', '/bitcoin-wallet',
 ]
 
 useHead(computed(() => ({
@@ -112,9 +112,11 @@ useHead(computed(() => ({
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/reunion">Reunion</RouterLink>
+        <RouterLink to="/bitcoinblockparty">Block Party</RouterLink>
         <!-- <RouterLink to="/dasrecord">Das Record</RouterLink> -->
         <RouterLink to="/placeholder">PlaceHolder</RouterLink>
         <RouterLink to="/blessedcoast">Blessed</RouterLink>
+        <RouterLink to="/medprep">Med Prep</RouterLink>
         <RouterLink to="/synergistic">Synergistic</RouterLink>
         <RouterLink to="/starcrossed">Starcrossed</RouterLink>
         <a href="https://evolvedmusicgroup.com"> Evolved</a>
@@ -163,7 +165,6 @@ nav {
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
   font-size: 16px;
-
   text-align: center;
   /* margin-top: 1rem; */
 }
