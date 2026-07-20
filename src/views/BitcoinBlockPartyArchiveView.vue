@@ -17,6 +17,7 @@
             <h2>{{ year.title }}</h2>
             <span class="bbp-archive-year">{{ year.year }}</span>
           </div>
+          <p class="bbp-archive-date">{{ year.date }}</p>
           <p class="bbp-archive-venue">{{ year.venue }}</p>
           <p class="bbp-archive-summary">{{ year.summary }}</p>
 

@@ -71,8 +71,9 @@ export const BITCOIN_BLOCK_PARTY = {
   archive: [
     {
       year: 2024,
+      date: 'Saturday, August 25, 2024',
       title: 'Bitcoin Block Party 2024',
-      venue: 'The Beaumont Studios, Vancouver, BC',
+      venue: 'The Beaumont Studios, 316 W 5th Ave, Vancouver, BC V5Y 1J0',
       summary: 'Second iteration of the community meetup format with live music, speaker sessions, and Bitcoin-first vendors.',
       performers: [
         { name: 'Das Record', role: 'DJ', note: 'Ambient Instrumental' },
@@ -92,8 +93,9 @@ export const BITCOIN_BLOCK_PARTY = {
     },
     {
       year: 2023,
+      date: 'Saturday, September 4, 2023',
       title: 'Bitcoin Block Party 2023',
-      venue: 'The Beaumont Studios, Vancouver, BC',
+      venue: 'The Beaumont Studios, 316 W 5th Ave, Vancouver, BC V5Y 1J0',
       summary: 'Pilot-year format focused on education, community meetups, and merchant onboarding.',
       performers: [
         { name: 'Paulina Gemini', role: 'DJ', note: 'House' },
