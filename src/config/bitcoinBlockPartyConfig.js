@@ -33,7 +33,9 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // Firebase Auth UIDs for BBP admin dashboard access
   adminUids: [
-    'dAqoRFRNBGS8gXJ9gGAOMmIMIuO2',  // Add BBP admin UIDs here
+    'dAqoRFRNBGS8gXJ9gGAOMmIMIuO2',
+    'wAdx17eqbER5oE31FyyKfw2YuQq2',
+    'zlOMb56caXM6tasm8LObF5TMyHk2'
   ],
 
   // ── Itinerary ─────────────────────────────────────────────────────────────
