@@ -7,7 +7,6 @@ export const REUNION_FESTIVAL = {
 
   admins: ['Prasenjit', 'Brandon','Chris'],
   adminUids: ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2'],
-  adminUids: ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2'],
 
   // Pre-built Date objects for programmatic use
   startDate: new Date('2026-09-04T12:00:00'),           // scanners & check-in (local time)

@@ -20,7 +20,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
-import { festivall_auth } from '@/firebase' // Adjust the import path as needed
+import { festivall_auth } from '@/firebase'
+import { BITCOIN_BLOCK_PARTY } from '@/config/bitcoinBlockPartyConfig.js'
 
 export default {
   name: 'FestivallLogin',
@@ -40,8 +41,6 @@ export default {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user
-          console.log('User signed in:', user)
-          console.log('User email:', user.email)
 
           // Check if localStorage is available
           if (typeof localStorage !== 'undefined') {
@@ -52,8 +51,12 @@ export default {
             console.warn('localStorage is not available.')
           }
 
-          // Get the redirect path from query parameters or default to dashboard
-          const redirectPath = route.query.redirect || '/dashboard'
+          // Route by role: BBP admins → BBP dashboard, others → Reunion dashboard
+          let redirectPath = route.query.redirect
+          if (!redirectPath) {
+            const isBBPAdmin = BITCOIN_BLOCK_PARTY.adminUids.includes(user.uid)
+            redirectPath = isBBPAdmin ? '/admin/bitcoinblockparty' : '/dashboard'
+          }
           router.push(redirectPath)
         })
         .catch((error) => {

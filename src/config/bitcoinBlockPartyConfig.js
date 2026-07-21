@@ -31,6 +31,11 @@ export const BITCOIN_BLOCK_PARTY = {
     { name: 'Prasenjit Das', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
   ],
 
+  // Firebase Auth UIDs for BBP admin dashboard access
+  adminUids: [
+    'dAqoRFRNBGS8gXJ9gGAOMmIMIuO2',  // Add BBP admin UIDs here
+  ],
+
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
     { time: '12:00 PM', label: 'Doors Open' },

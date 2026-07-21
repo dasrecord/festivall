@@ -72,6 +72,7 @@ import BitcoinBlockPartyMapView from '@/views/BitcoinBlockPartyMapView.vue'
 import BitcoinBlockPartyPosterView from '@/views/BitcoinBlockPartyPosterView.vue'
 import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
 import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
+import AdminBitcoinBlockPartyView from '@/views/AdminBitcoinBlockPartyView.vue'
 
 
 const routes = [
@@ -606,6 +607,12 @@ const routes = [
     name: 'bitcoin-block-party-volunteer',
     component: BitcoinBlockPartyApplicationView,
     meta: { showHeader: false }
+  },
+  {
+    path: '/admin/bitcoinblockparty',
+    name: 'bitcoin-block-party-admin',
+    component: AdminBitcoinBlockPartyView,
+    meta: { requiresAuth: true, showHeader: false }
   }
 ]
 

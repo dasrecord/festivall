@@ -107,6 +107,11 @@
           <input id="bbpapp-email" v-model="form.email" class="bbpapp-input" type="email" maxlength="120" required />
         </div>
 
+        <div class="bbpapp-field-group">
+          <label class="bbpapp-label" for="bbpapp-phone">Phone *</label>
+          <input id="bbpapp-phone" v-model="form.phone" class="bbpapp-input" type="tel" placeholder="+1 (555) 555-5555" maxlength="20" required />
+        </div>
+
         <div class="bbpapp-field-group" v-if="form.role !== 'volunteer'">
           <label class="bbpapp-label" for="bbpapp-org">
             {{ form.role === 'sponsor' ? 'Company / Organization *' : 'Business Name *' }}
@@ -232,6 +237,7 @@ const form = ref({
   tier:                 '',
   contact_name:         '',
   email:                '',
+  phone:                '',
   org_name:             '',
   url:                  '',
   // sponsor-specific
@@ -294,6 +300,7 @@ function validate() {
   if (!f.role)         return 'Please select an application type.'
   if (!f.contact_name?.trim())  return 'Please enter your name.'
   if (!f.email?.trim() || !f.email.includes('@')) return 'Please enter a valid email address.'
+  if (!f.phone?.trim()) return 'Please enter your phone number.'
   if ((f.role === 'sponsor' || f.role === 'vendor') && !f.org_name?.trim()) {
     return f.role === 'sponsor' ? 'Please enter your company name.' : 'Please enter your business name.'
   }
