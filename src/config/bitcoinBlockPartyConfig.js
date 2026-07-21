@@ -28,6 +28,12 @@ export const BITCOIN_BLOCK_PARTY = {
     { name: 'Jennifer Zee',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
     { name: 'Roger Huang',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
+    {
+      name: 'Dustin McNulty',
+      bio: 'Event organizer, Vancouver Bitcoin.',
+      email: 'party@vanbitcoin.ca'
+    },
+
     { name: 'Prasenjit Das', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
   ],
 
@@ -41,12 +47,15 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
     { time: '12:00 PM', label: 'Doors Open' },
-    { time: '2:00 PM',label: 'Film Screening',            note: '"My Trust In You Is Broken"' },
-    { time: '3:00 PM',label: 'Speakers' },
-    { time: '4:00 PM',label: 'Film Screening',            note: '"What\'s The Problem?"' },
+    {time: '12:15 PM', label: 'Networking & Mingling'},
+    { time: '2:00 PM',label: 'ZEUS Wallet Workshop'},
+    { time: '3:00 PM', label: 'Vivian (Singer/Songwriter)' },
+    {time: '3:00 PM', label: 'Film Screening', note: '"My Trust In You Is Broken"' },
+    { time: '4:00 PM',label: 'Lightning Talks Speaker Series' },
+    { time: '5:30 PM',label: 'Film Screening',            note: '"What\'s The Problem?"' },
     { time: '5:00 PM',label: 'Dinner' },
     { time: '5:45 PM',label: 'Announcements & Acknowledgements' },
-    { time: '6:00 PM',label: 'DJs & Mixer [Morimori]' },
+    { time: '6:30 PM',label: 'DJs & Mixer [Morimori][Fustler]' },
     { time: '8:00 PM',label: 'Doors Close' },
   ],
 
@@ -119,12 +128,20 @@ export const BITCOIN_BLOCK_PARTY = {
     },
   ],
 
-  // ── DJ (for map popup) ────────────────────────────────────────────────────
-  dj: {
-    name: 'MoriMori',
-    shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
-    url: 'https://www.instagram.com/morimoribeats/'
-  },
+  // ── DJs (for map popup) ────────────────────────────────────────────────────
+  djs: [
+    {
+      name: 'MoriMori',
+      shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
+      url: 'https://www.instagram.com/morimoribeats/'
+    },
+    {
+      name: 'Fustler',
+      shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
+      url: 'https://www.instagram.com/fustler/'
+    }
+  ],
+  
 
   // ── Sponsor tiers (from pitch deck) ───────────────────────────────────────
   sponsorTiers: [
