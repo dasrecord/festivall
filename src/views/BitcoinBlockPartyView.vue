@@ -589,7 +589,7 @@ const cssVars = computed(() => ({
 /* ── Quick actions ─────────────────────────────────────────────────────────── */
 .bbp-quick-actions {
   position: sticky;
-  top: 3.25rem;
+  top: 2rem;
   z-index: 20;
   background: color-mix(in srgb, var(--bbp-white) 94%, transparent);
   backdrop-filter: blur(10px);
