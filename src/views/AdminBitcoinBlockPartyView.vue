@@ -93,7 +93,7 @@
       </div>
 
       <!-- Status Filter & Search -->
-      <div class="controls">
+      <div v-if="selectedRole !== 'schedule'" class="controls">
         <div class="status-filters">
           <label class="status-filter">
             <input type="radio" v-model="selectedStatus" value="all" />
@@ -117,13 +117,13 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="loading">
+      <div v-if="loading && selectedRole !== 'schedule'" class="loading">
         <div class="spinner"></div>
         Loading applicants...
       </div>
 
       <!-- Applicant Table -->
-      <div v-else-if="filteredApplicants.length > 0" class="applicants-table">
+      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule'" class="applicants-table">
         <div class="table-header">
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
@@ -202,8 +202,161 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else class="empty-state">
+      <div v-else-if="selectedRole !== 'schedule'" class="empty-state">
         <p>No {{ selectedStatus === 'all' ? '' : selectedStatus }} {{ selectedRole }} applicants found.</p>
+      </div>
+
+      <!-- ── Schedule Editor ───────────────────────────────────────────── -->
+      <div v-if="selectedRole === 'schedule'" class="schedule-editor">
+
+        <!-- Schedule item edit modal -->
+        <div v-if="scheduleModal.open" class="modal-overlay" @click.self="closeScheduleModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>{{ scheduleModal.isNew ? 'Add' : 'Edit' }} {{ scheduleModal.sectionLabel }}</h2>
+              <button @click="closeScheduleModal" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+
+              <!-- Itinerary fields -->
+              <template v-if="scheduleModal.field === 'itinerary'">
+                <div class="edit-field">
+                  <label>Time *</label>
+                  <input type="text" v-model="scheduleForm.time" placeholder="e.g. 2:00 PM" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Label *</label>
+                  <input type="text" v-model="scheduleForm.label" placeholder="e.g. Lightning Talks" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Note <span class="optional">(optional)</span></label>
+                  <input type="text" v-model="scheduleForm.note" placeholder="e.g. &ldquo;My Trust In You Is Broken&rdquo;" class="edit-input" />
+                </div>
+              </template>
+
+              <!-- Screening fields -->
+              <template v-if="scheduleModal.field === 'screenings'">
+                <div class="edit-field">
+                  <label>Time *</label>
+                  <input type="text" v-model="scheduleForm.time" placeholder="e.g. 3:00 - 4:00 PM" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Title *</label>
+                  <input type="text" v-model="scheduleForm.title" placeholder="Film title" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Description</label>
+                  <textarea v-model="scheduleForm.description" rows="4" class="edit-input edit-textarea" placeholder="Short film description"></textarea>
+                </div>
+                <div class="edit-field">
+                  <label>Director</label>
+                  <input type="text" v-model="scheduleForm.director" placeholder="Director name" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Director URL</label>
+                  <input type="url" v-model="scheduleForm.directorUrl" placeholder="https://twitter.com/..." class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Info / Trailer URL</label>
+                  <input type="url" v-model="scheduleForm.infoUrl" placeholder="https://youtu.be/..." class="edit-input" />
+                </div>
+              </template>
+
+              <!-- DJ fields -->
+              <template v-if="scheduleModal.field === 'djs'">
+                <div class="edit-field">
+                  <label>Name *</label>
+                  <input type="text" v-model="scheduleForm.name" placeholder="DJ name or alias" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Description</label>
+                  <input type="text" v-model="scheduleForm.shortDescription" placeholder="e.g. Live DJ set from 6:00 PM to 8:00 PM." class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>URL</label>
+                  <input type="url" v-model="scheduleForm.url" placeholder="https://instagram.com/..." class="edit-input" />
+                </div>
+              </template>
+
+            </div>
+            <div class="modal-footer">
+              <button @click="closeScheduleModal" class="btn-cancel">Cancel</button>
+              <button
+                @click="saveScheduleItem"
+                class="btn-save"
+                :disabled="scheduleModal.saving || !scheduleFormValid"
+              >
+                {{ scheduleModal.saving ? 'Saving…' : 'Save' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day Itinerary -->
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>Day Itinerary</h2>
+            <button class="btn-add" @click="openScheduleAdd('itinerary')">+ Add Item</button>
+          </div>
+          <div v-if="schedLoading" class="loading"><div class="spinner"></div> Loading…</div>
+          <div v-else-if="schedItinerary.length === 0" class="sched-empty">No itinerary items. Add one above.</div>
+          <div v-else class="sched-list">
+            <div v-for="(item, idx) in schedItinerary" :key="idx" class="sched-row">
+              <span class="sched-time">{{ item.time }}</span>
+              <span class="sched-label">{{ item.label }}<span v-if="item.note" class="sched-note"> — {{ item.note }}</span></span>
+              <div class="sched-actions">
+                <button class="btn-sched-edit" @click="openScheduleEdit('itinerary', idx)">Edit</button>
+                <button class="btn-sched-delete" @click="deleteScheduleItem('itinerary', idx)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Film Screenings -->
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>Film Screenings</h2>
+            <button class="btn-add" @click="openScheduleAdd('screenings')">+ Add Screening</button>
+          </div>
+          <div v-if="schedLoading" class="loading"><div class="spinner"></div> Loading…</div>
+          <div v-else-if="schedScreenings.length === 0" class="sched-empty">No screenings added yet.</div>
+          <div v-else class="sched-list">
+            <div v-for="(film, idx) in schedScreenings" :key="idx" class="sched-row sched-row--film">
+              <div class="sched-film-meta">
+                <span class="sched-time">{{ film.time }}</span>
+                <strong class="sched-film-title">{{ film.title }}</strong>
+                <span v-if="film.director" class="sched-film-dir">dir. {{ film.director }}</span>
+              </div>
+              <p class="sched-film-desc">{{ film.description }}</p>
+              <div class="sched-actions">
+                <button class="btn-sched-edit" @click="openScheduleEdit('screenings', idx)">Edit</button>
+                <button class="btn-sched-delete" @click="deleteScheduleItem('screenings', idx)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DJs -->
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>DJs &amp; Performers</h2>
+            <button class="btn-add" @click="openScheduleAdd('djs')">+ Add DJ</button>
+          </div>
+          <div v-if="schedLoading" class="loading"><div class="spinner"></div> Loading…</div>
+          <div v-else-if="schedDjs.length === 0" class="sched-empty">No DJs added yet.</div>
+          <div v-else class="sched-list">
+            <div v-for="(dj, idx) in schedDjs" :key="idx" class="sched-row">
+              <span class="sched-label"><strong>{{ dj.name }}</strong> — {{ dj.shortDescription }}</span>
+              <a v-if="dj.url" :href="dj.url" target="_blank" rel="noopener noreferrer" class="sched-dj-url">{{ dj.url }}</a>
+              <div class="sched-actions">
+                <button class="btn-sched-edit" @click="openScheduleEdit('djs', idx)">Edit</button>
+                <button class="btn-sched-delete" @click="deleteScheduleItem('djs', idx)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p v-if="schedSaveError" class="error-message" style="margin-top:1rem">{{ schedSaveError }}</p>
       </div>
     </div>
   </div>
@@ -212,9 +365,10 @@
 <script setup>
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore'
+import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
 import { festivall_db } from '@/firebase'
 import { useBitcoinBlockPartyAdmin } from '@/composables/useBitcoinBlockPartyAdmin'
+import { useBbpSchedule } from '@/composables/useBbpSchedule'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig'
 import { sendEmail } from '/scripts/notifications.js'
 
@@ -232,6 +386,7 @@ const roleTabs = [
   { value: 'sponsor', label: 'Sponsors', icon: '₿' },
   { value: 'vendor', label: 'Vendors', icon: '🏪' },
   { value: 'volunteer', label: 'Volunteers', icon: '🙌' },
+  { value: 'schedule', label: 'Schedule', icon: '📅' },
 ]
 
 // State
@@ -543,6 +698,210 @@ function formatDate(isoString) {
     year: 'numeric',
   })
 }
+
+// ── Schedule Editor ──────────────────────────────────────────────────────────
+const {
+  itinerary: schedItinerary,
+  screenings: schedScreenings,
+  djs: schedDjs,
+  loading: scheduleLoading,
+  saveSchedule,
+  loadSchedule,
+} = useBbpSchedule()
+
+// Alias for template (schedLoading already used for sections above)
+const schedLoading = scheduleLoading
+
+const schedSaveError = ref('')
+
+const SECTION_LABELS = {
+  itinerary: 'Itinerary Item',
+  screenings: 'Film Screening',
+  djs: 'DJ / Performer',
+}
+
+// Modal state
+const scheduleModal = reactive({
+  open: false,
+  field: '',          // 'itinerary' | 'screenings' | 'djs'
+  sectionLabel: '',
+  editIndex: -1,      // -1 = new item
+  isNew: true,
+  saving: false,
+})
+
+// Form data — superset of all fields; we only use the relevant subset per section
+const scheduleForm = reactive({
+  // Itinerary
+  time: '',
+  label: '',
+  note: '',
+  // Screenings (+ time above)
+  title: '',
+  description: '',
+  director: '',
+  directorUrl: '',
+  infoUrl: '',
+  // DJs
+  name: '',
+  shortDescription: '',
+  url: '',
+})
+
+const scheduleFormValid = computed(() => {
+  if (scheduleModal.field === 'itinerary') return !!scheduleForm.time.trim() && !!scheduleForm.label.trim()
+  if (scheduleModal.field === 'screenings') return !!scheduleForm.time.trim() && !!scheduleForm.title.trim()
+  if (scheduleModal.field === 'djs') return !!scheduleForm.name.trim()
+  return false
+})
+
+function resetScheduleForm() {
+  scheduleForm.time = ''
+  scheduleForm.label = ''
+  scheduleForm.note = ''
+  scheduleForm.title = ''
+  scheduleForm.description = ''
+  scheduleForm.director = ''
+  scheduleForm.directorUrl = ''
+  scheduleForm.infoUrl = ''
+  scheduleForm.name = ''
+  scheduleForm.shortDescription = ''
+  scheduleForm.url = ''
+}
+
+function openScheduleAdd(field) {
+  resetScheduleForm()
+  scheduleModal.field = field
+  scheduleModal.sectionLabel = SECTION_LABELS[field] || field
+  scheduleModal.editIndex = -1
+  scheduleModal.isNew = true
+  scheduleModal.saving = false
+  scheduleModal.open = true
+}
+
+function openScheduleEdit(field, idx) {
+  resetScheduleForm()
+  const source = field === 'itinerary' ? schedItinerary.value
+    : field === 'screenings' ? schedScreenings.value
+    : schedDjs.value
+  const item = source[idx]
+  if (!item) return
+
+  // Copy all fields present on the item into the form
+  Object.keys(scheduleForm).forEach((key) => {
+    if (item[key] !== undefined) scheduleForm[key] = item[key]
+  })
+
+  scheduleModal.field = field
+  scheduleModal.sectionLabel = SECTION_LABELS[field] || field
+  scheduleModal.editIndex = idx
+  scheduleModal.isNew = false
+  scheduleModal.saving = false
+  scheduleModal.open = true
+}
+
+function closeScheduleModal() {
+  scheduleModal.open = false
+}
+
+function buildScheduleItem(field) {
+  if (field === 'itinerary') {
+    const item = { time: scheduleForm.time.trim(), label: scheduleForm.label.trim() }
+    if (scheduleForm.note.trim()) item.note = scheduleForm.note.trim()
+    return item
+  }
+  if (field === 'screenings') {
+    const item = {
+      id: `screening_${Date.now()}`,
+      time: scheduleForm.time.trim(),
+      title: scheduleForm.title.trim(),
+      description: scheduleForm.description.trim(),
+    }
+    if (scheduleForm.director.trim()) item.director = scheduleForm.director.trim()
+    if (scheduleForm.directorUrl.trim()) item.directorUrl = scheduleForm.directorUrl.trim()
+    if (scheduleForm.infoUrl.trim()) item.infoUrl = scheduleForm.infoUrl.trim()
+    return item
+  }
+  if (field === 'djs') {
+    const item = { name: scheduleForm.name.trim() }
+    if (scheduleForm.shortDescription.trim()) item.shortDescription = scheduleForm.shortDescription.trim()
+    if (scheduleForm.url.trim()) item.url = scheduleForm.url.trim()
+    return item
+  }
+  return null
+}
+
+async function saveScheduleItem() {
+  if (!scheduleFormValid.value) return
+  scheduleModal.saving = true
+  schedSaveError.value = ''
+
+  try {
+    const field = scheduleModal.field
+    const source = field === 'itinerary' ? [...schedItinerary.value]
+      : field === 'screenings' ? [...schedScreenings.value]
+      : [...schedDjs.value]
+
+    const item = buildScheduleItem(field)
+    if (!item) return
+
+    if (scheduleModal.isNew) {
+      // Keep existing id on screenings edit if not new
+      source.push(item)
+    } else {
+      // Preserve original screening id on edit
+      if (field === 'screenings' && source[scheduleModal.editIndex]?.id) {
+        item.id = source[scheduleModal.editIndex].id
+      }
+      source[scheduleModal.editIndex] = item
+    }
+
+    // Sort itinerary by time string when saving
+    if (field === 'itinerary') {
+      source.sort((a, b) => {
+        const toMin = (t) => {
+          const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i)
+          if (!m) return 0
+          let h = parseInt(m[1], 10)
+          const min = parseInt(m[2], 10)
+          if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12
+          if (m[3].toUpperCase() === 'AM' && h === 12) h = 0
+          return h * 60 + min
+        }
+        return toMin(a.time) - toMin(b.time)
+      })
+    }
+
+    await saveSchedule(field, source)
+    scheduleModal.open = false
+  } catch (err) {
+    console.error('[AdminBBP] Failed to save schedule item:', err)
+    schedSaveError.value = 'Failed to save. Please try again.'
+  } finally {
+    scheduleModal.saving = false
+  }
+}
+
+async function deleteScheduleItem(field, idx) {
+  if (!window.confirm('Delete this item?')) return
+  schedSaveError.value = ''
+
+  try {
+    const source = field === 'itinerary' ? [...schedItinerary.value]
+      : field === 'screenings' ? [...schedScreenings.value]
+      : [...schedDjs.value]
+    source.splice(idx, 1)
+    await saveSchedule(field, source)
+  } catch (err) {
+    console.error('[AdminBBP] Failed to delete schedule item:', err)
+    schedSaveError.value = 'Failed to delete. Please try again.'
+  }
+}
+
+// Trigger schedule load when admin switches to schedule tab
+watch(selectedRole, (val) => {
+  if (val === 'schedule') loadSchedule()
+})
 </script>
 
 <style scoped>
@@ -1127,5 +1486,182 @@ function formatDate(isoString) {
     display: flex;
     flex-direction: column;
   }
+}
+
+/* ── Schedule Editor ──────────────────────────────────────────────────────── */
+.schedule-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-top: 1rem;
+}
+
+.sched-section {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sched-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.sched-section-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f7931a;
+  margin: 0;
+}
+
+.btn-add {
+  background: #f7931a;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-add:hover {
+  opacity: 0.85;
+}
+
+.sched-empty {
+  padding: 1.5rem 1.25rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.sched-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sched-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #1e1e1e;
+  flex-wrap: wrap;
+}
+
+.sched-row:last-child {
+  border-bottom: none;
+}
+
+.sched-time {
+  color: #f7931a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 7rem;
+  white-space: nowrap;
+}
+
+.sched-label {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #e0e0e0;
+}
+
+.sched-note {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.sched-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.btn-sched-edit,
+.btn-sched-delete {
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-sched-edit {
+  background: #2a2a2a;
+  color: #ccc;
+}
+
+.btn-sched-edit:hover {
+  background: #3a3a3a;
+}
+
+.btn-sched-delete {
+  background: #3b1010;
+  color: #f88;
+}
+
+.btn-sched-delete:hover {
+  background: #5a1a1a;
+}
+
+/* Film row variant */
+.sched-row--film {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.sched-film-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sched-film-title {
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.sched-film-dir {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.sched-film-desc {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sched-dj-url {
+  font-size: 0.8rem;
+  color: #888;
+  word-break: break-all;
+}
+
+/* Textarea in modal */
+.edit-textarea {
+  resize: vertical;
+  min-height: 6rem;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.optional {
+  color: #666;
+  font-size: 0.8rem;
+  font-weight: 400;
 }
 </style>

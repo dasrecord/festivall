@@ -77,7 +77,7 @@
             <div class="bbpmap-modal-section">
               <h3>Today's Schedule</h3>
               <div class="bbpmap-schedule-list">
-                <div v-for="(item, i) in BBP.itinerary" :key="i" class="bbpmap-schedule-row">
+                <div v-for="(item, i) in schedItinerary" :key="i" class="bbpmap-schedule-row">
                   <span class="bbpmap-schedule-time">{{ item.time }}</span>
                   <span class="bbpmap-schedule-label">
                     {{ item.label }}<span v-if="item.note"> — {{ item.note }}</span>
@@ -91,7 +91,7 @@
           <template v-if="activeZone.type === 'screenings'">
             <div class="bbpmap-modal-section">
               <h3>Films</h3>
-              <div v-for="film in BBP.screenings" :key="film.id" class="bbpmap-film-item">
+              <div v-for="film in schedScreenings" :key="film.id" class="bbpmap-film-item">
                 <span class="bbpmap-film-time">{{ film.time }}</span>
                 <span class="bbpmap-film-title">{{ film.title }}</span>
                 <p class="bbpmap-film-desc">{{ film.description }}</p>
@@ -124,8 +124,8 @@
           <template v-if="activeZone.type === 'dj'">
             <div class="bbpmap-modal-section">
               <h3>DJs & Mixer</h3>
-              <div v-if="BBP.djs?.length" class="bbpmap-dj-list">
-                <div v-for="dj in BBP.djs" :key="dj.name" class="bbpmap-dj-item">
+              <div v-if="schedDjs?.length" class="bbpmap-dj-list">
+                <div v-for="dj in schedDjs" :key="dj.name" class="bbpmap-dj-item">
                   <p class="bbpmap-dj-name">{{ dj.name }}</p>
                   <p class="bbpmap-dj-desc">{{ dj.shortDescription }}</p>
                   <a v-if="dj.url" :href="dj.url" target="_blank" rel="noopener noreferrer" class="bbpmap-modal-link">
@@ -156,6 +156,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { festivall_db } from '@/firebase.js'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import mapSvgUrl from '@/assets/images/bitcoin_block_party/bitcoin_blockparty_map_bg.svg?url'
@@ -173,6 +174,13 @@ useHead({
   title: `Venue Map — Bitcoin Block Party ${BBP.year}`,
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
+
+// ── Schedule (Firestore-backed) ─────────────────────────────────────────────
+const {
+  itinerary: schedItinerary,
+  screenings: schedScreenings,
+  djs: schedDjs,
+} = useBbpSchedule()
 
 // ── Firestore data ───────────────────────────────────────────────────────────
 const sponsors = ref([])

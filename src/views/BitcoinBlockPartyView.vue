@@ -73,7 +73,7 @@
       <div class="bbp-container">
         <h2 class="bbp-section-title">Day Schedule</h2>
         <div class="bbp-schedule-list">
-          <div v-for="(item, i) in BBP.itinerary" :key="i" class="bbp-schedule-item">
+          <div v-for="(item, i) in schedItinerary" :key="i" class="bbp-schedule-item">
             <span class="bbp-schedule-time">{{ item.time }}</span>
             <span class="bbp-schedule-label">
               {{ item.label }}
@@ -114,7 +114,7 @@
       <div class="bbp-container">
         <h2 class="bbp-section-title">Film Screenings</h2>
         <div class="bbp-screening-cards">
-          <div v-for="film in BBP.screenings" :key="film.id" class="bbp-screening-card">
+          <div v-for="film in schedScreenings" :key="film.id" class="bbp-screening-card">
             <p class="bbp-screening-time">{{ film.time }}</p>
             <h3 class="bbp-screening-title">{{ film.title }}</h3>
             <p class="bbp-screening-desc">{{ film.description }}</p>
@@ -279,6 +279,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { festivall_db } from '@/firebase.js'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
@@ -299,6 +300,9 @@ useHead({
     },
   ],
 })
+
+// ── Schedule (Firestore-backed) ─────────────────────────────────────────────
+const { itinerary: schedItinerary, screenings: schedScreenings } = useBbpSchedule()
 
 // ── Firestore data ───────────────────────────────────────────────────────────
 const sponsors = ref([])
