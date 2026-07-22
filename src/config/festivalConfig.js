@@ -5,7 +5,7 @@ export const REUNION_FESTIVAL = {
   day: 4,         // Friday start
   endDay: 7,      // Monday end
 
-  admins: ['Prasenjit', 'Brandon','Chris'],
+  admins: ['Prasenjit', 'Brandon', 'Chris'],
   adminUids: ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2'],
 
   // Pre-built Date objects for programmatic use
@@ -46,19 +46,26 @@ export const REUNION_FESTIVAL = {
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
   get meals() {
     const days = [
-      { label: 'Friday',   date: this.fridayDate },
+      { label: 'Friday', date: this.fridayDate },
       { label: 'Saturday', date: this.saturdayDate },
-      { label: 'Sunday',   date: this.sundayDate },
+      { label: 'Sunday', date: this.sundayDate },
     ]
     const toDateStr = (d) => d.toISOString().slice(0, 10) // 'YYYY-MM-DD'
     const meals = []
     days.forEach(({ label, date }) => {
       const ds = toDateStr(date)
-      meals.push({ label: `${label} Lunch`,   time: `${ds}T12:00:00-06:00`, menu: ['Placeholder Lunch 1',  'Placeholder Lunch 2']  })
-      meals.push({ label: `${label} Supper`,  time: `${ds}T18:00:00-06:00`, menu: ['Placeholder Supper 1', 'Placeholder Supper 2'] })
+      meals.push({ label: `${label} Lunch`, time: `${ds}T12:00:00-06:00`, menu: ['Placeholder Lunch 1', 'Placeholder Lunch 2'] })
+      meals.push({ label: `${label} Supper`, time: `${ds}T18:00:00-06:00`, menu: ['Placeholder Supper 1', 'Placeholder Supper 2'] })
     })
     return meals
   },
+
+  applicationPhases: {
+    artistApplicationsOpen: new Date('2026-01-01T00:00:00-06:00'),
+    artistApplicationsClose: new Date('2026-07-20T23:59:59-06:00'),
+    vendorApplicationsClose: new Date('2026-08-15T23:59:59-06:00'),
+  },
+
   // Volunteer team reveal phases — controls which teams appear in the application form
   volunteerPhases: {
     phase1Start: new Date('2026-08-24T12:00:00-06:00'), // Setup Crew begins
@@ -158,7 +165,7 @@ export const REUNION_FESTIVAL = {
     // Min/max picks per library
     selectionLimits: {
       video: { min: 1, max: 6 },
-      mask:  { min: 1, max: 3 },
+      mask: { min: 1, max: 3 },
     },
   },
 }

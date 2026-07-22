@@ -361,6 +361,13 @@ export const BITCOIN_BLOCK_PARTY = {
       shortDescription: 'Licensed bar. No liquor beyond designated zones.',
       url: null,
     },
+    on_ramp: {
+      type: 'info',
+      tier: 'info',
+      displayName: 'Lightning on-ramp station',
+      shortDescription: 'Get Bitcoin on-site with a Lightning on-ramp.',
+      url: null,
+    },
     // vendor_0..6 are populated dynamically from the vendors array in the view
     // bull_0..4 and whale_0..2 are populated dynamically from the sponsors array
   },

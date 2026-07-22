@@ -20,16 +20,25 @@ const { year } = REUNION_FESTIVAL
 useHead({
   title: `Apply to Reunion ${year} — Artists, Volunteers & Vendors | Festivall`,
   meta: [
-    { name: 'description', content: `Apply to perform, volunteer, run a workshop, or vend at Reunion ${year}. Canada's premier grassroots electronic music festival. Applications open now.` },
+    {
+      name: 'description',
+      content: `Apply to perform, volunteer, run a workshop, or vend at Reunion ${year}. Canada's premier grassroots electronic music festival. Applications open now.`
+    },
     { property: 'og:title', content: `Apply to Reunion ${year} | Festivall` },
-    { property: 'og:description', content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.` },
+    {
+      property: 'og:description',
+      content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.`
+    },
     { property: 'og:image', content: 'https://festivall.ca/reunionapplication_preview.png' },
     { property: 'og:url', content: 'https://festivall.ca/reunionapplication' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: `Apply to Reunion ${year} | Festivall` },
-    { name: 'twitter:description', content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.` },
-    { name: 'twitter:image', content: 'https://festivall.ca/reunionapplication_preview.png' },
+    {
+      name: 'twitter:description',
+      content: `Artists, volunteers, workshop facilitators, art installers & vendors — apply to be part of Reunion ${year}.`
+    },
+    { name: 'twitter:image', content: 'https://festivall.ca/reunionapplication_preview.png' }
   ]
 })
 import { reunion_db } from '@/firebase'
@@ -97,8 +106,29 @@ const availableVolunteerTeams = computed(() => {
   return REUNION_FESTIVAL.volunteerTeamsByPhase[`phase${currentPhase.value}`]
 })
 
+const artistApplicationsOpen = computed(() => {
+  const now = new Date()
+  return (
+    now >= REUNION_FESTIVAL.applicationPhases.artistApplicationsOpen &&
+    now <= REUNION_FESTIVAL.applicationPhases.artistApplicationsClose
+  )
+})
+
 const volunteerDates = computed(() => {
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec']
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec'
+  ]
   const dates = []
   const cur = new Date(REUNION_FESTIVAL.volunteerPhases.phase1Start)
   cur.setHours(12, 0, 0, 0)
@@ -245,7 +275,11 @@ const addApplicant = async () => {
   try {
     const nowIso = new Date().toISOString()
     const compensation = calculateCompensation()
-    const participantsDocRef = doc(reunion_db, REUNION_FESTIVAL.participantsCollection, form.value.id_code)
+    const participantsDocRef = doc(
+      reunion_db,
+      REUNION_FESTIVAL.participantsCollection,
+      form.value.id_code
+    )
     await setDoc(
       participantsDocRef,
       {
@@ -818,8 +852,17 @@ onMounted(() => {
           <label for="applicant_type">Categories:</label>
           <div class="checkboxes">
             <span class="checkbox-label">
-              <input type="checkbox" id="artist" value="Artist" v-model="form.applicant_types" />
+              <input
+                type="checkbox"
+                id="artist"
+                value="Artist"
+                v-model="form.applicant_types"
+                :disabled="!artistApplicationsOpen"
+              />
               Artist
+              <span v-if="!artistApplicationsOpen" style="color: #ff6b6b; font-size: 0.8rem">
+                (Closed)
+              </span>
             </span>
 
             <span class="checkbox-label">
