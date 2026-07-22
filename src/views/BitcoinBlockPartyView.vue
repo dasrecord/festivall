@@ -8,6 +8,14 @@
         <p class="bbp-hero-date">{{ BBP.date }}</p>
         <p class="bbp-hero-time">{{ BBP.startTime }} – {{ BBP.endTime }}</p>
         <p class="bbp-hero-venue">{{ BBP.venue }}</p>
+
+        <div class="bbp-hero-rsvp-wrap">
+          <button class="bbp-btn bbp-btn-primary bbp-btn-rsvp" @click="openRsvpModal">
+            RSVP / Add to Calendar
+          </button>
+          <p class="bbp-hero-rsvp-note">Save your spot with your name and email. We’ll give you a calendar file right after.</p>
+        </div>
+        
         <div class="bbp-hero-ctas">
           <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
           <router-link :to="BBP.routes.poster" class="bbp-btn bbp-btn-secondary">See The Poster</router-link>
@@ -21,6 +29,43 @@
         </div>
       </div>
     </section>
+
+    <transition name="bbp-modal-fade">
+      <div v-if="rsvpModalOpen" class="bbp-rsvp-overlay" @click.self="closeRsvpModal">
+        <div class="bbp-rsvp-modal">
+          <button class="bbp-rsvp-close" @click="closeRsvpModal">✕</button>
+
+          <div v-if="!rsvpSubmitted" class="bbp-rsvp-body">
+            <p class="bbp-rsvp-eyebrow">Official RSVP</p>
+            <h2 class="bbp-rsvp-title">Save your spot</h2>
+            <p class="bbp-rsvp-copy">Leave your name and email and we’ll save your RSVP to the event list.</p>
+
+            <label class="bbp-rsvp-field">
+              <span>Name</span>
+              <input v-model="rsvpForm.name" type="text" placeholder="Your name" />
+            </label>
+            <label class="bbp-rsvp-field">
+              <span>Email</span>
+              <input v-model="rsvpForm.email" type="email" placeholder="you@example.com" />
+            </label>
+
+            <p v-if="rsvpError" class="bbp-rsvp-error">{{ rsvpError }}</p>
+
+            <button class="bbp-btn bbp-btn-primary bbp-rsvp-submit" :disabled="rsvpSaving" @click="submitRsvp">
+              {{ rsvpSaving ? 'Saving…' : 'RSVP Now' }}
+            </button>
+          </div>
+
+          <div v-else class="bbp-rsvp-body bbp-rsvp-success">
+            <p class="bbp-rsvp-eyebrow">You’re in</p>
+            <h2 class="bbp-rsvp-title">Thanks, {{ rsvpSubmitted.name }}</h2>
+            <p class="bbp-rsvp-copy">We saved your RSVP and prepared a calendar file you can download now.</p>
+            <a class="bbp-btn bbp-btn-secondary bbp-rsvp-submit" :href="rsvpIcsUrl" :download="rsvpIcsFilename">Download .ics</a>
+            <button class="bbp-btn bbp-btn-outline bbp-rsvp-submit" @click="closeRsvpModal">Close</button>
+          </div>
+        </div>
+      </div>
+    </transition>
 
     <section class="bbp-chyron" aria-label="Live Bitcoin market status" aria-live="polite">
       <div class="bbp-chyron-viewport">
@@ -281,7 +326,7 @@ import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { festivall_db } from '@/firebase.js'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore'
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
 import bullIcon from '@/assets/images/icons/bull.png'
 import whaleIcon from '@/assets/images/icons/whale.png'
@@ -303,6 +348,15 @@ useHead({
 
 // ── Schedule (Firestore-backed) ─────────────────────────────────────────────
 const { itinerary: schedItinerary, screenings: schedScreenings } = useBbpSchedule()
+
+// ── RSVP capture ────────────────────────────────────────────────────────────
+const rsvpModalOpen = ref(false)
+const rsvpSaving = ref(false)
+const rsvpSubmitted = ref(null)
+const rsvpError = ref('')
+const rsvpIcsUrl = ref('')
+const rsvpIcsFilename = `bitcoin_block_party_${BBP.year}_rsvp.ics`
+const rsvpForm = ref({ name: '', email: '' })
 
 // ── Firestore data ───────────────────────────────────────────────────────────
 const sponsors = ref([])
@@ -339,7 +393,6 @@ async function loadSponsorsAndVendors() {
 const confirmedSponsors = computed(() => sponsors.value)
 const confirmedVendors  = computed(() => vendors.value)
 const showSponsorCallToAction = true
-const copiedDirections = ref(false)
 const directionsLabel = computed(() => `FUNK. Coffee Bar, ${BBP.venue}, ${BBP.city}`)
 const directionsQuery = computed(() => encodeURIComponent(directionsLabel.value))
 const googleMapsUrl = computed(() => `https://www.google.com/maps/search/?api=1&query=${directionsQuery.value}`)
@@ -428,19 +481,113 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (marketRefreshId) window.clearInterval(marketRefreshId)
+  if (rsvpIcsUrl.value) URL.revokeObjectURL(rsvpIcsUrl.value)
 })
 
 function openDirections() {
   window.open(googleMapsUrl.value, '_blank', 'noopener,noreferrer')
 }
 
-async function copyDirectionsQuery() {
+function openRsvpModal() {
+  rsvpError.value = ''
+  rsvpModalOpen.value = true
+}
+
+function closeRsvpModal() {
+  if (rsvpSaving.value) return
+  rsvpModalOpen.value = false
+}
+
+function escapeIcsText(value) {
+  return String(value || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\n/g, '\\n')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;')
+}
+
+function formatIcsStamp(date) {
+  const pad = (num) => String(num).padStart(2, '0')
+  return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`
+}
+
+function parseTimeTo24h(timeLabel) {
+  const match = String(timeLabel || '').match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+  if (!match) return null
+  let hours = Number(match[1])
+  const minutes = Number(match[2])
+  const meridiem = match[3].toUpperCase()
+  if (meridiem === 'PM' && hours !== 12) hours += 12
+  if (meridiem === 'AM' && hours === 12) hours = 0
+  return { hours, minutes }
+}
+
+function buildRsvpIcs() {
+  const start = parseTimeTo24h(BBP.startTime)
+  const end = parseTimeTo24h(BBP.endTime)
+  const eventDate = BBP.dateISO
+  const startDate = start
+    ? new Date(`${eventDate}T${String(start.hours).padStart(2, '0')}:${String(start.minutes).padStart(2, '0')}:00-07:00`)
+    : new Date(`${eventDate}T12:00:00-07:00`)
+  const endDate = end
+    ? new Date(`${eventDate}T${String(end.hours).padStart(2, '0')}:${String(end.minutes).padStart(2, '0')}:00-07:00`)
+    : new Date(`${eventDate}T20:00:00-07:00`)
+
+  return new Blob([
+    [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Festivall//Bitcoin Block Party RSVP//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:bbp-rsvp-${Date.now()}@festivall.ca`,
+      `DTSTAMP:${formatIcsStamp(new Date())}`,
+      `DTSTART:${formatIcsStamp(startDate)}`,
+      `DTEND:${formatIcsStamp(endDate)}`,
+      `SUMMARY:Bitcoin Block Party ${BBP.year}`,
+      `LOCATION:${escapeIcsText(`${BBP.venue}, ${BBP.city}`)}`,
+      `DESCRIPTION:${escapeIcsText(`RSVP confirmed for Bitcoin Block Party ${BBP.year}.`)}`,
+      'STATUS:CONFIRMED',
+      'SEQUENCE:0',
+      'TRANSP:OPAQUE',
+      'CLASS:PUBLIC',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n')
+  ], { type: 'text/calendar;charset=utf-8' })
+}
+
+async function submitRsvp() {
+  const name = rsvpForm.value.name.trim()
+  const email = rsvpForm.value.email.trim().toLowerCase()
+
+  if (!name || !email) {
+    rsvpError.value = 'Please enter both your name and email.'
+    return
+  }
+
+  rsvpSaving.value = true
+  rsvpError.value = ''
+
   try {
-    await navigator.clipboard.writeText(directionsLabel.value)
-    copiedDirections.value = true
-    window.setTimeout(() => { copiedDirections.value = false }, 1800)
-  } catch (_) {
-    openDirections()
+    await setDoc(doc(festivall_db, BBP.collections.attendees, email), {
+      name,
+      email,
+      event: 'bitcoin_block_party_2026',
+      source: 'bitcoinblockparty.festivall.ca',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }, { merge: true })
+
+    if (rsvpIcsUrl.value) URL.revokeObjectURL(rsvpIcsUrl.value)
+    rsvpIcsUrl.value = URL.createObjectURL(buildRsvpIcs())
+    rsvpSubmitted.value = { name, email }
+  } catch (error) {
+    console.error('Error saving RSVP:', error)
+    rsvpError.value = 'We could not save your RSVP right now. Please try again.'
+  } finally {
+    rsvpSaving.value = false
   }
 }
 
@@ -517,6 +664,26 @@ const cssVars = computed(() => ({
   color: var(--bbp-black);
 }
 .bbp-hero-date { font-weight: 700; font-size: 1.1rem; color: var(--bbp-teal); }
+.bbp-hero-rsvp-wrap {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+.bbp-btn-rsvp {
+  min-width: min(100%, 320px);
+  min-height: 3.4rem;
+  font-size: 1.05rem;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+}
+.bbp-hero-rsvp-note {
+  margin: 0;
+  max-width: 420px;
+  color: var(--bbp-blue);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 .bbp-hero-ctas {
   margin-top: 2rem;
   display: grid;
@@ -562,6 +729,98 @@ const cssVars = computed(() => ({
   color: var(--bbp-teal);
   font-weight: 700;
   border-right: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
+}
+
+/* ── RSVP modal ────────────────────────────────────────────────────────────── */
+.bbp-rsvp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(9, 25, 49, 0.72);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+.bbp-rsvp-modal {
+  position: relative;
+  width: min(100%, 520px);
+  border-radius: 18px;
+  background: var(--bbp-white);
+  color: var(--bbp-black);
+  border: 1px solid color-mix(in srgb, var(--bbp-yellow) 60%, transparent);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  padding: 1.5rem;
+}
+.bbp-rsvp-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bbp-teal) 10%, transparent);
+  color: var(--bbp-teal);
+  cursor: pointer;
+}
+.bbp-rsvp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.bbp-rsvp-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+  color: var(--bbp-blue);
+  font-weight: 800;
+}
+.bbp-rsvp-title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.05;
+  color: var(--bbp-teal);
+}
+.bbp-rsvp-copy {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+.bbp-rsvp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--bbp-teal);
+}
+.bbp-rsvp-field input {
+  border: 1px solid color-mix(in srgb, var(--bbp-teal) 20%, transparent);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  color: var(--bbp-black);
+  background: #fff;
+}
+.bbp-rsvp-field input:focus {
+  outline: none;
+  border-color: var(--bbp-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bbp-red) 16%, transparent);
+}
+.bbp-rsvp-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.92rem;
+}
+.bbp-rsvp-submit {
+  width: 100%;
+  min-height: 3rem;
+}
+.bbp-rsvp-success .bbp-rsvp-submit + .bbp-rsvp-submit {
+  margin-top: 0.35rem;
 }
 
 @keyframes bbp-chyron-scroll {

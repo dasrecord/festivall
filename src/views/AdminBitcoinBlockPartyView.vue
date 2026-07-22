@@ -77,6 +77,11 @@
           <div class="stat-value">{{ stats.volunteers.pending }} pending</div>
           <div class="stat-subvalue">{{ stats.volunteers.confirmed }} confirmed</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-label">Attendees</div>
+          <div class="stat-value">{{ stats.attendees.total }} RSVPs</div>
+          <div class="stat-subvalue">Captured on the website</div>
+        </div>
       </div>
 
       <!-- Role Filter Tabs -->
@@ -95,15 +100,15 @@
       <!-- Status Filter & Search -->
       <div v-if="selectedRole !== 'schedule'" class="controls">
         <div class="status-filters">
-          <label class="status-filter">
+          <label v-if="selectedRole !== 'attendees'" class="status-filter">
             <input type="radio" v-model="selectedStatus" value="all" />
             All
           </label>
-          <label class="status-filter">
+          <label v-if="selectedRole !== 'attendees'" class="status-filter">
             <input type="radio" v-model="selectedStatus" value="pending" />
             Pending
           </label>
-          <label class="status-filter">
+          <label v-if="selectedRole !== 'attendees'" class="status-filter">
             <input type="radio" v-model="selectedStatus" value="confirmed" />
             Confirmed
           </label>
@@ -117,13 +122,13 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading && selectedRole !== 'schedule'" class="loading">
+      <div v-if="loading && selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="loading">
         <div class="spinner"></div>
         Loading applicants...
       </div>
 
       <!-- Applicant Table -->
-      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule'" class="applicants-table">
+      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="applicants-table">
         <div class="table-header">
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
@@ -202,8 +207,37 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="selectedRole !== 'schedule'" class="empty-state">
+      <div v-else-if="selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="empty-state">
         <p>No {{ selectedStatus === 'all' ? '' : selectedStatus }} {{ selectedRole }} applicants found.</p>
+      </div>
+
+      <!-- Attendees Table -->
+      <div v-if="selectedRole === 'attendees'" class="schedule-editor">
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>Attendees</h2>
+            <span class="bbp-attendee-count">{{ filteredAttendees.length }} records</span>
+          </div>
+          <div v-if="loadingAttendees" class="loading"><div class="spinner"></div> Loading RSVPs…</div>
+          <div v-else-if="filteredAttendees.length === 0" class="sched-empty">No RSVPs captured yet.</div>
+          <div v-else class="applicants-table bbp-attendees-table">
+            <div class="table-header bbp-attendees-header">
+              <div class="col-name">Name</div>
+              <div class="col-contact">Email</div>
+              <div class="col-org">Registered</div>
+              <div class="col-status">Source</div>
+            </div>
+            <div v-for="attendee in filteredAttendees" :key="attendee.id" class="applicant-row bbp-attendee-row">
+              <div class="col-name"><strong>{{ attendee.name }}</strong></div>
+              <div class="col-contact">{{ attendee.email }}</div>
+              <div class="col-org">{{ formatDate(attendee.createdAt) }}</div>
+              <div class="col-status">
+                <span class="status-badge confirmed">RSVP</span>
+                <div class="attendee-source">{{ attendee.source || 'website' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ── Schedule Editor ───────────────────────────────────────────── -->
@@ -386,12 +420,15 @@ const roleTabs = [
   { value: 'sponsor', label: 'Sponsors', icon: '₿' },
   { value: 'vendor', label: 'Vendors', icon: '🏪' },
   { value: 'volunteer', label: 'Volunteers', icon: '🙌' },
+  { value: 'attendees', label: 'Attendees', icon: '👥' },
   { value: 'schedule', label: 'Schedule', icon: '📅' },
 ]
 
 // State
 const applicants = ref([])
+const attendees = ref([])
 const loading = ref(false)
+const loadingAttendees = ref(false)
 const selectedRole = ref('all')
 const selectedStatus = ref('all')
 const searchQuery = ref('')
@@ -403,6 +440,7 @@ const stats = computed(() => {
     sponsors: { pending: 0, confirmed: 0 },
     vendors: { pending: 0, confirmed: 0 },
     volunteers: { pending: 0, confirmed: 0 },
+    attendees: { total: 0 },
   }
   applicants.value.forEach((app) => {
     const category = app.role === 'volunteer' ? 'volunteers' : `${app.role}s`
@@ -411,6 +449,7 @@ const stats = computed(() => {
       else if (app.status === 'confirmed') result[category].confirmed++
     }
   })
+  result.attendees.total = attendees.value.length
   return result
 })
 
@@ -445,6 +484,21 @@ const filteredApplicants = computed(() => {
     if (a.status !== 'pending' && b.status === 'pending') return 1
     return new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0)
   })
+})
+
+const filteredAttendees = computed(() => {
+  let result = attendees.value
+
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(
+      (attendee) =>
+        attendee.name?.toLowerCase().includes(query) ||
+        attendee.email?.toLowerCase().includes(query)
+    )
+  }
+
+  return result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
 })
 
 // Load applicants
@@ -505,12 +559,35 @@ async function loadApplicants() {
   }
 }
 
+async function loadAttendees() {
+  loadingAttendees.value = true
+  try {
+    const snapshot = await getDocs(collection(festivall_db, BBP.collections.attendees))
+    attendees.value = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...(docSnap.data() || {}),
+    }))
+  } catch (error) {
+    console.error('Error loading attendees:', error)
+  } finally {
+    loadingAttendees.value = false
+  }
+}
+
 // Watch for admin status and load data when authenticated
 watch(isAdmin, (newValue) => {
   if (newValue && applicants.value.length === 0) {
     loadApplicants()
   }
+  if (newValue && attendees.value.length === 0) {
+    loadAttendees()
+  }
 }, { immediate: true })
+
+watch(selectedRole, (newValue) => {
+  if (newValue === 'schedule') loadSchedule()
+  if (newValue === 'attendees' && attendees.value.length === 0) loadAttendees()
+})
 
 // Validation
 function canOnboard(applicant) {
@@ -697,6 +774,11 @@ function formatDate(isoString) {
     day: 'numeric',
     year: 'numeric',
   })
+}
+
+// ── Attendees ───────────────────────────────────────────────────────────────
+if (selectedRole.value === 'attendees') {
+  loadAttendees()
 }
 
 // ── Schedule Editor ──────────────────────────────────────────────────────────
@@ -1016,6 +1098,23 @@ watch(selectedRole, (val) => {
   font-size: 0.9rem;
   color: #aaa;
   margin-top: 0.25rem;
+}
+
+.bbp-attendee-count {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.attendee-source {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: lowercase;
+}
+
+.bbp-attendees-table .table-header,
+.bbp-attendees-table .applicant-row {
+  grid-template-columns: 1.5fr 1.8fr 1.2fr 1fr;
 }
 
 /* Filter Tabs */

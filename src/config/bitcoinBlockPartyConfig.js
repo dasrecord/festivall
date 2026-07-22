@@ -386,6 +386,7 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Firestore collection names (all on festivall_db) ─────────────────────
   collections: {
     applications: 'bbp_applications_2026',    // Sponsors, vendors (all statuses)
+    attendees: 'bbp_attendees_2026',
     volunteers: 'bbp_volunteers_2026',
     quizLeaderboard: 'bbp_quiz_leaderboard_2026',
   },
