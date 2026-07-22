@@ -352,11 +352,12 @@ function closeZoneModal() {
 
 // ── CSS vars ─────────────────────────────────────────────────────────────────
 const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.purple,
+  '--bbp-purple': BBP.palette.blue,
   '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.orange,
-  '--bbp-tan':    BBP.palette.tan,
-  '--bbp-cream':  BBP.palette.cream,
+  '--bbp-orange': BBP.palette.red,
+  '--bbp-tan':    BBP.palette.yellow,
+  '--bbp-cream':  BBP.palette.white,
+  '--bbp-dark':   BBP.palette.black,
 }))
 
 // ── Pan & zoom ────────────────────────────────────────────────────────────────
@@ -513,7 +514,7 @@ onBeforeUnmount(() => {
   color: var(--bbp-teal);
   height: 100dvh;
   overflow: hidden;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--bbp-font-family);
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */

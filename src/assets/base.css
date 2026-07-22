@@ -1,4 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@350&display=swap');
+
+@font-face {
+  font-family: 'Rigid Square Bold';
+  src: url('/fonts/Rigid-Square-Bold.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
@@ -46,6 +55,7 @@
   --color-icon: var(--vt-c-white);
 
   --section-gap: 160px;
+  --bbp-font-family: 'Rigid Square Bold', 'Inter', 'Helvetica Neue', Arial, sans-serif;
 }
 :root {
   /* Custom Colors */

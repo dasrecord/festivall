@@ -56,6 +56,18 @@
       </div>
     </section>
 
+    <!-- ── FEATURES ───────────────────────────────────────────────────────── -->
+    <section class="bbp-section bbp-features" v-if="BBP.features?.length">
+      <div class="bbp-container">
+        <h2 class="bbp-section-title">Features</h2>
+        <div class="bbp-features-grid">
+          <article v-for="feature in BBP.features" :key="feature" class="bbp-feature-card">
+            <h3 class="bbp-feature-title">{{ feature }}</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- ── ITINERARY ──────────────────────────────────────────────────────── -->
     <section class="bbp-section bbp-itinerary">
       <div class="bbp-container">
@@ -411,20 +423,21 @@ function sponsorIconSrc(tierId) {
 }
 
 const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.purple,
+  '--bbp-blue':   BBP.palette.blue,
   '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.orange,
-  '--bbp-tan':    BBP.palette.tan,
-  '--bbp-cream':  BBP.palette.cream,
+  '--bbp-red':    BBP.palette.red,
+  '--bbp-yellow': BBP.palette.yellow,
+  '--bbp-white':  BBP.palette.white,
+  '--bbp-black':  BBP.palette.black,
 }))
 </script>
 
 <style scoped>
 /* ── Base ──────────────────────────────────────────────────────────────────── */
 .bbp-page {
-  background: var(--bbp-cream);
+  background: var(--bbp-white);
   color: var(--bbp-teal);
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--bbp-font-family);
   min-height: 100vh;
 }
 
@@ -435,7 +448,7 @@ const cssVars = computed(() => ({
   justify-content: center;
   min-height: 90vh;
   padding: 4rem 1.5rem;
-  background: linear-gradient(160deg, var(--bbp-cream) 55%, rgba(7,94,114,0.09) 100%);
+  background: linear-gradient(160deg, var(--bbp-white) 55%, color-mix(in srgb, var(--bbp-teal) 9%, transparent) 100%);
   text-align: center;
 }
 .bbp-hero-inner {
@@ -445,7 +458,7 @@ const cssVars = computed(() => ({
   font-size: 0.85rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--bbp-purple);
+  color: var(--bbp-blue);
   margin-bottom: 0.5rem;
 }
 .bbp-hero-title {
@@ -454,14 +467,14 @@ const cssVars = computed(() => ({
   line-height: 1;
   color: var(--bbp-teal);
   margin: 0 0 1rem;
-  text-shadow: 0 1px 8px rgba(7,94,114,0.12);
+  text-shadow: 0 1px 8px color-mix(in srgb, var(--bbp-teal) 12%, transparent);
 }
 .bbp-hero-date,
 .bbp-hero-time,
 .bbp-hero-venue {
   font-size: 1rem;
   margin: 0.25rem 0;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
 }
 .bbp-hero-date { font-weight: 700; font-size: 1.1rem; color: var(--bbp-teal); }
 .bbp-hero-ctas {
@@ -480,9 +493,9 @@ const cssVars = computed(() => ({
 
 /* ── Live chyron ───────────────────────────────────────────────────────────── */
 .bbp-chyron {
-  background: rgba(7, 94, 114, 0.08);
-  border-top: 1px solid rgba(188,186,165,0.5);
-  border-bottom: 1px solid rgba(188,186,165,0.5);
+  background: color-mix(in srgb, var(--bbp-teal) 8%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 .bbp-chyron-viewport {
   max-width: 980px;
@@ -504,7 +517,7 @@ const cssVars = computed(() => ({
   text-transform: uppercase;
   color: var(--bbp-teal);
   font-weight: 700;
-  border-right: 1px solid rgba(188,186,165,0.5);
+  border-right: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 
 @keyframes bbp-chyron-scroll {
@@ -529,8 +542,8 @@ const cssVars = computed(() => ({
   font-family: inherit;
 }
 .bbp-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-.bbp-btn-primary  { background: var(--bbp-orange); color: #fff; }
-.bbp-btn-secondary { background: var(--bbp-teal); color: #fff; }
+.bbp-btn-primary  { background: var(--bbp-red); color: var(--bbp-white); }
+.bbp-btn-secondary { background: var(--bbp-teal); color: var(--bbp-white); }
 .bbp-btn-outline  { border: 2px solid var(--bbp-teal); color: var(--bbp-teal); background: transparent; }
 
 /* ── Quick actions ─────────────────────────────────────────────────────────── */
@@ -538,10 +551,10 @@ const cssVars = computed(() => ({
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(244,242,230,0.94);
+  background: color-mix(in srgb, var(--bbp-white) 94%, transparent);
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(188,186,165,0.5);
-  border-bottom: 1px solid rgba(188,186,165,0.5);
+  border-top: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 .bbp-quick-actions-inner {
   max-width: 980px;
@@ -554,9 +567,9 @@ const cssVars = computed(() => ({
 .bbp-quick-actions button {
   flex: 0 0 auto;
   padding: 0.45rem 0.8rem;
-  border: 1px solid var(--bbp-tan);
+  border: 1px solid var(--bbp-yellow);
   border-radius: 999px;
-  background: rgba(255,255,255,0.7);
+  background: color-mix(in srgb, var(--bbp-white) 70%, transparent);
   color: var(--bbp-teal);
   text-decoration: none;
   font-size: 0.78rem;
@@ -566,14 +579,14 @@ const cssVars = computed(() => ({
 }
 .bbp-quick-actions a:hover,
 .bbp-quick-actions button:hover {
-  border-color: var(--bbp-orange);
-  color: var(--bbp-orange);
+  border-color: var(--bbp-red);
+  color: var(--bbp-red);
 }
 
 /* ── Sections ──────────────────────────────────────────────────────────────── */
 .bbp-section {
   padding: 4rem 1.5rem;
-  border-top: 1px solid rgba(188,186,165,0.5);
+  border-top: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 .bbp-container {
   max-width: 760px;
@@ -591,7 +604,30 @@ const cssVars = computed(() => ({
 .bbp-about-body {
   font-size: 1.05rem;
   line-height: 1.75;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
+}
+
+/* ── Features ──────────────────────────────────────────────────────────────── */
+.bbp-features {
+  background: color-mix(in srgb, var(--bbp-teal) 6%, transparent);
+}
+.bbp-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+}
+.bbp-feature-card {
+  border: 1px solid var(--bbp-yellow);
+  background: color-mix(in srgb, var(--bbp-white) 78%, transparent);
+  border-radius: 8px;
+  padding: 0.95rem 1rem;
+}
+.bbp-feature-title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--bbp-teal);
+  font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 /* ── Itinerary ─────────────────────────────────────────────────────────────── */
@@ -605,7 +641,7 @@ const cssVars = computed(() => ({
   gap: 1.25rem;
   align-items: baseline;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(188,186,165,0.5);
+  border-bottom: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 .bbp-schedule-time {
   font-size: 0.85rem;
@@ -616,10 +652,10 @@ const cssVars = computed(() => ({
 }
 .bbp-schedule-label {
   font-size: 1rem;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
 }
 .bbp-schedule-note {
-  color: var(--bbp-purple);
+  color: var(--bbp-blue);
   font-size: 0.9rem;
 }
 
@@ -632,7 +668,7 @@ const cssVars = computed(() => ({
 
 /* ── Directions ─────────────────────────────────────────────────────────────── */
 .bbp-directions {
-  background: rgba(188,186,165,0.16);
+  background: color-mix(in srgb, var(--bbp-yellow) 16%, transparent);
 }
 .bbp-directions-inner {
   max-width: 980px;
@@ -650,11 +686,11 @@ const cssVars = computed(() => ({
   margin: 0;
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
 }
 .bbp-directions-note {
   margin: 0.35rem 0 0;
-  color: var(--bbp-purple);
+  color: var(--bbp-blue);
   font-size: 0.95rem;
 }
 .bbp-directions-actions {
@@ -665,10 +701,10 @@ const cssVars = computed(() => ({
 }
 .bbp-directions-map {
   min-height: 320px;
-  border: 1px solid var(--bbp-tan);
+  border: 1px solid var(--bbp-yellow);
   border-radius: 8px;
   overflow: hidden;
-  background: rgba(255,255,255,0.7);
+  background: color-mix(in srgb, var(--bbp-white) 70%, transparent);
 }
 .bbp-directions-map iframe {
   display: block;
@@ -678,10 +714,10 @@ const cssVars = computed(() => ({
   border: 0;
 }
 .bbp-screening-card {
-  background: rgba(255,255,255,0.75);
+  background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
   border-radius: 8px;
   padding: 1.5rem;
-  border: 1px solid var(--bbp-tan);
+  border: 1px solid var(--bbp-yellow);
 }
 .bbp-screening-time {
   font-size: 0.8rem;
@@ -699,13 +735,13 @@ const cssVars = computed(() => ({
 .bbp-screening-desc {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
   margin: 0;
 }
 .bbp-screening-credit {
   margin: 0.65rem 0 0;
   font-size: 0.82rem;
-  color: var(--bbp-purple);
+  color: var(--bbp-blue);
 }
 .bbp-screening-credit a {
   color: var(--bbp-teal);
@@ -736,8 +772,8 @@ const cssVars = computed(() => ({
   gap: 0.75rem;
   padding: 1.25rem 1.5rem;
   border-radius: 8px;
-  border: 1px solid var(--bbp-tan);
-  background: rgba(255,255,255,0.75);
+  border: 1px solid var(--bbp-yellow);
+  background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
   text-decoration: none;
   color: var(--bbp-teal);
   transition: background 0.15s;
@@ -745,7 +781,7 @@ const cssVars = computed(() => ({
   max-width: 320px;
   flex: 1 1 260px;
 }
-.bbp-sponsor-card:hover { background: rgba(255,255,255,0.95); }
+.bbp-sponsor-card:hover { background: color-mix(in srgb, var(--bbp-white) 95%, transparent); }
 .bbp-sponsor-copy {
   display: flex;
   flex-direction: column;
@@ -760,7 +796,7 @@ const cssVars = computed(() => ({
   display: grid;
   place-items: center;
   background: var(--bbp-teal);
-  border: 1px solid rgba(7,94,114,0.42);
+  border: 1px solid color-mix(in srgb, var(--bbp-teal) 42%, transparent);
 }
 .bbp-sponsor-icon {
   width: auto;
@@ -773,14 +809,14 @@ const cssVars = computed(() => ({
 .bbp-sponsor-name { font-size: 1.2rem; font-weight: 800; }
 .bbp-sponsor-desc {
   font-size: 0.85rem;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
 /* ── Vendors ─────────────────────────────────────────────────────────────────── */
 .bbp-vendors-intro {
-  color: var(--bbp-tan);
+  color: var(--bbp-yellow);
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
 }
@@ -796,8 +832,8 @@ const cssVars = computed(() => ({
   gap: 0.3rem;
   padding: 1rem 1.25rem;
   border-radius: 8px;
-  border: 1px solid var(--bbp-tan);
-  background: rgba(255,255,255,0.75);
+  border: 1px solid var(--bbp-yellow);
+  background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
   min-width: 180px;
 }
 .bbp-vendor-tier-badge {
@@ -807,7 +843,7 @@ const cssVars = computed(() => ({
   color: var(--bbp-teal);
 }
 .bbp-vendor-name { font-size: 1rem; font-weight: 700; }
-.bbp-vendor-desc { font-size: 0.82rem; color: var(--bbp-dark); }
+.bbp-vendor-desc { font-size: 0.82rem; color: var(--bbp-black); }
 
 /* ── Tier grid ───────────────────────────────────────────────────────────────── */
 .bbp-tier-grid {
@@ -818,8 +854,8 @@ const cssVars = computed(() => ({
 }
 .bbp-tier-card {
   border-radius: 8px;
-  border: 1px solid var(--bbp-tan);
-  background: rgba(255,255,255,0.75);
+  border: 1px solid var(--bbp-yellow);
+  background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
   overflow: hidden;
 }
 .bbp-tier-header {
@@ -827,11 +863,11 @@ const cssVars = computed(() => ({
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  border-bottom: 1px solid var(--bbp-tan);
+  border-bottom: 1px solid var(--bbp-yellow);
 }
 .bbp-tier-name { font-size: 1.15rem; font-weight: 800; color: var(--bbp-teal); }
 .bbp-tier-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--bbp-teal); }
-.bbp-tier-price { font-size: 1rem; font-weight: 700; color: var(--bbp-orange); margin-top: 0.25rem; }
+.bbp-tier-price { font-size: 1rem; font-weight: 700; color: var(--bbp-red); margin-top: 0.25rem; }
 .bbp-tier-perks {
   padding: 0.75rem 1.25rem 1.25rem;
   margin: 0;
@@ -842,7 +878,7 @@ const cssVars = computed(() => ({
 }
 .bbp-tier-perks li {
   font-size: 0.88rem;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
   padding-left: 1rem;
   position: relative;
 }
@@ -862,11 +898,11 @@ const cssVars = computed(() => ({
   align-items: flex-start;
   gap: 0.75rem;
 }
-.bbp-cta-tagline { color: var(--bbp-dark); font-size: 0.95rem; margin: 0; }
+.bbp-cta-tagline { color: var(--bbp-black); font-size: 0.95rem; margin: 0; }
 
 /* ── Map CTA ─────────────────────────────────────────────────────────────────── */
 .bbp-map-cta, .bbp-quiz-cta {
-  background: rgba(7, 94, 114, 0.06);
+  background: color-mix(in srgb, var(--bbp-teal) 6%, transparent);
 }
 .bbp-map-cta-inner,
 .bbp-quiz-cta-inner {
@@ -878,7 +914,7 @@ const cssVars = computed(() => ({
 }
 .bbp-map-cta-text p,
 .bbp-quiz-cta-inner > div > p {
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
   margin: 0;
   font-size: 0.95rem;
 }
@@ -889,7 +925,7 @@ const cssVars = computed(() => ({
 
 /* ── Wallet CTA ──────────────────────────────────────────────────────────────── */
 .bbp-wallet-cta {
-  background: rgba(200, 63, 15, 0.07);
+  background: color-mix(in srgb, var(--bbp-red) 7%, transparent);
 }
 .bbp-wallet-cta-inner {
   display: flex;
@@ -902,7 +938,7 @@ const cssVars = computed(() => ({
   line-height: 1;
 }
 .bbp-wallet-cta-inner > div > p {
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
   margin: 0;
   font-size: 0.95rem;
 }
@@ -922,13 +958,13 @@ const cssVars = computed(() => ({
 .bbp-team-pill {
   padding: 0.35rem 1rem;
   border-radius: 999px;
-  border: 1px solid var(--bbp-tan);
+  border: 1px solid var(--bbp-yellow);
   font-size: 0.9rem;
   color: var(--bbp-teal);
 }
 .bbp-team-contact {
   font-size: 0.9rem;
-  color: var(--bbp-dark);
+  color: var(--bbp-black);
 }
 .bbp-team-contact a {
   color: var(--bbp-teal);
@@ -940,11 +976,11 @@ const cssVars = computed(() => ({
 .bbp-footer {
   padding: 2rem 1.5rem;
   text-align: center;
-  border-top: 1px solid rgba(188,186,165,0.5);
+  border-top: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
 .bbp-footer-link {
   font-size: 0.8rem;
-  color: var(--bbp-tan);
+  color: var(--bbp-yellow);
   text-decoration: none;
   letter-spacing: 0.06em;
   text-transform: uppercase;

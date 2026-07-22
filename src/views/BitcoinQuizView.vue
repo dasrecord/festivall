@@ -88,6 +88,7 @@
     <template v-if="phase === 'quiz'">
       <!-- Quick nav dots -->
       <div class="bbpquiz-nav">
+        <router-link :to="BBP.routes.landing" class="bbpquiz-nav-back">← Back</router-link>
         <span
           v-for="(q, i) in questions"
           :key="i"
@@ -693,11 +694,12 @@ function formatText(text) {
 
 // ── CSS vars ──────────────────────────────────────────────────────────────────
 const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.purple,
+  '--bbp-purple': BBP.palette.blue,
   '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.orange,
-  '--bbp-tan':    BBP.palette.tan,
-  '--bbp-cream':  BBP.palette.cream,
+  '--bbp-orange': BBP.palette.red,
+  '--bbp-tan':    BBP.palette.yellow,
+  '--bbp-cream':  BBP.palette.white,
+  '--bbp-dark':   BBP.palette.black,
 }))
 </script>
 
@@ -707,7 +709,7 @@ const cssVars = computed(() => ({
   min-height: 100dvh;
   background: var(--bbp-cream);
   color: var(--bbp-teal);
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--bbp-font-family);
   position: relative;
   overflow-x: hidden;
 }
@@ -814,7 +816,7 @@ const cssVars = computed(() => ({
 }
 .bbpquiz-contact-option:has(input:checked) {
   border-color: var(--bbp-orange);
-  background: rgba(200,63,15,0.1);
+  background: rgba(248,41,9,0.1);
   color: var(--bbp-orange);
 }
 .bbpquiz-contact-option input {
@@ -872,18 +874,35 @@ const cssVars = computed(() => ({
   z-index: 20;
   background: rgba(244,242,230,0.95);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(188,186,165,0.5);
+  border-bottom: 1px solid rgba(247,211,3,0.5);
   padding: 0.6rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.35rem;
   overflow-x: auto;
 }
+.bbpquiz-nav-back {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--bbp-teal);
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+  padding: 0.25rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--bbp-tan) 65%, transparent);
+  flex-shrink: 0;
+}
+.bbpquiz-nav-back:hover {
+  color: var(--bbp-orange);
+  border-color: var(--bbp-orange);
+}
 .bbpquiz-dot {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1.5px solid rgba(188,186,165,0.8);
+  border: 1.5px solid rgba(247,211,3,0.8);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -893,7 +912,7 @@ const cssVars = computed(() => ({
   transition: background 0.15s;
   color: var(--bbp-teal);
 }
-.bbpquiz-dot--current { border-color: var(--bbp-orange); background: rgba(200,63,15,0.3); }
+.bbpquiz-dot--current { border-color: var(--bbp-orange); background: rgba(248,41,9,0.3); }
 .bbpquiz-dot--done    { background: rgba(7,94,114,0.4); border-color: var(--bbp-teal); }
 .bbpquiz-dot--info    { opacity: 0.35; cursor: default; }
 .bbpquiz-nav-score {
@@ -945,8 +964,8 @@ const cssVars = computed(() => ({
   font-size: 0.85rem;
 }
 .bbpquiz-hint-warn {
-  background: rgba(200,63,15,0.07);
-  border: 1px solid rgba(200,63,15,0.3);
+  background: rgba(248,41,9,0.07);
+  border: 1px solid rgba(248,41,9,0.3);
   border-radius: 6px;
   padding: 0.85rem 1rem;
   font-size: 0.88rem;
@@ -1239,8 +1258,8 @@ const cssVars = computed(() => ({
   border: 1px solid var(--bbp-tan);
 }
 .bbpquiz-mining-result--near {
-  border-color: rgba(200,63,15,0.55);
-  background: rgba(200,63,15,0.08);
+  border-color: rgba(248,41,9,0.55);
+  background: rgba(248,41,9,0.08);
 }
 .bbpquiz-mining-result--valid {
   border-color: #2a8c5a;

@@ -23,17 +23,12 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Admins ────────────────────────────────────────────────────────────────
   admins: [
-    { name: 'Leo Weese',    bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Kurtis Warren', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Jennifer Zee',   bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    { name: 'Roger Huang',  bio: 'Event organizer, Vancouver Bitcoin.',    email: 'party@vanbitcoin.ca' },
-    {
-      name: 'Dustin McNulty',
-      bio: 'Event organizer, Vancouver Bitcoin.',
-      email: 'party@vanbitcoin.ca'
-    },
-
+    { name: 'Leo Weese', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
+    { name: 'Kurtis Warren', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
+    { name: 'Jennifer Zee', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
+    { name: 'Curtis Heinen', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
+    { name: 'Roger Huang', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
+    { name: 'Dustin McNulty', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
     { name: 'Prasenjit Das', bio: 'Event organizer, Vancouver Bitcoin.', email: 'party@vanbitcoin.ca' },
   ],
 
@@ -47,16 +42,15 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Itinerary ─────────────────────────────────────────────────────────────
   itinerary: [
     { time: '12:00 PM', label: 'Doors Open' },
-    {time: '12:15 PM', label: 'Networking & Mingling'},
-    { time: '2:00 PM',label: 'ZEUS Wallet Workshop'},
+    { time: '12:15 PM', label: 'Networking & Mingling' },
+    { time: '2:00 PM', label: 'ZEUS Wallet Workshop' },
     { time: '3:00 PM', label: 'Vivian (Singer/Songwriter)' },
-    {time: '3:00 PM', label: 'Film Screening', note: '"My Trust In You Is Broken"' },
-    { time: '4:00 PM',label: 'Lightning Talks Speaker Series' },
-    { time: '5:30 PM',label: 'Film Screening',            note: '"What\'s The Problem?"' },
-    { time: '5:00 PM',label: 'Dinner' },
-    { time: '5:45 PM',label: 'Announcements & Acknowledgements' },
-    { time: '6:30 PM',label: 'DJs & Mixer [Morimori][Fustler]' },
-    { time: '8:00 PM',label: 'Doors Close' },
+    { time: '3:00 PM', label: 'Film Screening', note: '"My Trust In You Is Broken"' },
+    { time: '4:00 PM', label: 'Lightning Talks Speaker Series' },
+    { time: '5:30 PM', label: 'Film Screening', note: '"What\'s The Problem?"' },
+    { time: '5:45 PM', label: 'Announcements & Acknowledgements' },
+    { time: '6:30 PM', label: 'DJs & Mixer [Morimori][Fustler]' },
+    { time: '8:00 PM', label: 'Doors Close' },
   ],
 
   // ── Film Screenings (for map popup + landing) ─────────────────────────────
@@ -83,6 +77,20 @@ export const BITCOIN_BLOCK_PARTY = {
     },
   ],
 
+  // ── Landing page feature highlights ───────────────────────────────────────
+  features: [
+    'Food & Drink',
+    'Learning Resources',
+    'Art Gallery',
+    'Workshops',
+    '21UP',
+    'Film Screenings',
+    'P2P Desk',
+    'Bitcoin Quiz',
+    'Live Music',
+    'Speakers',
+  ],
+
   // ── Archive / previous years ─────────────────────────────────────────────
   archive: [
     {
@@ -101,10 +109,10 @@ export const BITCOIN_BLOCK_PARTY = {
       speakers: [
         { name: 'Kerri Kinna', company: 'Cocoa Tanning', topic: 'Understanding Risk to Increase Your Net Worth' },
         { name: 'Sebastian Bunney', topic: 'Breaking the cycle - The Solution to Economic Intervention' },
-        { name: 'Scott Dedels', topic: 'Energy Money and Human Connectivity'},
-        { name: 'Colin Sullivan', company: 'MintGreen', topic: 'Bitcoin & Brews'},
+        { name: 'Scott Dedels', topic: 'Energy Money and Human Connectivity' },
+        { name: 'Colin Sullivan', company: 'MintGreen', topic: 'Bitcoin & Brews' },
         { name: 'Adam O’Brian', company: 'Bitcoin Well', topic: 'Freedom' },
-        { name: 'Cole', company: 'Coinos',topic: 'Merchant Adoption'},
+        { name: 'Cole', company: 'Coinos', topic: 'Merchant Adoption' },
       ],
     },
     {
@@ -121,7 +129,7 @@ export const BITCOIN_BLOCK_PARTY = {
       speakers: [
         { name: 'Will', topic: 'NOSTR' },
         { name: 'Sebastian Bunney', company: 'Looking Glass Education' },
-        { name: 'Kent Draper', company: 'Iris Energy'},
+        { name: 'Kent Draper', company: 'Iris Energy' },
         { name: 'Colin Sullivan', company: 'MintGreen' },
         { name: 'Scott Dedels', company: 'BlockRewards' },
       ],
@@ -141,7 +149,7 @@ export const BITCOIN_BLOCK_PARTY = {
       url: 'https://www.instagram.com/fustler/'
     }
   ],
-  
+
 
   // ── Sponsor tiers (from pitch deck) ───────────────────────────────────────
   sponsorTiers: [
@@ -342,20 +350,22 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Palette ───────────────────────────────────────────────────────────────
   palette: {
-    purple: '#512656',
-    teal:   '#075e72',
-    orange: '#c83f0f',
-    tan:    '#bcbaa5',
-    cream:  '#f4f2e6',
+      // Current BBP palette
+    blue: '#074db3',
+    teal: '#074db3',
+    red: '#f82909',
+    yellow: '#f7d303',
+    white: '#fbfbfa',
+    black: '#091931',
   },
 
   // ── Firestore collection names (all on festivall_db) ─────────────────────
   collections: {
-    sponsors:       'bbp_sponsors_2026',
-    vendors:        'bbp_vendors_2026',
-    volunteers:     'bbp_volunteers_2026',
-    applications:   'bbp_applications_2026',
-    quizLeaderboard:'bbp_quiz_leaderboard_2026',
+    sponsors: 'bbp_sponsors_2026',
+    vendors: 'bbp_vendors_2026',
+    volunteers: 'bbp_volunteers_2026',
+    applications: 'bbp_applications_2026',
+    quizLeaderboard: 'bbp_quiz_leaderboard_2026',
   },
 
   // ── MC announcement generator seeds ─────────────────────────────────────
@@ -372,14 +382,14 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Route constants ───────────────────────────────────────────────────────
   routes: {
-    landing:       '/bitcoinblockparty',
-    archive:       '/bitcoinblockparty/archive',
-    map:           '/bitcoinblockpartymap',
-    quiz:          '/bitcoinquiz',
-    wallet:        '/bitcoin-wallet',
-    vendorApply:   '/bitcoinblockparty/vendor',
-    sponsorApply:  '/bitcoinblockparty/sponsor',
-    volunteer:     '/bitcoinblockparty/volunteer',
-    poster:        '/bitcoinblockparty/poster',
+    landing: '/bitcoinblockparty',
+    archive: '/bitcoinblockparty/archive',
+    map: '/bitcoinblockpartymap',
+    quiz: '/bitcoinquiz',
+    wallet: '/bitcoin-wallet',
+    vendorApply: '/bitcoinblockparty/vendor',
+    sponsorApply: '/bitcoinblockparty/sponsor',
+    volunteer: '/bitcoinblockparty/volunteer',
+    poster: '/bitcoinblockparty/poster',
   },
 }

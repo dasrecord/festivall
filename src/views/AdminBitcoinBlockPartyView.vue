@@ -557,7 +557,7 @@ function formatDate(isoString) {
   min-height: 100vh;
   background: #0a0a0a;
   color: #e0e0e0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--bbp-font-family);
 }
 
 /* Auth States */

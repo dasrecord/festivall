@@ -345,11 +345,12 @@ async function submitApplication() {
 
 // ── CSS vars ──────────────────────────────────────────────────────────────────
 const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.purple,
+  '--bbp-purple': BBP.palette.blue,
   '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.orange,
-  '--bbp-tan':    BBP.palette.tan,
-  '--bbp-cream':  BBP.palette.cream,
+  '--bbp-orange': BBP.palette.red,
+  '--bbp-tan':    BBP.palette.yellow,
+  '--bbp-cream':  BBP.palette.white,
+  '--bbp-dark':   BBP.palette.black,
 }))
 </script>
 
@@ -359,7 +360,7 @@ const cssVars = computed(() => ({
   min-height: 100dvh;
   background: var(--bbp-cream);
   color: var(--bbp-teal);
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--bbp-font-family);
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */
@@ -409,7 +410,7 @@ const cssVars = computed(() => ({
   transition: border-color 0.15s, background 0.15s;
 }
 .bbpapp-type-card:hover { border-color: var(--bbp-teal); background: rgba(255,255,255,0.9); }
-.bbpapp-type-card--active { border-color: var(--bbp-orange); background: rgba(200,63,15,0.05); }
+.bbpapp-type-card--active { border-color: var(--bbp-orange); background: rgba(248,41,9,0.05); }
 .bbpapp-type-icon { font-size: 1.75rem; }
 .bbpapp-type-name { font-weight: 700; font-size: 1rem; }
 .bbpapp-type-desc { font-size: 0.8rem; color: var(--bbp-dark); line-height: 1.4; }
@@ -445,18 +446,18 @@ const cssVars = computed(() => ({
 .bbpapp-tier-card--active { border-color: var(--bbp-orange); }
 .bbpapp-tier-card--claimed {
   position: relative;
-  border-color: rgba(188,186,165,0.8);
+  border-color: rgba(247,211,3,0.8);
   background: repeating-linear-gradient(
     -45deg,
-    rgba(188,186,165,0.12) 0,
-    rgba(188,186,165,0.12) 8px,
+    rgba(247,211,3,0.12) 0,
+    rgba(247,211,3,0.12) 8px,
     rgba(255,255,255,0.62) 8px,
     rgba(255,255,255,0.62) 18px
   );
   cursor: not-allowed;
   opacity: 0.78;
 }
-.bbpapp-tier-card--claimed:hover { border-color: rgba(188,186,165,0.8); }
+.bbpapp-tier-card--claimed:hover { border-color: rgba(247,211,3,0.8); }
 .bbpapp-tier-card-header {
   padding: 1rem 1.25rem 0.75rem;
   display: flex;
@@ -482,7 +483,7 @@ const cssVars = computed(() => ({
   text-transform: uppercase;
 }
 .bbpapp-tier-availability--claimed {
-  background: rgba(200,63,15,0.14);
+  background: rgba(248,41,9,0.14);
   color: var(--bbp-orange);
 }
 .bbpapp-tier-price { margin-left: auto; font-weight: 700; font-size: 0.95rem; color: var(--bbp-orange); }

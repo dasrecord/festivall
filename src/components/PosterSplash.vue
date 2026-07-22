@@ -41,6 +41,15 @@ const zoomStyle = computed(() => ({
   cursor: isDragging.value ? 'grabbing' : mapScale.value > 1 ? 'grab' : 'default',
 }))
 
+const splashCssVars = computed(() => ({
+  '--bbp-blue': BBP.palette.blue,
+  '--bbp-teal': BBP.palette.teal,
+  '--bbp-red': BBP.palette.red,
+  '--bbp-yellow': BBP.palette.yellow,
+  '--bbp-white': BBP.palette.white,
+  '--bbp-black': BBP.palette.black,
+}))
+
 function buildSplashLabel(item: { label: string; note?: string }) {
   return item.note ? `${item.label}: ${item.note}` : item.label
 }
@@ -197,7 +206,7 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <Transition name="poster-fade">
-      <div v-if="visible" class="poster-splash">
+      <div v-if="visible" class="poster-splash" :style="splashCssVars">
         <div
           ref="posterContainer"
           class="poster-container"
@@ -252,7 +261,7 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #000;
+  background: var(--bbp-black);
 }
 
 .poster-container {
@@ -317,13 +326,13 @@ onBeforeUnmount(() => {
   justify-content: flex-start;
   text-align: center;
   overflow: hidden;
-  color: #f4f2e6;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--bbp-white);
+  font-family: var(--bbp-font-family);
   pointer-events: none;
 }
 .bbp-splash-eyebrow {
   margin: 0 0 0.35rem;
-  color: #bcbaa5;
+  color: var(--bbp-yellow);
   font-size: clamp(0.5rem, 1.45vw, 0.98rem);
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -331,26 +340,26 @@ onBeforeUnmount(() => {
 }
 .bbp-splash-date {
   margin: 0 0 0.15rem;
-  color: #f4f2e6;
+  color: var(--bbp-white);
   font-size: clamp(1.1rem, 3.2vw, 2.1rem);
   font-weight: 800;
   line-height: 1.1;
 }
 .bbp-splash-venue {
   margin: 0 0 0.5rem;
-  color: #bcbaa5;
+  color: var(--bbp-yellow);
   font-size: clamp(0.72rem, 1.95vw, 1.28rem);
   font-weight: 600;
 }
 .bbp-splash-divider {
   width: 32%;
   height: 2px;
-  background: #075e72;
+  background: var(--bbp-teal);
   margin-bottom: 0.45rem;
 }
 .bbp-splash-schedule-title {
   margin: 0 0 0.25rem;
-  color: #075e72;
+  color: var(--bbp-teal);
   font-size: clamp(0.48rem, 1.1vw, 0.82rem);
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -366,23 +375,23 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.08rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid color-mix(in srgb, var(--bbp-white) 10%, transparent);
   font-size: clamp(0.48rem, 1.25vw, 0.95rem);
   line-height: 1.25;
 }
 .bbp-splash-schedule span:first-child {
-  color: #075e72;
+  color: var(--bbp-teal);
   font-weight: 900;
   white-space: nowrap;
 }
 .bbp-splash-schedule span:last-child {
-  color: #075e72;
+  color: var(--bbp-teal);
   text-align: right;
   font-weight: 700;
 }
 .bbp-splash-url {
   margin: 0.45rem 0 0;
-  color: #c83f0f;
+  color: var(--bbp-red);
   font-size: clamp(0.62rem, 1.55vw, 1.1rem);
   font-weight: 900;
   letter-spacing: 0.03em;
@@ -397,12 +406,12 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: color-mix(in srgb, var(--bbp-white) 75%, transparent);
   font-size: 0.9rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   pointer-events: none;
-  background: rgba(0, 0, 0, 1);
+  background: var(--bbp-black);
   padding: 0.4rem 1rem;
   border-radius: 2rem;
   white-space: nowrap;
@@ -410,13 +419,13 @@ onBeforeUnmount(() => {
 .poster-hint--bbp {
   bottom: max(2rem, env(safe-area-inset-bottom, 0px));
   align-items: flex-start;
-  background: rgba(0, 0, 0, 0.92);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: color-mix(in srgb, var(--bbp-black) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bbp-white) 18%, transparent);
   padding: 0.75rem 1rem;
   border-radius: 0.85rem;
   width: min(92vw, 480px);
   white-space: normal;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--bbp-black) 45%, transparent);
 }
 
 .poster-hint-copy {
@@ -431,18 +440,18 @@ onBeforeUnmount(() => {
   line-height: 1.35;
 }
 .poster-hint-copy strong {
-  color: white;
+  color: var(--bbp-white);
   font-size: 0.95rem;
 }
 .poster-hint-copy span {
-  color: rgba(255,255,255,0.72);
+  color: color-mix(in srgb, var(--bbp-white) 72%, transparent);
   font-size: 0.78rem;
 }
 
 .countdown {
   font-size: 1.1rem;
   font-weight: 700;
-  color: white;
+  color: var(--bbp-white);
   min-width: 1.25ch;
   text-align: center;
 }

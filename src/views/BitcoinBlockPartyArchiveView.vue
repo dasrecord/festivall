@@ -90,11 +90,12 @@ function formatSpeakerDetails(speaker) {
 }
 
 const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.purple,
+  '--bbp-purple': BBP.palette.blue,
   '--bbp-teal': BBP.palette.teal,
-  '--bbp-orange': BBP.palette.orange,
-  '--bbp-tan': BBP.palette.tan,
-  '--bbp-cream': BBP.palette.cream,
+  '--bbp-orange': BBP.palette.red,
+  '--bbp-tan': BBP.palette.yellow,
+  '--bbp-cream': BBP.palette.white,
+  '--bbp-dark': BBP.palette.black,
 }))
 </script>
 
@@ -103,11 +104,11 @@ const cssVars = computed(() => ({
   min-height: 100dvh;
   background: var(--bbp-cream);
   color: var(--bbp-teal);
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--bbp-font-family);
 }
 .bbp-archive-nav {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(188,186,165,0.5);
+  border-bottom: 1px solid rgba(247,211,3,0.5);
   background: rgba(244,242,230,0.96);
 }
 .bbp-archive-back {
@@ -146,7 +147,7 @@ const cssVars = computed(() => ({
   margin-top: 2rem;
 }
 .bbp-archive-card {
-  border: 1px solid rgba(188,186,165,0.85);
+  border: 1px solid rgba(247,211,3,0.85);
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(255,255,255,0.86), rgba(244,242,230,0.62));
   padding: 1.35rem;
@@ -165,10 +166,10 @@ const cssVars = computed(() => ({
 }
 .bbp-archive-year {
   flex: 0 0 auto;
-  border: 1px solid rgba(200,63,15,0.32);
+  border: 1px solid rgba(248,41,9,0.32);
   border-radius: 999px;
   padding: 0.2rem 0.65rem;
-  background: rgba(200,63,15,0.08);
+  background: rgba(248,41,9,0.08);
   font-weight: 800;
   color: var(--bbp-orange);
 }
@@ -185,7 +186,7 @@ const cssVars = computed(() => ({
 }
 .bbp-archive-list-panel {
   min-width: 0;
-  border: 1px solid rgba(188,186,165,0.55);
+  border: 1px solid rgba(247,211,3,0.55);
   border-radius: 8px;
   background: rgba(255,255,255,0.54);
   padding: 0.95rem;
@@ -222,7 +223,7 @@ const cssVars = computed(() => ({
   gap: 0.55rem;
   align-items: start;
   padding: 0.55rem 0;
-  border-top: 1px solid rgba(188,186,165,0.4);
+  border-top: 1px solid rgba(247,211,3,0.4);
 }
 .bbp-archive-columns li:first-child {
   border-top: 0;
