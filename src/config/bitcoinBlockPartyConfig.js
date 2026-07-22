@@ -207,6 +207,22 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Sponsor roster ────────────────────────────────────────────────────────
   // status: 'confirmed' | 'draft'
   // Add/update entries as sponsors are locked in.
+  // ── Sponsors ───────────────────────────────────────────────────────────────
+  // NOTE: Sponsor/vendor data is managed in Firestore (bbp_applications_2026).
+  // Applications start with status='pending'. Admin approves by changing to status='confirmed'.
+  // Website displays only confirmed sponsors/vendors from bbp_applications_2026.
+  //
+  // To seed initial confirmed sponsors, run: node scripts/seed-bbp-sponsors-vendors.js
+  // Or manually add via Firebase Console with these fields:
+  //   - role: 'sponsor' | 'vendor'
+  //   - tier: 'satoshi' | 'whale' | 'bull' (sponsors) or 'hodler' | 'diamond_hands' (vendors)
+  //   - displayName: string (or org_name for display)
+  //   - shortDescription: string
+  //   - url: string
+  //   - status: 'confirmed' | 'pending'
+  //   - contact_name, email, phone (for admin reference)
+  //
+  // Legacy hardcoded data (for reference - can be removed after migration):
   sponsors: [
     {
       id: 'zeus',
@@ -248,7 +264,6 @@ export const BITCOIN_BLOCK_PARTY = {
       url: 'https://blockrewards.ca/',
       status: 'confirmed',
     },
-    // Add more sponsors here as confirmed
   ],
 
   // ── Vendor tiers (from pitch deck) ────────────────────────────────────────
@@ -279,7 +294,9 @@ export const BITCOIN_BLOCK_PARTY = {
   ],
 
   // ── Vendor roster ─────────────────────────────────────────────────────────
-  // status: 'confirmed' | 'draft'
+  // NOTE: Vendor data is managed in Firestore (bbp_applications_2026).
+  // See sponsors section above for details.
+  // Legacy hardcoded data (for reference - can be removed after migration):
   vendors: [
     // Add vendors here as confirmed
   ],
@@ -361,10 +378,8 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── Firestore collection names (all on festivall_db) ─────────────────────
   collections: {
-    sponsors: 'bbp_sponsors_2026',
-    vendors: 'bbp_vendors_2026',
+    applications: 'bbp_applications_2026',    // Sponsors, vendors (all statuses)
     volunteers: 'bbp_volunteers_2026',
-    applications: 'bbp_applications_2026',
     quizLeaderboard: 'bbp_quiz_leaderboard_2026',
   },
 

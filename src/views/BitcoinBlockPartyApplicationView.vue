@@ -123,6 +123,37 @@
           <label class="bbpapp-label" for="bbpapp-url">Website (optional)</label>
           <input id="bbpapp-url" v-model="form.url" class="bbpapp-input" type="url" maxlength="200" placeholder="https://" />
         </div>
+
+        <div class="bbpapp-field-group" v-if="form.role !== 'volunteer'">
+          <label class="bbpapp-label" for="bbpapp-display-name">
+            Display Name (optional)
+          </label>
+          <input 
+            id="bbpapp-display-name" 
+            v-model="form.displayName" 
+            class="bbpapp-input" 
+            type="text" 
+            maxlength="80" 
+            :placeholder="`Defaults to ${form.org_name || 'organization name'}`" 
+          />
+          <p class="bbpapp-field-hint">How your name appears on the website (defaults to organization name)</p>
+        </div>
+
+        <div class="bbpapp-field-group" v-if="form.role !== 'volunteer'">
+          <label class="bbpapp-label" for="bbpapp-short-desc">
+            Short Description *
+          </label>
+          <textarea 
+            id="bbpapp-short-desc" 
+            v-model="form.shortDescription" 
+            class="bbpapp-textarea" 
+            rows="2" 
+            maxlength="150"
+            placeholder="Brief description for website (e.g., 'Bitcoin payments infrastructure' or 'Local coffee roaster')"
+            required
+          ></textarea>
+          <p class="bbpapp-field-hint">{{ form.shortDescription?.length || 0 }}/150 characters</p>
+        </div>
       </section>
 
       <!-- Role-specific fields -->
@@ -239,6 +270,8 @@ const form = ref({
   email:                '',
   phone:                '',
   org_name:             '',
+  displayName:          '',  // Public display name (defaults to org_name)
+  shortDescription:     '',  // Brief description for website
   url:                  '',
   // sponsor-specific
   keynote_topic:        '',
@@ -304,6 +337,9 @@ function validate() {
   if ((f.role === 'sponsor' || f.role === 'vendor') && !f.org_name?.trim()) {
     return f.role === 'sponsor' ? 'Please enter your company name.' : 'Please enter your business name.'
   }
+  if ((f.role === 'sponsor' || f.role === 'vendor') && !f.shortDescription?.trim()) {
+    return 'Please enter a short description for the website.'
+  }
   if (f.role === 'vendor' && !f.products?.trim()) return 'Please describe what you are selling.'
   if (f.role === 'sponsor' && !f.tier) return 'Please select a sponsorship tier.'
   if (f.role === 'vendor' && !f.tier)  return 'Please select a vendor tier.'
@@ -329,6 +365,8 @@ async function submitApplication() {
 
     await addDoc(collection(festivall_db, colName), {
       ...form.value,
+      // Default displayName to org_name if not provided (for sponsors/vendors)
+      displayName: form.value.displayName || form.value.org_name || form.value.contact_name,
       event: 'bitcoin_block_party_2026',
       status: 'pending',
       submitted_at: new Date().toISOString(),
@@ -522,8 +560,12 @@ const cssVars = computed(() => ({
   flex-direction: column;
   gap: 0.4rem;
   margin-bottom: 1.1rem;
-}
-.bbpapp-label {
+}.bbpapp-field-hint {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--bbp-black) 60%, transparent);
+  margin: 0;
+  line-height: 1.4;
+}.bbpapp-label {
   font-size: 0.85rem;
   color: var(--bbp-dark);
 }

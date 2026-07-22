@@ -340,7 +340,7 @@ onBeforeUnmount(() => {
 }
 .bbp-splash-date {
   margin: 0 0 0.15rem;
-  color: var(--bbp-white);
+  color: var(--bbp-blue);
   font-size: clamp(1.1rem, 3.2vw, 2.1rem);
   font-weight: 800;
   line-height: 1.1;

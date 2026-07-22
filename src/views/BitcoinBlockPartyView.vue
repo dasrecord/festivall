@@ -269,7 +269,8 @@
 
     <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
     <footer class="bbp-footer">
-      <a href="/" class="bbp-footer-link">Powered by Festivall</a>
+      <a href="/" class="bbp-footer-link">Powered by Festivall</a><br>
+      <router-link :to="{ path: '/admin/bitcoinblockparty/' }" class="bbp-footer-link">Admin Login</router-link>
     </footer>
   </div>
 </template>
@@ -278,6 +279,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import { festivall_db } from '@/firebase.js'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
 import bullIcon from '@/assets/images/icons/bull.png'
 import whaleIcon from '@/assets/images/icons/whale.png'
@@ -297,8 +300,40 @@ useHead({
   ],
 })
 
-const confirmedSponsors = computed(() => BBP.sponsors.filter(s => s.status === 'confirmed'))
-const confirmedVendors  = computed(() => BBP.vendors.filter(v => v.status === 'confirmed'))
+// ── Firestore data ───────────────────────────────────────────────────────────
+const sponsors = ref([])
+const vendors = ref([])
+
+async function loadSponsorsAndVendors() {
+  try {
+    // Load confirmed sponsors and vendors from applications collection
+    const applicationsQuery = query(
+      collection(festivall_db, BBP.collections.applications),
+      where('status', '==', 'confirmed')
+    )
+    const applicationsSnap = await getDocs(applicationsQuery)
+    
+    const sponsorsList = []
+    const vendorsList = []
+    
+    applicationsSnap.docs.forEach(doc => {
+      const data = { id: doc.id, ...doc.data() }
+      if (data.role === 'sponsor') {
+        sponsorsList.push(data)
+      } else if (data.role === 'vendor') {
+        vendorsList.push(data)
+      }
+    })
+    
+    sponsors.value = sponsorsList
+    vendors.value = vendorsList
+  } catch (error) {
+    console.error('Error loading sponsors/vendors:', error)
+  }
+}
+
+const confirmedSponsors = computed(() => sponsors.value)
+const confirmedVendors  = computed(() => vendors.value)
 const showSponsorCallToAction = true
 const copiedDirections = ref(false)
 const directionsLabel = computed(() => `FUNK. Coffee Bar, ${BBP.venue}, ${BBP.city}`)
@@ -382,6 +417,7 @@ async function loadBitcoinMarketData() {
 }
 
 onMounted(() => {
+  loadSponsorsAndVendors()
   loadBitcoinMarketData()
   marketRefreshId = window.setInterval(loadBitcoinMarketData, 60000)
 })
@@ -493,7 +529,11 @@ const cssVars = computed(() => ({
 
 /* ── Live chyron ───────────────────────────────────────────────────────────── */
 .bbp-chyron {
+  position: sticky;
+  top: 0;
+  z-index: 21;
   background: color-mix(in srgb, var(--bbp-teal) 8%, transparent);
+  backdrop-filter: blur(10px);
   border-top: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
 }
@@ -549,7 +589,7 @@ const cssVars = computed(() => ({
 /* ── Quick actions ─────────────────────────────────────────────────────────── */
 .bbp-quick-actions {
   position: sticky;
-  top: 0;
+  top: 3.25rem;
   z-index: 20;
   background: color-mix(in srgb, var(--bbp-white) 94%, transparent);
   backdrop-filter: blur(10px);

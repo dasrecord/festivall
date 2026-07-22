@@ -65,17 +65,17 @@
         <div class="stat-card">
           <div class="stat-label">Sponsors</div>
           <div class="stat-value">{{ stats.sponsors.pending }} pending</div>
-          <div class="stat-subvalue">{{ stats.sponsors.onboarded }} onboarded</div>
+          <div class="stat-subvalue">{{ stats.sponsors.confirmed }} confirmed</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Vendors</div>
           <div class="stat-value">{{ stats.vendors.pending }} pending</div>
-          <div class="stat-subvalue">{{ stats.vendors.onboarded }} onboarded</div>
+          <div class="stat-subvalue">{{ stats.vendors.confirmed }} confirmed</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Volunteers</div>
           <div class="stat-value">{{ stats.volunteers.pending }} pending</div>
-          <div class="stat-subvalue">{{ stats.volunteers.onboarded }} onboarded</div>
+          <div class="stat-subvalue">{{ stats.volunteers.confirmed }} confirmed</div>
         </div>
       </div>
 
@@ -104,8 +104,8 @@
             Pending
           </label>
           <label class="status-filter">
-            <input type="radio" v-model="selectedStatus" value="onboarded" />
-            Onboarded
+            <input type="radio" v-model="selectedStatus" value="confirmed" />
+            Confirmed
           </label>
         </div>
         <input
@@ -135,7 +135,7 @@
           v-for="applicant in filteredApplicants"
           :key="applicant.id"
           class="applicant-row"
-          :class="{ onboarded: applicant.status === 'onboarded' }"
+          :class="{ confirmed: applicant.status === 'confirmed' }"
         >
           <div class="col-name">
             <strong>{{ applicant.contact_name }}</strong>
@@ -148,13 +148,18 @@
             <div v-if="applicant.phone" class="contact-item">
               📱 {{ applicant.phone }}
             </div>
-            <div v-if="!applicant.email || !applicant.phone" class="contact-warning">
-              ⚠️ Missing {{ !applicant.email ? 'email' : 'phone' }}
+            <div v-if="!applicant.email" class="contact-warning">
+              ⚠️ Missing email
             </div>
           </div>
           <div class="col-org">
-            <div v-if="applicant.org_name">{{ applicant.org_name }}</div>
+            <div v-if="applicant.displayName || applicant.org_name">
+              {{ applicant.displayName || applicant.org_name }}
+            </div>
             <div v-if="applicant.tier" class="tier-badge">{{ applicant.tier }}</div>
+            <div v-if="applicant.url" class="org-url">
+              <a :href="applicant.url" target="_blank" rel="noopener noreferrer">🔗 Website</a>
+            </div>
           </div>
           <div class="col-status">
             <span class="status-badge" :class="applicant.status">
@@ -179,7 +184,7 @@
               {{ onboardingStates[applicant.id]?.sending ? 'Sending...' : '✉️ Onboard' }}
             </button>
             <button
-              v-else-if="applicant.status === 'onboarded' && applicant.onboarding?.sent_at"
+              v-else-if="applicant.status === 'confirmed' && applicant.onboarding?.sent_at"
               @click="confirmResend(applicant)"
               :disabled="onboardingStates[applicant.id]?.sending"
               class="btn-resend"
@@ -211,7 +216,7 @@ import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/fire
 import { festivall_db } from '@/firebase'
 import { useBitcoinBlockPartyAdmin } from '@/composables/useBitcoinBlockPartyAdmin'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig'
-import { sendEmail, sendSMS } from '/scripts/notifications.js'
+import { sendEmail } from '/scripts/notifications.js'
 
 // Auth
 const isAuthenticated = ref(false)
@@ -240,15 +245,15 @@ const onboardingStates = reactive({})
 // Stats
 const stats = computed(() => {
   const result = {
-    sponsors: { pending: 0, onboarded: 0 },
-    vendors: { pending: 0, onboarded: 0 },
-    volunteers: { pending: 0, onboarded: 0 },
+    sponsors: { pending: 0, confirmed: 0 },
+    vendors: { pending: 0, confirmed: 0 },
+    volunteers: { pending: 0, confirmed: 0 },
   }
   applicants.value.forEach((app) => {
     const category = app.role === 'volunteer' ? 'volunteers' : `${app.role}s`
     if (result[category]) {
       if (app.status === 'pending') result[category].pending++
-      else if (app.status === 'onboarded') result[category].onboarded++
+      else if (app.status === 'confirmed') result[category].confirmed++
     }
   })
   return result
@@ -305,6 +310,9 @@ async function loadApplicants() {
           email: data.email || '',
           phone: data.phone || '',
           org_name: data.org_name || '',
+          displayName: data.displayName || data.org_name || '',
+          shortDescription: data.shortDescription || '',
+          url: data.url || '',
           tier: data.tier || '',
           status: data.status || 'pending',
           submitted_at: data.submitted_at || '',
@@ -324,6 +332,9 @@ async function loadApplicants() {
         email: data.email || '',
         phone: data.phone || '',
         org_name: '',
+        displayName: '',
+        shortDescription: '',
+        url: '',
         tier: '',
         status: data.status || 'pending',
         submitted_at: data.submitted_at || '',
@@ -348,14 +359,13 @@ watch(isAdmin, (newValue) => {
 
 // Validation
 function canOnboard(applicant) {
-  return !!(applicant.email && applicant.phone)
+  return !!applicant.email
 }
 
 // Helper to show what's missing
 function getMissingFields(applicant) {
   const missing = []
   if (!applicant.email) missing.push('email')
-  if (!applicant.phone) missing.push('phone')
   return missing.join(' and ')
 }
 
@@ -436,14 +446,14 @@ function getOnboardingTemplates(applicant) {
 async function onboardApplicant(applicant) {
   if (!canOnboard(applicant)) {
     onboardingStates[applicant.id] = {
-      error: 'Missing required contact info (email and phone)',
+      error: 'Missing required contact info (email)',
     }
     setTimeout(() => delete onboardingStates[applicant.id], 5000)
     return
   }
 
   // Check idempotency
-  if (applicant.onboarding?.sent_at && applicant.status === 'onboarded') {
+  if (applicant.onboarding?.sent_at && applicant.status === 'confirmed') {
     const confirm = window.confirm(
       `This applicant was already onboarded on ${formatDate(applicant.onboarding.sent_at)}. Resend onboarding messages?`
     )
@@ -455,37 +465,20 @@ async function onboardApplicant(applicant) {
   try {
     const templates = getOnboardingTemplates(applicant)
 
-    // Send email and SMS in parallel
-    const [emailResult, smsResult] = await Promise.allSettled([
-      sendEmail(applicant.email, templates.emailSubject, templates.emailBody),
-      sendSMS(applicant.phone, templates.smsBody),
-    ])
+    // Send email
+    await sendEmail(applicant.email, templates.emailSubject, templates.emailBody)
 
-    // Check for failures
-    const emailFailed = emailResult.status === 'rejected'
-    const smsFailed = smsResult.status === 'rejected'
-
-    if (emailFailed && smsFailed) {
-      throw new Error('Both email and SMS failed. Please check contact info and try again.')
-    }
-
-    if (emailFailed || smsFailed) {
-      const failedChannel = emailFailed ? 'Email' : 'SMS'
-      console.error(`${failedChannel} failed:`, emailFailed ? emailResult.reason : smsResult.reason)
-      throw new Error(`${failedChannel} failed. Please verify contact info and try again.`)
-    }
-
-    // Both succeeded - update Firestore
+    // Update Firestore
     const collectionName =
       applicant.role === 'volunteer' ? BBP.collections.volunteers : BBP.collections.applications
 
     const onboardingMetadata = {
-      status: 'onboarded',
+      status: 'confirmed',
       onboarding: {
         sent_at: new Date().toISOString(),
         sent_by_uid: currentUser.value?.uid || '',
         sent_by_email: currentUser.value?.email || '',
-        channels: ['email', 'sms'],
+        channels: ['email'],
         template_version: '1.0',
         resends: applicant.onboarding?.sent_at
           ? [
@@ -798,7 +791,7 @@ function formatDate(isoString) {
   background: #151515;
 }
 
-.applicant-row.onboarded {
+.applicant-row.confirmed {
   opacity: 0.7;
 }
 
@@ -851,6 +844,22 @@ function formatDate(isoString) {
   margin-top: 0.25rem;
 }
 
+.org-url {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.org-url a {
+  color: #4a9eff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.org-url a:hover {
+  color: #6bb0ff;
+  text-decoration: underline;
+}
+
 .status-badge {
   display: inline-block;
   padding: 0.3rem 0.6rem;
@@ -865,7 +874,7 @@ function formatDate(isoString) {
   color: #ff9800;
 }
 
-.status-badge.onboarded {
+.status-badge.confirmed {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
 }

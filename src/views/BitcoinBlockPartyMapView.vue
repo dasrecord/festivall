@@ -124,11 +124,16 @@
           <template v-if="activeZone.type === 'dj'">
             <div class="bbpmap-modal-section">
               <h3>DJs & Mixer</h3>
-              <p class="bbpmap-dj-name">{{ BBP.dj.name !== 'TBA' ? BBP.dj.name : 'Lineup announced soon.' }}</p>
-              <p class="bbpmap-dj-desc">{{ BBP.dj.shortDescription }}</p>
-              <a v-if="BBP.dj.url" :href="BBP.dj.url" target="_blank" rel="noopener noreferrer" class="bbpmap-modal-link">
-                More info →
-              </a>
+              <div v-if="BBP.djs?.length" class="bbpmap-dj-list">
+                <div v-for="dj in BBP.djs" :key="dj.name" class="bbpmap-dj-item">
+                  <p class="bbpmap-dj-name">{{ dj.name }}</p>
+                  <p class="bbpmap-dj-desc">{{ dj.shortDescription }}</p>
+                  <a v-if="dj.url" :href="dj.url" target="_blank" rel="noopener noreferrer" class="bbpmap-modal-link">
+                    More info →
+                  </a>
+                </div>
+              </div>
+              <p v-else class="bbpmap-dj-name">Lineup announced soon.</p>
             </div>
           </template>
 
@@ -151,6 +156,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import { festivall_db } from '@/firebase.js'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import mapSvgUrl from '@/assets/images/bitcoin_block_party/bitcoin_blockparty_map_bg.svg?url'
 import barIcon from '@/assets/images/icons/bar.png'
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
@@ -166,6 +173,38 @@ useHead({
   title: `Venue Map — Bitcoin Block Party ${BBP.year}`,
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
+
+// ── Firestore data ───────────────────────────────────────────────────────────
+const sponsors = ref([])
+const vendors = ref([])
+
+async function loadSponsorsAndVendors() {
+  try {
+    // Load confirmed sponsors and vendors from applications collection
+    const applicationsQuery = query(
+      collection(festivall_db, BBP.collections.applications),
+      where('status', '==', 'confirmed')
+    )
+    const applicationsSnap = await getDocs(applicationsQuery)
+    
+    const sponsorsList = []
+    const vendorsList = []
+    
+    applicationsSnap.docs.forEach(doc => {
+      const data = { id: doc.id, ...doc.data() }
+      if (data.role === 'sponsor') {
+        sponsorsList.push(data)
+      } else if (data.role === 'vendor') {
+        vendorsList.push(data)
+      }
+    })
+    
+    sponsors.value = sponsorsList
+    vendors.value = vendorsList
+  } catch (error) {
+    console.error('Error loading sponsors/vendors:', error)
+  }
+}
 
 // ── Inline SVG load ──────────────────────────────────────────────────────────
 const inlineSvgContent = ref('')
@@ -196,7 +235,7 @@ const directZoneIcons = {
   food_truck_0: 'meals',
   food_truck_1: 'meals',
   front_gate: 'front_gate',
-  movie_screening: 'movie_screening',
+  movie_screening: 'projector',
   presenting_area: 'bitcoin',
 }
 
@@ -222,8 +261,8 @@ const KNOWN_ZONE_IDS = new Set([
   ...Array.from({ length: 3 }, (_v, i) => `whale_${i}`),
 ])
 
-const whaleSponsors = BBP.sponsors.filter(s => s.status === 'confirmed' && s.tier === 'whale')
-const bullSponsors = BBP.sponsors.filter(s => s.status === 'confirmed' && (s.tier === 'bull' || s.tier === 'tba'))
+const whaleSponsors = computed(() => sponsors.value.filter(s => s.tier === 'whale'))
+const bullSponsors = computed(() => sponsors.value.filter(s => s.tier === 'bull' || s.tier === 'tba'))
 
 function sponsorZoneData(sponsor) {
   return {
@@ -255,10 +294,10 @@ function zoneDataForId(id) {
     }
   }
 
-  // Vendor slots (vendor_0..vendor_6) → look up in BBP.vendors
+  // Vendor slots (vendor_0..vendor_6) → look up in vendors array
   const vendorMatch = key.match(/^vendor_(\d+)$/)
   if (vendorMatch) {
-    const vendor = BBP.vendors[parseInt(vendorMatch[1])]
+    const vendor = vendors.value[parseInt(vendorMatch[1])]
     if (vendor) {
       return {
         type: 'vendor',
@@ -279,10 +318,10 @@ function zoneDataForId(id) {
     }
   }
 
-  // Sponsor bull slots (bull_0..bull_4) → look up in BBP.sponsors
+  // Sponsor bull slots (bull_0..bull_4) → look up in sponsors array
   const bullMatch = key.match(/^bull_(\d+)$/)
   if (bullMatch) {
-    const sponsor = bullSponsors[parseInt(bullMatch[1])]
+    const sponsor = bullSponsors.value[parseInt(bullMatch[1])]
     if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
@@ -297,7 +336,7 @@ function zoneDataForId(id) {
   // Whale slots (whale_0..whale_2) — reserved for future use
   const whaleMatch = key.match(/^whale_(\d+)$/)
   if (whaleMatch) {
-    const sponsor = whaleSponsors[parseInt(whaleMatch[1])]
+    const sponsor = whaleSponsors.value[parseInt(whaleMatch[1])]
     if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
@@ -497,6 +536,7 @@ function onKeydown(e) {
 }
 
 onMounted(() => {
+  loadSponsorsAndVendors()
   loadSvg()
   window.addEventListener('keydown', onKeydown)
 })
@@ -769,8 +809,10 @@ onBeforeUnmount(() => {
 .bbpmap-film-credit a:hover { text-decoration: underline; }
 
 /* ── DJ modal ──────────────────────────────────────────────────────────────────── */
+.bbpmap-dj-list { display: flex; flex-direction: column; gap: 1rem; }
+.bbpmap-dj-item { }
 .bbpmap-dj-name { font-size: 1.1rem; font-weight: 700; color: var(--bbp-teal); margin: 0 0 0.35rem; }
-.bbpmap-dj-desc  { font-size: 0.87rem; color: var(--bbp-dark); margin: 0; }
+.bbpmap-dj-desc  { font-size: 0.87rem; color: var(--bbp-black); margin: 0 0 0.5rem; }
 
 /* ── Transition ──────────────────────────────────────────────────────────────── */
 .bbp-modal-fade-enter-active, .bbp-modal-fade-leave-active {
