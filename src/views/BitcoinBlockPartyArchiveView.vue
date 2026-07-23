@@ -1,5 +1,5 @@
 <template>
-  <div class="bbp-archive" :style="cssVars">
+  <div class="bbp-archive">
     <nav class="bbp-archive-nav">
       <router-link :to="BBP.routes.landing" class="bbp-archive-back">← Bitcoin Block Party</router-link>
     </nav>
@@ -88,15 +88,6 @@ function formatPerformerDetails(performer) {
 function formatSpeakerDetails(speaker) {
   return [speaker.company, speaker.topic].filter(Boolean).join(' · ')
 }
-
-const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.blue,
-  '--bbp-teal': BBP.palette.teal,
-  '--bbp-orange': BBP.palette.red,
-  '--bbp-tan': BBP.palette.yellow,
-  '--bbp-cream': BBP.palette.white,
-  '--bbp-dark': BBP.palette.black,
-}))
 </script>
 
 <style scoped>

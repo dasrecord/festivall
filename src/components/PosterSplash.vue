@@ -41,15 +41,6 @@ const zoomStyle = computed(() => ({
   cursor: isDragging.value ? 'grabbing' : mapScale.value > 1 ? 'grab' : 'default',
 }))
 
-const splashCssVars = computed(() => ({
-  '--bbp-blue': BBP.palette.blue,
-  '--bbp-teal': BBP.palette.teal,
-  '--bbp-red': BBP.palette.red,
-  '--bbp-yellow': BBP.palette.yellow,
-  '--bbp-white': BBP.palette.white,
-  '--bbp-black': BBP.palette.black,
-}))
-
 function buildSplashLabel(item: { label: string; note?: string }) {
   return item.note ? `${item.label}: ${item.note}` : item.label
 }
@@ -206,7 +197,7 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <Transition name="poster-fade">
-      <div v-if="visible" class="poster-splash" :style="splashCssVars">
+      <div v-if="visible" class="poster-splash">
         <div
           ref="posterContainer"
           class="poster-container"
@@ -378,8 +369,7 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
   padding: 0.08rem 0;
   border-bottom: 1px solid color-mix(in srgb, var(--bbp-white) 10%, transparent);
-  font-size: clamp(0.5rem, 2cqw, 1
-  rem);
+  font-size: clamp(0.5rem, 1.5cqw, 1rem);
   line-height: 1.25;
 }
 .bbp-splash-schedule span:first-child {

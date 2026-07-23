@@ -1,6 +1,37 @@
 @import './base.css';
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
+/* Bitcoin Block Party Design Tokens
+   ──────────────────────────────────────────────────────────────────────────
+   Structural token layer maps purpose → semantic color values.
+   Color-named variables are aliases for backward compatibility.
+*/
+:root {
+  /* ── Structural tokens (use these in new code) ────────────────────────── */
+  --bbp-primary:    #074db3;  /* Brand teal - headings, links, primary UI */
+  --bbp-accent:     var(--bitcoin-orange);  /* Action red - CTAs, primary buttons */
+  --bbp-highlight:  var(--bitcoin-orange);  /* Highlight yellow - borders, accents */
+  --bbp-bg-light:   #fbfbfa;  /* Light backgrounds, cards */
+  --bbp-bg-dark:    #091931;  /* Dark backgrounds, text */
+
+  /* ── Color-named aliases (backward compatibility) ────────────────────── */
+  --bbp-blue:   var(--bbp-dark);
+  --bbp-teal:   var(--bbp-dark);
+  --bbp-purple: var(--bbp-primary);
+  
+  --bbp-red:    var(--bbp-accent);
+  --bbp-orange: var(--bbp-accent);
+  
+  --bbp-yellow: var(--bbp-highlight);
+  --bbp-tan:    var(--bbp-highlight);
+  
+  --bbp-white:  var(--bbp-bg-light);
+  --bbp-cream:  var(--bbp-bg-light);
+  
+  --bbp-black:  var(--bbp-bg-dark);
+  --bbp-dark:   var(--bbp-bg-dark);
+}
+
 #app {
   /* max-width: 1280px; */
   margin: 0 auto;

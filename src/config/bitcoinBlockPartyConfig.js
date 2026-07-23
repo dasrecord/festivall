@@ -375,9 +375,9 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Palette ───────────────────────────────────────────────────────────────
   palette: {
       // Current BBP palette
-    blue: '#074db3',
-    teal: '#074db3',
+    blue: '#15CFD2',
     red: '#f82909',
+    orange: '#E9890C',
     yellow: '#f7d303',
     white: '#fbfbfa',
     black: '#091931',

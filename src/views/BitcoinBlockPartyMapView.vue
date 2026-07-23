@@ -1,5 +1,5 @@
 <template>
-  <div class="bbpmap-page" :style="cssVars">
+  <div class="bbpmap-page">
     <!-- ── Nav bar ─────────────────────────────────────────────────────────── -->
     <nav class="bbpmap-nav">
       <router-link :to="BBP.routes.landing" class="bbpmap-nav-back">← Bitcoin Block Party</router-link>
@@ -396,16 +396,6 @@ function handleZoneClick(id) {
 function closeZoneModal() {
   activeZone.value = null
 }
-
-// ── CSS vars ─────────────────────────────────────────────────────────────────
-const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.blue,
-  '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.red,
-  '--bbp-tan':    BBP.palette.yellow,
-  '--bbp-cream':  BBP.palette.white,
-  '--bbp-dark':   BBP.palette.black,
-}))
 
 // ── Pan & zoom ────────────────────────────────────────────────────────────────
 const MIN_SCALE = 1

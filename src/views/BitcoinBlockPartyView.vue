@@ -1,5 +1,5 @@
 <template>
-  <div class="bbp-page" :style="cssVars">
+  <div class="bbp-page">
     <!-- ── HERO ─────────────────────────────────────────────────────────── -->
     <section class="bbp-hero">
       <div class="bbp-hero-inner">
@@ -8,6 +8,7 @@
         <p class="bbp-hero-date">{{ BBP.date }}</p>
         <p class="bbp-hero-time">{{ BBP.startTime }} – {{ BBP.endTime }}</p>
         <p class="bbp-hero-venue">{{ BBP.venue }}</p>
+
 
         <div class="bbp-hero-rsvp-wrap">
           <button class="bbp-btn bbp-btn-primary bbp-btn-rsvp" @click="openRsvpModal">
@@ -608,15 +609,6 @@ function sponsorIconSrc(tierId) {
   if (tierId === 'bull') return bullIcon
   return bitcoinIcon
 }
-
-const cssVars = computed(() => ({
-  '--bbp-blue':   BBP.palette.blue,
-  '--bbp-teal':   BBP.palette.teal,
-  '--bbp-red':    BBP.palette.red,
-  '--bbp-yellow': BBP.palette.yellow,
-  '--bbp-white':  BBP.palette.white,
-  '--bbp-black':  BBP.palette.black,
-}))
 </script>
 
 <style scoped>

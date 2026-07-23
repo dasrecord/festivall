@@ -1,5 +1,5 @@
 <template>
-  <div class="bbpquiz-page" :style="cssVars">
+  <div class="bbpquiz-page">
     <!-- ── Intro / name capture ────────────────────────────────────────────── -->
     <div v-if="phase === 'intro'" class="bbpquiz-slide bbpquiz-slide--active">
       <div class="bbpquiz-intro">
@@ -692,15 +692,6 @@ function formatText(text) {
   return text.replace(/\n/g, '<br>')
 }
 
-// ── CSS vars ──────────────────────────────────────────────────────────────────
-const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.blue,
-  '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.red,
-  '--bbp-tan':    BBP.palette.yellow,
-  '--bbp-cream':  BBP.palette.white,
-  '--bbp-dark':   BBP.palette.black,
-}))
 </script>
 
 <style scoped>
@@ -1155,7 +1146,7 @@ const cssVars = computed(() => ({
 .bbpquiz-option {
   padding: 0.85rem 0.75rem;
   border-radius: 6px;
-  border: 1.5px solid var(--bbp-tan);
+  border: 1.5px solid var(--bbp-orange);
   background: rgba(255,255,255,0.7);
   color: var(--bbp-teal);
   font-size: 0.95rem;

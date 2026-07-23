@@ -1,5 +1,5 @@
 <template>
-  <div class="bbpapp-page" :style="cssVars">
+  <div class="bbpapp-page">
     <!-- ── Nav ────────────────────────────────────────────────────────────── -->
     <nav class="bbpapp-nav">
       <router-link :to="BBP.routes.landing" class="bbpapp-nav-back">← Bitcoin Block Party</router-link>
@@ -381,15 +381,6 @@ async function submitApplication() {
   }
 }
 
-// ── CSS vars ──────────────────────────────────────────────────────────────────
-const cssVars = computed(() => ({
-  '--bbp-purple': BBP.palette.blue,
-  '--bbp-teal':   BBP.palette.teal,
-  '--bbp-orange': BBP.palette.red,
-  '--bbp-tan':    BBP.palette.yellow,
-  '--bbp-cream':  BBP.palette.white,
-  '--bbp-dark':   BBP.palette.black,
-}))
 </script>
 
 <style scoped>
