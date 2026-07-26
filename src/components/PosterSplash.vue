@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
+import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 
 const props = withDefaults(defineProps<{
   src: string
@@ -45,8 +46,12 @@ function buildSplashLabel(item: { label: string; note?: string }) {
   return item.note ? `${item.label}: ${item.note}` : item.label
 }
 
+// ── Live Firestore schedule (syncs with BBP Admin edits) ─────────────────────
+const { itinerary: liveItinerary } = useBbpSchedule()
+
 const bbpSplashRows = computed(() => {
-  const rows = (BBP.itinerary || []).filter((item) => item.label !== 'Doors Close')
+  // Use live Firestore schedule instead of static config so admin edits propagate
+  const rows = (liveItinerary.value || BBP.itinerary || []).filter((item) => item.label !== 'Doors Close')
   return rows.map((item) => ({
     time: item.time || 'TBA',
     label: buildSplashLabel(item),
