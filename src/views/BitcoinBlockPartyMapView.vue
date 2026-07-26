@@ -310,10 +310,43 @@ function zoneDataForId(id) {
     }
   }
 
-  // Vendor slots (vendor_0..vendor_6) → look up in vendors array
+  // Food truck slots (food_truck_0..food_truck_N) → look up by ordinal
+  const foodTruckMatch = key.match(/^food_truck_(\d+)$/)
+  if (foodTruckMatch) {
+    const ordinal = parseInt(foodTruckMatch[1])
+    const foodTruck = foodTrucks.value.find(ft => ft.ordinal === ordinal)
+    if (foodTruck) {
+      return {
+        type: 'vendor',
+        tier: 'food_truck',
+        icon: 'meals',
+        displayName: foodTruck.displayName,
+        shortDescription: foodTruck.shortDescription || '',
+        url: foodTruck.url || null,
+      }
+    }
+    // Fallback to config or generic
+    if (BBP.mapZones[key]) {
+      return {
+        icon: 'meals',
+        ...BBP.mapZones[key],
+      }
+    }
+    return {
+      type: 'info',
+      tier: 'vendor',
+      icon: 'meals',
+      displayName: 'Food Truck',
+      shortDescription: 'Delicious food available on-site. Bitcoin accepted.',
+      url: null,
+    }
+  }
+
+  // Vendor slots (vendor_0..vendor_N) → look up by ordinal
   const vendorMatch = key.match(/^vendor_(\d+)$/)
   if (vendorMatch) {
-    const vendor = vendors.value[parseInt(vendorMatch[1])]
+    const ordinal = parseInt(vendorMatch[1])
+    const vendor = vendors.value.find(v => v.ordinal === ordinal)
     if (vendor) {
       return {
         type: 'vendor',
@@ -328,37 +361,39 @@ function zoneDataForId(id) {
       type: 'info',
       tier: 'vendor',
       icon: 'vendor',
-      displayName: `Vendor Booth ${parseInt(vendorMatch[1]) + 1}`,
+      displayName: `Vendor Booth ${ordinal + 1}`,
       shortDescription: 'Available vendor booth. All vendors at the event accept Bitcoin.',
       url: null,
     }
   }
 
-  // Sponsor bull slots (bull_0..bull_4) → look up in sponsors array
+  // Sponsor bull slots (bull_0..bull_N) → look up by ordinal
   const bullMatch = key.match(/^bull_(\d+)$/)
   if (bullMatch) {
-    const sponsor = bullSponsors.value[parseInt(bullMatch[1])]
+    const ordinal = parseInt(bullMatch[1])
+    const sponsor = sponsors.value.find(s => s.ordinal === ordinal && (s.tier === 'bull' || s.tier === 'tba'))
     if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
       tier: 'sponsor',
       icon: 'bull',
-      displayName: `Sponsor Zone ${parseInt(bullMatch[1]) + 1}`,
+      displayName: `Sponsor Zone ${ordinal + 1}`,
       shortDescription: 'Reserved sponsor activation area.',
       url: null,
     }
   }
 
-  // Whale slots (whale_0..whale_2) — reserved for future use
+  // Whale slots (whale_0..whale_N) → look up by ordinal
   const whaleMatch = key.match(/^whale_(\d+)$/)
   if (whaleMatch) {
-    const sponsor = whaleSponsors.value[parseInt(whaleMatch[1])]
+    const ordinal = parseInt(whaleMatch[1])
+    const sponsor = sponsors.value.find(s => s.ordinal === ordinal && s.tier === 'whale')
     if (sponsor) return sponsorZoneData(sponsor)
     return {
       type: 'info',
       tier: 'sponsor',
       icon: 'whale',
-      displayName: `Whale Sponsor Zone ${parseInt(whaleMatch[1]) + 1}`,
+      displayName: `Whale Sponsor Zone ${ordinal + 1}`,
       shortDescription: 'Reserved premium sponsor activation area.',
       url: null,
     }

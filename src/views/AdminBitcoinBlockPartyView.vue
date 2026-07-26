@@ -57,7 +57,7 @@
       <div v-if="editingContent" class="modal-overlay" @click.self="closeContentModal">
         <div class="modal-content">
           <div class="modal-header">
-            <h2>✏️ Edit {{ editingContent.role === 'sponsor' ? 'Sponsor' : 'Vendor' }} Display Content</h2>
+            <h2>✏️ Edit {{ editingContent.role === 'sponsor' ? 'Sponsor' : editingContent.role === 'food_truck' ? 'Food Truck' : 'Vendor' }} Display Content</h2>
             <button @click="closeContentModal" class="modal-close">✕</button>
           </div>
           <div class="modal-body">
@@ -99,6 +99,132 @@
         </div>
       </div>
 
+      <!-- Add New Applicant Modal -->
+      <div v-if="addingNew" class="modal-overlay" @click.self="closeAddNewModal">
+        <div class="modal-content modal-content--wide">
+          <div class="modal-header">
+            <h2>➕ Add New {{ addingNew === 'sponsor' ? 'Sponsor' : addingNew === 'food_truck' ? 'Food Truck' : 'Vendor' }}</h2>
+            <button @click="closeAddNewModal" class="modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-section">
+              <h3>Contact Information</h3>
+              <div class="edit-field">
+                <label>Contact Name *</label>
+                <input 
+                  type="text" 
+                  v-model="newApplicantForm.contact_name" 
+                  placeholder="Full name"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field">
+                <label>Email *</label>
+                <input 
+                  type="email" 
+                  v-model="newApplicantForm.email" 
+                  placeholder="email@example.com"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field">
+                <label>Phone</label>
+                <input 
+                  type="tel" 
+                  v-model="newApplicantForm.phone" 
+                  placeholder="+1 (555) 555-5555"
+                  class="edit-input"
+                />
+              </div>
+            </div>
+            <div class="form-section">
+              <h3>Display Information</h3>
+              <div class="edit-field">
+                <label>Display Name *</label>
+                <input 
+                  type="text" 
+                  v-model="newApplicantForm.displayName" 
+                  placeholder="Organization name as shown on website"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field">
+                <label>Short Description *</label>
+                <textarea 
+                  v-model="newApplicantForm.shortDescription" 
+                  placeholder="Brief description shown on landing page and map"
+                  class="edit-input edit-textarea"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="edit-field">
+                <label>Website URL</label>
+                <input 
+                  type="url" 
+                  v-model="newApplicantForm.url" 
+                  placeholder="https://example.com"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field" v-if="addingNew === 'sponsor' || addingNew === 'vendor'">
+                <label>Tier *</label>
+                <select v-model="newApplicantForm.tier" class="edit-input">
+                  <option value="">Select tier...</option>
+                  <template v-if="addingNew === 'sponsor'">
+                    <option value="satoshi">SATOSHI (Presenting)</option>
+                    <option value="whale">WHALE (Premium)</option>
+                    <option value="bull">BULL (Supporting)</option>
+                  </template>
+                  <template v-if="addingNew === 'vendor'">
+                    <option value="hodler">HODLER</option>
+                    <option value="diamond_hands">DIAMOND HANDS</option>
+                  </template>
+                </select>
+              </div>
+              <div class="edit-field">
+                <label>Map Icon # <span class="optional">(0-99, leave blank if not on map)</span></label>
+                <input 
+                  type="number" 
+                  v-model.number="newApplicantForm.ordinal" 
+                  min="0"
+                  max="99"
+                  :placeholder="addingNew === 'food_truck' ? '0-9' : addingNew === 'sponsor' ? '0-4' : '0-6'"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field">
+                <label>Display Order <span class="optional">(lower numbers appear first)</span></label>
+                <input 
+                  type="number" 
+                  v-model.number="newApplicantForm.displayOrder" 
+                  min="0"
+                  max="999"
+                  placeholder="0-999"
+                  class="edit-input"
+                />
+              </div>
+              <div class="edit-field">
+                <label>Status</label>
+                <select v-model="newApplicantForm.status" class="edit-input">
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button @click="closeAddNewModal" class="btn-cancel">Cancel</button>
+            <button 
+              @click="saveNewApplicant" 
+              class="btn-save" 
+              :disabled="!isNewApplicantFormValid || savingNewApplicant"
+            >
+              {{ savingNewApplicant ? 'Saving...' : 'Add ' + (addingNew === 'sponsor' ? 'Sponsor' : addingNew === 'food_truck' ? 'Food Truck' : 'Vendor') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Header -->
       <div class="header">
         <RouterLink to="/bitcoinblockparty" class="back-link">← Bitcoin Block Party</RouterLink>
@@ -117,6 +243,11 @@
           <div class="stat-label">Vendors</div>
           <div class="stat-value">{{ stats.vendors.pending }} pending</div>
           <div class="stat-subvalue">{{ stats.vendors.confirmed }} confirmed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Food Trucks</div>
+          <div class="stat-value">{{ stats.food_trucks.pending }} pending</div>
+          <div class="stat-subvalue">{{ stats.food_trucks.confirmed }} confirmed</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Volunteers</div>
@@ -145,26 +276,35 @@
 
       <!-- Status Filter & Search -->
       <div v-if="selectedRole !== 'schedule' && selectedRole !== 'flyer'" class="controls">
-        <div class="status-filters">
-          <label v-if="selectedRole !== 'attendees'" class="status-filter">
-            <input type="radio" v-model="selectedStatus" value="all" />
-            All
-          </label>
-          <label v-if="selectedRole !== 'attendees'" class="status-filter">
-            <input type="radio" v-model="selectedStatus" value="pending" />
-            Pending
-          </label>
-          <label v-if="selectedRole !== 'attendees'" class="status-filter">
-            <input type="radio" v-model="selectedStatus" value="confirmed" />
-            Confirmed
-          </label>
+        <div class="controls-left">
+          <div class="status-filters">
+            <label v-if="selectedRole !== 'attendees'" class="status-filter">
+              <input type="radio" v-model="selectedStatus" value="all" />
+              All
+            </label>
+            <label v-if="selectedRole !== 'attendees'" class="status-filter">
+              <input type="radio" v-model="selectedStatus" value="pending" />
+              Pending
+            </label>
+            <label v-if="selectedRole !== 'attendees'" class="status-filter">
+              <input type="radio" v-model="selectedStatus" value="confirmed" />
+              Confirmed
+            </label>
+          </div>
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Search by name, email, or organization..."
+            class="search-input"
+          />
         </div>
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search by name, email, or organization..."
-          class="search-input"
-        />
+        <button 
+          v-if="selectedRole === 'sponsor' || selectedRole === 'vendor' || selectedRole === 'food_trucks'"
+          @click="openAddNew()"
+          class="btn-add-new"
+        >
+          ➕ Add New {{ selectedRole === 'sponsor' ? 'Sponsor' : selectedRole === 'food_trucks' ? 'Food Truck' : 'Vendor' }}
+        </button>
       </div>
 
       <!-- Loading State -->
@@ -179,7 +319,8 @@
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
           <div class="col-org">Organization / Tier</div>
-          <div v-if="selectedRole === 'sponsor' || selectedRole === 'vendor' || selectedRole === 'all'" class="col-order">Display Order</div>
+          <div v-if="selectedRole === 'sponsor' || selectedRole === 'vendor' || selectedRole === 'food_trucks' || selectedRole === 'all'" class="col-ordinal">Map Icon #</div>
+          <div v-if="selectedRole === 'sponsor' || selectedRole === 'vendor' || selectedRole === 'food_trucks' || selectedRole === 'all'" class="col-order">Display Order</div>
           <div class="col-status">Status</div>
           <div class="col-actions">Actions</div>
         </div>
@@ -213,7 +354,19 @@
               <a :href="applicant.url" target="_blank" rel="noopener noreferrer">🔗 Website</a>
             </div>
           </div>
-          <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor'" class="col-order">
+          <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor' || applicant.role === 'food_truck'" class="col-ordinal">
+            <input 
+              type="number" 
+              :value="applicant.ordinal ?? ''" 
+              @change="updateOrdinal(applicant, $event.target.value)"
+              min="0"
+              max="99"
+              class="ordinal-input"
+              :disabled="applicant.status !== 'confirmed'"
+              :placeholder="applicant.role === 'food_truck' ? '0-9' : applicant.tier === 'whale' ? '0-2' : applicant.tier === 'bull' ? '0-4' : '0-6'"
+            />
+          </div>
+          <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor' || applicant.role === 'food_truck'" class="col-order">
             <div class="order-controls">
               <input 
                 type="number" 
@@ -251,7 +404,7 @@
             </div>
           </div>
           <div class="col-actions">
-            <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor'" class="content-edit-wrapper">
+            <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor' || applicant.role === 'food_truck'" class="content-edit-wrapper">
               <button @click="editContent(applicant)" class="btn-edit-content" title="Edit display content">
                 ✏️ Edit Content
               </button>
@@ -682,7 +835,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
+import { collection, getDocs, updateDoc, doc, addDoc } from 'firebase/firestore'
 import { festivall_db } from '@/firebase'
 import { useBitcoinBlockPartyAdmin } from '@/composables/useBitcoinBlockPartyAdmin'
 import { useBbpSchedule } from '@/composables/useBbpSchedule'
@@ -702,6 +855,7 @@ const roleTabs = [
   { value: 'all', label: 'All', icon: '📋' },
   { value: 'sponsor', label: 'Sponsors', icon: '₿' },
   { value: 'vendor', label: 'Vendors', icon: '🏪' },
+  { value: 'food_trucks', label: 'Food Trucks', icon: '🍔' },
   { value: 'volunteer', label: 'Volunteers', icon: '🙌' },
   { value: 'attendees', label: 'Attendees', icon: '👥' },
   { value: 'schedule', label: 'Schedule', icon: '📅' },
@@ -724,11 +878,14 @@ const stats = computed(() => {
   const result = {
     sponsors: { pending: 0, confirmed: 0 },
     vendors: { pending: 0, confirmed: 0 },
+    food_trucks: { pending: 0, confirmed: 0 },
     volunteers: { pending: 0, confirmed: 0 },
     attendees: { total: 0 },
   }
   applicants.value.forEach((app) => {
-    const category = app.role === 'volunteer' ? 'volunteers' : `${app.role}s`
+    let category = app.role === 'volunteer' ? 'volunteers' 
+                 : app.role === 'food_truck' ? 'food_trucks'
+                 : `${app.role}s`
     if (result[category]) {
       if (app.status === 'pending') result[category].pending++
       else if (app.status === 'confirmed') result[category].confirmed++
@@ -744,7 +901,11 @@ const filteredApplicants = computed(() => {
 
   // Role filter
   if (selectedRole.value !== 'all') {
-    result = result.filter((app) => app.role === selectedRole.value)
+    if (selectedRole.value === 'food_trucks') {
+      result = result.filter((app) => app.role === 'food_truck')
+    } else {
+      result = result.filter((app) => app.role === selectedRole.value)
+    }
   }
 
   // Status filter
@@ -764,8 +925,8 @@ const filteredApplicants = computed(() => {
   }
 
   return result.sort((a, b) => {
-    // For sponsors/vendors when filtering by role, sort confirmed by displayOrder
-    if ((selectedRole.value === 'sponsor' || selectedRole.value === 'vendor') && a.status === 'confirmed' && b.status === 'confirmed') {
+    // For sponsors/vendors/food trucks when filtering by role, sort confirmed by displayOrder
+    if ((selectedRole.value === 'sponsor' || selectedRole.value === 'vendor' || selectedRole.value === 'food_trucks') && a.status === 'confirmed' && b.status === 'confirmed') {
       const orderA = a.displayOrder ?? 999
       const orderB = b.displayOrder ?? 999
       if (orderA !== orderB) return orderA - orderB
@@ -802,7 +963,7 @@ async function loadApplicants() {
     const appsSnapshot = await getDocs(collection(festivall_db, BBP.collections.applications))
     appsSnapshot.forEach((docSnap) => {
       const data = docSnap.data()
-      if (data.role === 'sponsor' || data.role === 'vendor') {
+      if (data.role === 'sponsor' || data.role === 'vendor' || data.role === 'food_truck') {
         allApplicants.push({
           id: docSnap.id,
           role: data.role,
@@ -818,6 +979,7 @@ async function loadApplicants() {
           submitted_at: data.submitted_at || '',
           onboarding: data.onboarding || null,
           displayOrder: data.displayOrder ?? null,
+          ordinal: data.ordinal ?? null,
         })
       }
     })
@@ -980,6 +1142,97 @@ async function saveContentInfo() {
   }
 }
 
+// Add new applicant modal
+const addingNew = ref(null)
+const savingNewApplicant = ref(false)
+const newApplicantForm = reactive({
+  contact_name: '',
+  email: '',
+  phone: '',
+  displayName: '',
+  shortDescription: '',
+  url: '',
+  tier: '',
+  ordinal: null,
+  displayOrder: null,
+  status: 'confirmed'
+})
+
+const isNewApplicantFormValid = computed(() => {
+  const form = newApplicantForm
+  const hasBasicInfo = form.contact_name.trim() && form.email.trim() && form.displayName.trim() && form.shortDescription.trim()
+  const hasTier = addingNew.value === 'food_truck' || form.tier
+  return hasBasicInfo && hasTier
+})
+
+function openAddNew() {
+  const role = selectedRole.value === 'food_trucks' ? 'food_truck' : selectedRole.value
+  addingNew.value = role
+  // Reset form
+  Object.assign(newApplicantForm, {
+    contact_name: '',
+    email: '',
+    phone: '',
+    displayName: '',
+    shortDescription: '',
+    url: '',
+    tier: '',
+    ordinal: null,
+    displayOrder: null,
+    status: 'confirmed'
+  })
+}
+
+function closeAddNewModal() {
+  addingNew.value = null
+}
+
+async function saveNewApplicant() {
+  if (!isNewApplicantFormValid.value) return
+  
+  savingNewApplicant.value = true
+  
+  try {
+    const role = addingNew.value
+    const now = new Date().toISOString()
+    
+    const newApplicantData = {
+      role: role,
+      contact_name: newApplicantForm.contact_name.trim(),
+      email: newApplicantForm.email.trim(),
+      phone: newApplicantForm.phone.trim(),
+      org_name: newApplicantForm.displayName.trim(),
+      displayName: newApplicantForm.displayName.trim(),
+      shortDescription: newApplicantForm.shortDescription.trim(),
+      url: newApplicantForm.url.trim(),
+      tier: newApplicantForm.tier || (role === 'food_truck' ? 'food_truck' : ''),
+      status: newApplicantForm.status,
+      submitted_at: now,
+      created_at: now,
+      displayOrder: newApplicantForm.displayOrder ?? null,
+      ordinal: newApplicantForm.ordinal ?? null,
+      source: 'admin_manual_entry'
+    }
+    
+    const docRef = await addDoc(collection(festivall_db, BBP.collections.applications), newApplicantData)
+    
+    // Add to local state
+    applicants.value.push({
+      id: docRef.id,
+      ...newApplicantData,
+      onboarding: null
+    })
+    
+    closeAddNewModal()
+    alert(`${role === 'sponsor' ? 'Sponsor' : role === 'food_truck' ? 'Food truck' : 'Vendor'} added successfully!`)
+  } catch (error) {
+    console.error('Error adding new applicant:', error)
+    alert('Failed to add new applicant. Please try again.')
+  } finally {
+    savingNewApplicant.value = false
+  }
+}
+
 // Onboarding templates
 function getOnboardingTemplates(applicant) {
   const role = applicant.role
@@ -1119,7 +1372,8 @@ async function updateDisplayOrder(applicant, newOrder) {
   orderSaving[applicant.id] = true
 
   try {
-    await updateDoc(doc(festivall_db, BBP.collections.applications, applicant.id), {
+    const collection_name = applicant.role === 'volunteer' ? BBP.collections.volunteers : BBP.collections.applications
+    await updateDoc(doc(festivall_db, collection_name, applicant.id), {
       displayOrder: orderValue
     })
 
@@ -1131,6 +1385,32 @@ async function updateDisplayOrder(applicant, newOrder) {
   } catch (error) {
     console.error('Error updating display order:', error)
     alert('Failed to update display order. Please try again.')
+  } finally {
+    delete orderSaving[applicant.id]
+  }
+}
+
+// ── Ordinal Management ─────────────────────────────────────────────────────
+async function updateOrdinal(applicant, newOrdinal) {
+  const ordinalValue = newOrdinal === '' ? null : parseInt(newOrdinal)
+  if (ordinalValue !== null && isNaN(ordinalValue)) return
+
+  orderSaving[applicant.id] = true
+
+  try {
+    const collection_name = BBP.collections.applications
+    await updateDoc(doc(festivall_db, collection_name, applicant.id), {
+      ordinal: ordinalValue
+    })
+
+    // Update local state
+    const index = applicants.value.findIndex(a => a.id === applicant.id)
+    if (index !== -1) {
+      applicants.value[index].ordinal = ordinalValue
+    }
+  } catch (error) {
+    console.error('Error updating ordinal:', error)
+    alert('Failed to update ordinal. Please try again.')
   } finally {
     delete orderSaving[applicant.id]
   }
@@ -1560,8 +1840,17 @@ function printFlyer() {
 /* Controls */
 .controls {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.controls-left {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
   flex-wrap: wrap;
 }
 
@@ -1597,6 +1886,28 @@ function printFlyer() {
 .search-input:focus {
   outline: none;
   border-color: #f7931a;
+}
+
+.btn-add-new {
+  padding: 0.75rem 1.5rem;
+  background: #f7931a;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-add-new:hover {
+  background: #ff9f1a;
+  transform: translateY(-1px);
+}
+
+.btn-add-new:active {
+  transform: translateY(0);
 }
 
 /* Loading */
@@ -1635,7 +1946,7 @@ function printFlyer() {
 
 .table-header {
   display: grid;
-  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr 1.5fr;
+  grid-template-columns: 1.5fr 2fr 1.5fr 0.8fr 1fr 1fr 1.5fr;
   gap: 1rem;
   padding: 1rem;
   background: #111;
@@ -1649,7 +1960,7 @@ function printFlyer() {
 
 .applicant-row {
   display: grid;
-  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr 1.5fr;
+  grid-template-columns: 1.5fr 2fr 1.5fr 0.8fr 1fr 1fr 1.5fr;
   gap: 1rem;
   padding: 1rem;
   border-bottom: 1px solid #222;
@@ -1686,6 +1997,11 @@ function printFlyer() {
 .role-badge.vendor {
   background: rgba(76, 175, 80, 0.2);
   color: #4caf50;
+}
+
+.role-badge.food_truck {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
 }
 
 .role-badge.volunteer {
@@ -1727,6 +2043,33 @@ function printFlyer() {
 .org-url a:hover {
   color: #6bb0ff;
   text-decoration: underline;
+}
+
+/* Ordinal Column */
+.col-ordinal {
+  display: flex;
+  align-items: center;
+}
+
+.ordinal-input {
+  width: 60px;
+  padding: 0.4rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.ordinal-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ordinal-input::placeholder {
+  color: #555;
+  font-size: 0.75rem;
 }
 
 /* Display Order Column */
@@ -1946,6 +2289,10 @@ function printFlyer() {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
+.modal-content--wide {
+  max-width: 700px;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -2001,6 +2348,12 @@ function printFlyer() {
   color: #aaa;
 }
 
+.edit-field label .optional {
+  font-weight: 400;
+  color: #666;
+  font-size: 0.85rem;
+}
+
 .edit-input {
   width: 100%;
   padding: 0.75rem;
@@ -2022,6 +2375,24 @@ function printFlyer() {
   min-height: 80px;
   font-family: inherit;
   line-height: 1.5;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #222;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  color: #f7931a;
+  font-size: 1.1rem;
 }
 
 .modal-footer {
