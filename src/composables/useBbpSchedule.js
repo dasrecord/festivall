@@ -2,8 +2,7 @@
  * useBbpSchedule
  *
  * Provides reactive BBP schedule data (itinerary, screenings, djs) backed by
- * Firestore. Falls back to the static config on first load and auto-seeds the
- * Firestore doc if it does not yet exist.
+ * Firestore. All schedule data is managed via the admin dashboard.
  *
  * Singleton pattern — module-level refs shared across all consumers so the
  * fetch only runs once per page load.
@@ -12,20 +11,19 @@
 import { ref, readonly } from 'vue'
 import { festivall_db } from '@/firebase.js'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 
 // ── Firestore path ──────────────────────────────────────────────────────────
 const COLLECTION = 'bbp_config_2026'
 const DOC_ID = 'schedule'
 
 // ── Singleton state ──────────────────────────────────────────────────────────
-const itinerary = ref([...BBP.itinerary])
-const screenings = ref([...BBP.screenings])
-const djs = ref([...BBP.djs])
+const itinerary = ref([])
+const screenings = ref([])
+const djs = ref([])
 const loading = ref(false)
 const initialized = ref(false)
 
-// ── Load (and optionally seed) ───────────────────────────────────────────────
+// ── Load from Firestore ──────────────────────────────────────────────────────
 async function loadSchedule() {
   if (initialized.value) return
   loading.value = true
@@ -36,26 +34,19 @@ async function loadSchedule() {
 
     if (snap.exists()) {
       const data = snap.data()
-      if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
+      if (Array.isArray(data.itinerary)) {
         itinerary.value = data.itinerary
       }
-      if (Array.isArray(data.screenings) && data.screenings.length > 0) {
+      if (Array.isArray(data.screenings)) {
         screenings.value = data.screenings
       }
-      if (Array.isArray(data.djs) && data.djs.length > 0) {
+      if (Array.isArray(data.djs)) {
         djs.value = data.djs
       }
-    } else {
-      // First run — seed from static config
-      await setDoc(scheduleRef, {
-        itinerary: BBP.itinerary,
-        screenings: BBP.screenings,
-        djs: BBP.djs,
-      })
     }
+    // If document doesn't exist, arrays remain empty until admin adds data
   } catch (err) {
     console.error('[useBbpSchedule] Failed to load schedule from Firestore:', err)
-    // Stay on static config values already set above
   } finally {
     loading.value = false
     initialized.value = true

@@ -53,6 +53,52 @@
         </div>
       </div>
 
+      <!-- Edit Sponsor/Vendor Content Modal -->
+      <div v-if="editingContent" class="modal-overlay" @click.self="closeContentModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>✏️ Edit {{ editingContent.role === 'sponsor' ? 'Sponsor' : 'Vendor' }} Display Content</h2>
+            <button @click="closeContentModal" class="modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">{{ editingContent.contact_name }}</p>
+            <div class="edit-field">
+              <label>Display Name *</label>
+              <input 
+                type="text" 
+                v-model="contentForm.displayName" 
+                placeholder="Organization name as shown on website"
+                class="edit-input"
+              />
+            </div>
+            <div class="edit-field">
+              <label>Short Description *</label>
+              <textarea 
+                v-model="contentForm.shortDescription" 
+                placeholder="Brief description shown on landing page and map"
+                class="edit-input edit-textarea"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="edit-field">
+              <label>Website URL</label>
+              <input 
+                type="url" 
+                v-model="contentForm.url" 
+                placeholder="https://example.com"
+                class="edit-input"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button @click="closeContentModal" class="btn-cancel">Cancel</button>
+            <button @click="saveContentInfo" class="btn-save" :disabled="!contentForm.displayName.trim() || !contentForm.shortDescription.trim()">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Header -->
       <div class="header">
         <RouterLink to="/bitcoinblockparty" class="back-link">← Bitcoin Block Party</RouterLink>
@@ -133,6 +179,7 @@
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
           <div class="col-org">Organization / Tier</div>
+          <div v-if="selectedRole === 'sponsor' || selectedRole === 'vendor' || selectedRole === 'all'" class="col-order">Display Order</div>
           <div class="col-status">Status</div>
           <div class="col-actions">Actions</div>
         </div>
@@ -166,6 +213,34 @@
               <a :href="applicant.url" target="_blank" rel="noopener noreferrer">🔗 Website</a>
             </div>
           </div>
+          <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor'" class="col-order">
+            <div class="order-controls">
+              <input 
+                type="number" 
+                :value="applicant.displayOrder ?? 999" 
+                @change="updateDisplayOrder(applicant, $event.target.value)"
+                min="0"
+                max="999"
+                class="order-input"
+                :disabled="applicant.status !== 'confirmed'"
+              />
+              <div class="order-buttons">
+                <button 
+                  @click="moveUp(applicant)" 
+                  :disabled="applicant.status !== 'confirmed'"
+                  class="btn-order-move"
+                  title="Move up"
+                >▲</button>
+                <button 
+                  @click="moveDown(applicant)" 
+                  :disabled="applicant.status !== 'confirmed'"
+                  class="btn-order-move"
+                  title="Move down"
+                >▼</button>
+              </div>
+            </div>
+            <div v-if="orderSaving[applicant.id]" class="order-saving">Saving...</div>
+          </div>
           <div class="col-status">
             <span class="status-badge" :class="applicant.status">
               {{ applicant.status }}
@@ -176,6 +251,11 @@
             </div>
           </div>
           <div class="col-actions">
+            <div v-if="applicant.role === 'sponsor' || applicant.role === 'vendor'" class="content-edit-wrapper">
+              <button @click="editContent(applicant)" class="btn-edit-content" title="Edit display content">
+                ✏️ Edit Content
+              </button>
+            </div>
             <div v-if="!canOnboard(applicant) && applicant.status === 'pending'" class="missing-contact-warning">
               ⚠️ Cannot onboard: missing {{ getMissingFields(applicant) }}
               <button @click="editContact(applicant)" class="btn-edit-contact">✏️ Edit Contact</button>
@@ -637,6 +717,7 @@ const selectedRole = ref('all')
 const selectedStatus = ref('all')
 const searchQuery = ref('')
 const onboardingStates = reactive({})
+const orderSaving = reactive({})
 
 // Stats
 const stats = computed(() => {
@@ -683,6 +764,12 @@ const filteredApplicants = computed(() => {
   }
 
   return result.sort((a, b) => {
+    // For sponsors/vendors when filtering by role, sort confirmed by displayOrder
+    if ((selectedRole.value === 'sponsor' || selectedRole.value === 'vendor') && a.status === 'confirmed' && b.status === 'confirmed') {
+      const orderA = a.displayOrder ?? 999
+      const orderB = b.displayOrder ?? 999
+      if (orderA !== orderB) return orderA - orderB
+    }
     // Pending first, then by submission date (newest first)
     if (a.status === 'pending' && b.status !== 'pending') return -1
     if (a.status !== 'pending' && b.status === 'pending') return 1
@@ -730,6 +817,7 @@ async function loadApplicants() {
           status: data.status || 'pending',
           submitted_at: data.submitted_at || '',
           onboarding: data.onboarding || null,
+          displayOrder: data.displayOrder ?? null,
         })
       }
     })
@@ -846,6 +934,49 @@ async function saveContactInfo() {
   } catch (error) {
     console.error('Error updating contact info:', error)
     alert('Failed to update contact info. Please try again.')
+  }
+}
+
+// Edit content modal (for sponsors/vendors)
+const editingContent = ref(null)
+const contentForm = ref({ displayName: '', shortDescription: '', url: '' })
+
+function editContent(applicant) {
+  editingContent.value = applicant
+  contentForm.value = {
+    displayName: applicant.displayName || applicant.org_name || '',
+    shortDescription: applicant.shortDescription || '',
+    url: applicant.url || ''
+  }
+}
+
+function closeContentModal() {
+  editingContent.value = null
+  contentForm.value = { displayName: '', shortDescription: '', url: '' }
+}
+
+async function saveContentInfo() {
+  if (!editingContent.value) return
+  
+  try {
+    await updateDoc(doc(festivall_db, BBP.collections.applications, editingContent.value.id), {
+      displayName: contentForm.value.displayName.trim(),
+      shortDescription: contentForm.value.shortDescription.trim(),
+      url: contentForm.value.url.trim()
+    })
+    
+    // Update local state
+    const index = applicants.value.findIndex(a => a.id === editingContent.value.id)
+    if (index !== -1) {
+      applicants.value[index].displayName = contentForm.value.displayName.trim()
+      applicants.value[index].shortDescription = contentForm.value.shortDescription.trim()
+      applicants.value[index].url = contentForm.value.url.trim()
+    }
+    
+    closeContentModal()
+  } catch (error) {
+    console.error('Error updating content info:', error)
+    alert('Failed to update content info. Please try again.')
   }
 }
 
@@ -978,6 +1109,67 @@ function formatDate(isoString) {
     day: 'numeric',
     year: 'numeric',
   })
+}
+
+// ── Display Order Management ─────────────────────────────────────────────────
+async function updateDisplayOrder(applicant, newOrder) {
+  const orderValue = parseInt(newOrder)
+  if (isNaN(orderValue)) return
+
+  orderSaving[applicant.id] = true
+
+  try {
+    await updateDoc(doc(festivall_db, BBP.collections.applications, applicant.id), {
+      displayOrder: orderValue
+    })
+
+    // Update local state
+    const index = applicants.value.findIndex(a => a.id === applicant.id)
+    if (index !== -1) {
+      applicants.value[index].displayOrder = orderValue
+    }
+  } catch (error) {
+    console.error('Error updating display order:', error)
+    alert('Failed to update display order. Please try again.')
+  } finally {
+    delete orderSaving[applicant.id]
+  }
+}
+
+async function moveUp(applicant) {
+  const currentOrder = applicant.displayOrder ?? 999
+  const newOrder = Math.max(0, currentOrder - 1)
+  
+  // Find the item currently at newOrder position and swap
+  const blocker = filteredApplicants.value.find(a => 
+    a.id !== applicant.id && 
+    a.role === applicant.role && 
+    a.status === 'confirmed' &&
+    (a.displayOrder ?? 999) === newOrder
+  )
+  
+  if (blocker) {
+    await updateDisplayOrder(blocker, currentOrder)
+  }
+  await updateDisplayOrder(applicant, newOrder)
+}
+
+async function moveDown(applicant) {
+  const currentOrder = applicant.displayOrder ?? 999
+  const newOrder = Math.min(999, currentOrder + 1)
+  
+  // Find the item currently at newOrder position and swap
+  const blocker = filteredApplicants.value.find(a => 
+    a.id !== applicant.id && 
+    a.role === applicant.role && 
+    a.status === 'confirmed' &&
+    (a.displayOrder ?? 999) === newOrder
+  )
+  
+  if (blocker) {
+    await updateDisplayOrder(blocker, currentOrder)
+  }
+  await updateDisplayOrder(applicant, newOrder)
 }
 
 // ── Attendees ───────────────────────────────────────────────────────────────
@@ -1443,7 +1635,7 @@ function printFlyer() {
 
 .table-header {
   display: grid;
-  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1.5fr;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr 1.5fr;
   gap: 1rem;
   padding: 1rem;
   background: #111;
@@ -1457,7 +1649,7 @@ function printFlyer() {
 
 .applicant-row {
   display: grid;
-  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1.5fr;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr 1.5fr;
   gap: 1rem;
   padding: 1rem;
   border-bottom: 1px solid #222;
@@ -1535,6 +1727,75 @@ function printFlyer() {
 .org-url a:hover {
   color: #6bb0ff;
   text-decoration: underline;
+}
+
+/* Display Order Column */
+.col-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.order-input {
+  width: 60px;
+  padding: 0.4rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.order-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.order-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.btn-order-move {
+  width: 24px;
+  height: 18px;
+  padding: 0;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #f7931a;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-order-move:hover:not(:disabled) {
+  background: #f7931a;
+  color: #000;
+  border-color: #f7931a;
+}
+
+.btn-order-move:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.order-saving {
+  font-size: 0.75rem;
+  color: #4caf50;
+  font-style: italic;
 }
 
 .status-badge {
@@ -1640,6 +1901,27 @@ function printFlyer() {
   transform: translateY(-1px);
 }
 
+.content-edit-wrapper {
+  margin-bottom: 0.5rem;
+}
+
+.btn-edit-content {
+  padding: 0.4rem 0.8rem;
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit-content:hover {
+  background: #42a5f5;
+  transform: translateY(-1px);
+}
+
 /* Edit Contact Modal */
 .modal-overlay {
   position: fixed;
@@ -1733,6 +2015,13 @@ function printFlyer() {
 .edit-input:focus {
   outline: none;
   border-color: #f7931a;
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 .modal-footer {

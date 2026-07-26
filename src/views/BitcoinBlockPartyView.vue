@@ -384,8 +384,16 @@ async function loadSponsorsAndVendors() {
       }
     })
     
-    sponsors.value = sponsorsList
-    vendors.value = vendorsList
+    // Sort by displayOrder (ascending), fallback to submission date
+    const sortByOrder = (a, b) => {
+      const orderA = a.displayOrder ?? 999
+      const orderB = b.displayOrder ?? 999
+      if (orderA !== orderB) return orderA - orderB
+      return new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0)
+    }
+    
+    sponsors.value = sponsorsList.sort(sortByOrder)
+    vendors.value = vendorsList.sort(sortByOrder)
   } catch (error) {
     console.error('Error loading sponsors/vendors:', error)
   }

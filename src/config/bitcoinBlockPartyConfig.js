@@ -42,45 +42,9 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Itinerary ─────────────────────────────────────────────────────────────
   // NOTE: Live schedule data is managed in Firestore (bbp_config_2026/schedule).
   // Admin edits via /admin/bitcoinblockparty propagate to landing/map/poster.
-  // These static arrays serve as initial seed + fallback only.
-  itinerary: [
-    { time: '12:00 PM', label: 'Doors Open' },
-    { time: '12:15 PM', label: 'Networking & Mingling' },
-    { time: '2:00 PM', label: 'ZEUS Wallet Workshop' },
-    { time: '3:00 PM', label: 'Vivian (Singer/Songwriter)' },
-    { time: '3:00 PM', label: 'Film Screening', note: '"My Trust In You Is Broken"' },
-    { time: '4:00 PM', label: 'Lightning Talks Speaker Series' },
-    { time: '5:30 PM', label: 'Film Screening', note: '"What\'s The Problem?"' },
-    { time: '5:45 PM', label: 'Announcements & Acknowledgements' },
-    { time: '6:30 PM', label: 'DJs & Mixer [Morimori][Fustler]' },
-    { time: '8:00 PM', label: 'Doors Close' },
-  ],
 
   // ── Film Screenings (for map popup + landing) ─────────────────────────────
   // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
-  // Static array below is initial seed + fallback only.
-  screenings: [
-    {
-      id: 'screening_1',
-      time: '2:00 - 3:00 PM',
-      title: 'My Trust In You Is Broken',
-      description:
-        'Feature documentary by Parker Worthington that chronicles Bitcoin\'s origins as a payments system and Nicolas Dorier\'s pivotal role in creating BTCPay Server during the Block Size Wars. The film highlights merchant adoption, privacy, autonomy, and the risks of trusted third parties.',
-      director: 'Parker Worthington',
-      directorUrl: 'https://twitter.com/webworthy',
-      infoUrl: 'https://youtu.be/8ywHizrZfAo?si=YSLoGVJVdWACrTsZ',
-    },
-    {
-      id: 'screening_2',
-      time: '4:00 - 5:00 PM',
-      title: "What's The Problem?",
-      description:
-        'Demystifying why we all need Bitcoin. How can anyone properly value a solution if they do not understand the problem? "What\'s The Problem?" helps everyone, regardless of background, understand what the problem is. Fix the money, fix the world.',
-      director: 'Joe Bryan',
-      directorUrl: 'https://x.com/satmojoe',
-      infoUrl: 'https://youtu.be/0g1j3k5r6xM?si=Y7J8X9n2Q4WqZ0yR',
-    },
-  ],
 
   // ── Landing page feature highlights ───────────────────────────────────────
   features: [
@@ -143,19 +107,6 @@ export const BITCOIN_BLOCK_PARTY = {
 
   // ── DJs (for map popup) ────────────────────────────────────────────────────
   // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
-  // Static array below is initial seed + fallback only.
-  djs: [
-    {
-      name: 'MoriMori',
-      shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
-      url: 'https://www.instagram.com/morimoribeats/'
-    },
-    {
-      name: 'Fustler',
-      shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
-      url: 'https://www.instagram.com/fustler/'
-    }
-  ],
 
 
   // ── Sponsor tiers (from pitch deck) ───────────────────────────────────────
@@ -228,50 +179,7 @@ export const BITCOIN_BLOCK_PARTY = {
   //   - url: string
   //   - status: 'confirmed' | 'pending'
   //   - contact_name, email, phone (for admin reference)
-  //
-  // Legacy hardcoded data (for reference - can be removed after migration):
-  sponsors: [
-    {
-      id: 'zeus',
-      tier: 'satoshi',
-      displayName: 'Zeus',
-      shortDescription: 'SATOSHI presenting sponsor. Bitcoin payments infrastructure.',
-      url: 'https://zeusln.com',
-      status: 'confirmed',
-    },
-    {
-      id: 'funk',
-      tier: 'whale',
-      displayName: 'FUNK',
-      shortDescription: 'Whale sponsor. Coffee bar and event host.',
-      url: 'https://funk.coffee/',
-      status: 'confirmed',
-    },
-    {
-      id: 'coincards',
-      tier: 'bull',
-      displayName: 'Coincards',
-      shortDescription: 'Bull sponsor. Bitcoin gift cards and payments.',
-      url: 'https://coincards.com/',
-      status: 'confirmed',
-    },
-    {
-      id: 'printprint',
-      tier: 'bull',
-      displayName: 'PrintPrint',
-      shortDescription: 'Bull sponsor. Local print production and creative services.',
-      url: 'https://printprint.ca/',
-      status: 'confirmed',
-    },
-    {
-      id: 'block_rewards',
-      tier: 'bull',
-      displayName: 'Block Rewards',
-      shortDescription: 'Bull sponsor. Bitcoin rewards and education.',
-      url: 'https://blockrewards.ca/',
-      status: 'confirmed',
-    },
-  ],
+  //   - displayOrder: number (for custom ordering on website)
 
   // ── Vendor tiers (from pitch deck) ────────────────────────────────────────
   vendorTiers: [
@@ -303,10 +211,6 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── Vendor roster ─────────────────────────────────────────────────────────
   // NOTE: Vendor data is managed in Firestore (bbp_applications_2026).
   // See sponsors section above for details.
-  // Legacy hardcoded data (for reference - can be removed after migration):
-  vendors: [
-    // Add vendors here as confirmed
-  ],
 
   // ── Map zone popup content ─────────────────────────────────────────────────
   // keyed by the SVG feature object id
