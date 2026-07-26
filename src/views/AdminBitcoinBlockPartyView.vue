@@ -98,7 +98,7 @@
       </div>
 
       <!-- Status Filter & Search -->
-      <div v-if="selectedRole !== 'schedule'" class="controls">
+      <div v-if="selectedRole !== 'schedule' && selectedRole !== 'flyer'" class="controls">
         <div class="status-filters">
           <label v-if="selectedRole !== 'attendees'" class="status-filter">
             <input type="radio" v-model="selectedStatus" value="all" />
@@ -122,13 +122,13 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading && selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="loading">
+      <div v-if="loading && selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="loading">
         <div class="spinner"></div>
         Loading applicants...
       </div>
 
       <!-- Applicant Table -->
-      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="applicants-table">
+      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="applicants-table">
         <div class="table-header">
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
@@ -207,7 +207,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="selectedRole !== 'schedule' && selectedRole !== 'attendees'" class="empty-state">
+      <div v-else-if="selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="empty-state">
         <p>No {{ selectedStatus === 'all' ? '' : selectedStatus }} {{ selectedRole }} applicants found.</p>
       </div>
 
@@ -392,6 +392,209 @@
 
         <p v-if="schedSaveError" class="error-message" style="margin-top:1rem">{{ schedSaveError }}</p>
       </div>
+
+      <!-- ── Flyer Generator ───────────────────────────────────────────── -->
+      <div v-if="selectedRole === 'flyer'" class="flyer-generator">
+        <div class="flyer-header">
+          <h2>🖨️ Print-Ready Flyers (Live Data)</h2>
+          <p>All flyers use live data from Firebase. Changes to schedule and event info appear automatically.</p>
+        </div>
+
+        <div class="flyer-controls">
+          <label for="flyer-preset-select">Flyer Type:</label>
+          <select id="flyer-preset-select" v-model="selectedFlyerPreset" class="flyer-preset-select">
+            <optgroup label="Main Flyers">
+              <option value="poster">Poster (11×17)</option>
+              <option value="handout">Handout (5.5×8.5)</option>
+              <option value="schedule">Schedule Poster (8.5×11)</option>
+            </optgroup>
+            <optgroup label="Signage">
+              <option value="wayfinding">Wayfinding Sign (11×8.5 landscape)</option>
+              <option value="wayfinding-simple">Simple Direction Arrow (8.5×11)</option>
+              <option value="no-alcohol">No Alcohol Zone (11×8.5 landscape)</option>
+            </optgroup>
+            <optgroup label="Custom">
+              <option value="custom">Custom Poster (11×17)</option>
+            </optgroup>
+          </select>
+          <button @click="printFlyer" class="btn-print">🖨 Print</button>
+        </div>
+
+        <!-- Poster Preview -->
+        <div v-if="selectedFlyerPreset === 'poster'" class="flyer-preview flyer-preview--poster">
+          <div class="flyer-page page--poster">
+            <img
+              class="poster-bg"
+              src="/bitcoin_block_party_2026_bg.svg"
+              alt=""
+              aria-hidden="true"
+            />
+            <div class="poster-overlay">
+              <p class="poster-eyebrow">{{ BBP.city }} · Free Admission</p>
+              <p class="poster-date-block">{{ BBP.date }}</p>
+              <p class="poster-venue-block">{{ BBP.venue }} · {{ BBP.startTime }} – {{ BBP.endTime }}</p>
+              <div class="poster-divider"></div>
+              <p class="poster-schedule-title">Day Schedule</p>
+              <div class="poster-schedule">
+                <div v-for="(item, idx) in schedItinerary" :key="idx" class="poster-schedule-row">
+                  <span class="poster-schedule-time">{{ item.time }}</span>
+                  <span class="poster-schedule-label">{{ item.label }}<span v-if="item.note"> — {{ item.note }}</span></span>
+                </div>
+              </div>
+              <div class="poster-cta-row">
+                <span class="poster-cta-url">festivall.ca/bitcoinblockparty</span>
+                <span class="poster-cta-contact">{{ BBP.contactEmail }}</span>
+              </div>
+              <div class="poster-sponsor-row">
+                Presenting Sponsor: Zeus · Powered by Festivall
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Handout Preview -->
+        <div v-else-if="selectedFlyerPreset === 'handout'" class="flyer-preview flyer-preview--handout">
+          <div class="flyer-page page--handout">
+            <div class="handout-header">
+              <p class="handout-eyebrow">{{ BBP.city }} · Free Admission</p>
+              <h1 class="handout-title">Bitcoin<br>Block Party</h1>
+              <p class="handout-date">{{ BBP.date }}</p>
+              <p class="handout-venue">{{ BBP.venue }} · {{ BBP.startTime }} – {{ BBP.endTime }}</p>
+            </div>
+            <div class="handout-divider"></div>
+            <p class="handout-section-title">Schedule</p>
+            <div v-for="(item, idx) in schedItinerary" :key="idx" class="handout-schedule-row">
+              <span class="handout-sched-time">{{ item.time }}</span>
+              <span class="handout-sched-label">{{ item.label }}<span v-if="item.note"> — {{ item.note }}</span></span>
+            </div>
+            <div class="handout-divider"></div>
+            <p class="handout-body">
+              Free outdoor celebration of Bitcoin, community, and music in the heart of Vancouver.
+              Food trucks, speakers, film screenings, live DJs, and Bitcoin prizes.
+              All vendors accept Bitcoin. All ages welcome.
+            </p>
+            <p class="handout-cta">festivall.ca/bitcoinblockparty</p>
+            <p class="handout-wallet-note">New to Bitcoin? Get a free wallet: festivall.ca/bitcoin-wallet</p>
+            <p class="handout-footer">Presenting Sponsor: Zeus · {{ BBP.contactEmail }} · Powered by Festivall</p>
+          </div>
+        </div>
+
+        <!-- Schedule Poster Preview -->
+        <div v-else-if="selectedFlyerPreset === 'schedule'" class="flyer-preview flyer-preview--schedule">
+          <div class="flyer-page page--schedule">
+            <div class="schedule-header">
+              <div class="schedule-header-left">
+                <h1>Day Schedule</h1>
+                <p>Bitcoin Block Party {{ BBP.year }} — {{ BBP.venue }}</p>
+              </div>
+              <div class="schedule-header-right">
+                {{ BBP.date }}<br>
+                {{ BBP.startTime }} – {{ BBP.endTime }}<br>
+                Free Admission
+              </div>
+            </div>
+            <div class="schedule-table">
+              <div class="schedule-table-header">
+                <span>Time</span>
+                <span>Event</span>
+              </div>
+              <div v-for="(item, idx) in schedItinerary" :key="idx" class="schedule-entry">
+                <span class="sched-time">{{ item.time }}</span>
+                <span class="sched-label">{{ item.label }}<span v-if="item.note" class="sched-note"> — {{ item.note }}</span></span>
+              </div>
+            </div>
+            <div class="schedule-footer">
+              <span class="schedule-footer-url">festivall.ca/bitcoinblockparty</span>
+              <span class="schedule-footer-brand">Powered by Festivall</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wayfinding Sign (Landscape) -->
+        <div v-else-if="selectedFlyerPreset === 'wayfinding'" class="flyer-preview flyer-preview--wayfinding">
+          <div class="flyer-page page--wayfinding">
+            <div class="wayfinding-content">
+              <div class="wayfinding-arrow">→</div>
+              <div class="wayfinding-text">
+                <h1 class="wayfinding-title">Bitcoin Block Party</h1>
+                <p class="wayfinding-venue">{{ BBP.venue }}</p>
+                <p class="wayfinding-detail">{{ BBP.date }} · {{ BBP.startTime }}–{{ BBP.endTime }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simple Direction Arrow -->
+        <div v-else-if="selectedFlyerPreset === 'wayfinding-simple'" class="flyer-preview flyer-preview--simple">
+          <div class="flyer-page page--simple-arrow">
+            <div class="simple-arrow-content">
+              <div class="simple-arrow">↓</div>
+              <h1 class="simple-arrow-title">Bitcoin Block Party</h1>
+              <p class="simple-arrow-detail">This Way</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Alcohol Sign -->
+        <div v-else-if="selectedFlyerPreset === 'no-alcohol'" class="flyer-preview flyer-preview--no-alcohol">
+          <div class="flyer-page page--no-alcohol">
+            <div class="no-alcohol-content">
+              <div class="no-alcohol-icon">🚫</div>
+              <h1 class="no-alcohol-title">No Alcohol</h1>
+              <h2 class="no-alcohol-subtitle">Beyond This Point</h2>
+              <p class="no-alcohol-detail">Alcohol-free zone ahead</p>
+              <p class="no-alcohol-footer">Bitcoin Block Party {{ BBP.year }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Poster -->
+        <div v-else-if="selectedFlyerPreset === 'custom'" class="flyer-preview flyer-preview--custom">
+          <div class="custom-poster-editor">
+            <div class="custom-fields">
+              <h3>Custom Poster Editor</h3>
+              <div class="edit-field">
+                <label>Main Heading</label>
+                <input type="text" v-model="customPoster.title" placeholder="Enter main heading" class="edit-input" />
+              </div>
+              <div class="edit-field">
+                <label>Subheading</label>
+                <input type="text" v-model="customPoster.subtitle" placeholder="Enter subheading" class="edit-input" />
+              </div>
+              <div class="edit-field">
+                <label>Body Text</label>
+                <textarea v-model="customPoster.body" rows="4" class="edit-input" placeholder="Enter body text"></textarea>
+              </div>
+              <div class="edit-field">
+                <label>Footer Text</label>
+                <input type="text" v-model="customPoster.footer" placeholder="Optional footer" class="edit-input" />
+              </div>
+            </div>
+          </div>
+          <div class="flyer-page page--custom">
+            <div class="custom-poster-content">
+              <h1 class="custom-title">{{ customPoster.title || 'Your Heading Here' }}</h1>
+              <h2 class="custom-subtitle">{{ customPoster.subtitle }}</h2>
+              <div class="custom-body" v-html="customPoster.body.replace(/\n/g, '<br>')" v-if="customPoster.body"></div>
+              <p class="custom-footer" v-if="customPoster.footer">{{ customPoster.footer }}</p>
+              <div class="custom-branding">
+                <p>Bitcoin Block Party {{ BBP.year }} · Powered by Festivall</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flyer-help">
+          <p><strong>💡 Tip:</strong> Changes made in the Schedule tab will automatically appear here. Click Print to generate print-ready PDFs.</p>
+          <p><strong>🖨️ For Print Shops:</strong> When saving as PDF, ensure "Background graphics" is enabled and select the correct paper size:</p>
+          <ul class="flyer-help-list">
+            <li><strong>Poster / Custom:</strong> 11" × 17" (Tabloid)</li>
+            <li><strong>Handout:</strong> 5.5" × 8.5" (Half Letter)</li>
+            <li><strong>Schedule / Simple Arrow:</strong> 8.5" × 11" (Letter)</li>
+            <li><strong>Wayfinding / No Alcohol:</strong> 11" × 8.5" (Tabloid Landscape)</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -422,6 +625,7 @@ const roleTabs = [
   { value: 'volunteer', label: 'Volunteers', icon: '🙌' },
   { value: 'attendees', label: 'Attendees', icon: '👥' },
   { value: 'schedule', label: 'Schedule', icon: '📅' },
+  { value: 'flyer', label: 'Flyer', icon: '🖨️' },
 ]
 
 // State
@@ -983,7 +1187,22 @@ async function deleteScheduleItem(field, idx) {
 // Trigger schedule load when admin switches to schedule tab
 watch(selectedRole, (val) => {
   if (val === 'schedule') loadSchedule()
+  if (val === 'flyer') loadSchedule()
 })
+
+// ── Flyer Generator ─────────────────────────────────────────────────────────
+const selectedFlyerPreset = ref('poster')
+
+const customPoster = reactive({
+  title: 'Bitcoin Block Party',
+  subtitle: '',
+  body: '',
+  footer: ''
+})
+
+function printFlyer() {
+  window.print()
+}
 </script>
 
 <style scoped>
@@ -1762,5 +1981,930 @@ watch(selectedRole, (val) => {
   color: #666;
   font-size: 0.8rem;
   font-weight: 400;
+}
+
+/* ── Flyer Generator ────────────────────────────────────────────────────── */
+.flyer-generator {
+  margin-top: 1rem;
+}
+
+.flyer-header {
+  margin-bottom: 2rem;
+}
+
+.flyer-header h2 {
+  font-size: 1.75rem;
+  color: #f7931a;
+  margin: 0 0 0.5rem 0;
+}
+
+.flyer-header p {
+  color: #888;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.flyer-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.flyer-controls label {
+  font-size: 0.9rem;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.flyer-preset-select {
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  font-family: var(--bbp-font-family);
+}
+
+.flyer-preset-select:hover {
+  border-color: #f7931a;
+}
+
+.btn-print {
+  background: #f7931a;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: auto;
+  font-family: var(--bbp-font-family);
+}
+
+.btn-print:hover {
+  background: #ff9e2a;
+  transform: scale(1.02);
+}
+
+.flyer-preview {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  overflow: auto;
+  max-height: 90vh;
+}
+
+.flyer-page {
+  margin: 0 auto;
+  background: white;
+  color: #000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Poster Styles */
+.page--poster {
+  width: 11in;
+  height: 17in;
+  min-width: 11in;
+  min-height: 17in;
+  max-width: 11in;
+  max-height: 17in;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.poster-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster-overlay {
+  position: absolute;
+  top: 31.3%;
+  left: 15%;
+  width: 70%;
+  height: 37.3%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: 'Rigid Square Bold', sans-serif;
+  box-sizing: border-box;
+}
+
+.poster-eyebrow {
+  font-size: 0.85rem;
+  color: #074db3;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.poster-date-block {
+  font-size: 1.4rem;
+  color: #091931;
+  font-weight: 700;
+  margin: 0 0 0.3rem 0;
+}
+
+.poster-venue-block {
+  font-size: 0.95rem;
+  color: #074db3;
+  margin: 0 0 1rem 0;
+}
+
+.poster-divider {
+  width: 60%;
+  height: 2px;
+  background: #f7d303;
+  margin: 0.5rem 0;
+}
+
+.poster-schedule-title {
+  font-size: 1.1rem;
+  color: #091931;
+  font-weight: 700;
+  margin: 0.75rem 0 0.5rem 0;
+}
+
+.poster-schedule {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.poster-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #091931;
+}
+
+.poster-schedule-time {
+  font-weight: 700;
+  text-align: left;
+  flex: 0 0 auto;
+  min-width: 5rem;
+}
+
+.poster-schedule-label {
+  text-align: right;
+  flex: 1;
+}
+
+.poster-cta-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.75rem;
+  color: #074db3;
+  font-weight: 700;
+}
+
+.poster-sponsor-row {
+  margin-top: 0.75rem;
+  font-size: 0.65rem;
+  color: #666;
+}
+
+/* Handout Styles */
+.page--handout {
+  width: 5.5in;
+  height: 8.5in;
+  min-width: 5.5in;
+  min-height: 8.5in;
+  max-width: 5.5in;
+  max-height: 8.5in;
+  padding: 1in 0.6in;
+  font-family: 'Rigid Square Bold', sans-serif;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.handout-eyebrow {
+  font-size: 0.7rem;
+  color: #074db3;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.handout-title {
+  font-size: 2.5rem;
+  color: #091931;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.handout-date {
+  font-size: 0.95rem;
+  color: #091931;
+  font-weight: 700;
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+.handout-venue {
+  font-size: 0.8rem;
+  color: #074db3;
+  margin: 0 0 1rem 0;
+}
+
+.handout-divider {
+  width: 100%;
+  height: 2px;
+  background: #f7d303;
+  margin: 1rem 0;
+}
+
+.handout-section-title {
+  font-size: 1rem;
+  color: #091931;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.handout-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #091931;
+  margin-bottom: 0.2rem;
+}
+
+.handout-sched-time {
+  font-weight: 700;
+}
+
+.handout-body {
+  font-size: 0.75rem;
+  color: #333;
+  line-height: 1.5;
+  margin: 1rem 0;
+}
+
+.handout-cta {
+  font-size: 0.85rem;
+  color: #074db3;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.handout-wallet-note {
+  font-size: 0.65rem;
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.handout-footer {
+  font-size: 0.6rem;
+  color: #888;
+  margin-top: 1rem;
+}
+
+/* Schedule Poster Styles */
+.page--schedule {
+  width: 8.5in;
+  height: 11in;
+  min-width: 8.5in;
+  min-height: 11in;
+  max-width: 8.5in;
+  max-height: 11in;
+  padding: 1in 0.75in;
+  font-family: 'Rigid Square Bold', sans-serif;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #f7d303;
+}
+
+.schedule-header-left h1 {
+  font-size: 2rem;
+  color: #091931;
+  margin: 0;
+}
+
+.schedule-header-left p {
+  font-size: 0.85rem;
+  color: #074db3;
+  margin: 0.25rem 0 0 0;
+}
+
+.schedule-header-right {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #074db3;
+  line-height: 1.6;
+}
+
+.schedule-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.schedule-table-header {
+  display: flex;
+  font-size: 0.85rem;
+  color: #074db3;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f7d303;
+}
+
+.schedule-table-header span:first-child {
+  flex: 0 0 8rem;
+}
+
+.schedule-table-header span:last-child {
+  flex: 1;
+}
+
+.schedule-entry {
+  display: flex;
+  font-size: 0.8rem;
+  color: #091931;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.schedule-entry .sched-time {
+  flex: 0 0 8rem;
+  font-weight: 700;
+}
+
+.schedule-entry .sched-label {
+  flex: 1;
+}
+
+.schedule-entry .sched-note {
+  color: #333;
+  font-style: italic;
+}
+
+.schedule-footer {
+  margin-top: 2rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #f7d303;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #074db3;
+}
+
+.flyer-help {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.flyer-help p {
+  margin: 0 0 0.75rem 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.flyer-help p:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+.flyer-help strong {
+  color: #f7931a;
+}
+
+.flyer-help-list {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.5rem;
+  color: #aaa;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.flyer-help-list li {
+  margin-bottom: 0.25rem;
+}
+
+.flyer-help-list strong {
+  color: #e0e0e0;
+}
+
+/* Wayfinding Sign (Landscape) */
+.page--wayfinding {
+  width: 11in;
+  height: 8.5in;
+  min-width: 11in;
+  min-height: 8.5in;
+  max-width: 11in;
+  max-height: 8.5in;
+  background: #074db3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rigid Square Bold', sans-serif;
+  box-sizing: border-box;
+  padding: 1in;
+  margin: 0 auto;
+}
+
+.wayfinding-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  text-align: left;
+}
+
+.wayfinding-arrow {
+  font-size: 12rem;
+  color: #f7d303;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.wayfinding-title {
+  font-size: 3.5rem;
+  color: white;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.1;
+}
+
+.wayfinding-venue {
+  font-size: 1.5rem;
+  color: #f7d303;
+  margin: 0 0 0.5rem 0;
+}
+
+.wayfinding-detail {
+  font-size: 1.1rem;
+  color: white;
+  margin: 0;
+}
+
+/* Simple Direction Arrow */
+.page--simple-arrow {
+  width: 8.5in;
+  height: 11in;
+  min-width: 8.5in;
+  min-height: 11in;
+  max-width: 8.5in;
+  max-height: 11in;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rigid Square Bold', sans-serif;
+  border: 0.5in solid #074db3;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.simple-arrow-content {
+  text-align: center;
+}
+
+.simple-arrow {
+  font-size: 15rem;
+  color: #f7931a;
+  line-height: 1;
+  font-weight: 900;
+  margin-bottom: 1rem;
+}
+
+.simple-arrow-title {
+  font-size: 2.5rem;
+  color: #091931;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+}
+
+.simple-arrow-detail {
+  font-size: 1.8rem;
+  color: #074db3;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* No Alcohol Sign */
+.page--no-alcohol {
+  width: 11in;
+  height: 8.5in;
+  min-width: 11in;
+  min-height: 8.5in;
+  max-width: 11in;
+  max-height: 8.5in;
+  background: #f82909;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rigid Square Bold', sans-serif;
+  box-sizing: border-box;
+  padding: 1in;
+  margin: 0 auto;
+}
+
+.no-alcohol-content {
+  text-align: center;
+  color: white;
+}
+
+.no-alcohol-icon {
+  font-size: 8rem;
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.no-alcohol-title {
+  font-size: 5rem;
+  color: white;
+  margin: 0 0 0.5rem 0;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.no-alcohol-subtitle {
+  font-size: 3.5rem;
+  color: white;
+  margin: 0 0 1.5rem 0;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.no-alcohol-detail {
+  font-size: 1.5rem;
+  color: white;
+  margin: 2rem 0 0 0;
+  opacity: 0.9;
+}
+
+.no-alcohol-footer {
+  font-size: 1rem;
+  color: white;
+  margin: 2rem 0 0 0;
+  opacity: 0.7;
+}
+
+/* Custom Poster */
+.custom-poster-editor {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.custom-poster-editor h3 {
+  color: #f7931a;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+}
+
+.custom-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page--custom {
+  width: 11in;
+  height: 17in;
+  min-width: 11in;
+  min-height: 17in;
+  max-width: 11in;
+  max-height: 17in;
+  background: linear-gradient(135deg, #074db3 0%, #091931 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rigid Square Bold', sans-serif;
+  padding: 2in;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.custom-poster-content {
+  text-align: center;
+  color: white;
+  width: 100%;
+}
+
+.custom-title {
+  font-size: 4.5rem;
+  color: #f7d303;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+.custom-subtitle {
+  font-size: 2.5rem;
+  color: white;
+  margin: 0 0 2rem 0;
+  line-height: 1.2;
+}
+
+.custom-body {
+  font-size: 1.5rem;
+  color: white;
+  line-height: 1.6;
+  margin: 2rem 0;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.custom-footer {
+  font-size: 1.2rem;
+  color: #f7d303;
+  margin: 2rem 0 0 0;
+  font-weight: 700;
+}
+
+.custom-branding {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 3px solid #f7d303;
+}
+
+.custom-branding p {
+  font-size: 0.9rem;
+  color: white;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* Print Styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .bbp-admin {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide all admin interface elements */
+  .header,
+  .stats-overview,
+  .filter-tabs,
+  .controls,
+  .flyer-controls,
+  .flyer-help,
+  .flyer-header {
+    display: none !important;
+  }
+
+  .admin-interface {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  .flyer-generator {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .flyer-preview {
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 0 !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+  }
+
+  .flyer-page {
+    box-shadow: none !important;
+    page-break-after: always;
+    page-break-inside: avoid;
+    margin: 0 auto !important;
+    padding: 0;
+    display: block !important;
+    position: relative !important;
+  }
+
+  /* Exact print dimensions - preserve all layout properties */
+  .page--poster,
+  .page--custom {
+    width: 11in !important;
+    height: 17in !important;
+    min-height: 17in !important;
+    max-width: 11in !important;
+    min-width: 11in !important;
+    max-height: 17in !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  .page--poster {
+    padding: 0 !important;
+  }
+
+  .page--custom {
+    padding: 2in !important;
+  }
+
+  .page--handout {
+    width: 5.5in !important;
+    height: 8.5in !important;
+    min-height: 8.5in !important;
+    max-width: 5.5in !important;
+    min-width: 5.5in !important;
+    max-height: 8.5in !important;
+    padding: 1in 0.6in !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  .page--schedule,
+  .page--simple-arrow {
+    width: 8.5in !important;
+    height: 11in !important;
+    min-height: 11in !important;
+    max-width: 8.5in !important;
+    min-width: 8.5in !important;
+    max-height: 11in !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  .page--schedule {
+    padding: 1in 0.75in !important;
+  }
+
+  .page--simple-arrow {
+    padding: 0 !important;
+    border: 0.5in solid #074db3 !important;
+  }
+
+  .page--wayfinding,
+  .page--no-alcohol {
+    width: 11in !important;
+    height: 8.5in !important;
+    min-height: 8.5in !important;
+    max-width: 11in !important;
+    min-width: 11in !important;
+    max-height: 8.5in !important;
+    padding: 1in !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  /* Hide custom editor controls in print */
+  .custom-poster-editor {
+    display: none !important;
+  }
+
+  /* Preserve all positioning and sizing */
+  .poster-bg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .poster-overlay {
+    position: absolute !important;
+    top: 31.3% !important;
+    left: 15% !important;
+    width: 70% !important;
+    height: 37.3% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* Preserve flex layouts */
+  .page--wayfinding,
+  .page--no-alcohol,
+  .page--simple-arrow,
+  .page--custom {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .wayfinding-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2rem !important;
+  }
+
+  /* Don't override text centering - let parent flex handle it */
+  .simple-arrow-content,
+  .no-alcohol-content,
+  .custom-poster-content {
+    text-align: center !important;
+  }
+
+  /* Preserve schedule table layout */
+  .schedule-header,
+  .schedule-table,
+  .schedule-table-header,
+  .schedule-entry,
+  .schedule-footer {
+    display: flex !important;
+  }
+
+  .schedule-header {
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+  }
+
+  .schedule-table {
+    flex-direction: column !important;
+  }
+
+  .schedule-footer {
+    justify-content: space-between !important;
+  }
+
+  /* Preserve handout layout */
+  .handout-header {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Preserve poster schedule rows */
+  .poster-schedule,
+  .poster-schedule-row,
+  .poster-cta-row {
+    display: flex !important;
+  }
+
+  .poster-schedule {
+    flex-direction: column !important;
+  }
+
+  .poster-schedule-row,
+  .poster-cta-row {
+    justify-content: space-between !important;
+  }
+
+  /* Preserve handout schedule rows */
+  .handout-schedule-row {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  /* Preserve backgrounds and colors */
+  .page--poster,
+  .page--handout,
+  .page--schedule,
+  .page--wayfinding,
+  .page--no-alcohol,
+  .page--simple-arrow,
+  .page--custom {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    margin: 0;
+    size: auto;
+  }
 }
 </style>
