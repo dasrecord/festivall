@@ -56,8 +56,10 @@ export const BITCOIN_BLOCK_PARTY = {
     { time: '8:00 PM', label: 'Doors Close' },
   ],
 
-  // ── Film Screenings (for map popup + landing) ─────────────────────────────  // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
-  // Static array below is initial seed + fallback only.  screenings: [
+  // ── Film Screenings (for map popup + landing) ─────────────────────────────
+  // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
+  // Static array below is initial seed + fallback only.
+  screenings: [
     {
       id: 'screening_1',
       time: '2:00 - 3:00 PM',
@@ -139,8 +141,10 @@ export const BITCOIN_BLOCK_PARTY = {
     },
   ],
 
-  // ── DJs (for map popup) ────────────────────────────────────────────────────  // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
-  // Static array below is initial seed + fallback only.  djs: [
+  // ── DJs (for map popup) ────────────────────────────────────────────────────
+  // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
+  // Static array below is initial seed + fallback only.
+  djs: [
     {
       name: 'MoriMori',
       shortDescription: 'Live DJ set from 6:00 PM to 8:00 PM.',
