@@ -217,6 +217,12 @@
               <span class="bbp-sponsor-name">{{ sponsor.displayName }}</span>
               <span class="bbp-sponsor-desc">{{ sponsor.shortDescription }}</span>
             </span>
+            <img
+              v-if="getSponsorLogo(sponsor)"
+              :src="getSponsorLogo(sponsor)"
+              :alt="`${sponsor.displayName} logo`"
+              class="bbp-sponsor-logo"
+            />
           </a>
         </div>
 
@@ -331,6 +337,19 @@ import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firesto
 import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
 import bullIcon from '@/assets/images/icons/bull.png'
 import whaleIcon from '@/assets/images/icons/whale.png'
+
+// Sponsor logos
+import zeusLogo from '@/assets/images/bitcoin_block_party/logos/zeus.png'
+import coincardsLogo from '@/assets/images/bitcoin_block_party/logos/coincards.png'
+import blockRewardsLogo from '@/assets/images/bitcoin_block_party/logos/block_rewards.png'
+import printprintLogo from '@/assets/images/bitcoin_block_party/logos/printprint.png'
+import funkLogo from '@/assets/images/bitcoin_block_party/logos/funk.png'
+import bitcoinWellLogo from '@/assets/images/bitcoin_block_party/logos/bitcoin_well.png'
+import coinosLogo from '@/assets/images/bitcoin_block_party/logos/coinos.png'
+import coinkiteLogo from '@/assets/images/bitcoin_block_party/logos/coinkite.png'
+import mintGreenLogo from '@/assets/images/bitcoin_block_party/logos/mint_green.png'
+import cocoaTanningLogo from '@/assets/images/bitcoin_block_party/logos/cocoa_tanning_studio.png'
+import bitcoinRocksLogo from '@/assets/images/bitcoin_block_party/logos/bitcoin_rocks.png'
 
 useHead({
   title: `Bitcoin Block Party ${BBP.year} — ${BBP.venue}, ${BBP.city}`,
@@ -616,6 +635,28 @@ function sponsorIconSrc(tierId) {
   if (tierId === 'whale') return whaleIcon
   if (tierId === 'bull') return bullIcon
   return bitcoinIcon
+}
+
+// Map sponsor display names to their logos
+function getSponsorLogo(sponsor) {
+  const name = (sponsor.displayName || sponsor.org_name || '').toLowerCase()
+  
+  // Current sponsors
+  if (name.includes('zeus')) return zeusLogo
+  if (name.includes('coincards')) return coincardsLogo
+  if (name.includes('block rewards') || name.includes('blockrewards')) return blockRewardsLogo
+  if (name.includes('printprint') || name.includes('print print')) return printprintLogo
+  if (name.includes('funk')) return funkLogo
+  
+  // Additional sponsors
+  if (name.includes('bitcoin well')) return bitcoinWellLogo
+  if (name.includes('coinos')) return coinosLogo
+  if (name.includes('coinkite')) return coinkiteLogo
+  if (name.includes('mint green') || name.includes('mintgreen')) return mintGreenLogo
+  if (name.includes('cocoa tanning')) return cocoaTanningLogo
+  if (name.includes('bitcoin rocks')) return bitcoinRocksLogo
+  
+  return null
 }
 </script>
 
@@ -1074,6 +1115,7 @@ function sponsorIconSrc(tierId) {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1.25rem 1.5rem;
+  padding-right: 110px; /* Reserve space for logo */
   border-radius: 8px;
   border: 1px solid var(--bbp-yellow);
   background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
@@ -1083,6 +1125,7 @@ function sponsorIconSrc(tierId) {
   min-width: 200px;
   max-width: 320px;
   flex: 1 1 260px;
+  position: relative;
 }
 .bbp-sponsor-card:hover { background: color-mix(in srgb, var(--bbp-white) 95%, transparent); }
 .bbp-sponsor-copy {
@@ -1090,6 +1133,7 @@ function sponsorIconSrc(tierId) {
   flex-direction: column;
   gap: 0.3rem;
   min-width: 0;
+  flex: 1;
 }
 .bbp-sponsor-icon-badge {
   width: 46px;
@@ -1115,6 +1159,32 @@ function sponsorIconSrc(tierId) {
   color: var(--bbp-black);
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+.bbp-sponsor-logo {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  width: 80px;
+  height: 50px;
+  padding: 0.4rem;
+  background: var(--bbp-white);
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--bbp-yellow) 30%, transparent);
+  object-fit: contain;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s;
+}
+.bbp-sponsor-card:hover .bbp-sponsor-logo {
+  border-color: color-mix(in srgb, var(--bbp-yellow) 50%, transparent);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+/* Adjust for satoshi tier (larger cards) */
+.bbp-sponsor-tier-satoshi .bbp-sponsor-logo {
+  width: 110px;
+  height: 65px;
+}
+.bbp-sponsor-tier-satoshi {
+  padding-right: 140px; /* More space for larger logo */
 }
 
 /* ── Vendors ─────────────────────────────────────────────────────────────────── */
