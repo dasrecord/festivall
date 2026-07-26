@@ -239,7 +239,7 @@
           <div class="contract-chip">
             <span v-if="applicant.contract_signed" class="contract-chip-signed">✓ Signed</span>
             <button
-              v-else
+              v-else-if="applicant.status !== 'customer'"
               class="contract-chip-unsigned"
               :class="{ 'contract-chip-confirm': contractRemindPending.has(applicant.id_code) }"
               @click.stop="triggerContractRemind(applicant.id_code)"
