@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
 
 }
 .bbp-splash-eyebrow {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.25rem;
   color: var(--bbp-yellow);
   font-size: clamp(0.5rem, 1.45cqw, 0.98rem);
   font-weight: 700;
@@ -337,14 +337,14 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
 }
 .bbp-splash-date {
-  margin: 0 0 0.15rem;
+  margin: 0 0 0.1rem;
   color: var(--bbp-blue);
   font-size: clamp(1.1rem, 3.2cqw, 2.1rem);
   font-weight: 800;
   line-height: 1.1;
 }
 .bbp-splash-venue {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.35rem;
   color: var(--bbp-yellow);
   font-size: clamp(0.72rem, 1.95cqw, 1.28rem);
   font-weight: 600;
@@ -353,10 +353,10 @@ onBeforeUnmount(() => {
   width: 32%;
   height: 2px;
   background: var(--bbp-teal);
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.3rem;
 }
 .bbp-splash-schedule-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.18rem;
   color: var(--bbp-teal);
   font-size: clamp(0.48rem, 1.1cqw, 0.82rem);
   font-weight: 900;
@@ -374,8 +374,8 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
   padding: 0.08rem 0;
   border-bottom: 1px solid color-mix(in srgb, var(--bbp-white) 10%, transparent);
-  font-size: clamp(0.5rem, 1.5cqw, 1rem);
-  line-height: 1.25;
+  font-size: clamp(0.42rem, 1.5cqw, 1rem);
+  line-height: 1.2;
 }
 .bbp-splash-schedule span:first-child {
   color: var(--bbp-teal);
@@ -388,7 +388,7 @@ onBeforeUnmount(() => {
   font-weight: 700;
 }
 .bbp-splash-url {
-  margin: 0.45rem 0 0;
+  margin: 0.3rem 0 0;
   color: var(--bbp-red);
   font-size: clamp(0.62rem, 1.55cqw, 1.1rem);
   font-weight: 900;
