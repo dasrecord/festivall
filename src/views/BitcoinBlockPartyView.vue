@@ -12,21 +12,17 @@
 
         <div class="bbp-hero-rsvp-wrap">
           <button class="bbp-btn bbp-btn-primary bbp-btn-rsvp" @click="openRsvpModal">
-            RSVP / Add to Calendar
+            RSVP / Luma Link
           </button>
-          <p class="bbp-hero-rsvp-note">Save your spot with your name and email. We’ll give you a calendar file right after.</p>
         </div>
         
         <div class="bbp-hero-ctas">
-          <button class="bbp-btn bbp-btn-secondary" @click="openDirections">Get Directions</button>
-          <router-link :to="BBP.routes.poster" class="bbp-btn bbp-btn-secondary">See The Poster</router-link>
-          <router-link :to="BBP.routes.archive" class="bbp-btn bbp-btn-secondary">Previous Years</router-link>
+          <a href="#schedule" class="bbp-btn bbp-btn-primary">Event Schedule</a>
+          <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">Venue Map</router-link>
+          <button class="bbp-btn bbp-btn-primary" @click="openDirections">Directions</button>
           <router-link :to="BBP.routes.sponsorApply" class="bbp-btn bbp-btn-outline">Become a Sponsor</router-link>
           <router-link :to="BBP.routes.vendorApply" class="bbp-btn bbp-btn-outline">Sell your Goods</router-link>
-          <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Apply to Volunteer</router-link>
-          <router-link :to="BBP.routes.map" class="bbp-btn bbp-btn-primary">View Map</router-link>
-          <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-primary">Take the Quiz</router-link>
-          <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }" class="bbp-btn bbp-btn-primary">Get a Wallet</router-link>
+          <router-link :to="BBP.routes.volunteer" class="bbp-btn bbp-btn-outline">Volunteer</router-link>
         </div>
       </div>
     </section>
@@ -39,7 +35,7 @@
           <div v-if="!rsvpSubmitted" class="bbp-rsvp-body">
             <p class="bbp-rsvp-eyebrow">Official RSVP</p>
             <h2 class="bbp-rsvp-title">Save your spot</h2>
-            <p class="bbp-rsvp-copy">Leave your name and email and we’ll save your RSVP to the event list.</p>
+            <p class="bbp-rsvp-copy">Leave your name and email and we'll save your RSVP to the event list.</p>
 
             <label class="bbp-rsvp-field">
               <span>Name</span>
@@ -58,10 +54,11 @@
           </div>
 
           <div v-else class="bbp-rsvp-body bbp-rsvp-success">
-            <p class="bbp-rsvp-eyebrow">You’re in</p>
+            <p class="bbp-rsvp-eyebrow">You're in!</p>
             <h2 class="bbp-rsvp-title">Thanks, {{ rsvpSubmitted.name }}</h2>
-            <p class="bbp-rsvp-copy">We saved your RSVP and prepared a calendar file you can download now.</p>
-            <a class="bbp-btn bbp-btn-secondary bbp-rsvp-submit" :href="rsvpIcsUrl" :download="rsvpIcsFilename">Download .ics</a>
+            <p class="bbp-rsvp-copy">Add this event to your calendar or view the full details on Luma.</p>
+            <a class="bbp-btn bbp-btn-secondary bbp-rsvp-submit" :href="rsvpIcsUrl" :download="rsvpIcsFilename">Download .ics Calendar</a>
+            <a class="bbp-btn bbp-btn-primary bbp-rsvp-submit" href="https://lu.ma/ed63hjqz" target="_blank" rel="noopener noreferrer">View on Luma →</a>
             <button class="bbp-btn bbp-btn-outline bbp-rsvp-submit" @click="closeRsvpModal">Close</button>
           </div>
         </div>
@@ -80,14 +77,12 @@
     <!-- ── QUICK ACTIONS ──────────────────────────────────────────────────── -->
     <section class="bbp-quick-actions" aria-label="Bitcoin Block Party quick actions">
       <div class="bbp-container bbp-quick-actions-inner">
-        <router-link :to="BBP.routes.map">Venue Map</router-link>
-        <button @click="openDirections">Directions</button>
-        <router-link :to="BBP.routes.quiz">Quiz</router-link>
+        <router-link :to="BBP.routes.quiz">Bitcoin Quiz</router-link>
         <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }">Wallet Guide</router-link>
-        <router-link :to="BBP.routes.archive">Archive</router-link>
         <router-link :to="BBP.routes.sponsorApply">Sponsor</router-link>
         <router-link :to="BBP.routes.vendorApply">Vendor</router-link>
         <router-link :to="BBP.routes.volunteer">Volunteer</router-link>
+        <a href="mailto:party@vanbitcoin.ca">Contact</a>
       </div>
     </section>
 
@@ -115,7 +110,7 @@
     </section>
 
     <!-- ── ITINERARY ──────────────────────────────────────────────────────── -->
-    <section class="bbp-section bbp-itinerary">
+    <section id="schedule" class="bbp-section bbp-itinerary">
       <div class="bbp-container">
         <h2 class="bbp-section-title">Day Schedule</h2>
         <div class="bbp-schedule-list">
@@ -287,7 +282,7 @@
       <div class="bbp-container bbp-quiz-cta-inner">
         <div>
           <h2 class="bbp-section-title">Bitcoin Quiz</h2>
-          <p>Test your knowledge and compete for prizes on the leaderboard.</p>
+          <p>Test your knowledge and compete to win some bitcoin.</p>
         </div>
         <router-link :to="BBP.routes.quiz" class="bbp-btn bbp-btn-primary">Take the Quiz</router-link>
       </div>
@@ -453,7 +448,7 @@ const chyronItems = computed(() => {
   const heightText = marketDataLoading.value ? 'Loading...' : lockHeight.value ?? 'Unavailable'
   const hashText = marketDataLoading.value ? 'Loading...' : shortBlockHash.value
   const rateText = marketDataLoading.value ? 'Loading...' : formattedCadRate.value
-  const customText = marketDataError.value || 'ADVERTISE HERE — sponsor the Bitcoin Block Party and reach thousands of Bitcoiners in Vancouver.'
+  const customText = marketDataError.value || 'Presented by zeus'
 
   return [
     `BLOCK HEIGHT ${heightText}`,

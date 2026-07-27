@@ -9,7 +9,7 @@ export const BITCOIN_BLOCK_PARTY = {
   dateISO: '2026-08-23',
   startTime: '12:00 PM',
   endTime: '8:00 PM',
-  venue: 'Dunsmuir Plaza',
+  venue: '1055 Dunsmuir St, Vancouver',
   city: 'Vancouver, BC',
   contactEmail: 'party@vanbitcoin.ca',
 
