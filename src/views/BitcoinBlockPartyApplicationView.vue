@@ -239,12 +239,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from '@vueuse/head'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { festivall_db } from '@/firebase.js'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
 
 const route = useRoute()
 
@@ -261,6 +261,27 @@ const roleOptions = [
   { value: 'vendor',    icon: '🏪', label: 'Vendor',    description: 'Sell products. Must accept Bitcoin.' },
   { value: 'volunteer', icon: '🙌', label: 'Volunteer', description: 'Help make the event run smoothly.' },
 ]
+
+// ── Firestore data ───────────────────────────────────────────────────────────
+const confirmedSponsors = ref([])
+
+async function loadConfirmedSponsors() {
+  try {
+    const applicationsQuery = query(
+      collection(festivall_db, BBP.collections.applications),
+      where('status', '==', 'confirmed'),
+      where('role', '==', 'sponsor')
+    )
+    const applicationsSnap = await getDocs(applicationsQuery)
+    confirmedSponsors.value = applicationsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('Error loading confirmed sponsors:', error)
+  }
+}
+
+onMounted(() => {
+  loadConfirmedSponsors()
+})
 
 // ── Form state ────────────────────────────────────────────────────────────────
 const form = ref({
@@ -304,7 +325,7 @@ const tierStepComplete = computed(() => {
 })
 
 function sponsorTierClaimedCount(tier) {
-  return BBP.sponsors.filter(sponsor => sponsor.tier === tier.id && sponsor.status === 'confirmed').length
+  return confirmedSponsors.value.filter(sponsor => sponsor.tier === tier.id).length
 }
 
 function isSponsorTierClaimed(tier) {
