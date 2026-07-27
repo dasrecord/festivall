@@ -185,6 +185,33 @@
       </div>
     </section>
 
+    <!-- ── SPEAKERS ───────────────────────────────────────────────────────── -->
+    <section class="bbp-section bbp-speakers" v-if="schedSpeakers.length">
+      <div class="bbp-container">
+        <h2 class="bbp-section-title">Speakers</h2>
+        <div class="bbp-speaker-cards">
+          <div v-for="(speaker, idx) in schedSpeakers" :key="idx" class="bbp-speaker-card">
+            <div class="bbp-speaker-header">
+              <p class="bbp-speaker-time">{{ speaker.time }}</p>
+              <h3 class="bbp-speaker-name">{{ speaker.name }}</h3>
+              <p v-if="speaker.company" class="bbp-speaker-company">{{ speaker.company }}</p>
+            </div>
+            <p class="bbp-speaker-topic">{{ speaker.topic }}</p>
+            <p v-if="speaker.bio" class="bbp-speaker-bio">{{ speaker.bio }}</p>
+            <a
+              v-if="speaker.url"
+              :href="speaker.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bbp-speaker-link"
+            >
+              Learn more →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── SPONSORS ───────────────────────────────────────────────────────── -->
     <section class="bbp-section bbp-sponsors" v-if="confirmedSponsors.length || showSponsorCallToAction">
       <div class="bbp-container">
@@ -362,7 +389,7 @@ useHead({
 })
 
 // ── Schedule (Firestore-backed) ─────────────────────────────────────────────
-const { itinerary: schedItinerary, screenings: schedScreenings } = useBbpSchedule()
+const { itinerary: schedItinerary, screenings: schedScreenings, speakers: schedSpeakers } = useBbpSchedule()
 
 // ── RSVP capture ────────────────────────────────────────────────────────────
 const rsvpModalOpen = ref(false)
@@ -1097,6 +1124,74 @@ function getSponsorLogo(sponsor) {
   text-decoration: none;
 }
 .bbp-screening-link:hover { text-decoration: underline; }
+
+/* ── Speakers ───────────────────────────────────────────────────────────────── */
+.bbp-speakers {
+  background: color-mix(in srgb, var(--bbp-blue) 4%, transparent);
+}
+.bbp-speaker-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.bbp-speaker-card {
+  background: color-mix(in srgb, var(--bbp-white) 75%, transparent);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--bbp-yellow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.bbp-speaker-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--bbp-yellow) 40%, transparent);
+}
+.bbp-speaker-time {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--bbp-teal);
+  margin: 0;
+  font-weight: 800;
+}
+.bbp-speaker-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--bbp-teal);
+  margin: 0;
+}
+.bbp-speaker-company {
+  font-size: 0.85rem;
+  color: var(--bbp-blue);
+  margin: 0;
+}
+.bbp-speaker-topic {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--bbp-black);
+  margin: 0;
+}
+.bbp-speaker-bio {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--bbp-black);
+  margin: 0;
+}
+.bbp-speaker-link {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--bbp-teal);
+  font-weight: 700;
+  text-decoration: none;
+  align-self: flex-start;
+}
+.bbp-speaker-link:hover { text-decoration: underline; }
 
 /* ── Sponsors ───────────────────────────────────────────────────────────────── */
 .bbp-sponsor-cards {

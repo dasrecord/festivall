@@ -545,6 +545,34 @@
                 </div>
               </template>
 
+              <!-- Speaker fields -->
+              <template v-if="scheduleModal.field === 'speakers'">
+                <div class="edit-field">
+                  <label>Name *</label>
+                  <input type="text" v-model="scheduleForm.name" placeholder="Speaker name" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Time *</label>
+                  <input type="text" v-model="scheduleForm.time" placeholder="e.g. 2:30 PM" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Talk Topic *</label>
+                  <input type="text" v-model="scheduleForm.topic" placeholder="Talk title or topic" class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Company / Affiliation</label>
+                  <input type="text" v-model="scheduleForm.company" placeholder="e.g. Zeus, Bitcoin Well, etc." class="edit-input" />
+                </div>
+                <div class="edit-field">
+                  <label>Bio / Description</label>
+                  <textarea v-model="scheduleForm.bio" rows="3" class="edit-input edit-textarea" placeholder="Short bio or description"></textarea>
+                </div>
+                <div class="edit-field">
+                  <label>Website / Social URL</label>
+                  <input type="url" v-model="scheduleForm.url" placeholder="https://twitter.com/..." class="edit-input" />
+                </div>
+              </template>
+
             </div>
             <div class="modal-footer">
               <button @click="closeScheduleModal" class="btn-cancel">Cancel</button>
@@ -618,6 +646,31 @@
               <div class="sched-actions">
                 <button class="btn-sched-edit" @click="openScheduleEdit('djs', idx)">Edit</button>
                 <button class="btn-sched-delete" @click="deleteScheduleItem('djs', idx)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speakers -->
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>Speakers</h2>
+            <button class="btn-add" @click="openScheduleAdd('speakers')">+ Add Speaker</button>
+          </div>
+          <div v-if="schedLoading" class="loading"><div class="spinner"></div> Loading…</div>
+          <div v-else-if="schedSpeakers.length === 0" class="sched-empty">No speakers added yet.</div>
+          <div v-else class="sched-list">
+            <div v-for="(speaker, idx) in schedSpeakers" :key="idx" class="sched-row sched-row--speaker">
+              <div class="sched-speaker-meta">
+                <span class="sched-time">{{ speaker.time }}</span>
+                <strong class="sched-speaker-name">{{ speaker.name }}</strong>
+                <span v-if="speaker.company" class="sched-speaker-company">{{ speaker.company }}</span>
+              </div>
+              <p class="sched-speaker-topic"><strong>Topic:</strong> {{ speaker.topic }}</p>
+              <p v-if="speaker.bio" class="sched-speaker-bio">{{ speaker.bio }}</p>
+              <div class="sched-actions">
+                <button class="btn-sched-edit" @click="openScheduleEdit('speakers', idx)">Edit</button>
+                <button class="btn-sched-delete" @click="deleteScheduleItem('speakers', idx)">Delete</button>
               </div>
             </div>
           </div>
@@ -1462,6 +1515,7 @@ const {
   itinerary: schedItinerary,
   screenings: schedScreenings,
   djs: schedDjs,
+  speakers: schedSpeakers,
   loading: scheduleLoading,
   saveSchedule,
   loadSchedule,
@@ -1476,6 +1530,7 @@ const SECTION_LABELS = {
   itinerary: 'Itinerary Item',
   screenings: 'Film Screening',
   djs: 'DJ / Performer',
+  speakers: 'Speaker',
 }
 
 // Modal state
@@ -1504,12 +1559,17 @@ const scheduleForm = reactive({
   name: '',
   shortDescription: '',
   url: '',
+  // Speakers (+ name, time, url above)
+  topic: '',
+  company: '',
+  bio: '',
 })
 
 const scheduleFormValid = computed(() => {
   if (scheduleModal.field === 'itinerary') return !!scheduleForm.time.trim() && !!scheduleForm.label.trim()
   if (scheduleModal.field === 'screenings') return !!scheduleForm.time.trim() && !!scheduleForm.title.trim()
   if (scheduleModal.field === 'djs') return !!scheduleForm.name.trim()
+  if (scheduleModal.field === 'speakers') return !!scheduleForm.name.trim() && !!scheduleForm.time.trim() && !!scheduleForm.topic.trim()
   return false
 })
 
@@ -1520,6 +1580,9 @@ function resetScheduleForm() {
   scheduleForm.title = ''
   scheduleForm.description = ''
   scheduleForm.director = ''
+  scheduleForm.topic = ''
+  scheduleForm.company = ''
+  scheduleForm.bio = ''
   scheduleForm.directorUrl = ''
   scheduleForm.infoUrl = ''
   scheduleForm.name = ''
@@ -1541,6 +1604,7 @@ function openScheduleEdit(field, idx) {
   resetScheduleForm()
   const source = field === 'itinerary' ? schedItinerary.value
     : field === 'screenings' ? schedScreenings.value
+    : field === 'speakers' ? schedSpeakers.value
     : schedDjs.value
   const item = source[idx]
   if (!item) return
@@ -1586,6 +1650,17 @@ function buildScheduleItem(field) {
     if (scheduleForm.url.trim()) item.url = scheduleForm.url.trim()
     return item
   }
+  if (field === 'speakers') {
+    const item = {
+      name: scheduleForm.name.trim(),
+      time: scheduleForm.time.trim(),
+      topic: scheduleForm.topic.trim(),
+    }
+    if (scheduleForm.company.trim()) item.company = scheduleForm.company.trim()
+    if (scheduleForm.bio.trim()) item.bio = scheduleForm.bio.trim()
+    if (scheduleForm.url.trim()) item.url = scheduleForm.url.trim()
+    return item
+  }
   return null
 }
 
@@ -1598,6 +1673,7 @@ async function saveScheduleItem() {
     const field = scheduleModal.field
     const source = field === 'itinerary' ? [...schedItinerary.value]
       : field === 'screenings' ? [...schedScreenings.value]
+      : field === 'speakers' ? [...schedSpeakers.value]
       : [...schedDjs.value]
 
     const item = buildScheduleItem(field)
@@ -1630,6 +1706,22 @@ async function saveScheduleItem() {
       })
     }
 
+    // Sort speakers by time string when saving
+    if (field === 'speakers') {
+      source.sort((a, b) => {
+        const toMin = (t) => {
+          const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i)
+          if (!m) return 0
+          let h = parseInt(m[1], 10)
+          const min = parseInt(m[2], 10)
+          if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12
+          if (m[3].toUpperCase() === 'AM' && h === 12) h = 0
+          return h * 60 + min
+        }
+        return toMin(a.time) - toMin(b.time)
+      })
+    }
+
     await saveSchedule(field, source)
     scheduleModal.open = false
   } catch (err) {
@@ -1647,6 +1739,7 @@ async function deleteScheduleItem(field, idx) {
   try {
     const source = field === 'itinerary' ? [...schedItinerary.value]
       : field === 'screenings' ? [...schedScreenings.value]
+      : field === 'speakers' ? [...schedSpeakers.value]
       : [...schedDjs.value]
     source.splice(idx, 1)
     await saveSchedule(field, source)
@@ -2627,6 +2720,44 @@ function printFlyer() {
   font-size: 0.8rem;
   color: #888;
   word-break: break-all;
+}
+
+/* Speaker row variant */
+.sched-row--speaker {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.sched-speaker-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sched-speaker-name {
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.sched-speaker-company {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.sched-speaker-topic {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sched-speaker-bio {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* Textarea in modal */

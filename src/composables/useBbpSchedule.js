@@ -20,6 +20,7 @@ const DOC_ID = 'schedule'
 const itinerary = ref([])
 const screenings = ref([])
 const djs = ref([])
+const speakers = ref([])
 const loading = ref(false)
 const initialized = ref(false)
 
@@ -43,6 +44,9 @@ async function loadSchedule() {
       if (Array.isArray(data.djs)) {
         djs.value = data.djs
       }
+      if (Array.isArray(data.speakers)) {
+        speakers.value = data.speakers
+      }
     }
     // If document doesn't exist, arrays remain empty until admin adds data
   } catch (err) {
@@ -62,6 +66,7 @@ async function saveSchedule(field, array) {
   if (field === 'itinerary') itinerary.value = array
   if (field === 'screenings') screenings.value = array
   if (field === 'djs') djs.value = array
+  if (field === 'speakers') speakers.value = array
 }
 
 // ── Public API ───────────────────────────────────────────────────────────────
@@ -74,6 +79,7 @@ export function useBbpSchedule() {
     itinerary: readonly(itinerary),
     screenings: readonly(screenings),
     djs: readonly(djs),
+    speakers: readonly(speakers),
     loading: readonly(loading),
     saveSchedule,
     loadSchedule,

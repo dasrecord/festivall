@@ -108,6 +108,9 @@ export const BITCOIN_BLOCK_PARTY = {
   // ── DJs (for map popup) ────────────────────────────────────────────────────
   // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
 
+  // ── Speakers ───────────────────────────────────────────────────────────────
+  // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
+  // Admin edits via /admin/bitcoinblockparty propagate to landing page.
 
   // ── Sponsor tiers (from pitch deck) ───────────────────────────────────────
   sponsorTiers: [
