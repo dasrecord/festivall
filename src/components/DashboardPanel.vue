@@ -106,7 +106,7 @@
         </RouterLink>
 
         <a href="/reunion-2026-flyer.html" target="_blank" class="scanner-link">
-          <img :src="flyer_icon" alt="Printable Flyer" class="action-icon" style="width: 32px" />
+          <img :src="flyer_icon" alt="Printable Flyer" class="action-icon" style="width: 24px" />
           Printable Flyer
         </a>
 
