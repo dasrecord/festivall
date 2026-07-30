@@ -105,6 +105,11 @@
           Reunion Lineup
         </RouterLink>
 
+        <a href="/reunion-2026-flyer.html" target="_blank" class="scanner-link">
+          <img :src="flyer_icon" alt="Printable Flyer" class="action-icon" style="width: 32px" />
+          Printable Flyer
+        </a>
+
         <RouterLink to="/admin/volunteer-tasks" class="scanner-link">
           <img
             :src="volunteer_icon"
@@ -798,6 +803,7 @@ import ticket_icon from '@/assets/images/icons/ticket.png'
 import meal_icon from '@/assets/images/icons/meals.png'
 import artist_icon from '@/assets/images/icons/artist.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
+import flyer_icon from '@/assets/images/icons/flyer.png'
 import reminder_icon from '@/assets/images/icons/reminder.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
 import vendor_icon from '@/assets/images/icons/vendor.png'
@@ -2274,6 +2280,7 @@ export default {
       updateCompensation,
       clearCompensation,
       lineup_icon,
+      flyer_icon,
       updateSettime,
       removeSettime,
       generateLineup,
