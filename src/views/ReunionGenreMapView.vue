@@ -187,7 +187,7 @@
             {{ focusedNode.artist.genre }}
           </button>
           <p v-if="focusedNode.artist?.act_description" class="gm-panel-bio">
-            {{ truncate(focusedNode.artist.act_description, 240) }}
+            {{ truncate(focusedNode.artist.act_description, 1000) }}
           </p>
           <div class="gm-panel-links">
             <a v-if="focusedNode.artist?.mix_track_url" :href="focusedNode.artist.mix_track_url" target="_blank" rel="noopener" class="gm-panel-link">🎧 Listen</a>
