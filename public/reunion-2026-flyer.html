@@ -850,17 +850,121 @@
   </div>
 
 <script>
-  // Common Saskatoon locations
-  const commonLocations = [
-    'Broadway Theatre', 'Remai Modern', 'Midtown Plaza', 'The Capitol',
-    'USask Campus', 'SIAST Kelsey', 'Spadina Crescent', 'The Basement',
-    'Amigo\'s Cantina', 'Winston\'s Pub', 'Lydia\'s Pub', 'Louis\' Pub',
-    'Samurai Japanese Restaurant', 'The Rook & Raven', 'Calories Bakery', 'Bon Temps Café',
-    'Black Fox Farm', '8th Street', 'The Bessborough', 'Riverside Park',
-    'Kinsmen Park', 'City Hospital', 'St. Paul\'s Hospital', 'Circle Drive Coffee',
-    'Homestead Ice Cream', 'Prairie Ink', 'McNally Robinson', 'Chapters Indigo',
-    'Bulk Cheese Warehouse', 'Dad\'s Organic Market', 'The Woodshed', 'Manos Restaurant'
-  ];
+// Current, active Saskatoon flyering locations — April 2025
+const commonLocations = [
+  // ─── Coffee & Cafés ───
+  'Broadway Roastery — Broadway',
+  'Broadway Roastery — Sutherland',
+  'Broadway Roastery — River Landing',
+  'The Collective Coffee',
+  'Sparrow Coffee',
+  'Museo Coffee',
+  'Night Oven Bakery',
+  'Little Bird Café',
+  'City Perks',
+  'Calories Bakery',
+  'Bon Temps Café',
+  'Prairie Ink Restaurant',
+  'McNally Robinson Booksellers',
+  'Drift Coffee',
+  'Rise Café',
+
+  // ─── Breweries, Bars & Pubs ───
+  '9 Mile Legacy Brewing',
+  'Shelter Brewing',
+  'Prairie Sun Brewery',
+  'Congress Beer House',
+  'Ace Burger — Broadway',
+  'Ace Burger — 8th Street',
+  'Buds on Broadway',
+  'The Woodshed',
+  'Winston\'s Pub',
+  'Lydia\'s Pub',
+  'Louis\' Pub',
+  'The Rook & Raven',
+  'The Cat & Fiddle',
+  'Leopold\'s Tavern — Sutherland',
+  'Leopold\'s Tavern — Stonebridge',
+  'Prairie Dog Brewing',     // new local fav
+  'Black Fox Distillery',    // great flyering spot
+  'SaskMade Marketplace',    // high-traffic
+  'Hearth Restaurant',
+  'Ayden Restaurant',
+  'Una Pizza',
+  'Odd Couple',
+  'Keo\'s Kitchen',
+  'Saboroso',
+  'Filosophi',
+
+  // ─── Music & Arts Venues ───
+  'Broadway Theatre',
+  'The Bassment',
+  'Remai Modern',
+  'AKA Artist-Run',
+  'PAVED Arts',
+  'Persephone Theatre',
+  'Live Five',
+  'Amigo\'s Cantina',
+  'Saskatoon Jazz Society',
+
+  // ─── Universities & Colleges ───
+  'USask — Arts Building',
+  'USask — Place Riel',
+  'USask — College Quarter',
+  'Saskatchewan Polytechnic — Kelsey',
+  'St. Thomas More College',
+
+  // ─── Libraries ───
+  'Frances Morrison Central Library',
+  'Alice Turner Library',
+  'Cliff Wright Library',
+  'Mayfair Library',
+  'Round Prairie Library',
+  'Dr. Freda Ahenakew Library',
+
+  // ─── Shopping & Retail ───
+  'Midtown Plaza',
+  'Centre at Circle & 8th',
+  'Lawson Heights Mall',
+  'Market Mall',
+  'Confederation Mall',
+  'Bulk Cheese Warehouse',
+  'Dad\'s Organic Market',
+  'Chapters Indigo',
+  'Homestead Ice Cream',
+
+  // ─── Parks & Recreation ───
+  'River Landing Amphitheatre',
+  'Kiwanis Memorial Park',
+  'Rotary Park',
+  'Gabriel Dumont Park',
+  'Diefenbaker Park',
+  'Forestry Farm Park & Zoo',
+  'Chief Whitecap Park',
+  'Meadow Green Park',
+  'Hyde Park',
+
+  // ─── Community Hubs ───
+  'Station 20 West',
+  'The Core Neighbourhood Co-op',
+  'White Buffalo Youth Lodge',
+  'Market Square',
+  'Cosmo Civic Centre',
+  'Sutherland Civic Centre',
+  'Lakewood Civic Centre',
+  'Nutana Legion',
+  'Riversdale Community Centre',
+
+  // ─── Other High-Traffic ───
+  'Wanuskewin Heritage Park',
+  'Spadina Crescent',
+  'The Farmers\' Market — River Landing',
+  'Buddy\'s Bakes',
+  'Elim Church — 8th Street',
+  'Circle Drive Coffee',
+  'The Shoppe',
+  'Métis Nation – Saskatoon',
+];
 
   // Initialize location browser
   function initLocations() {
