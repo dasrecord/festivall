@@ -140,6 +140,11 @@
           Budget Manager
         </RouterLink>
 
+        <RouterLink to="/dashboard/promo-passes" class="scanner-link">
+          <img :src="ticket_icon" alt="Promo Passes" class="action-icon" style="width: 28px" />
+          Promo Passes
+        </RouterLink>
+
         <RouterLink to="/admin/inventory" class="scanner-link">
           <img :src="inventory_icon" alt="Inventory" class="action-icon" style="width: 28px" />
           Inventory
@@ -783,7 +788,7 @@
 
 <script>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, setDoc, query, where } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { transferTicket } from '@/composables/useTicketTransfer'
 import { reunion_db, festivall_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'

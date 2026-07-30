@@ -1,0 +1,27 @@
+Hello {name},
+
+Your complimentary Reunion pass is ready.
+
+Pass summary:
+{ticket_label}
+{ticket_quantity} ticket(s)
+{ticket_type}
+{selected_day}
+
+Your ID_CODE: {id_code}
+
+Open your ticket here:
+{ticket_url}
+
+When prompted, use this same email address to verify your ticket.
+
+{recipient_message}
+
+{addon}
+
+If you hav any questions, reply to this email or contact {support_email}.
+
+See you on the grounds,
+{sender_name}
+
+⟢Powered by Festivall⟣
