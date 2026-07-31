@@ -10,15 +10,12 @@
       <img :src="frog_image" style="height: 52px; width: 52px" alt="Frog" />
     </div>
 
-    <div class="order-info">
+    <div class="order-info" :class="{ 'promo-order-info': order.payment_type === 'promo' }">
       <div class="ticket-identity">
         <span class="ticket-name">{{ order.fullname }}</span>
-        <span class="ticket-badge">{{ order.custom_ticket_label || (order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : 'Day Pass') }}</span>
-      </div>
-
-      <div v-if="order.promo_message || order.promo_label" class="promo-banner">
-        <p class="promo-kicker">{{ order.promo_label || 'Complimentary Pass' }}</p>
-        <p class="promo-copy">{{ order.promo_message || 'Your pass was prepared by the Festivall team with care.' }}</p>
+        <span class="ticket-badge" :class="{ 'promo-ticket-badge': order.payment_type === 'promo' }">
+          {{ order.custom_ticket_label || (order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : 'Day Pass') }}
+        </span>
       </div>
       <p class="ticket-valid">
         <strong>Valid:</strong>
@@ -1682,33 +1679,35 @@ strong {
   white-space: nowrap;
 }
 
+.promo-ticket-badge {
+  background: linear-gradient(135deg, #f8f8f8 0%, #dde1e6 42%, #ffffff 58%, #b7bec7 100%);
+  color: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.promo-order-info {
+  border-color: rgba(219, 224, 230, 0.95);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 248, 251, 0.98)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(185, 190, 198, 0.1));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.promo-order-info .ticket-name {
+  color: #2d2d2d;
+}
+
 .ticket-valid {
   font-size: 0.85rem;
   margin: 0 0 0.5rem 0 !important;
   opacity: 0.85;
-}
-
-.promo-banner {
-  margin: 0.75rem 0 1rem;
-  padding: 1rem 1.1rem;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(74, 144, 217, 0.18), rgba(31, 30, 34, 0.95));
-  border: 1px solid rgba(74, 144, 217, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-}
-
-.promo-kicker {
-  margin: 0 0 0.35rem;
-  color: #f7e6a3;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.promo-copy {
-  margin: 0;
-  color: #f4f4f4;
-  line-height: 1.45;
 }
 
 h1,

@@ -141,7 +141,7 @@
         </RouterLink>
 
         <RouterLink to="/dashboard/promo-passes" class="scanner-link">
-          <img :src="ticket_icon" alt="Promo Passes" class="action-icon" style="width: 28px" />
+          <img :src="promo_icon" alt="Promo Passes" class="action-icon" style="width: 28px" />
           Promo Passes
         </RouterLink>
 
@@ -816,6 +816,7 @@ import volunteer_icon from '@/assets/images/icons/volunteer.png'
 import art_installation_icon from '@/assets/images/icons/art_installation.png'
 import scavenger_hunt_icon from '@/assets/images/icons/quiz.png'
 import task_icon from '@/assets/images/icons/task.png'
+import promo_icon from '@/assets/images/icons/promo.png'
 import budget_icon from '@/assets/images/icons/budget.png'
 import inventory_icon from '@/assets/images/icons/inventory.png'
 import map_icon from '@/assets/images/icons/grounds_map.png'
@@ -2275,6 +2276,7 @@ export default {
       art_installation_icon,
       scavenger_hunt_icon,
       task_icon,
+      promo_icon,
       budget_icon,
       inventory_icon,
       map_icon,
