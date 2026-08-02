@@ -491,28 +491,6 @@
               <!-- PAYMENT TYPE -->
               <p v-if="applicant.payment_type">Payment Type: {{ applicant.payment_type }}</p>
             </div>
-            <div class="preview-section">
-              <!-- PREVIEW TICKET -->
-              <button @click="previewTicket(applicant.id_code)" class="section-action-btn">Preview Ticket</button>
-              <div v-if="!ticketPendingCards.has(applicant.id_code)">
-                <img
-                  @click="initiateTicketDelivery(applicant.id_code)"
-                  :src="ticket_icon"
-                  alt="Deliver Ticket"
-                  class="action-icon"
-                  style="width: auto; height: 32px; cursor: pointer;"
-                  title="Click to deliver ticket"
-                />
-              </div>
-              <div v-if="ticketPendingCards.has(applicant.id_code)" class="confirm-actions">
-                <button @click="confirmTicketDelivery(applicant.id_code)" class="confirm-btn" title="Confirm send ticket email">
-                  ✓ Send Ticket
-                </button>
-                <button @click="cancelTicketDelivery(applicant.id_code)" class="cancel-btn" title="Cancel">
-                  ✕
-                </button>
-              </div>
-            </div>
           </div>
           <!-- DASHBOARD ACTIONS-->
           <div
@@ -520,7 +498,8 @@
               (applicant.applicant_types && applicant.applicant_types.length) ||
               applicant.contract_signed !== undefined ||
               applicant.phone ||
-              applicant.rates
+              applicant.rates ||
+              applicant.email
             "
             class="actions"
           >
@@ -704,6 +683,28 @@
                   ✓ Send Contract
                 </button>
                 <button @click="cancelContractDelivery(applicant.id_code)" class="cancel-btn" title="Cancel">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div class="ticket-delivery-section">
+              <button @click="previewTicket(applicant.id_code)" class="contract-preview-btn">Preview Ticket</button>
+              <div v-if="applicant.email && !ticketPendingCards.has(applicant.id_code)">
+                <img
+                  @click="initiateTicketDelivery(applicant.id_code)"
+                  :src="ticket_icon"
+                  alt="Deliver Ticket"
+                  class="action-icon"
+                  style="width: auto; height: 32px; cursor: pointer;"
+                  title="Click to deliver ticket"
+                />
+              </div>
+              <div v-if="ticketPendingCards.has(applicant.id_code)" class="confirm-actions">
+                <button @click="confirmTicketDelivery(applicant.id_code)" class="confirm-btn" title="Confirm send ticket email">
+                  ✓ Send Ticket
+                </button>
+                <button @click="cancelTicketDelivery(applicant.id_code)" class="cancel-btn" title="Cancel">
                   ✕
                 </button>
               </div>
@@ -1248,8 +1249,8 @@ export default {
     const transferTargetApplicant = ref(null)
     const transferForm = reactive({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const declineEmailBody = ref('')
-    const contractPendingCards = new Set()
-    const ticketPendingCards = new Set()
+    const contractPendingCards = reactive(new Set())
+    const ticketPendingCards = reactive(new Set())
 
     const loadDeclineTemplate = () => {
       fetch('/email_templates/decline_template.txt')
