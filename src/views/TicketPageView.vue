@@ -87,13 +87,13 @@
           <strong>FM Radio</strong>
         </p>
         <p
-          class="status-btn"
-          v-if="attendeeSlots && attendeeSlots.length > 0"
+          class="status-btn waiver-btn-large"
+          v-if="order.checked_in && attendeeSlots && attendeeSlots.length > 0"
           @click="showAttendeeNamingModal = true"
           :class="{ 'attention-needed': hasUnacceptedWaivers }"
         >
-          <img :src="ticket_icon" style="height: auto; width: 32px; margin: 0" alt="Manage Attendees" />
-          <strong>
+          <img :src="ticket_icon" style="height: auto; width: 48px; margin: 0" alt="Manage Attendees" />
+          <strong style="font-size: 1.1rem;">
             <template v-if="hasUnacceptedWaivers">
               ⚠️ Waivers Needed ({{ unacceptedWaiverCount }})
             </template>
@@ -982,9 +982,9 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { collection, getDocs, query, where, updateDoc, arrayUnion } from 'firebase/firestore'
+import { collection, getDocs, query, where, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore'
 import { doc, getDoc } from 'firebase/firestore'
 import { transferTicket } from '@/composables/useTicketTransfer'
 import { reunion_db, festivall_auth } from '@/firebase'
@@ -1046,6 +1046,7 @@ export default {
     const router = useRouter()
     const { currentAct } = useLineupState()
     const order = ref(null)
+    const orderUnsubscribe = ref(null)
       // Holds the merged slots with up-to-date active status
       const mergedClaimedSlots = ref([])
     const qrCanvas = ref(null)
@@ -1264,6 +1265,11 @@ export default {
     }
 
     const loadOrder = async (id_code) => {
+      // Clean up previous listener if exists
+      if (orderUnsubscribe.value) {
+        orderUnsubscribe.value()
+        orderUnsubscribe.value = null
+      }
           // Helper: fetch all claimed slot_ids and merge in current slot data
           const mergeClaimedSlotsWithStatus = async (claimedSlots) => {
             if (!Array.isArray(claimedSlots) || claimedSlots.length === 0) return []
@@ -1342,89 +1348,93 @@ export default {
           sessionStorage.setItem(`verified_${id_code}`, 'true')
         }
 
-        // Load participant by id_code
+        // Load participant by id_code with real-time listener
         const q = query(
           collection(reunion_db, 'participants_2026'),
           where('id_code', '==', id_code)
         )
-        const querySnapshot = await getDocs(q)
+        
+        orderUnsubscribe.value = onSnapshot(q, async (querySnapshot) => {
+          if (!querySnapshot.empty) {
+            const p = querySnapshot.docs[0].data()
 
-        if (!querySnapshot.empty) {
-          const p = querySnapshot.docs[0].data()
+            // Check if participant has a valid ticket (either purchased or earned through contract)
+            const hasValidOrder = p.order && p.order.paid === true
+            const hasSignedContract = p.contract && p.contract.signed === true
 
-          // Check if participant has a valid ticket (either purchased or earned through contract)
-          const hasValidOrder = p.order && p.order.paid === true
-          const hasSignedContract = p.contract && p.contract.signed === true
+            if (!hasValidOrder && !hasSignedContract) {
+              alert(
+                'No valid ticket found for this ID code. You may need to purchase a ticket or complete your contract signing process.'
+              )
+              router.push({ name: 'EnterIDCode' })
+              return
+            }
 
-          if (!hasValidOrder && !hasSignedContract) {
-            alert(
-              'No valid ticket found for this ID code. You may need to purchase a ticket or complete your contract signing process.'
-            )
+            // If they only have a signed contract but no order, they might need to complete setup
+            if (hasSignedContract && !hasValidOrder) {
+              alert(
+                'Contract signed but ticket not yet activated. Please contact admin to complete your ticket setup.'
+              )
+              router.push({ name: 'EnterIDCode' })
+              return
+            }
+
+            // Normalize to previous shape for UI expectations
+            order.value = {
+              id_code: p.id_code,
+              id_code_long: p.id_code_long,
+              fullname: p.contact?.fullname || '',
+              email: p.contact?.email || '',
+              phone: p.contact?.phone || '',
+              ticket_type: p.order?.ticket_type || '',
+              selected_day: p.order?.selected_day || '',
+              total_price: p.order?.fiat_total_price_cad || 0,
+              currency: 'CAD',
+              paid: p.order?.paid || false,
+              original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+              ticket_quantity: p.order?.ticket_quantity || 0,
+              meal_packages: p.order?.meal_packages || 0,
+              meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+              checked_in: p.order?.checked_in || false,
+              // Corrected field mapping for scanning history
+              entrance_activity_history: p.order?.entrance_activity_history || [],
+              last_entrance_activity: p.order?.last_entrance_activity || null,
+              meal_redemption_history: p.order?.meal_redemption_history || [],
+              pending_meal_purchases: p.order?.pending_meal_purchases || [],
+              // Roles & application data
+              applicant_types: p.roles?.applicant_types || [],
+              payment_type: p.order?.payment_type || '',
+              rates: p.application?.data?.rates || '',
+              // Settimes are stored at the document root (written by DashboardPanel's
+              // updateSettime as `settimes: [...]`), with a legacy fallback to
+              // application.data.settimes for older records.
+              settimes: p.settimes || p.application?.data?.settimes || [],
+              // Raw application.data for self-edit modals (read-only snapshot)
+              application_data: p.application?.data || {},
+              // Volunteer shift data
+              volunteer_claimed_slots: p.volunteer?.claimed_slots || []
+            }
+
+            // Load attendee slots if available (new system)
+            attendeeSlots.value = p.order?.attendee_slots || []
+            slotsActive.value = p.order?.slots_active || false
+
+            // Merge claimed slots with up-to-date status and set mergedClaimedSlots
+            pendingMealPurchases.value = p.order?.pending_meal_purchases || []
+            mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
+
+            await nextTick()
+            generateQRCode(order.value.id_code_long, qrCanvas.value)
+            await calculateReferralEarnings(order.value.id_code)
+          } else {
+            console.error('No such document!')
+            alert('No order found with this ID code. Please check your ID code and try again.')
             router.push({ name: 'EnterIDCode' })
-            return
           }
-
-          // If they only have a signed contract but no order, they might need to complete setup
-          if (hasSignedContract && !hasValidOrder) {
-            alert(
-              'Contract signed but ticket not yet activated. Please contact admin to complete your ticket setup.'
-            )
-            router.push({ name: 'EnterIDCode' })
-            return
-          }
-
-          // Normalize to previous shape for UI expectations
-          order.value = {
-            id_code: p.id_code,
-            id_code_long: p.id_code_long,
-            fullname: p.contact?.fullname || '',
-            email: p.contact?.email || '',
-            phone: p.contact?.phone || '',
-            ticket_type: p.order?.ticket_type || '',
-            selected_day: p.order?.selected_day || '',
-            total_price: p.order?.fiat_total_price_cad || 0,
-            currency: 'CAD',
-            paid: p.order?.paid || false,
-            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
-            ticket_quantity: p.order?.ticket_quantity || 0,
-            meal_packages: p.order?.meal_packages || 0,
-            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            checked_in: p.order?.checked_in || false,
-            // Corrected field mapping for scanning history
-            entrance_activity_history: p.order?.entrance_activity_history || [],
-            last_entrance_activity: p.order?.last_entrance_activity || null,
-            meal_redemption_history: p.order?.meal_redemption_history || [],
-            pending_meal_purchases: p.order?.pending_meal_purchases || [],
-            // Roles & application data
-            applicant_types: p.roles?.applicant_types || [],
-            payment_type: p.order?.payment_type || '',
-            rates: p.application?.data?.rates || '',
-            // Settimes are stored at the document root (written by DashboardPanel's
-            // updateSettime as `settimes: [...]`), with a legacy fallback to
-            // application.data.settimes for older records.
-            settimes: p.settimes || p.application?.data?.settimes || [],
-            // Raw application.data for self-edit modals (read-only snapshot)
-            application_data: p.application?.data || {},
-            // Volunteer shift data
-            volunteer_claimed_slots: p.volunteer?.claimed_slots || []
-          }
-
-          // Load attendee slots if available (new system)
-          attendeeSlots.value = p.order?.attendee_slots || []
-          slotsActive.value = p.order?.slots_active || false
-
-          // Merge claimed slots with up-to-date status and set mergedClaimedSlots
-          pendingMealPurchases.value = p.order?.pending_meal_purchases || []
-          mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
-
-          await nextTick()
-          generateQRCode(order.value.id_code_long, qrCanvas.value)
-          await calculateReferralEarnings(order.value.id_code)
-        } else {
-          console.error('No such document!')
-          alert('No order found with this ID code. Please check your ID code and try again.')
+        }, (error) => {
+          console.error('Error with real-time listener:', error)
           router.push({ name: 'EnterIDCode' })
-        }
+        })
       } catch (error) {
         console.error('Error getting document:', error)
         router.push({ name: 'EnterIDCode' })
@@ -1626,6 +1636,13 @@ export default {
       console.log('Settimes:', order.value?.settimes)
     })
 
+    onUnmounted(() => {
+      // Clean up real-time listener when component unmounts
+      if (orderUnsubscribe.value) {
+        orderUnsubscribe.value()
+      }
+    })
+
     return {
       frog_image,
       festivall_emblem_white,
@@ -1825,6 +1842,11 @@ a {
   background-color: #f59e0b;
   animation: pulse 2s ease-in-out infinite;
   border: 2px solid #fbbf24;
+}
+
+.status-btn.waiver-btn-large {
+  grid-column: span 2;
+  padding: 1rem;
 }
 
 @keyframes pulse {

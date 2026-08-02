@@ -288,3 +288,119 @@ const submitWaiver = async () => {
   }
 }
 </script>
+
+<style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 10;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  color: white;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.9);
+  font-size: 16px;
+  position: relative;
+  margin-top: 2rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+  z-index: 12;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.modal-close::before {
+  content: '✕';
+  font-size: 20px;
+}
+
+button {
+  background: var(--reunion-frog-green);
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #7ed957;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button[style*="background: transparent"] {
+  background: transparent !important;
+  color: white !important;
+  border: 1px solid white !important;
+}
+
+button[style*="background: transparent"]:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+h2 {
+  margin: 1rem 0;
+  font-size: 1.5rem;
+}
+
+h3 {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+h4 {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 1rem;
+  color: var(--reunion-frog-green);
+}
+</style>
