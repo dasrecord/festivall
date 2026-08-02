@@ -1,27 +1,29 @@
-Hello {name},
+<p>Hello <strong>{name}</strong>,</p>
 
-Your complimentary Reunion pass is ready.
+<p>Your complimentary Reunion pass is ready.</p>
 
-Pass summary:
-{ticket_label}
-{ticket_quantity} ticket(s)
-{ticket_type}
-{selected_day}
+<p><strong>Pass summary:</strong><br>
+{ticket_label}<br>
+{ticket_quantity} ticket(s)<br>
+{ticket_type}<br>
+{selected_day}</p>
 
-Your ID_CODE: {id_code}
+<p><strong>Your ID_CODE:</strong> {id_code}</p>
 
-Open your ticket here:
-{ticket_url}
+<p>Open your ticket here:<br>
+<a href="{ticket_url}">{ticket_url}</a></p>
 
-When prompted, use this same email address to verify your ticket.
+<p>When prompted, use this same email address to verify your ticket.</p>
 
-{recipient_message}
+<p>{recipient_message}</p>
 
-{addon}
+<p>{addon}</p>
 
-If you hav any questions, reply to this email or contact {support_email}.
+<p>If you have any questions, reply to this email or contact {support_email}.</p>
 
-See you on the grounds,
-{sender_name}
+<p>See you on the grounds,<br>
+{sender_name}</p>
 
-⟢Powered by Festivall⟣
+<hr>
+
+<p style="text-align: center; color: #888;">⟢ Powered by Festivall ⟣</p>
