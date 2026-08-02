@@ -10,10 +10,12 @@
       <img :src="frog_image" style="height: 52px; width: 52px" alt="Frog" />
     </div>
 
-    <div class="order-info">
+    <div class="order-info" :class="{ 'promo-order-info': order.payment_type === 'promo' }">
       <div class="ticket-identity">
         <span class="ticket-name">{{ order.fullname }}</span>
-        <span class="ticket-badge">{{ order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : 'Day Pass' }}</span>
+        <span class="ticket-badge" :class="{ 'promo-ticket-badge': order.payment_type === 'promo' }">
+          {{ order.custom_ticket_label || (order.ticket_type === 'Weekend Pass' ? 'Weekend Pass' : 'Day Pass') }}
+        </span>
       </div>
       <p class="ticket-valid">
         <strong>Valid:</strong>
@@ -1340,6 +1342,9 @@ export default {
             paid: p.order?.paid || false,
             original_ticket_quantity: p.order?.original_ticket_quantity || 0,
             ticket_quantity: p.order?.ticket_quantity || 0,
+            custom_ticket_label: p.order?.custom_ticket_label || p.promo?.label || '',
+            promo_label: p.order?.promo_label || p.promo?.label || '',
+            promo_message: p.order?.promo_message || p.promo?.message || '',
             meal_packages: p.order?.meal_packages || 0,
             meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
             checked_in: p.order?.checked_in || false,
@@ -1672,6 +1677,31 @@ strong {
   padding: 0.15rem 0.5rem;
   border-radius: 12px;
   white-space: nowrap;
+}
+
+.promo-ticket-badge {
+  background: linear-gradient(135deg, #f8f8f8 0%, #dde1e6 42%, #ffffff 58%, #b7bec7 100%);
+  color: #232323;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.promo-order-info {
+  border-color: rgba(219, 224, 230, 0.95);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 248, 251, 0.98)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(185, 190, 198, 0.1));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.promo-order-info .ticket-name {
+  color: #2d2d2d;
 }
 
 .ticket-valid {

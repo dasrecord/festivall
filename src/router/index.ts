@@ -58,6 +58,7 @@ import AdminTaskManager from '@/views/AdminTaskManager.vue'
 import AdminVolunteerSlotsView from '@/views/AdminVolunteerSlotsView.vue'
 import BudgetView from '@/views/BudgetView.vue'
 import AdminInventoryView from '@/views/AdminInventoryView.vue'
+import AdminPromoPassView from '@/views/AdminPromoPassView.vue'
 import BitcoinWalletView from '@/views/BitcoinWalletView.vue'
 import ReceiptTrackerView from '@/views/ReceiptTrackerView.vue'
 import MedPrepView from '@/views/MedPrepView.vue'
@@ -191,6 +192,12 @@ const routes = [
     path: '/dashboard/budget',
     name: 'dashboard-budget',
     component: BudgetView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/dashboard/promo-passes',
+    name: 'dashboard-promo-passes',
+    component: AdminPromoPassView,
     meta: { requiresAuth: true }
   },
   {
