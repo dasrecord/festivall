@@ -1246,6 +1246,18 @@ export default {
         
         const { sendEmail } = await import('/scripts/notifications.js')
         await sendEmail(applicant.value.email, 'Reunion 2026 — Contract Ready', personalizedBody)
+        
+        // Update Firestore with timestamp
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const timestamp = new Date().toISOString()
+        await updateDoc(docRef, {
+          contract_sent_at: timestamp,
+          updatedAt: timestamp
+        })
+        
+        // Update local state
+        applicant.value.contract_sent_at = timestamp
+        
         contractDeliveryPending.value = false
         alert(`Contract delivered to ${applicant.value.fullname || applicant.value.email}`)
       } catch (err) {
@@ -1274,6 +1286,18 @@ export default {
         
         const { sendEmail } = await import('/scripts/notifications.js')
         await sendEmail(applicant.value.email, 'Reunion 2026 — Your Ticket', personalizedBody)
+        
+        // Update Firestore with timestamp
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const timestamp = new Date().toISOString()
+        await updateDoc(docRef, {
+          ticket_sent_at: timestamp,
+          updatedAt: timestamp
+        })
+        
+        // Update local state
+        applicant.value.ticket_sent_at = timestamp
+        
         ticketDeliveryPending.value = false
         alert(`Ticket delivered to ${applicant.value.fullname || applicant.value.email}`)
       } catch (err) {

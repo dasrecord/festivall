@@ -933,6 +933,9 @@ export default {
       // Contract filters (applies to both applicants and customers)
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
+      { property: 'contract_sent_at', value: 'has_value', label: 'Contract Sent', collections: ['participants_2026'] },
+      { property: 'contract_sent_not_signed', value: true, label: 'Contract Sent - Not Signed', collections: ['participants_2026'] },
+      { property: 'ticket_sent_at', value: 'has_value', label: 'Ticket Sent', collections: ['participants_2026', 'orders_2025'] },
 
       // Leads filters (festivall_db leads collection)
       { property: 'source', value: 'reunion', label: 'Source: Reunion', collections: ['leads'] },
@@ -970,6 +973,13 @@ export default {
           if (!filter.collections.includes(currentCollection.value)) {
             return false
           }
+        }
+
+        // Handle special combined filter
+        if (filter.property === 'contract_sent_not_signed') {
+          return applicants.value.some((applicant) => 
+            applicant.contract_sent_at && !applicant.contract_signed
+          )
         }
 
         // Then check if the filter exists in the data
@@ -1039,6 +1049,9 @@ export default {
                 act_name: docData.roles?.act_name || '',
                 act_type: docData.roles?.act_type || '',
                 volunteer_type: docData.roles?.volunteer_type || '',
+                // Email tracking timestamps
+                contract_sent_at: docData.contract_sent_at || null,
+                ticket_sent_at: docData.ticket_sent_at || null,
                 // Extract from application.data
                 genre: docData.application?.data?.genre || '',
                 act_description: docData.application?.data?.act_description || '',
@@ -1078,6 +1091,23 @@ export default {
                 referral_id_code: docData.referral?.referral_id_code || '',
                 createdAt: docData.createdAt || '',
                 ...docData
+              }
+            } else if (type === 'orders_2025') {
+              // Orders collection - simpler structure than participants
+              return {
+                id: doc.id,
+                ...docData,
+                id_code: docData.id_code || '',
+                fullname: docData.fullname || '',
+                email: docData.email || '',
+                phone: docData.phone || '',
+                payment_type: docData.payment_type || '',
+                paid: docData.paid || false,
+                checked_in: docData.checked_in || false,
+                ticket_type: docData.ticket_type || '',
+                ticket_quantity: docData.ticket_quantity || 0,
+                ticket_sent_at: docData.ticket_sent_at || null,
+                createdAt: docData.createdAt || ''
               }
             } else {
               return { id: doc.id, ...docData }
@@ -1142,6 +1172,11 @@ export default {
           property,
           value,
           filter: (applicant) => {
+            // Handle special combined filter
+            if (property === 'contract_sent_not_signed') {
+              return applicant.contract_sent_at && !applicant.contract_signed
+            }
+            
             const prop = applicant[property]
 
             // Handle special cases first
@@ -1805,6 +1840,19 @@ export default {
           .replace('{id_code}', applicant.id_code || '')
         
         await sendEmail(applicant.email, 'Reunion 2026 — Contract Ready', personalizedBody)
+        
+        // Update Firestore with timestamp
+        const docId = applicant.id || id_code
+        const docRef = doc(reunion_db, currentCollection.value, docId)
+        const timestamp = new Date().toISOString()
+        await updateDoc(docRef, {
+          contract_sent_at: timestamp,
+          updatedAt: timestamp
+        })
+        
+        // Update local state
+        applicant.contract_sent_at = timestamp
+        
         contractPendingCards.delete(id_code)
         alert(`Contract delivered to ${applicant.fullname || applicant.email}`)
       } catch (err) {
@@ -1907,6 +1955,19 @@ export default {
           .replace('{id_code}', applicant.id_code || '')
         
         await sendEmail(applicant.email, 'Reunion 2026 — Your Ticket', personalizedBody)
+        
+        // Update Firestore with timestamp
+        const docId = applicant.id || id_code
+        const docRef = doc(reunion_db, currentCollection.value, docId)
+        const timestamp = new Date().toISOString()
+        await updateDoc(docRef, {
+          ticket_sent_at: timestamp,
+          updatedAt: timestamp
+        })
+        
+        // Update local state
+        applicant.ticket_sent_at = timestamp
+        
         ticketPendingCards.delete(id_code)
         alert(`Ticket delivered to ${applicant.fullname || applicant.email}`)
       } catch (err) {
