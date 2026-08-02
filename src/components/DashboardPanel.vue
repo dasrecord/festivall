@@ -494,17 +494,24 @@
             <div class="preview-section">
               <!-- PREVIEW TICKET -->
               <button @click="previewTicket(applicant.id_code)" class="section-action-btn">Preview Ticket</button>
-              <a
-                :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
-                target="_blank"
-              >
+              <div v-if="!ticketPendingCards.has(applicant.id_code)">
                 <img
+                  @click="initiateTicketDelivery(applicant.id_code)"
                   :src="ticket_icon"
                   alt="Deliver Ticket"
                   class="action-icon"
-                  style="width: auto; height: 32px"
+                  style="width: auto; height: 32px; cursor: pointer;"
+                  title="Click to deliver ticket"
                 />
-              </a>
+              </div>
+              <div v-if="ticketPendingCards.has(applicant.id_code)" class="confirm-actions">
+                <button @click="confirmTicketDelivery(applicant.id_code)" class="confirm-btn" title="Confirm send ticket email">
+                  ✓ Send Ticket
+                </button>
+                <button @click="cancelTicketDelivery(applicant.id_code)" class="cancel-btn" title="Cancel">
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
           <!-- DASHBOARD ACTIONS-->
@@ -682,22 +689,24 @@
 
             <div class="contract-section">
               <button @click="generateContract(applicant.id_code)" class="contract-preview-btn">Preview Contract</button>
-              <a
-                v-if="applicant.email"
-                :href="
-                  deliverContract(
-                    applicant.email,
-                    applicant.fullname,
-                    applicant.applicant_types && applicant.applicant_types.length
-                      ? applicant.applicant_types.join(', and ')
-                      : 'Participant',
-                    applicant.id_code
-                  )
-                "
-                target="_blank"
-              >
-                <img :src="contract_icon" alt="Book Applicant" class="action-icon" style="width:auto;height:32px;" />
-              </a>
+              <div v-if="applicant.email && !contractPendingCards.has(applicant.id_code)">
+                <img
+                  @click="initiateContractDelivery(applicant.id_code)"
+                  :src="contract_icon"
+                  alt="Deliver Contract"
+                  class="action-icon"
+                  style="width:auto;height:32px;cursor:pointer;"
+                  title="Click to deliver contract"
+                />
+              </div>
+              <div v-if="contractPendingCards.has(applicant.id_code)" class="confirm-actions">
+                <button @click="confirmContractDelivery(applicant.id_code)" class="confirm-btn" title="Confirm send contract email">
+                  ✓ Send Contract
+                </button>
+                <button @click="cancelContractDelivery(applicant.id_code)" class="cancel-btn" title="Cancel">
+                  ✕
+                </button>
+              </div>
             </div>
 
             <!-- Meal Ticket Management -->
@@ -1204,6 +1213,8 @@ export default {
     const transferTargetApplicant = ref(null)
     const transferForm = reactive({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const declineEmailBody = ref('')
+    const contractPendingCards = new Set()
+    const ticketPendingCards = new Set()
 
     const loadDeclineTemplate = () => {
       fetch('/email_templates/decline_template.txt')
@@ -1770,14 +1781,36 @@ export default {
       }
     }
 
-    const deliverContract = (email, fullname, roles, id_code) => {
-      const subject = encodeURIComponent('Reunion 2026')
-      const personalizedBody = contractEmailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{roles}', roles || '')
-        .replace('{id_code}', id_code || '')
-      const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
+    const initiateContractDelivery = (id_code) => {
+      contractPendingCards.add(id_code)
+    }
+
+    const cancelContractDelivery = (id_code) => {
+      contractPendingCards.delete(id_code)
+    }
+
+    const confirmContractDelivery = async (id_code) => {
+      const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+      if (!applicant || !applicant.email) {
+        alert('Applicant email not found.')
+        return
+      }
+      try {
+        const roles = applicant.applicant_types && applicant.applicant_types.length
+          ? applicant.applicant_types.join(', and ')
+          : 'Participant'
+        const personalizedBody = contractEmailBody.value
+          .replace('{name}', applicant.fullname || '')
+          .replace('{roles}', roles)
+          .replace('{id_code}', applicant.id_code || '')
+        
+        await sendEmail(applicant.email, 'Reunion 2026 — Contract Ready', personalizedBody)
+        contractPendingCards.delete(id_code)
+        alert(`Contract delivered to ${applicant.fullname || applicant.email}`)
+      } catch (err) {
+        console.error('Error delivering contract:', err)
+        alert('Failed to deliver contract.')
+      }
     }
 
     const confirmPaymentReceived = async (id_code) => {
@@ -1854,13 +1887,32 @@ export default {
       router.push({ path: `/reunionticket/${id_code}` })
     }
 
-    const deliverTicket = (email, fullname, id_code) => {
-      const subject = encodeURIComponent('Reunion 2026')
-      const personalizedBody = ticketEmailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{id_code}', id_code || '')
-      const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
+    const initiateTicketDelivery = (id_code) => {
+      ticketPendingCards.add(id_code)
+    }
+
+    const cancelTicketDelivery = (id_code) => {
+      ticketPendingCards.delete(id_code)
+    }
+
+    const confirmTicketDelivery = async (id_code) => {
+      const applicant = applicants.value.find((a) => a.id_code === id_code || a.id === id_code)
+      if (!applicant || !applicant.email) {
+        alert('Applicant email not found.')
+        return
+      }
+      try {
+        const personalizedBody = ticketEmailBody.value
+          .replace('{name}', applicant.fullname || '')
+          .replace('{id_code}', applicant.id_code || '')
+        
+        await sendEmail(applicant.email, 'Reunion 2026 — Your Ticket', personalizedBody)
+        ticketPendingCards.delete(id_code)
+        alert(`Ticket delivered to ${applicant.fullname || applicant.email}`)
+      } catch (err) {
+        console.error('Error delivering ticket:', err)
+        alert('Failed to deliver ticket.')
+      }
     }
 
     // Add search functionality
@@ -2257,8 +2309,14 @@ export default {
       clearFilters,
       isFilterActive,
       goToApplicantPage,
-      deliverContract,
-      deliverTicket,
+      initiateContractDelivery,
+      confirmContractDelivery,
+      cancelContractDelivery,
+      contractPendingCards,
+      initiateTicketDelivery,
+      confirmTicketDelivery,
+      cancelTicketDelivery,
+      ticketPendingCards,
       sendSMS,
       sms_icon,
       ticket_icon,
@@ -3485,5 +3543,48 @@ a {
     flex-wrap: wrap;
     gap: 0.2rem 0.5rem;
   }
+}
+
+/* Two-step confirmation buttons for contract/ticket delivery */
+.confirm-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.confirm-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #388e3c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-btn {
+  background: #ef5350;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 </style>

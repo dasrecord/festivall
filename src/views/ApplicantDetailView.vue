@@ -360,13 +360,21 @@
               <button v-if="applicant.id_code" @click="generateContract" class="preview-btn">
                 Preview Contract
               </button>
-              <a
-                v-if="applicant.email && applicant.id_code && applicant.paid"
-                :href="deliverTicket(applicant.email, applicant.fullname, applicant.id_code)"
-                target="_blank"
+              <button
+                v-if="applicant.email && applicant.id_code && applicant.paid && !ticketDeliveryPending"
+                @click="initiateTicketDelivery"
+                class="deliver-btn"
               >
-                <button class="deliver-btn">📧 Deliver Ticket</button>
-              </a>
+                📧 Deliver Ticket
+              </button>
+              <div v-if="ticketDeliveryPending" class="confirm-actions">
+                <button @click="confirmTicketDelivery" class="confirm-btn" title="Confirm send ticket email">
+                  ✓ Confirm Send
+                </button>
+                <button @click="cancelTicketDelivery" class="cancel-btn" title="Cancel">
+                  ✕ Cancel
+                </button>
+              </div>
               <div v-if="applicant.mix_track_url" class="mix-track-section">
                 <a :href="applicant.mix_track_url" target="_blank" class="mix-track-link">
                   🎵 Mix/Track
@@ -418,13 +426,21 @@
                 {{ applicant.contract_signed ? '✅ Signed' : '❌ Not Signed' }}
               </p>
               <template v-if="!applicant.contract_signed">
-                <a
-                  v-if="applicant.email && applicant.id_code && applicant.applicant_types"
-                  :href="deliverContract(applicant.email, applicant.fullname, applicant.applicant_types.join(', and '), applicant.id_code)"
-                  target="_blank"
+                <button
+                  v-if="applicant.email && applicant.id_code && applicant.applicant_types && !contractDeliveryPending"
+                  @click="initiateContractDelivery"
+                  class="deliver-btn"
                 >
-                  <button class="deliver-btn">📋 Send Contract</button>
-                </a>
+                  📋 Send Contract
+                </button>
+                <div v-if="contractDeliveryPending" class="confirm-actions">
+                  <button @click="confirmContractDelivery" class="confirm-btn" title="Confirm send contract email">
+                    ✓ Confirm Send
+                  </button>
+                  <button @click="cancelContractDelivery" class="cancel-btn" title="Cancel">
+                    ✕ Cancel
+                  </button>
+                </div>
                 <button @click="remindContract" class="remind-btn">
                   Remind Contract
                 </button>
@@ -636,6 +652,8 @@ export default {
     const originalTicketQuantity = ref(0)
     const declineReason = ref('')
     const declinePending = ref(false)
+    const contractDeliveryPending = ref(false)
+    const ticketDeliveryPending = ref(false)
 
     const declineReasons = [
       { value: '', label: '— No specific reason (optional) —' },
@@ -1204,23 +1222,64 @@ export default {
         })
     }
 
-    const deliverContract = (email, fullname, roles, id_code) => {
-      const subject = encodeURIComponent('Reunion 2026')
-      const personalizedBody = contractEmailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{roles}', roles || '')
-        .replace('{id_code}', id_code || '')
-      const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
+    const initiateContractDelivery = () => {
+      contractDeliveryPending.value = true
     }
 
-    const deliverTicket = (email, fullname, id_code) => {
-      const subject = encodeURIComponent('Reunion 2026')
-      const personalizedBody = ticketEmailBody.value
-        .replace('{name}', fullname || '')
-        .replace('{id_code}', id_code || '')
-      const body = encodeURIComponent(personalizedBody)
-      return `mailto:${email}?subject=${subject}&body=${body}&cc=prasun.das.89@gmail.com`
+    const cancelContractDelivery = () => {
+      contractDeliveryPending.value = false
+    }
+
+    const confirmContractDelivery = async () => {
+      if (!applicant.value || !applicant.value.email) {
+        alert('Applicant email not found.')
+        return
+      }
+      try {
+        const roles = applicant.value.applicant_types && applicant.value.applicant_types.length
+          ? applicant.value.applicant_types.join(', and ')
+          : 'Participant'
+        const personalizedBody = contractEmailBody.value
+          .replace('{name}', applicant.value.fullname || '')
+          .replace('{roles}', roles)
+          .replace('{id_code}', applicant.value.id_code || '')
+        
+        const { sendEmail } = await import('/scripts/notifications.js')
+        await sendEmail(applicant.value.email, 'Reunion 2026 — Contract Ready', personalizedBody)
+        contractDeliveryPending.value = false
+        alert(`Contract delivered to ${applicant.value.fullname || applicant.value.email}`)
+      } catch (err) {
+        console.error('Error delivering contract:', err)
+        alert('Failed to deliver contract.')
+      }
+    }
+
+    const initiateTicketDelivery = () => {
+      ticketDeliveryPending.value = true
+    }
+
+    const cancelTicketDelivery = () => {
+      ticketDeliveryPending.value = false
+    }
+
+    const confirmTicketDelivery = async () => {
+      if (!applicant.value || !applicant.value.email) {
+        alert('Applicant email not found.')
+        return
+      }
+      try {
+        const personalizedBody = ticketEmailBody.value
+          .replace('{name}', applicant.value.fullname || '')
+          .replace('{id_code}', applicant.value.id_code || '')
+        
+        const { sendEmail } = await import('/scripts/notifications.js')
+        await sendEmail(applicant.value.email, 'Reunion 2026 — Your Ticket', personalizedBody)
+        ticketDeliveryPending.value = false
+        alert(`Ticket delivered to ${applicant.value.fullname || applicant.value.email}`)
+      } catch (err) {
+        console.error('Error delivering ticket:', err)
+        alert('Failed to deliver ticket.')
+      }
     }
 
     const declineApplicant = async () => {
@@ -1292,8 +1351,14 @@ export default {
       incrementMealTickets,
       decrementMealTickets,
       approvePendingMeal,
-      deliverContract,
-      deliverTicket,
+      initiateContractDelivery,
+      confirmContractDelivery,
+      cancelContractDelivery,
+      contractDeliveryPending,
+      initiateTicketDelivery,
+      confirmTicketDelivery,
+      cancelTicketDelivery,
+      ticketDeliveryPending,
       checkInTicket,
       checkOutTicket,
       ticketQuantity,
@@ -2155,5 +2220,48 @@ h1 {
   .actions-two-col {
     grid-template-columns: 1fr;
   }
+}
+
+/* Two-step confirmation buttons for contract/ticket delivery */
+.confirm-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.confirm-btn {
+  background: #4caf50 !important;
+  color: white !important;
+}
+
+.confirm-btn:hover {
+  background: #388e3c !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-btn {
+  background: #ef5350 !important;
+  color: white !important;
+}
+
+.cancel-btn:hover {
+  background: #c62828 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 </style>
