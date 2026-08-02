@@ -88,6 +88,22 @@
         </p>
         <p
           class="status-btn"
+          v-if="attendeeSlots && attendeeSlots.length > 0"
+          @click="showAttendeeNamingModal = true"
+          :class="{ 'attention-needed': hasUnacceptedWaivers }"
+        >
+          <img :src="ticket_icon" style="height: auto; width: 32px; margin: 0" alt="Manage Attendees" />
+          <strong>
+            <template v-if="hasUnacceptedWaivers">
+              ⚠️ Waivers Needed ({{ unacceptedWaiverCount }})
+            </template>
+            <template v-else>
+              ✅ Waivers Complete ({{ attendeeSlots.length }})
+            </template>
+          </strong>
+        </p>
+        <p
+          class="status-btn"
           v-if="
             (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
             order.applicant_types.includes('Volunteer') &&
@@ -933,6 +949,27 @@
       @saved="onVisualsSelectionSaved"
     />
 
+    <AttendeeNamingModal
+      v-if="showAttendeeNamingModal"
+      :show="showAttendeeNamingModal"
+      :id-code="order.id_code"
+      :slots="attendeeSlots"
+      @close="showAttendeeNamingModal = false"
+      @openWaiver="openWaiverFromNaming"
+    />
+
+    <WaiverAcceptanceModal
+      v-if="showWaiverModal && selectedWaiverSlot"
+      :show="showWaiverModal"
+      :id-code="order.id_code"
+      :slot-id="selectedWaiverSlot.slot_id"
+      :slot-index="attendeeSlots.findIndex(s => s.slot_id === selectedWaiverSlot.slot_id)"
+      :attendee-name="selectedWaiverSlot.attendee_name || null"
+      source="ticket_page"
+      @close="showWaiverModal = false"
+      @accepted="onWaiverAccepted"
+    />
+
     <div class="qr-code">
       <canvas ref="qrCanvas"></canvas>
     </div>
@@ -987,7 +1024,10 @@ import CountdownTimer from '@/components/CountdownTimer.vue'
 import PosterSplash from '@/components/PosterSplash.vue'
 import EditArtistInfoModal from '@/components/EditArtistInfoModal.vue'
 import VisualsPickerModal from '@/components/VisualsPickerModal.vue'
+import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
+import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
+import { useWaiverStatus } from '@/composables/useWaiverStatus'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
@@ -996,7 +1036,9 @@ export default {
     CountdownTimer,
     PosterSplash,
     EditArtistInfoModal,
-    VisualsPickerModal
+    VisualsPickerModal,
+    AttendeeNamingModal,
+    WaiverAcceptanceModal
   },
 
   setup() {
@@ -1024,6 +1066,11 @@ export default {
     const isTransferSubmitting = ref(false)
     const showEditArtistModal = ref(false)
     const showVisualsPickerModal = ref(false)
+    const showAttendeeNamingModal = ref(false)
+    const showWaiverModal = ref(false)
+    const attendeeSlots = ref([])
+    const slotsActive = ref(false)
+    const selectedWaiverSlot = ref(null)
     const transferForm = ref({ recipientFullname: '', recipientEmail: '', recipientPhone: '', recipientIdCode: '', nTickets: 1 })
     const btcRate = ref(0)
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
@@ -1362,6 +1409,10 @@ export default {
             volunteer_claimed_slots: p.volunteer?.claimed_slots || []
           }
 
+          // Load attendee slots if available (new system)
+          attendeeSlots.value = p.order?.attendee_slots || []
+          slotsActive.value = p.order?.slots_active || false
+
           // Merge claimed slots with up-to-date status and set mergedClaimedSlots
           pendingMealPurchases.value = p.order?.pending_meal_purchases || []
           mergedClaimedSlots.value = await mergeClaimedSlotsWithStatus(order.value.volunteer_claimed_slots)
@@ -1530,6 +1581,39 @@ export default {
       }
     }
 
+    // Open waiver modal from naming modal
+    const openWaiverFromNaming = (slot) => {
+      selectedWaiverSlot.value = slot
+      showAttendeeNamingModal.value = false
+      showWaiverModal.value = true
+    }
+
+    // Handler for waiver acceptance
+    const onWaiverAccepted = (data) => {
+      console.log('Waiver accepted:', data)
+      // Reload order to get updated waiver status
+      if (order.value?.id_code) {
+        loadOrder(order.value.id_code)
+      }
+      selectedWaiverSlot.value = null
+    }
+
+    // Open waiver modal for a specific slot
+    const openWaiverForSlot = (slot) => {
+      selectedWaiverSlot.value = slot
+      showWaiverModal.value = true
+    }
+
+    // Check if any attendee slots need waiver acceptance
+    const { needsWaiverAcceptance } = useWaiverStatus()
+    const hasUnacceptedWaivers = computed(() => {
+      return attendeeSlots.value.some(slot => needsWaiverAcceptance(slot))
+    })
+
+    const unacceptedWaiverCount = computed(() => {
+      return attendeeSlots.value.filter(slot => needsWaiverAcceptance(slot)).length
+    })
+
     onMounted(() => {
       const id_code = route.params.id_code
       referralEarnings.value = 0
@@ -1567,6 +1651,16 @@ export default {
       isTransferSubmitting,
       showEditArtistModal,
       showVisualsPickerModal,
+      showAttendeeNamingModal,
+      showWaiverModal,
+      attendeeSlots,
+      slotsActive,
+      selectedWaiverSlot,
+      openWaiverFromNaming,
+      onWaiverAccepted,
+      openWaiverForSlot,
+      hasUnacceptedWaivers,
+      unacceptedWaiverCount,
       isArtistEditEligible,
       isVisualsPickerEligible,
       onArtistInfoSaved,
@@ -1725,6 +1819,21 @@ a {
   border-radius: 5px;
   cursor: pointer;
   margin: 0;
+}
+
+.status-btn.attention-needed {
+  background-color: #f59e0b;
+  animation: pulse 2s ease-in-out infinite;
+  border: 2px solid #fbbf24;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .quantities {
