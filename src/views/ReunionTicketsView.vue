@@ -266,7 +266,7 @@ const emailPaymentInstructions = async () => {
   try {
     const emailInstructions = paymentInstructions.value.replace(/\n/g, '<br />') // Add line breaks for email
     await axios.post(
-      'https://relayproxy.vercel.app/email',
+      'https://relayproxy.vercel.app/reunion_email',
       {
         value1: form.value.email,
         value2: `Payment Instructions - Reunion ${REUNION_FESTIVAL.year}`,

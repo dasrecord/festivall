@@ -98,11 +98,11 @@
     </section>
 
     <!-- ── FEATURES ───────────────────────────────────────────────────────── -->
-    <section class="bbp-section bbp-features" v-if="BBP.features?.length">
+    <section class="bbp-section bbp-features" v-if="schedFeatures?.length">
       <div class="bbp-container">
         <h2 class="bbp-section-title">Features</h2>
         <div class="bbp-features-grid">
-          <article v-for="feature in BBP.features" :key="feature" class="bbp-feature-card">
+          <article v-for="feature in schedFeatures" :key="feature" class="bbp-feature-card">
             <h3 class="bbp-feature-title">{{ feature }}</h3>
           </article>
         </div>
@@ -389,7 +389,7 @@ useHead({
 })
 
 // ── Schedule (Firestore-backed) ─────────────────────────────────────────────
-const { itinerary: schedItinerary, screenings: schedScreenings, speakers: schedSpeakers } = useBbpSchedule()
+const { itinerary: schedItinerary, screenings: schedScreenings, speakers: schedSpeakers, features: schedFeatures } = useBbpSchedule()
 
 // ── RSVP capture ────────────────────────────────────────────────────────────
 const rsvpModalOpen = ref(false)

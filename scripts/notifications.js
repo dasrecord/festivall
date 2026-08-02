@@ -48,10 +48,10 @@ export const sendEmail = async (email, subject, message) => {
     value3: message
   };
 
-  console.log('Sending Email payload:', JSON.stringify(payload));
+  console.log('Sending Reunion Email payload:', JSON.stringify(payload));
 
   try {
-    const response = await fetch('https://relayproxy.vercel.app/email', {
+    const response = await fetch('https://relayproxy.vercel.app/reunion_email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -64,10 +64,46 @@ export const sendEmail = async (email, subject, message) => {
     }
 
     const responseData = await response.json();
-    console.log('Email sent successfully:', responseData);
+    console.log('Reunion Email sent successfully:', responseData);
     return responseData;
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('Reunion Email sending failed:', error);
+    throw error; // Re-throw to let caller handle it
+  }
+};
+
+export const sendBbpEmail = async (email, subject, message) => {
+  if (!email || !subject || !message) {
+    console.error('Email, subject, and message are required.');
+    throw new Error('Email, subject, and message are required.');
+  }
+
+  const payload = {
+    value1: email,
+    value2: subject,
+    value3: message
+  };
+
+  console.log('Sending BBP Email payload:', JSON.stringify(payload));
+
+  try {
+    const response = await fetch('https://relayproxy.vercel.app/bbp_email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`BBP Email API responded with status: ${response.status} ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    console.log('BBP Email sent successfully:', responseData);
+    return responseData;
+  } catch (error) {
+    console.error('BBP Email sending failed:', error);
     throw error; // Re-throw to let caller handle it
   }
 };

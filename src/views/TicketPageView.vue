@@ -1110,7 +1110,7 @@ export default {
         }, { headers: { 'Content-Type': 'application/json' } })
 
         // Email
-        await axios.post('https://relayproxy.vercel.app/email', {
+        await axios.post('https://relayproxy.vercel.app/reunion_email', {
           value1: order.value.email,
           value2: `Meal Order - Reunion ${REUNION_FESTIVAL.year}`,
           value3: instructions.replace(/\n/g, '<br />')

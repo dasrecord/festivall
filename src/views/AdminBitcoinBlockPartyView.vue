@@ -275,7 +275,7 @@
       </div>
 
       <!-- Status Filter & Search -->
-      <div v-if="selectedRole !== 'schedule' && selectedRole !== 'flyer'" class="controls">
+      <div v-if="selectedRole !== 'schedule' && selectedRole !== 'features' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="controls">
         <div class="controls-left">
           <div class="status-filters">
             <label v-if="selectedRole !== 'attendees'" class="status-filter">
@@ -308,13 +308,13 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading && selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="loading">
+      <div v-if="loading && selectedRole !== 'schedule' && selectedRole !== 'features' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="loading">
         <div class="spinner"></div>
         Loading applicants...
       </div>
 
       <!-- Applicant Table -->
-      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="applicants-table">
+      <div v-else-if="filteredApplicants.length > 0 && selectedRole !== 'schedule' && selectedRole !== 'features' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="applicants-table">
         <div class="table-header">
           <div class="col-name">Name</div>
           <div class="col-contact">Contact</div>
@@ -440,7 +440,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="selectedRole !== 'schedule' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="empty-state">
+      <div v-else-if="selectedRole !== 'schedule' && selectedRole !== 'features' && selectedRole !== 'attendees' && selectedRole !== 'flyer'" class="empty-state">
         <p>No {{ selectedStatus === 'all' ? '' : selectedStatus }} {{ selectedRole }} applicants found.</p>
       </div>
 
@@ -573,6 +573,14 @@
                 </div>
               </template>
 
+              <!-- Feature fields -->
+              <template v-if="scheduleModal.field === 'features'">
+                <div class="edit-field">
+                  <label>Feature Text *</label>
+                  <input type="text" v-model="scheduleForm.text" placeholder="e.g. Live Music" class="edit-input" />
+                </div>
+              </template>
+
             </div>
             <div class="modal-footer">
               <button @click="closeScheduleModal" class="btn-cancel">Cancel</button>
@@ -671,6 +679,73 @@
               <div class="sched-actions">
                 <button class="btn-sched-edit" @click="openScheduleEdit('speakers', idx)">Edit</button>
                 <button class="btn-sched-delete" @click="deleteScheduleItem('speakers', idx)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p v-if="schedSaveError" class="error-message" style="margin-top:1rem">{{ schedSaveError }}</p>
+      </div>
+
+      <!-- ── Features Editor ──────────────────────────────────────────── -->
+      <div v-if="selectedRole === 'features'" class="schedule-editor">
+        <div class="sched-header-info">
+          <h2>✨ Landing Page Features</h2>
+          <p>Manage the feature highlights shown on the Bitcoin Block Party landing page. Drag to reorder.</p>
+        </div>
+
+        <!-- Feature item edit modal -->
+        <div v-if="scheduleModal.open" class="modal-overlay" @click.self="closeScheduleModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>{{ scheduleModal.isNew ? 'Add' : 'Edit' }} {{ scheduleModal.sectionLabel }}</h2>
+              <button @click="closeScheduleModal" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+              <div class="edit-field">
+                <label>Feature Text *</label>
+                <input type="text" v-model="scheduleForm.text" placeholder="e.g. Live Music" class="edit-input" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button @click="closeScheduleModal" class="btn-cancel">Cancel</button>
+              <button
+                @click="saveScheduleItem"
+                class="btn-save"
+                :disabled="scheduleModal.saving || !scheduleFormValid"
+              >
+                {{ scheduleModal.saving ? 'Saving…' : 'Save' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features List -->
+        <div class="sched-section">
+          <div class="sched-section-header">
+            <h2>Event Features</h2>
+            <button class="btn-add" @click="openScheduleAdd('features')">+ Add Feature</button>
+          </div>
+          <div v-if="schedLoading" class="loading"><div class="spinner"></div> Loading…</div>
+          <div v-else-if="schedFeatures.length === 0" class="sched-empty">No features added yet. Add one above.</div>
+          <div v-else class="sched-list">
+            <div v-for="(feature, idx) in schedFeatures" :key="idx" class="sched-row sched-row--feature">
+              <span class="sched-label"><strong>{{ feature }}</strong></span>
+              <div class="sched-actions sched-actions--feature">
+                <button 
+                  class="btn-sched-move" 
+                  @click="moveFeatureUp(idx)" 
+                  :disabled="idx === 0"
+                  title="Move up"
+                >▲</button>
+                <button 
+                  class="btn-sched-move" 
+                  @click="moveFeatureDown(idx)" 
+                  :disabled="idx === schedFeatures.length - 1"
+                  title="Move down"
+                >▼</button>
+                <button class="btn-sched-edit" @click="openScheduleEdit('features', idx)">Edit</button>
+                <button class="btn-sched-delete" @click="deleteScheduleItem('features', idx)">Delete</button>
               </div>
             </div>
           </div>
@@ -893,7 +968,7 @@ import { festivall_db } from '@/firebase'
 import { useBitcoinBlockPartyAdmin } from '@/composables/useBitcoinBlockPartyAdmin'
 import { useBbpSchedule } from '@/composables/useBbpSchedule'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig'
-import { sendEmail } from '/scripts/notifications.js'
+import { sendBbpEmail } from '/scripts/notifications.js'
 
 // Auth
 const isAuthenticated = ref(false)
@@ -912,6 +987,7 @@ const roleTabs = [
   { value: 'volunteer', label: 'Volunteers', icon: '🙌' },
   { value: 'attendees', label: 'Attendees', icon: '👥' },
   { value: 'schedule', label: 'Schedule', icon: '📅' },
+  { value: 'features', label: 'Features', icon: '✨' },
   { value: 'flyer', label: 'Flyer', icon: '🖨️' },
 ]
 
@@ -1297,17 +1373,60 @@ function getOnboardingTemplates(applicant) {
   const templates = {
     sponsor: {
       emailSubject: `Bitcoin Block Party ${BBP.year} — Sponsor Onboarding`,
-      emailBody: `Hi ${name},\n\nThank you for sponsoring Bitcoin Block Party ${BBP.year}!\n\nEvent Details:\n• Date: ${eventDate}\n• Location: ${venue}\n• Time: ${BBP.startTime} - ${BBP.endTime}\n\nNext Steps:\n1. Review your sponsorship tier benefits\n2. Provide your logo and materials (high-res)\n3. Confirm your booth/table requirements\n4. Let us know if you plan to give away any items\n\nWe'll follow up with detailed logistics closer to the event.\n\nQuestions? Reply to this email or contact ${contactEmail}.\n\nBest,\nBitcoin Block Party Team`,
+      emailBody: `<p>Hi <strong>${name}</strong>,</p>
+<p>Thank you for sponsoring Bitcoin Block Party ${BBP.year}!</p>
+<p><strong>Event Details:</strong><br>
+• Date: ${eventDate}<br>
+• Location: ${venue}<br>
+• Time: ${BBP.startTime} - ${BBP.endTime}</p>
+<p><strong>Next Steps:</strong><br>
+1. Review your sponsorship tier benefits<br>
+2. Provide your logo and materials (high-res)<br>
+3. Confirm your booth/table requirements<br>
+4. Let us know if you plan to give away any items</p>
+<p>We'll follow up with detailed logistics closer to the event.</p>
+<p>Questions? Reply to this email or contact ${contactEmail}.</p>
+<p>Best,<br>Bitcoin Block Party Team</p>`,
       smsBody: `Hi ${name}! Thanks for sponsoring Bitcoin Block Party ${BBP.year} on ${eventDate} at ${venue}. Check your email for onboarding details. Questions? ${contactEmail}`,
     },
     vendor: {
       emailSubject: `Bitcoin Block Party ${BBP.year} — Vendor Onboarding`,
-      emailBody: `Hi ${name},\n\nWelcome as a vendor at Bitcoin Block Party ${BBP.year}!\n\nEvent Details:\n• Date: ${eventDate}\n• Location: ${venue}\n• Time: ${BBP.startTime} - ${BBP.endTime}\n\nNext Steps:\n1. Confirm your Bitcoin payment setup (required)\n2. List the items you'll be selling\n3. Let us know your power/table requirements\n4. Provide any special setup needs\n\nVendor setup begins 2 hours before doors open.\n\nQuestions? Reply to this email or contact ${contactEmail}.\n\nBest,\nBitcoin Block Party Team`,
+      emailBody: `<p>Hi <strong>${name}</strong>,</p>
+<p>Welcome as a vendor at Bitcoin Block Party ${BBP.year}!</p>
+<p><strong>Event Details:</strong><br>
+• Date: ${eventDate}<br>
+• Location: ${venue}<br>
+• Time: ${BBP.startTime} - ${BBP.endTime}</p>
+<p><strong>Next Steps:</strong><br>
+1. Confirm your Bitcoin payment setup (required)<br>
+2. List the items you'll be selling<br>
+3. Let us know your power/table requirements<br>
+4. Provide any special setup needs</p>
+<p>Vendor setup begins 2 hours before doors open.</p>
+<p>Questions? Reply to this email or contact ${contactEmail}.</p>
+<p>Best,<br>Bitcoin Block Party Team</p>`,
       smsBody: `Hi ${name}! You're confirmed as a vendor for Bitcoin Block Party ${BBP.year} on ${eventDate} at ${venue}. Check your email for setup details. ${contactEmail}`,
     },
     volunteer: {
       emailSubject: `Bitcoin Block Party ${BBP.year} — Volunteer Onboarding`,
-      emailBody: `Hi ${name},\n\nThank you for volunteering at Bitcoin Block Party ${BBP.year}!\n\nEvent Details:\n• Date: ${eventDate}\n• Location: ${venue}\n• Time: ${BBP.startTime} - ${BBP.endTime}\n\nNext Steps:\n1. Confirm your availability and preferred shift\n2. Arrival time: 11:30 AM for volunteer briefing\n3. Bring comfortable shoes and a positive attitude!\n\nVolunteers receive:\n• Free admission\n• Volunteer t-shirt\n• Meal voucher\n• Good vibes and Bitcoin community connections\n\nWe'll send shift assignments and final details 1 week before the event.\n\nQuestions? Reply to this email or contact ${contactEmail}.\n\nBest,\nBitcoin Block Party Team`,
+      emailBody: `<p>Hi <strong>${name}</strong>,</p>
+<p>Thank you for volunteering at Bitcoin Block Party ${BBP.year}!</p>
+<p><strong>Event Details:</strong><br>
+• Date: ${eventDate}<br>
+• Location: ${venue}<br>
+• Time: ${BBP.startTime} - ${BBP.endTime}</p>
+<p><strong>Next Steps:</strong><br>
+1. Confirm your availability and preferred shift<br>
+2. Arrival time: 11:30 AM for volunteer briefing<br>
+3. Bring comfortable shoes and a positive attitude!</p>
+<p><strong>Volunteers receive:</strong><br>
+• Free admission<br>
+• Volunteer t-shirt<br>
+• Meal voucher<br>
+• Good vibes and Bitcoin community connections</p>
+<p>We'll send shift assignments and final details 1 week before the event.</p>
+<p>Questions? Reply to this email or contact ${contactEmail}.</p>
+<p>Best,<br>Bitcoin Block Party Team</p>`,
       smsBody: `Hi ${name}! Thanks for volunteering at Bitcoin Block Party ${BBP.year} on ${eventDate}. Check your email for details. Briefing at 11:30 AM. ${contactEmail}`,
     },
   }
@@ -1339,7 +1458,7 @@ async function onboardApplicant(applicant) {
     const templates = getOnboardingTemplates(applicant)
 
     // Send email
-    await sendEmail(applicant.email, templates.emailSubject, templates.emailBody)
+    await sendBbpEmail(applicant.email, templates.emailSubject, templates.emailBody)
 
     // Update Firestore
     const collectionName =
@@ -1516,6 +1635,7 @@ const {
   screenings: schedScreenings,
   djs: schedDjs,
   speakers: schedSpeakers,
+  features: schedFeatures,
   loading: scheduleLoading,
   saveSchedule,
   loadSchedule,
@@ -1530,6 +1650,7 @@ const SECTION_LABELS = {
   itinerary: 'Itinerary Item',
   screenings: 'Film Screening',
   djs: 'DJ / Performer',
+  features: 'Feature',
   speakers: 'Speaker',
 }
 
@@ -1562,11 +1683,14 @@ const scheduleForm = reactive({
   // Speakers (+ name, time, url above)
   topic: '',
   company: '',
+  // Features
+  text: '',
   bio: '',
 })
 
 const scheduleFormValid = computed(() => {
   if (scheduleModal.field === 'itinerary') return !!scheduleForm.time.trim() && !!scheduleForm.label.trim()
+  if (scheduleModal.field === 'features') return !!scheduleForm.text.trim()
   if (scheduleModal.field === 'screenings') return !!scheduleForm.time.trim() && !!scheduleForm.title.trim()
   if (scheduleModal.field === 'djs') return !!scheduleForm.name.trim()
   if (scheduleModal.field === 'speakers') return !!scheduleForm.name.trim() && !!scheduleForm.time.trim() && !!scheduleForm.topic.trim()
@@ -1585,6 +1709,7 @@ function resetScheduleForm() {
   scheduleForm.bio = ''
   scheduleForm.directorUrl = ''
   scheduleForm.infoUrl = ''
+  scheduleForm.text = ''
   scheduleForm.name = ''
   scheduleForm.shortDescription = ''
   scheduleForm.url = ''
@@ -1605,6 +1730,7 @@ function openScheduleEdit(field, idx) {
   const source = field === 'itinerary' ? schedItinerary.value
     : field === 'screenings' ? schedScreenings.value
     : field === 'speakers' ? schedSpeakers.value
+    : field === 'features' ? schedFeatures.value
     : schedDjs.value
   const item = source[idx]
   if (!item) return
@@ -1613,6 +1739,11 @@ function openScheduleEdit(field, idx) {
   Object.keys(scheduleForm).forEach((key) => {
     if (item[key] !== undefined) scheduleForm[key] = item[key]
   })
+  
+  // Handle features text field (features are stored as strings)
+  if (field === 'features' && typeof item === 'string') {
+    scheduleForm.text = item
+  }
 
   scheduleModal.field = field
   scheduleModal.sectionLabel = SECTION_LABELS[field] || field
@@ -1661,6 +1792,9 @@ function buildScheduleItem(field) {
     if (scheduleForm.url.trim()) item.url = scheduleForm.url.trim()
     return item
   }
+  if (field === 'features') {
+    return scheduleForm.text.trim()
+  }
   return null
 }
 
@@ -1674,6 +1808,7 @@ async function saveScheduleItem() {
     const source = field === 'itinerary' ? [...schedItinerary.value]
       : field === 'screenings' ? [...schedScreenings.value]
       : field === 'speakers' ? [...schedSpeakers.value]
+      : field === 'features' ? [...schedFeatures.value]
       : [...schedDjs.value]
 
     const item = buildScheduleItem(field)
@@ -1740,6 +1875,7 @@ async function deleteScheduleItem(field, idx) {
     const source = field === 'itinerary' ? [...schedItinerary.value]
       : field === 'screenings' ? [...schedScreenings.value]
       : field === 'speakers' ? [...schedSpeakers.value]
+      : field === 'features' ? [...schedFeatures.value]
       : [...schedDjs.value]
     source.splice(idx, 1)
     await saveSchedule(field, source)
@@ -1749,9 +1885,39 @@ async function deleteScheduleItem(field, idx) {
   }
 }
 
+// Feature reordering
+async function moveFeatureUp(idx) {
+  if (idx === 0) return
+  const source = [...schedFeatures.value]
+  const temp = source[idx]
+  source[idx] = source[idx - 1]
+  source[idx - 1] = temp
+  try {
+    await saveSchedule('features', source)
+  } catch (err) {
+    console.error('[AdminBBP] Failed to reorder features:', err)
+    schedSaveError.value = 'Failed to reorder. Please try again.'
+  }
+}
+
+async function moveFeatureDown(idx) {
+  if (idx === schedFeatures.value.length - 1) return
+  const source = [...schedFeatures.value]
+  const temp = source[idx]
+  source[idx] = source[idx + 1]
+  source[idx + 1] = temp
+  try {
+    await saveSchedule('features', source)
+  } catch (err) {
+    console.error('[AdminBBP] Failed to reorder features:', err)
+    schedSaveError.value = 'Failed to reorder. Please try again.'
+  }
+}
+
 // Trigger schedule load when admin switches to schedule tab
 watch(selectedRole, (val) => {
   if (val === 'schedule') loadSchedule()
+  if (val === 'features') loadSchedule()
   if (val === 'flyer') loadSchedule()
 })
 

@@ -47,6 +47,9 @@ export const BITCOIN_BLOCK_PARTY = {
   // NOTE: Live schedule managed in Firestore (bbp_config_2026/schedule).
 
   // ── Landing page feature highlights ───────────────────────────────────────
+  // NOTE: Features are now managed in Firestore (bbp_config_2026/schedule).
+  // Admin edits via /admin/bitcoinblockparty features tab propagate to landing page.
+  // This static array is deprecated and kept only as a fallback reference.
   features: [
     'Food & Drink',
     'Learning Resources',

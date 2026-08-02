@@ -5,7 +5,7 @@
 //   1. Extracts the buyer's id_code from the message body
 //   2. Looks up the order in Firebase (participants_2026)
 //   3. Marks order.paid = true
-//   4. Sends the ticket delivery email via relay proxy (/email)
+//   4. Sends the ticket delivery email via relay proxy (/reunion_email)
 //   5. Sends a Slack admin notification via relay proxy (/reunion_slack)
 //   6. Marks the Gmail message as read and labels it Processed_2026
 //
@@ -95,7 +95,7 @@ async function sendTicketEmail(email, fullname, id_code) {
     .replace('{name}', fullname || '')
     .replace('{id_code}', id_code || '')
 
-  await postRelay('/email', {
+  await postRelay('/reunion_email', {
     value1: email,
     value2: TICKET_EMAIL_SUBJECT,
     value3: body
@@ -171,13 +171,14 @@ function extractAmountFromSubject(subject) {
 
 async function sendMealConfirmationEmail(email, fullname, id_code, meal_quantity, fiat_total) {
   const body =
-    `Hi ${fullname},\n\n` +
-    `Your payment of $${fiat_total} CAD has been received and ${meal_quantity} meal ticket(s) have been added to your account.\n\n` +
-    `You can view your updated ticket at:\nhttps://festivall.ca/reunionticket\n\n` +
-    `Enter your ID code: ${id_code}\n\n` +
-    `See you at Reunion 2026!\n\nThe Reunion Team\n\n` +
-    `**************************************\nPowered by Festivall\n**************************************`
-  await postRelay('/email', {
+    `<p>Hi <strong>${fullname}</strong>,</p>` +
+    `<p>Your payment of <strong>$${fiat_total} CAD</strong> has been received and <strong>${meal_quantity} meal ticket(s)</strong> have been added to your account.</p>` +
+    `<p>You can view your updated ticket at:<br><a href="https://festivall.ca/reunionticket">https://festivall.ca/reunionticket</a></p>` +
+    `<p>Enter your ID code: <strong>${id_code}</strong></p>` +
+    `<p>See you at Reunion 2026!</p>` +
+    `<p>The Reunion Team</p>` +
+    `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
+  await postRelay('/reunion_email', {
     value1: email,
     value2: 'Reunion 2026 — Meal Tickets Added',
     value3: body

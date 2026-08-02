@@ -1,7 +1,7 @@
 /**
  * useBbpSchedule
  *
- * Provides reactive BBP schedule data (itinerary, screenings, djs) backed by
+ * Provides reactive BBP schedule data (itinerary, screenings, djs, speakers, features) backed by
  * Firestore. All schedule data is managed via the admin dashboard.
  *
  * Singleton pattern — module-level refs shared across all consumers so the
@@ -21,6 +21,7 @@ const itinerary = ref([])
 const screenings = ref([])
 const djs = ref([])
 const speakers = ref([])
+const features = ref([])
 const loading = ref(false)
 const initialized = ref(false)
 
@@ -47,6 +48,9 @@ async function loadSchedule() {
       if (Array.isArray(data.speakers)) {
         speakers.value = data.speakers
       }
+      if (Array.isArray(data.features)) {
+        features.value = data.features
+      }
     }
     // If document doesn't exist, arrays remain empty until admin adds data
   } catch (err) {
@@ -64,6 +68,7 @@ async function saveSchedule(field, array) {
 
   // Mirror locally
   if (field === 'itinerary') itinerary.value = array
+  if (field === 'features') features.value = array
   if (field === 'screenings') screenings.value = array
   if (field === 'djs') djs.value = array
   if (field === 'speakers') speakers.value = array
@@ -76,6 +81,7 @@ export function useBbpSchedule() {
   }
 
   return {
+    features: readonly(features),
     itinerary: readonly(itinerary),
     screenings: readonly(screenings),
     djs: readonly(djs),

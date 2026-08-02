@@ -1,15 +1,16 @@
-Congratulations {name}!
-We would like to invite you to participate at our upcoming festival
-in the capacity of {roles}. Your talent and energy would be a perfect addition to our lineup.
+<p>Congratulations <strong>{name}</strong>!</p>
 
-To e-sign your contract please navigate to:
-https://festivall.ca/reunioncontract
+<p>We would like to invite you to participate at our upcoming festival in the capacity of <strong>{roles}</strong>. Your talent and energy would be a perfect addition to our lineup.</p>
 
-and enter your ID_CODE: {id_code}
+<p>To e-sign your contract please navigate to:<br>
+<a href="https://festivall.ca/reunioncontract">https://festivall.ca/reunioncontract</a></p>
 
-Looking forward to your positive response.
+<p>and enter your ID_CODE: <strong>{id_code}</strong></p>
 
-Best regards,
-The Reunion Team
+<p>Looking forward to your positive response.</p>
 
-⟢Powered by Festivall⟣
+<p>Best regards,<br>
+The Reunion Team</p>
+
+<hr>
+<p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>

@@ -1,17 +1,17 @@
-Hey {name}!
+<p>Hey <strong>{name}</strong>!</p>
 
-{from_name} has transferred a Reunion 2026 ticket to you!
+<p>{from_name} has transferred a Reunion 2026 ticket to you!</p>
 
-To access your digital interactive ticket, navigate to:
-https://festivall.ca/reunionticket/
+<p>To access your digital interactive ticket, navigate to:<br>
+<a href="https://festivall.ca/reunionticket/">https://festivall.ca/reunionticket/</a></p>
 
-and enter your ID_CODE: {id_code}
-Please present this at the Front Gate along with a valid ID.
+<p>and enter your ID_CODE: <strong>{id_code}</strong><br>
+Please present this at the Front Gate along with a valid ID.</p>
 
-Order your meal packages, and earn your referral bonuses!
+<p>Order your meal packages, and earn your referral bonuses!</p>
 
+<p>Best regards,<br>
+The Reunion Team</p>
 
-Best regards,
-The Reunion Team
-
-⟢Powered by Festivall⟣
+<hr>
+<p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>

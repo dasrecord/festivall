@@ -1,12 +1,13 @@
-Hello {name},
+<p>Hello <strong>{name}</strong>,</p>
 
-Thank you so much for applying to Reunion 2026 as a {roles}.
+<p>Thank you so much for applying to Reunion 2026 as a <strong>{roles}</strong>.</p>
 
-After careful consideration, we regret to inform you that we are unable to accommodate your application this year. {reason}
+<p>After careful consideration, we regret to inform you that we are unable to accommodate your application this year. {reason}</p>
 
-We truly appreciate your interest and the time you took to apply. We hope you will consider applying again in the future, and we look forward to the possibility of working together at a future Reunion.
+<p>We truly appreciate your interest and the time you took to apply. We hope you will consider applying again in the future, and we look forward to the possibility of working together at a future Reunion.</p>
 
-Warm regards,
-The Reunion Team
+<p>Warm regards,<br>
+The Reunion Team</p>
 
-⟢Powered by Festivall⟣
+<hr>
+<p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>
