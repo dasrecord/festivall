@@ -797,8 +797,8 @@
 </template>
 
 <script>
-import { ref, computed, reactive, onMounted } from 'vue'
-import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
+import { collection, getDocs, doc, updateDoc, getDoc, arrayUnion, arrayRemove, increment, setDoc, query, where, onSnapshot } from 'firebase/firestore'
 import { transferTicket } from '@/composables/useTicketTransfer'
 import { reunion_db, festivall_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
@@ -839,6 +839,7 @@ export default {
     const applicants = ref([])
     const filteredApplicants = ref([])
     const currentCollection = ref('participants_2026')
+    const collectionUnsubscribe = ref(null)
 
     const expandedCards = reactive(new Set())
     const toggleCard = (id) => {
@@ -1017,6 +1018,12 @@ export default {
       activeFilters.value = []
       currentPage.value = 1
 
+      // Unsubscribe from previous listener if exists
+      if (collectionUnsubscribe.value) {
+        collectionUnsubscribe.value()
+        collectionUnsubscribe.value = null
+      }
+
       if (collectionCache[type]) {
         applicants.value = collectionCache[type]
         filteredApplicants.value = collectionCache[type]
@@ -1027,13 +1034,13 @@ export default {
       error.value = null
 
       try {
-        let data = []
         if (isFirestore) {
-          // Fetch data from Firestore
+          // Use real-time listener for Firestore collections
           const db = type === 'leads' ? festivall_db : reunion_db
           const applicantsCollection = collection(db, type)
-          const applicantsSnapshot = await getDocs(applicantsCollection)
-          data = applicantsSnapshot.docs.map((doc) => {
+          
+          collectionUnsubscribe.value = onSnapshot(applicantsCollection, (snapshot) => {
+            const data = snapshot.docs.map((doc) => {
             const docData = doc.data()
 
             // Normalize data structure for participants_2026 vs orders_2025
@@ -1121,46 +1128,76 @@ export default {
             }
           })
 
-          console.log(`Loaded ${data.length} documents from ${type}:`, data)
+            applicants.value = data
+              .map((applicant) => ({
+                ...applicant,
+                message: '',
+                isUpdating: false,
+                comp_amount: '',
+                comp_currency: 'CAD',
+                comp_non_monetary: '',
+                comp_tent: false,
+                comp_sleeping_bag: false,
+                comp_airport_pickup: false,
+                comp_airport_dropoff: false,
+                comp_shuttle: false,
+                comp_backline: false,
+                comp_accommodation: false,
+                comp_accommodation_notes: '',
+                comp_payment_method: ''
+              }))
+              .sort((a, b) => {
+                if (a.url && !b.url) return -1
+                if (!a.url && b.url) return 1
+                return 0
+              })
+            collectionCache[type] = applicants.value
+            filteredApplicants.value = applicants.value
+            loading.value = false
+            console.log(`Real-time: Loaded ${data.length} documents from ${type}`)
+          }, (err) => {
+            error.value = `Failed to load ${type}: ${err.message}`
+            console.error('Real-time listener error:', err)
+            loading.value = false
+          })
         } else {
           // Fetch static data from public folder
           const response = await fetch(`/data/applicants/${type}.json`)
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
-          data = await response.json()
+          const data = await response.json()
+          
+          applicants.value = data
+            .map((applicant) => ({
+              ...applicant,
+              message: '',
+              isUpdating: false,
+              comp_amount: '',
+              comp_currency: 'CAD',
+              comp_non_monetary: '',
+              comp_tent: false,
+              comp_sleeping_bag: false,
+              comp_airport_pickup: false,
+              comp_airport_dropoff: false,
+              comp_shuttle: false,
+              comp_backline: false,
+              comp_accommodation: false,
+              comp_accommodation_notes: '',
+              comp_payment_method: ''
+            }))
+            .sort((a, b) => {
+              if (a.url && !b.url) return -1
+              if (!a.url && b.url) return 1
+              return 0
+            })
+          collectionCache[type] = applicants.value
+          filteredApplicants.value = applicants.value
+          loading.value = false
         }
-
-        applicants.value = data
-          .map((applicant) => ({
-            ...applicant,
-            message: '',
-            isUpdating: false, // Track individual loading states
-            comp_amount: '',
-            comp_currency: 'CAD',
-            comp_non_monetary: '',
-            comp_tent: false,
-            comp_sleeping_bag: false,
-            comp_airport_pickup: false,
-            comp_airport_dropoff: false,
-            comp_shuttle: false,
-            comp_backline: false,
-            comp_accommodation: false,
-            comp_accommodation_notes: '',
-            comp_payment_method: ''
-          }))
-          .sort((a, b) => {
-            if (a.url && !b.url) return -1
-            if (!a.url && b.url) return 1
-            return 0
-          })
-        collectionCache[type] = applicants.value
-        filteredApplicants.value = applicants.value
       } catch (err) {
         error.value = `Failed to load ${type}: ${err.message}`
         console.error('Load error:', err)
-      } finally {
-        loading.value = false
       }
     }
 
@@ -2017,6 +2054,13 @@ export default {
       loadTicketDeliveryTemplate()
       loadTransferTemplate()
       loadDeclineTemplate()
+    })
+
+    onUnmounted(() => {
+      // Clean up real-time listener when component unmounts
+      if (collectionUnsubscribe.value) {
+        collectionUnsubscribe.value()
+      }
     })
 
     const exportMealRedemptionData = async () => {
