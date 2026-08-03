@@ -90,7 +90,7 @@ export interface AttendeeActivity {
   operator_name: string
   
   /** Source of the action (scanner type) */
-  source: 'operator_scanner' | 'self_service_kiosk' | 'admin_panel'
+  source: ScannerSource
   
   /** Device identifier (optional) */
   device_id?: string
