@@ -1128,7 +1128,8 @@ export default {
       if (payment_type === 'etransfer') {
         return `Please e-transfer $${total_price} CAD to humanoidtwo@gmail.com\nEnter your ID code in the message: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s) @ $${mealAdHocPrice} each`
       } else if (payment_type === 'bitcoin') {
-        return `Pay ${total_price} BTC (25% discount applied)\nYour ID code: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s)`
+        const payUrl = `${REUNION_FESTIVAL.btcPayServerUrl}&price=${total_price}&currency=BTC`
+        return `Pay with BTC Pay Server:\n${payUrl}\n\nAmount: ${total_price} BTC (25% discount applied)\nYour ID code: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s)`
       } else if (payment_type === 'cash') {
         return `Please bring $${total_price} CAD cash to the Food Team station.\nID code: ${order.value.id_code}\nOrder: ${meal_quantity} meal ticket(s) @ $${mealAdHocPrice} each`
       }

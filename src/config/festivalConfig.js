@@ -28,6 +28,8 @@ export const REUNION_FESTIVAL = {
     mealAdHocPrice: 15,         // à la carte meal price for ad hoc purchases
   },
 
+  btcPayServerUrl: 'https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=gZFHfJNEriUEU13jVjfnedP8RnQWsDg88897cNjPAp7',
+
   // Day Pass selectable days — derived from fridayDate/saturdayDate/sundayDate
   get dayPassOptions() {
     const fmt = (date) => date.toLocaleDateString('en-CA', {

@@ -745,7 +745,7 @@
                   :key="idx"
                   style="display:flex;justify-content:space-between;align-items:center;margin-top:0.35rem;font-size:0.8rem;"
                 >
-                  <span>{{ purchase.meal_quantity }}x — ${{ purchase.fiat_total }} {{ purchase.payment_type }}</span>
+                  <span>{{ purchase.meal_quantity }}x — ${{ purchase.fiat_total }} {{ purchase.payment_type }}<span v-if="purchase.btc_address" style="display:block;font-size:0.68rem;color:#f90;font-family:monospace;word-break:break-all;">{{ purchase.btc_address }}</span></span>
                   <button
                     @click="approvePendingMeal(applicant.id_code, purchase)"
                     style="font-size:0.7rem;padding:3px 8px;border-radius:12px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"

@@ -1176,6 +1176,7 @@ export default {
         await sendEmail(applicant.value.email, emailSubject.value.trim(), emailBody.value.trim())
         emailSubject.value = ''
         emailBody.value = ''
+        alert('Email sent successfully.')
       } catch (error) {
         console.error('Error sending email:', error)
         alert('Failed to send email')
