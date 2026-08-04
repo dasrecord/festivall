@@ -75,6 +75,7 @@ import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
 import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
 import AdminBitcoinBlockPartyView from '@/views/AdminBitcoinBlockPartyView.vue'
 import SongRequestView from '@/views/SongRequestView.vue'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 
 const routes = [
@@ -530,6 +531,18 @@ const routes = [
     name: 'videolibrary',
     component: ExternalRedirect,
     props: { url: 'https://drive.google.com/drive/folders/1l-xagltGwdnR1z7Jh5sw8PSu4h4oUjGl?usp=sharing' }
+  },
+  {
+    path: '/pay/:amount',
+    name: 'pay',
+    component: ExternalRedirect,
+    props: { url: '' },
+    beforeEnter(to: import('vue-router').RouteLocationNormalized) {
+      const amount = parseFloat(to.params.amount as string)
+      if (isNaN(amount) || amount <= 0) return '/'
+      window.location.href = `${REUNION_FESTIVAL.btcPayServerUrl}&price=${amount}&currency=CAD`
+      return false // prevent ExternalRedirect from mounting and overwriting the href
+    }
   },
   {
     path: '/bitcoin-wallet',
