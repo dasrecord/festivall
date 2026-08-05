@@ -38,7 +38,7 @@
             </div>
             <div class="info-item" v-if="applicant.id_code">
               <label>ID Code:</label>
-              <span class="id-code">#{{ applicant.id_code }}</span>
+              <a :href="firestoreUrl" target="_blank" class="id-code">#{{ applicant.id_code }}</a>
             </div>
             <div class="info-item" v-if="applicant.status">
               <label>Status:</label>
@@ -285,17 +285,7 @@
             </div>
             <div class="info-item" v-if="applicant.meal_tickets_remaining !== undefined">
               <label>Meal Tickets:</label>
-              <div class="meal-tickets-control">
-                <button
-                  @click="decrementMealTickets"
-                  :disabled="mealTickets <= 0"
-                  class="meal-btn decrement-btn"
-                >
-                  -
-                </button>
-                <span class="meal-count">{{ mealTickets }}</span>
-                <button @click="incrementMealTickets" class="meal-btn increment-btn">+</button>
-              </div>
+              <span>{{ mealTickets }}</span>
             </div>
           </div>
         </div>
@@ -785,6 +775,11 @@ export default {
     const generateContract = () => {
       router.push({ path: `/reunioncontract/${applicant.value.id_code}` })
     }
+
+    const firestoreUrl = computed(() => {
+      if (!applicant.value?.id_code) return '#'
+      return `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F${applicant.value.id_code}`
+    })
 
     const emailLink = computed(() => {
       if (!applicant.value?.email) return '#'
@@ -1351,6 +1346,7 @@ export default {
       applicant,
       loading,
       error,
+      firestoreUrl,
       previewTicket,
       generateContract,
       emailLink,
@@ -1373,6 +1369,7 @@ export default {
       clearCompensation,
       addSettime,
       removeSettime,
+      mealTickets,
       incrementMealTickets,
       decrementMealTickets,
       approvePendingMeal,
