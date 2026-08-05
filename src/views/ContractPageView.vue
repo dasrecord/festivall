@@ -511,7 +511,14 @@ export default {
             sendEmail(
               applicant.value.email,
               'Contract Signed - Reunion 2026',
-              `Hello ${applicant.value.fullname},\n\nThank you for signing your contract for Reunion 2026!\n\nYour ID Code: ${applicant.value.id_code}\n\nTo access your interactive ticket, please visit: https://festivall.ca/reunionticket\n\nSee you at the festival!\n\nBest regards,\nReunion Festival Team`
+              `<p>Hello <strong>${applicant.value.fullname}</strong>,</p>` +
+              `<p>Thank you for signing your contract for Reunion 2026!</p>` +
+              `<p>Your ID Code: <strong>${applicant.value.id_code}</strong></p>` +
+              `<p>To access your interactive ticket, please visit:<br>` +
+              `<a href="https://festivall.ca/reunionticket">https://festivall.ca/reunionticket</a></p>` +
+              `<p>See you at the festival!</p>` +
+              `<p>Best regards,<br>Reunion Festival Team</p>` +
+              `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
             ),
             sendReunionApplications(
               `:white_check_mark: Contract saved for ${applicant.value.fullname}.\n:ticket: ID Code: ${applicant.value.id_code}`
