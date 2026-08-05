@@ -912,7 +912,7 @@ export default {
         alert('SMS sent successfully!')
       } catch (error) {
         console.error('Error sending SMS:', error)
-        alert('Failed to send SMS')
+        alert(`Failed to send SMS: ${error.message}`)
       }
     }
 
