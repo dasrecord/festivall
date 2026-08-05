@@ -886,18 +886,12 @@
               Location
             </p>
           </RouterLink>
-          <div class="poster-tile" @click="activePoster = poster2025">
-            <p>
-              <img :src="poster2025" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
-              2025 Poster
-            </p>
-          </div>
-          <!-- <div @click="activePoster = poster2026">
+          <div class="poster-tile" @click="activePoster = poster2026">
             <p>
               <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
               2026 Poster
             </p>
-          </div> -->
+          </div>
           <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
             <p>
               <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
@@ -933,7 +927,12 @@
       </div>
     </div>
 
-    <PosterSplash v-if="activePoster" :src="activePoster" @dismissed="activePoster = null" />
+    <PosterSplash
+      v-if="activePoster"
+      :src="activePoster"
+      :show-reunion-info="activePoster === poster2026"
+      @dismissed="activePoster = null"
+    />
 
     <EditArtistInfoModal
       v-if="showEditArtistModal"
@@ -1019,7 +1018,7 @@ import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
 import task_icon from '@/assets/images/icons/task.png'
 import bitcoin_icon from '@/assets/images/bitcoin.svg?url'
-import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
+import poster2026 from '@/assets/images/reunion_2026_poster_v2.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'

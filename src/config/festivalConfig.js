@@ -18,7 +18,7 @@ export const REUNION_FESTIVAL = {
   festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
   gateCloseTime: '2:00 AM',                            // Nightly Front Gate closing time
 
-  // Ticket pricing — update here each year
+  // Ticket pricing info — update here each year
   pricing: {
     weekendPass: 200,
     dayPass: 100,
@@ -26,6 +26,28 @@ export const REUNION_FESTIVAL = {
     cashSurchargeWeekend: 30,   // admin fee per Weekend Pass for cash payment
     cashSurchargeDayPass: 15,   // admin fee per Day Pass for cash payment
     mealAdHocPrice: 15,         // à la carte meal price for ad hoc purchases
+  },
+
+  // Ages info
+  ages: {
+    'children 12 and under': 'free',
+    'youth 18 and under': 'require parent or guardian',
+    'door charge': 'in effect',
+  },
+
+  // Poster splash overlay colors — edit these two hexes to restyle the overlay
+  poster: {
+    colorPrimary: '#aa3a24',   // artist names, pricing values, year
+    colorAccent:  '#092442',   // workshops, labels, dividers
+    // Per-section font sizes — increase each to taste, any CSS size unit works
+    fontSizes: {
+      date:      '1.0rem',
+      year:      '1.0rem',
+      artists:   '1.0rem',
+      workshops: '1.0rem',
+      pricing:   '1.0rem',
+      ages:      '1.0rem',
+    },
   },
 
   btcPayServerUrl: 'https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=gZFHfJNEriUEU13jVjfnedP8RnQWsDg88897cNjPAp7',

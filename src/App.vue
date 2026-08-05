@@ -5,7 +5,7 @@ import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 import PosterSplash from './components/PosterSplash.vue'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
-import poster2026 from '@/assets/images/reunion_2026_poster_v1.svg?url'
+import poster2026 from '@/assets/images/reunion_2026_poster_v2.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import bitcoinBlockPartyPoster from '@/assets/images/bitcoin_block_party/bitcoin_block_party_2026_bg.svg?url'
@@ -22,6 +22,7 @@ const posterHint = ref('This was our 2025 poster.<br>The 2026 edition is going t
 const posterHintTitle = ref('')
 const posterHintBody = ref('')
 const showBitcoinBlockPartyInfo = ref(false)
+const showReunionInfo = ref(false)
 const activePosterStorageKey = ref(STORAGE_KEY)
 
 watch(
@@ -29,11 +30,12 @@ watch(
   (path) => {
     if (POSTER_ROUTES.includes(path)) {
       const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
-      posterSrc.value = poster2025
-      posterHint.value = 'This was our 2025 poster.<br>The 2026 edition is going to be Iconic'
-      posterHintTitle.value = ''
-      posterHintBody.value = ''
+      posterSrc.value = poster2026
+      posterHint.value = ''
+      posterHintTitle.value = 'Reunion Festival 2026'
+      posterHintBody.value = 'Tap anywhere to enter. Pinch or scroll to zoom.'
       showBitcoinBlockPartyInfo.value = false
+      showReunionInfo.value = true
       activePosterStorageKey.value = STORAGE_KEY
       showPoster.value = shown < 3
       return
@@ -46,6 +48,7 @@ watch(
       posterHintTitle.value = BBP.splash?.title || `${BBP.name} ${BBP.year}`
       posterHintBody.value = BBP.splash?.hintBody || 'Tap the poster to enter. Pinch or scroll to zoom.'
       showBitcoinBlockPartyInfo.value = true
+      showReunionInfo.value = false
       activePosterStorageKey.value = BITCOIN_BLOCK_PARTY_STORAGE_KEY
       showPoster.value = shown < 3
       return
@@ -53,6 +56,7 @@ watch(
 
     showPoster.value = false
     showBitcoinBlockPartyInfo.value = false
+    showReunionInfo.value = false
   },
   { immediate: true }
 )
@@ -135,6 +139,7 @@ useHead(computed(() => ({
     :hint-title="posterHintTitle"
     :hint-body="posterHintBody"
     :show-bitcoin-block-party-info="showBitcoinBlockPartyInfo"
+    :show-reunion-info="showReunionInfo"
     @dismissed="onPosterDismissed"
   />
   <RouterView />

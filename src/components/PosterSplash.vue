@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import { useReunionPosterData } from '@/composables/useReunionPosterData.js'
 
 interface ScheduleItem {
   label: string
@@ -15,11 +17,13 @@ const props = withDefaults(defineProps<{
   hintTitle?: string
   hintBody?: string
   showBitcoinBlockPartyInfo?: boolean
+  showReunionInfo?: boolean
 }>(), {
-  hint: 'This was our 2025 poster.<br>The 2026 edition is going to be Iconic',
+  hint: 'REUNION 2026<br>This year is going to be Iconic',
   hintTitle: '',
   hintBody: '',
   showBitcoinBlockPartyInfo: false,
+  showReunionInfo: false,
 })
 const emit = defineEmits<{ dismissed: [] }>()
 
@@ -54,6 +58,25 @@ function buildSplashLabel(item: ScheduleItem) {
 
 // ── Live Firestore schedule (syncs with BBP Admin edits) ─────────────────────
 const { itinerary: liveItinerary } = useBbpSchedule()
+
+// ── Reunion Firestore data ────────────────────────────────────────────────────
+const { signedArtists, signedWorkshops } = useReunionPosterData()
+
+const reunionDateStr = computed(() => {
+  const { year, month, day, endDay } = REUNION_FESTIVAL
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return `${months[month - 1]} ${day}–${endDay}, ${year}`
+})
+
+const reunionPricingRows = computed(() => [
+  { label: 'Weekend Pass', value: `$${REUNION_FESTIVAL.pricing.weekendPass}` },
+  { label: 'Day Pass', value: `$${REUNION_FESTIVAL.pricing.dayPass}` },
+  { label: 'Meal Package', value: `$${REUNION_FESTIVAL.pricing.mealPackage}` },
+])
+
+const reunionAgesRows = computed(() =>
+  Object.entries(REUNION_FESTIVAL.ages).map(([label, value]) => ({ label, value }))
+)
 
 const bbpSplashRows = computed(() => {
   // Use live Firestore schedule instead of static config so admin edits propagate
@@ -223,13 +246,50 @@ onBeforeUnmount(() => {
         >
           <div
             class="poster-zoom-wrapper"
-            :class="{ 'poster-zoom-wrapper--bbp': props.showBitcoinBlockPartyInfo }"
+            :class="{
+              'poster-zoom-wrapper--bbp': props.showBitcoinBlockPartyInfo,
+              'poster-zoom-wrapper--reunion': props.showReunionInfo,
+            }"
             :style="zoomStyle"
           >
             <!-- Inline SVG: crisp vector at any zoom level -->
             <div v-if="!svgLoadError" class="poster-svg-host" v-html="inlineSvgContent" />
             <!-- Fallback if fetch fails -->
             <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
+            <div v-if="props.showReunionInfo" class="reunion-splash-info" :style="{
+              '--r-primary':     REUNION_FESTIVAL.poster.colorPrimary,
+              '--r-accent':      REUNION_FESTIVAL.poster.colorAccent,
+              '--r-fs-date':     REUNION_FESTIVAL.poster.fontSizes.date,
+              '--r-fs-year':     REUNION_FESTIVAL.poster.fontSizes.year,
+              '--r-fs-artists':  REUNION_FESTIVAL.poster.fontSizes.artists,
+              '--r-fs-workshops':REUNION_FESTIVAL.poster.fontSizes.workshops,
+              '--r-fs-pricing':  REUNION_FESTIVAL.poster.fontSizes.pricing,
+              '--r-fs-ages':     REUNION_FESTIVAL.poster.fontSizes.ages,
+            }">
+              <!-- <div class="reunion-date">{{ reunionDateStr }}</div> -->
+              <!-- <div class="reunion-year">{{ REUNION_FESTIVAL.year }}</div> -->
+              <div class="reunion-artists">
+                <span v-for="artist in signedArtists" :key="artist.id" class="reunion-artist-chip">{{ artist.act_name }}</span>
+                <span v-if="!signedArtists.length" class="reunion-placeholder">Artists to be announced</span>
+              </div>
+              <div class="reunion-workshops">
+                <span v-for="ws in signedWorkshops" :key="ws.id" class="reunion-workshop-chip">{{ ws.workshop_title }}</span>
+                <span v-if="!signedWorkshops.length" class="reunion-placeholder">Workshops to be announced</span>
+              </div>
+
+              <!-- <div class="reunion-pricing">
+                <div v-for="row in reunionPricingRows" :key="row.label" class="reunion-pricing-row">
+                  <span class="reunion-pricing-label">{{ row.label }}</span>
+                  <span class="reunion-pricing-value">{{ row.value }}</span>
+                </div>
+              </div> -->
+              <!-- <div class="reunion-ages">
+                <div v-for="row in reunionAgesRows" :key="row.label" class="reunion-ages-row">
+                  <span class="reunion-ages-label">{{ row.label }}</span>
+                  <span class="reunion-ages-value">{{ row.value }}</span>
+                </div>
+              </div> -->
+            </div>
             <div v-if="props.showBitcoinBlockPartyInfo" class="bbp-splash-info">
               <p class="bbp-splash-eyebrow">{{ BBP.splash?.eyebrow || `${BBP.city} · Free Admission` }}</p>
               <p class="bbp-splash-date">{{ BBP.date }}</p>
@@ -259,6 +319,21 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* @font-face declarations are global even in scoped blocks */
+@font-face {
+  font-family: 'Organda MN';
+  src: url('/fonts/Organda-MN-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Organda MN';
+  src: url('/fonts/Organda-MN-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 .poster-splash {
   position: fixed;
   inset: 0;
@@ -285,6 +360,159 @@ onBeforeUnmount(() => {
   height: min(100dvh, calc(100vw * 17 / 11));
   margin: auto;
   container-type: inline-size;
+}
+/* Reunion 2026 poster: 948.091 × 1698.663 viewBox */
+.poster-zoom-wrapper--reunion {
+  width: min(100vw, calc(100dvh * 948.091 / 1698.663));
+  height: min(100dvh, calc(100vw * 1698.663 / 948.091));
+  margin: auto;
+  container-type: inline-size;
+}
+
+/* ── Reunion HTML overlay ──────────────────────────────────────────────────── */
+.reunion-splash-info {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--r-primary);
+  font-family: 'Organda MN', sans-serif;
+}
+
+/* Date — rect x=260.266 y=179.585 w=432.216 h=62.641 (viewBox 948×1698) */
+.reunion-date {
+  position: absolute;
+  left: 27.45%; top: 10.57%; width: 45.59%; height: 3.69%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--r-fs-date);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--r-primary);
+  overflow: hidden;
+}
+
+/* Year — polygon bounds x=365–583 y=242–316 */
+.reunion-year {
+  position: absolute;
+  left: 38.51%; top: 14.26%; width: 22.97%; height: 4.34%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--r-fs-year);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--r-primary);
+  overflow: hidden;
+}
+
+/* Artists — polygon bounds x=77–868 y=315–514 */
+.reunion-artists {
+  position: absolute;
+  left: 8.18%; top: 18.57%; width: 83.41%; height: 11.73%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+  overflow: hidden;
+  padding: 0.25rem;
+}
+.reunion-artist-chip {
+  font-size: var(--r-fs-artists);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--r-primary);
+  white-space: nowrap;
+}
+.reunion-artist-chip + .reunion-artist-chip::before {
+  content: '·';
+  margin-right: 0.5rem;
+  opacity: 0.5;
+}
+
+/* Workshops — polygon bounds x=78–868 y=514–663 */
+.reunion-workshops {
+  position: absolute;
+  left: 8.23%; top: 30.29%; width: 83.33%; height: 8.74%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 0.2rem 0.6rem;
+  overflow: hidden;
+  padding: 0.2rem;
+}
+.reunion-workshop-chip {
+  font-size: var(--r-fs-workshops);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--r-accent);
+  white-space: nowrap;
+}
+.reunion-workshop-chip + .reunion-workshop-chip::before {
+  content: '·';
+  margin-right: 0.5rem;
+  opacity: 0.5;
+}
+
+.reunion-placeholder {
+  font-size: var(--r-fs-workshops);
+  opacity: 0.45;
+  font-style: italic;
+}
+
+/* Pricing — rect x=127 y=931 w=276 h=149 */
+.reunion-pricing {
+  position: absolute;
+  left: 13.42%; top: 54.84%; width: 29.09%; height: 8.77%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  overflow: hidden;
+  padding: 0 0.25rem;
+}
+.reunion-pricing-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-size: var(--r-fs-pricing);
+  line-height: 1.25;
+}
+.reunion-pricing-label { color: var(--r-accent); }
+.reunion-pricing-value { font-weight: 700; white-space: nowrap; color: var(--r-primary); }
+
+/* Ages — polygon bounds x=552–817 y=930–1082 */
+.reunion-ages {
+  position: absolute;
+  left: 58.22%; top: 54.79%; width: 28.02%; height: 8.91%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  overflow: hidden;
+  padding: 0 0.25rem;
+}
+.reunion-ages-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.3rem;
+  font-size: var(--r-fs-ages);
+  line-height: 1.25;
+}
+.reunion-ages-label {
+  color: var(--r-accent);
+  text-transform: capitalize;
+}
+.reunion-ages-value {
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: capitalize;
+  color: var(--r-primary);
 }
 
 .poster-svg-host {
