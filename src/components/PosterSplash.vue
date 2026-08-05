@@ -37,6 +37,7 @@ const svgLoadError = ref(false)
 
 // ── Pan & zoom state ──────────────────────────────────────────────────────────
 const posterContainer = ref<HTMLElement | null>(null)
+const posterZoomWrapperEl = ref<HTMLElement | null>(null)
 const mapScale = ref(1)
 const mapTx = ref(0)
 const mapTy = ref(0)
@@ -88,13 +89,24 @@ const bbpSplashRows = computed(() => {
 })
 
 function clampTranslate(tx: number, ty: number, s: number) {
-  if (!posterContainer.value) return { tx, ty }
+  if (!posterContainer.value || !posterZoomWrapperEl.value) return { tx, ty }
   const cw = posterContainer.value.clientWidth
   const ch = posterContainer.value.clientHeight
-  return {
-    tx: Math.min(0, Math.max(cw * (1 - s), tx)),
-    ty: Math.min(0, Math.max(ch * (1 - s), ty)),
-  }
+  const ww = posterZoomWrapperEl.value.clientWidth
+  const wh = posterZoomWrapperEl.value.clientHeight
+  // When scaled wrapper fits inside container, keep it centered; otherwise clamp to edges
+  const minTx = cw - ww * s
+  const clampedTx = minTx > 0 ? (cw - ww * s) / 2 : Math.min(0, Math.max(minTx, tx))
+  const minTy = ch - wh * s
+  const clampedTy = minTy > 0 ? (ch - wh * s) / 2 : Math.min(0, Math.max(minTy, ty))
+  return { tx: clampedTx, ty: clampedTy }
+}
+
+function resetTransform() {
+  if (!posterContainer.value || !posterZoomWrapperEl.value) return
+  mapScale.value = 1
+  mapTx.value = (posterContainer.value.clientWidth - posterZoomWrapperEl.value.clientWidth) / 2
+  mapTy.value = (posterContainer.value.clientHeight - posterZoomWrapperEl.value.clientHeight) / 2
 }
 
 function applyZoom(newScale: number, pivotX: number, pivotY: number) {
@@ -218,8 +230,11 @@ onMounted(async () => {
     if (!res.ok) throw new Error('fetch failed')
     inlineSvgContent.value = await res.text()
     await nextTick()
+    resetTransform()
   } catch {
     svgLoadError.value = true
+    await nextTick()
+    resetTransform()
   }
 })
 
@@ -244,8 +259,7 @@ onBeforeUnmount(() => {
           @touchmove.prevent="onTouchMove"
           @touchend="onTouchEnd"
         >
-          <div
-            class="poster-zoom-wrapper"
+          <div            ref="posterZoomWrapperEl"            class="poster-zoom-wrapper"
             :class="{
               'poster-zoom-wrapper--bbp': props.showBitcoinBlockPartyInfo,
               'poster-zoom-wrapper--reunion': props.showReunionInfo,
@@ -356,16 +370,20 @@ onBeforeUnmount(() => {
   position: relative;
 }
 .poster-zoom-wrapper--bbp {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: min(100vw, calc(100dvh * 11 / 17));
   height: min(100dvh, calc(100vw * 17 / 11));
-  margin: auto;
   container-type: inline-size;
 }
 /* Reunion 2026 poster: 948.091 × 1698.663 viewBox */
 .poster-zoom-wrapper--reunion {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: min(100vw, calc(100dvh * 948.091 / 1698.663));
   height: min(100dvh, calc(100vw * 1698.663 / 948.091));
-  margin: auto;
   container-type: inline-size;
 }
 
@@ -413,24 +431,26 @@ onBeforeUnmount(() => {
   left: 8.18%; top: 18.57%; width: 83.41%; height: 11.73%;
   display: flex;
   flex-wrap: wrap;
-  align-content: center;
+  align-content: space-between;
   justify-content: center;
-  gap: 0.25rem 0.5rem;
+  gap: 0rem 0rem;
   overflow: hidden;
-  padding: 0.25rem;
+  padding: 0.5rem 0;
 }
 .reunion-artist-chip {
   font-size: var(--r-fs-artists);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  line-height: 0.5;
+  letter-spacing: 0.14em;
+  font-kerning: normal;
   text-transform: uppercase;
   color: var(--r-primary);
   white-space: nowrap;
 }
 .reunion-artist-chip + .reunion-artist-chip::before {
   content: '·';
-  margin-right: 0.5rem;
-  opacity: 0.5;
+  margin-right: 0.35rem;
+  opacity: 0.75;
 }
 
 /* Workshops — polygon bounds x=78–868 y=514–663 */
@@ -439,24 +459,25 @@ onBeforeUnmount(() => {
   left: 8.23%; top: 30.29%; width: 83.33%; height: 8.74%;
   display: flex;
   flex-wrap: wrap;
-  align-content: center;
+  align-content: space-evenly;
   justify-content: center;
-  gap: 0.2rem 0.6rem;
+  gap: 0.1rem 0.6rem;
   overflow: hidden;
-  padding: 0.2rem;
+  padding: 0.5rem 0;
 }
 .reunion-workshop-chip {
   font-size: var(--r-fs-workshops);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  line-height: 0.75;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--r-accent);
   white-space: nowrap;
 }
 .reunion-workshop-chip + .reunion-workshop-chip::before {
   content: '·';
-  margin-right: 0.5rem;
-  opacity: 0.5;
+  margin-right: 0.35rem;
+  opacity: 0.45;
 }
 
 .reunion-placeholder {

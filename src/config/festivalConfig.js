@@ -43,8 +43,8 @@ export const REUNION_FESTIVAL = {
     fontSizes: {
       date:      '1.0rem',
       year:      '1.0rem',
-      artists:   '1.0rem',
-      workshops: '1.0rem',
+      artists:   '1.3rem',
+      workshops: '1rem',
       pricing:   '1.0rem',
       ages:      '1.0rem',
     },

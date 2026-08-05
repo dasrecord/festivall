@@ -19,6 +19,9 @@ export function useReunionPosterData() {
 
       snap.docs.forEach((doc) => {
         const data = doc.data()
+        const status = `${data.status || ''}`.trim().toLowerCase()
+        if (status === 'test') return
+
         const roles = data.roles || {}
         const appData = (data.application && data.application.data) || {}
         const types = roles.applicant_types || data.applicant_types || []
