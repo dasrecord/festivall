@@ -351,9 +351,6 @@ const addOrder = async () => {
           referral_id_code: form.value.referral_id_code || null
         },
         order: orderData,
-        activity: {
-          checked_in: !!form.value.checked_in
-        },
         security: {
           recaptcha_token: recaptchaToken.value || null,
           time_on_page: Date.now() - pageLoadTime.value,

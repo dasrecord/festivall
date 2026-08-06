@@ -426,9 +426,6 @@ export default {
               meal_packages: mealPkgs,
               meal_tickets_remaining: mealRemain,
               checked_in: false
-            },
-            activity: {
-              checked_in: false
             }
           },
           { merge: true }
