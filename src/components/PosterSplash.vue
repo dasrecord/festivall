@@ -443,13 +443,13 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 0rem 0rem;
   overflow: hidden;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 .reunion-artist-chip {
   font-size: var(--r-fs-artists);
   font-weight: 700;
-  line-height: 0.5;
-  letter-spacing: 0.14em;
+  line-height: 0.8;
+  letter-spacing: 0.1em;
   font-kerning: normal;
   text-transform: uppercase;
   color: var(--r-primary);
@@ -457,7 +457,7 @@ onBeforeUnmount(() => {
 }
 .reunion-artist-chip + .reunion-artist-chip::before {
   content: '·';
-  margin-right: 0.35rem;
+  margin-right: 0.25rem;
   opacity: 0.75;
 }
 
@@ -471,7 +471,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 0.1rem 0.6rem;
   overflow: hidden;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 .reunion-workshop-chip {
   font-size: var(--r-fs-workshops);

@@ -43,8 +43,8 @@ export const REUNION_FESTIVAL = {
     fontSizes: {
       date:      'clamp(0.8rem, 2vw, 1.0rem)',
       year:      'clamp(0.8rem, 2vw, 1.0rem)',
-      artists:   'clamp(1.0rem, 2.5vw, 1.3rem)',
-      workshops: 'clamp(0.8rem, 2vw, 1rem)',
+      artists:   'clamp(1.1rem, 2.5vw, 1.35rem)',
+      workshops: 'clamp(0.9rem, 2vw, 1.2rem)',
       pricing:   'clamp(0.8rem, 2vw, 1.0rem)',
       ages:      'clamp(0.8rem, 2vw, 1.0rem)',
     },
