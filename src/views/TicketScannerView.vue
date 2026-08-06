@@ -307,10 +307,15 @@
           <h2>
             {{
               orders.reduce((total, order) => {
-                const original =
-                  parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
-                const remaining = parseInt(order.ticket_quantity) || 0
-                return total + (original - remaining)
+                // Use checked_in status instead of ticket difference
+                // (difference could be from transfers, not check-ins)
+                if (order.checked_in) {
+                  const original =
+                    parseInt(order.original_ticket_quantity) || parseInt(order.ticket_quantity) || 0
+                  const remaining = parseInt(order.ticket_quantity) || 0
+                  return total + (original - remaining)
+                }
+                return total
               }, 0)
             }}
           </h2>
