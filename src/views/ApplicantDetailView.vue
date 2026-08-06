@@ -562,6 +562,25 @@
             </div>
           </div>
 
+          <!-- Poster Order card (Artists only) -->
+          <div
+            v-if="applicant.applicant_types && applicant.applicant_types.includes('Artist')"
+            class="action-card"
+          >
+            <h2>Poster Display Order</h2>
+            <div class="poster-order-control">
+              <label style="font-size: 0.8rem; color: #999; display: block; margin-bottom: 0.3rem;">Lower numbers appear first on poster splash (leave empty for default)</label>
+              <input
+                type="number"
+                v-model.number="posterOrder"
+                placeholder="e.g. 1, 2, 3..."
+                class="poster-order-input"
+                style="width: 120px; padding: 0.4rem; font-size: 0.9rem; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 4px;"
+              />
+              <button @click="updatePosterOrder" class="add-btn" style="margin-left: 0.5rem;">Update Order</button>
+            </div>
+          </div>
+
           <!-- Meal Tickets card -->
           <div
             v-if="applicant.applicant_types && applicant.applicant_types.length"
@@ -644,6 +663,7 @@ export default {
     const declinePending = ref(false)
     const contractDeliveryPending = ref(false)
     const ticketDeliveryPending = ref(false)
+    const posterOrder = ref(null)
 
     const declineReasons = [
       { value: '', label: '— No specific reason (optional) —' },
@@ -739,9 +759,12 @@ export default {
             paid: docData.order?.paid || false,
             checked_in: docData.order?.checked_in || false,
             referral_id_code: docData.referral?.referral_id_code || '',
+            poster_order: docData.poster_order ?? null,
             createdAt: docData.createdAt || '',
             updatedAt: docData.updatedAt || ''
           }
+
+          posterOrder.value = docData.poster_order ?? null
 
           // Infer applicant types from the data if applicant_types is empty
           if (!applicant.value.applicant_types.length) {
@@ -1342,6 +1365,19 @@ export default {
       }
     }
 
+    const updatePosterOrder = async () => {
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const orderValue = posterOrder.value === '' || posterOrder.value === null ? null : Number(posterOrder.value)
+        await updateDoc(docRef, { poster_order: orderValue })
+        applicant.value.poster_order = orderValue
+        alert(`Poster order ${orderValue !== null ? `set to ${orderValue}` : 'cleared'}.`)
+      } catch (err) {
+        console.error('Error updating poster order:', err)
+        alert('Failed to update poster order. Check the console for details.')
+      }
+    }
+
     return {
       applicant,
       loading,
@@ -1391,7 +1427,9 @@ export default {
       undeclineApplicant,
       declineReason,
       declineReasons,
-      declinePending
+      declinePending,
+      posterOrder,
+      updatePosterOrder
     }
   }
 }
