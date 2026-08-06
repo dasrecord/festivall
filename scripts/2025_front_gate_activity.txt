@@ -1,0 +1,15 @@
+📊 Busiest Dates:
+Saturday, Aug 30, 2025 - 68 activities (45 check-ins, 23 check-outs)
+Friday, Aug 29, 2025 - 41 activities (37 check-ins, 4 check-outs)
+Sunday, Aug 31, 2025 - 14 activities (10 check-ins, 4 check-outs)
+⏰ Peak Hours (across all days):
+1:00 PM - 22 activities (12 in, 10 out)
+8:00 PM - 21 activities (12 in, 9 out)
+6:00 PM - 15 activities (14 in, 1 out)
+12:00 PM - 13 activities (10 in, 3 out)
+2:00 PM - 12 activities (10 in, 2 out)
+🔥 Top 3 Peak Time Slots:
+Saturday 8:00 PM - 15 activities (7 in, 8 out)
+Saturday 1:00 PM - 11 activities (4 in, 7 out)
+Saturday 2:00 PM - 11 activities (9 in, 2 out)
+The busiest gate times were Saturday afternoon/evening (1-2 PM and 8 PM), and Friday early evening (6 PM with 10 check-ins). Saturday 8 PM showed the highest mixed activity with people both arriving and departing.
