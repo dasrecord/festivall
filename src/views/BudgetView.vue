@@ -100,8 +100,8 @@
               <span v-if="advancesByArtist[a.id_code]" class="advance-tag" :title="`${fmtCAD(advancesByArtist[a.id_code])} advanced`">adv. −{{ fmtCAD(advancesByArtist[a.id_code]) }}</span>
               <span v-if="getAddons(a.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
               <span v-if="getAddons(a.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
-              <span v-if="getAddons(a.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YYZ</span>
-              <span v-if="getAddons(a.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YYZ</span>
+              <span v-if="getAddons(a.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YXE</span>
+              <span v-if="getAddons(a.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YXE</span>
             </div>
           </div>
           <div v-if="!artistsMonetary.length" class="empty-row">None set</div>
@@ -134,8 +134,8 @@
               <span class="line-amount red">{{ fmtAmount(s.parsedAmount, s.parsedCurrency) }}</span>
               <span v-if="getAddons(s.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
               <span v-if="getAddons(s.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
-              <span v-if="getAddons(s.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YYZ</span>
-              <span v-if="getAddons(s.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YYZ</span>
+              <span v-if="getAddons(s.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YXE</span>
+              <span v-if="getAddons(s.application?.data?.rates).airport_dropoff" class="addon-tag" title="Airport Dropoff">&#x2193;YXE</span>
             </div>
           </div>
           <div v-if="!staffMonetary.length" class="empty-row">None set</div>

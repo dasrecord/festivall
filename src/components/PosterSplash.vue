@@ -144,8 +144,12 @@ function onMouseMove(e: MouseEvent) {
   mapTy.value = ty
 }
 
-function onMouseUp() {
-  if (isDragging.value && !dragMoved.value) dismiss()
+function onMouseUp(e: MouseEvent) {
+  if (isDragging.value && !dragMoved.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    dismiss()
+  }
   isDragging.value = false
 }
 
@@ -205,7 +209,11 @@ function onTouchMove(e: TouchEvent) {
 
 function onTouchEnd(e: TouchEvent) {
   if (e.touches.length < 2) pinch.value.dist = 0
-  if (e.touches.length === 0 && !touchMoved.value) dismiss()
+  if (e.touches.length === 0 && !touchMoved.value) {
+    e.preventDefault()
+    e.stopPropagation()
+    dismiss()
+  }
   if (e.touches.length === 1) dragLast.value = { x: e.touches[0].clientX, y: e.touches[0].clientY }
 }
 
