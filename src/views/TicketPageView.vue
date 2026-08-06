@@ -889,19 +889,19 @@
           <div class="poster-tile" @click="activePoster = poster2026">
             <p>
               <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
-              2026 Poster
+              Poster
             </p>
           </div>
           <RouterLink :to="{ path: '/reunionmap', query: { id_code: order.id_code } }">
             <p>
               <img :src="map_icon" style="height: auto; width: 40px" alt="Grounds Map" />
-              Grounds Map
+              Grounds
             </p>
           </RouterLink>
           <RouterLink :to="{ path: '/reuniongenremap', query: { id_code: order.id_code } }">
             <p>
               <img :src="genre_map_icon" style="height: auto; width: 32px" alt="Genre Map" />
-              Genre Map
+              Genres
             </p>
           </RouterLink>
         </div>

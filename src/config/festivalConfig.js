@@ -39,14 +39,14 @@ export const REUNION_FESTIVAL = {
   poster: {
     colorPrimary: '#aa3a24',   // artist names, pricing values, year
     colorAccent:  '#092442',   // workshops, labels, dividers
-    // Per-section font sizes — increase each to taste, any CSS size unit works
+    // Per-section font sizes — use clamp(min, preferred, max) for responsive scaling
     fontSizes: {
-      date:      '1.0rem',
-      year:      '1.0rem',
-      artists:   '1.3rem',
-      workshops: '1rem',
-      pricing:   '1.0rem',
-      ages:      '1.0rem',
+      date:      'clamp(0.8rem, 2vw, 1.0rem)',
+      year:      'clamp(0.8rem, 2vw, 1.0rem)',
+      artists:   'clamp(1.0rem, 2.5vw, 1.3rem)',
+      workshops: 'clamp(0.8rem, 2vw, 1rem)',
+      pricing:   'clamp(0.8rem, 2vw, 1.0rem)',
+      ages:      'clamp(0.8rem, 2vw, 1.0rem)',
     },
   },
 

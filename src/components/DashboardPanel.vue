@@ -110,6 +110,11 @@
           Printable Flyer
         </a>
 
+        <RouterLink to="/reunion" class="scanner-link" @click="openReunionPosterSplash">
+          <img :src="vector_icon" alt="Reunion 2026 Poster Splash" class="action-icon" style="width: 32px" />
+          Poster Page
+        </RouterLink>
+
         <RouterLink to="/admin/volunteer-tasks" class="scanner-link">
           <img
             :src="volunteer_icon"
@@ -819,6 +824,7 @@ import meal_icon from '@/assets/images/icons/meals.png'
 import artist_icon from '@/assets/images/icons/artist.png'
 import lineup_icon from '@/assets/images/icons/lineup.png'
 import flyer_icon from '@/assets/images/icons/flyer.png'
+import vector_icon from '@/assets/images/icons/vectors.png'
 import reminder_icon from '@/assets/images/icons/reminder.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
 import vendor_icon from '@/assets/images/icons/vendor.png'
@@ -1282,6 +1288,10 @@ export default {
       if (applicantId) {
         router.push({ path: `/dashboard/applicant/${applicantId}` })
       }
+    }
+
+    const openReunionPosterSplash = () => {
+      sessionStorage.removeItem('posterSplashShown_2026')
     }
 
     const contractEmailBody = ref('')
@@ -2421,6 +2431,7 @@ export default {
       clearFilters,
       isFilterActive,
       goToApplicantPage,
+      openReunionPosterSplash,
       initiateContractDelivery,
       confirmContractDelivery,
       cancelContractDelivery,
@@ -2452,6 +2463,7 @@ export default {
       clearCompensation,
       lineup_icon,
       flyer_icon,
+      vector_icon,
       updateSettime,
       removeSettime,
       generateLineup,
