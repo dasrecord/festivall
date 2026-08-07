@@ -469,6 +469,25 @@
             </div>
           </div>
 
+          <!-- Slack DM card -->
+          <div
+            v-if="applicant.slack_id && applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>Slack Direct Message</h2>
+            <div class="slack-dm-section">
+              <p class="current-slack-id" style="margin-bottom: 0.5rem;">
+                <strong>Slack ID:</strong> <code>{{ applicant.slack_id }}</code>
+              </p>
+              <textarea
+                v-model="slackMessage"
+                placeholder="Type your message here..."
+                class="sms-input email-body-input"
+              ></textarea>
+              <button @click="sendSlackDMMessage" class="sms-btn">Send Slack DM</button>
+            </div>
+          </div>
+
           <!-- Compensation card -->
           <div
             v-if="applicant.applicant_types && applicant.applicant_types.length"
@@ -581,6 +600,26 @@
             </div>
           </div>
 
+          <!-- Slack ID card -->
+          <div
+            v-if="applicant.applicant_types && applicant.applicant_types.length"
+            class="action-card"
+          >
+            <h2>Slack ID</h2>
+            <div class="slack-id-section">
+              <p v-if="applicant.slack_id" class="current-slack-id">
+                <strong>Current:</strong> <code>{{ applicant.slack_id }}</code>
+              </p>
+              <input
+                type="text"
+                v-model="slack_id"
+                placeholder="Enter Slack ID (e.g., U01234ABCDE)"
+                class="sms-input"
+              />
+              <button @click="updateSlackId" class="add-btn">Update Slack ID</button>
+            </div>
+          </div>
+
           <!-- Meal Tickets card -->
           <div
             v-if="applicant.applicant_types && applicant.applicant_types.length"
@@ -664,6 +703,8 @@ export default {
     const contractDeliveryPending = ref(false)
     const ticketDeliveryPending = ref(false)
     const posterOrder = ref(null)
+    const slack_id = ref('')
+    const slackMessage = ref('')
 
     const declineReasons = [
       { value: '', label: '— No specific reason (optional) —' },
@@ -760,11 +801,13 @@ export default {
             checked_in: docData.order?.checked_in || false,
             referral_id_code: docData.referral?.referral_id_code || '',
             poster_order: docData.poster_order ?? null,
+            slack_id: docData.slack_id || '',
             createdAt: docData.createdAt || '',
             updatedAt: docData.updatedAt || ''
           }
 
           posterOrder.value = docData.poster_order ?? null
+          slack_id.value = docData.slack_id || ''
 
           // Infer applicant types from the data if applicant_types is empty
           if (!applicant.value.applicant_types.length) {
@@ -1201,6 +1244,29 @@ export default {
       }
     }
 
+    // Enhanced Slack DM function
+    const sendSlackDMMessage = async () => {
+      if (!applicant.value.slack_id) {
+        alert('No Slack ID assigned to this participant.')
+        return
+      }
+      if (!slackMessage.value.trim()) {
+        alert('Please enter a message')
+        return
+      }
+
+      try {
+        const { sendSlackDM } = await import('/scripts/notifications.js')
+        await sendSlackDM(applicant.value.slack_id, slackMessage.value.trim())
+        console.log('Slack DM sent successfully')
+        slackMessage.value = ''
+        alert('Slack DM sent successfully!')
+      } catch (error) {
+        console.error('Error sending Slack DM:', error)
+        alert(`Failed to send Slack DM: ${error.message}`)
+      }
+    }
+
     onMounted(() => {
       loadApplicant()
       loadContractDeliveryTemplate()
@@ -1378,6 +1444,28 @@ export default {
       }
     }
 
+    const updateSlackId = async () => {
+      const slackIdValue = slack_id.value.trim()
+      
+      // Optional: Basic Slack ID format validation (typically starts with U, W, or B)
+      if (slackIdValue && !/^[UWB][A-Z0-9]{8,}$/i.test(slackIdValue)) {
+        if (!confirm('The Slack ID format looks unusual. Slack IDs typically start with U, W, or B followed by alphanumeric characters. Continue anyway?')) {
+          return
+        }
+      }
+      
+      try {
+        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        await updateDoc(docRef, { slack_id: slackIdValue || null })
+        applicant.value.slack_id = slackIdValue
+        console.log('Slack ID updated for:', applicant.value.fullname)
+        alert('Slack ID updated successfully!')
+      } catch (error) {
+        console.error('Error updating Slack ID:', error)
+        alert('Failed to update Slack ID. Check console for details.')
+      }
+    }
+
     return {
       applicant,
       loading,
@@ -1429,7 +1517,11 @@ export default {
       declineReasons,
       declinePending,
       posterOrder,
-      updatePosterOrder
+      updatePosterOrder,
+      slack_id,
+      updateSlackId,
+      slackMessage,
+      sendSlackDMMessage
     }
   }
 }
@@ -2159,6 +2251,38 @@ h1 {
   color: #aaa !important;
   font-size: 10px;
   font-style: italic;
+}
+
+/* Slack ID Section */
+.slack-id-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.slack-dm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.current-slack-id {
+  margin: 0.2rem 0 0 0 !important;
+  padding: 0.25rem 0.4rem;
+  background-color: #252528;
+  border-radius: 3px;
+  color: #aaa !important;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.current-slack-id code {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 10px;
+  color: #d0d0d0;
 }
 
 /* Meal Tickets Control */

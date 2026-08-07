@@ -145,6 +145,47 @@ export const sendReunionFrontGate = async (message) => {
   }
 };
 
+export const sendSlackDM = async (slackUserId, message, blocks = null) => {
+  if (!slackUserId || !message) {
+    console.error('Slack user ID and message are required.');
+    throw new Error('Slack user ID and message are required.');
+  }
+
+  const payload = {
+    user_id: slackUserId,
+    message: message
+  };
+
+  // If blocks are provided (for rich formatting), include them
+  if (blocks) {
+    payload.blocks = blocks;
+  }
+
+  console.log('Sending Slack DM payload:', JSON.stringify(payload));
+
+  try {
+    const response = await fetch('https://relayproxy.vercel.app/slack_dm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Slack DM API responded with status: ${response.status} - ${errorData.error || response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Slack DM sent successfully:', responseData);
+    return responseData;
+  } catch (error) {
+    console.error('Slack DM sending failed:', error);
+    throw error; // Re-throw to let caller handle it
+  }
+};
+
 export const sendReunionFood = async (message) => {
   if (!message) {
     alert('Message is required.');
