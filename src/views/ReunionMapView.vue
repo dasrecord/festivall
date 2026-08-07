@@ -34,6 +34,8 @@ import iconTarget from '@/assets/images/icons/target.png'
 import iconCampsiteParking from '@/assets/images/icons/campsite_parking.png'
 import iconTent from '@/assets/images/icons/tent.png'
 import iconArtist from '@/assets/images/icons/artist.png'
+import iconFirstAidKit from '@/assets/images/icons/first_aid_kit.png'
+import iconSmokingArea from '@/assets/images/icons/smoking_area.png'
 
 // --- Claim Shift Logic ---
 const claimShiftStatus = ref('')
@@ -517,6 +519,8 @@ const INFO_ICON_PREFIXES = [
   { prefix: 'tent',                 info: { icon: iconTent,            title: 'Tent Camping',          description: 'General camping area. Set up anywhere that isn\'t reserved. No fires in the camping zone.' } },
   { prefix: 'camper',               info: { icon: iconCampsiteParking, title: 'Camper Parking',        description: 'Designated RV/camper area. See the setup crew for your assigned spot.' } },
   { prefix: 'artist_loading_zone',  info: { icon: iconArtist,          title: 'Artist Loading Zone',   description: 'Artist access only. Please keep this area clear for performers and their gear.' } },
+  { prefix: 'first_aid_kit',        info: { icon: iconFirstAidKit,     title: 'First Aid Station',     description: 'First aid supplies and medical assistance. For emergencies, call 911 and notify a volunteer immediately.' } },
+  { prefix: 'smoking_area',         info: { icon: iconSmokingArea,     title: 'Smoking Area',          description: 'Designated smoking area. Please smoke only in this zone to keep the rest of the festival smoke-free.' } },
 ]
 
 // Only show overlays for official teams, mapping to SVG icon by name
@@ -763,7 +767,8 @@ async function fetchAndUpdateCurrentAct() {
 function setupSvgListeners() {
   positionOverlays()
   // Attach click listeners to all icon elements in the inline SVG
-  const iconElements = document.querySelectorAll('[id$="_icon"], #outhouse_icon, #portapotty_icon')
+  // Matches: *_icon, *_icon-2, *_icon-3, etc.
+  const iconElements = document.querySelectorAll('[id$="_icon"], [id*="_icon-"], #outhouse_icon, #portapotty_icon')
   iconElements.forEach((el) => {
     el.style.cursor = 'pointer'
     el.style.pointerEvents = 'auto'
@@ -1186,8 +1191,18 @@ const WELCOME_SLIDES = [
   },
   {
     icon: iconWashroom,
-    title: 'Washrooms, Water & Fire Pit',
-    body: 'Tap those icons to report low supplies, a low water station, or to request more firewood.',
+    title: 'Washrooms & Fire Pit',
+    body: 'Tap washroom icons to report low supplies, or tap the fire pit to request more firewood.',
+  },
+  {
+    icon: iconPotableWater,
+    title: 'Water Station',
+    body: 'Tap the water station icon to report when it\'s running low so volunteers can refill it.',
+  },
+  {
+    icon: iconShowers,
+    title: 'Heated Showers',
+    body: 'Tap the showers icon to see step-by-step instructions for using the heated shower station.',
   },
   {
     icon: iconVolunteer,

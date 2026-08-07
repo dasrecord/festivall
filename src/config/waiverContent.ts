@@ -38,6 +38,13 @@ By accepting this waiver, you acknowledge and agree to the following safety and 
 - I will ensure children under my care follow all festival rules and safety guidelines
 - I acknowledge that certain areas (adult zones, smoking areas) are not suitable for children
 
+## Late-Night Content & Curfew
+
+- I understand that after midnight, music, volume, and artistic content will be tailored toward adult participants
+- Parents/guardians are encouraged to have children in bed by midnight for age-appropriate rest
+- I acknowledge that late-night activities may include adult themes and atmosphere
+- I am responsible for determining appropriate participation times for minors in my care
+
 ## Conduct & Respect
 
 - I will treat all attendees, staff, artists, and volunteers with respect
@@ -57,7 +64,8 @@ By accepting this waiver, you acknowledge and agree to the following safety and 
       'Safety & Personal Responsibility',
       'Smoking & Designated Adult Areas',
       'Cigarette Butt Disposal',
-      'Child Supervision',
+      'Child Supervision (15+ as Responsible Adult)',
+      'Late-Night Content & Curfew',
       'Conduct & Respect',
       'Environmental Responsibility'
     ],
