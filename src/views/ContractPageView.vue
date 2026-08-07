@@ -270,7 +270,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { setDoc, doc, query, where, collection, getDocs, runTransaction } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
-import { sendSMS, sendEmail, sendReunionApplications } from '/scripts/notifications.js'
+import { sendSMS, sendEmail, sendReunionApplications, sendReunionDevops } from '/scripts/notifications.js'
 import frog_image from '@/assets/images/frog.png'
 import festivall_emblem from '@/assets/images/festivall_emblem_black.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
@@ -311,21 +311,51 @@ export default {
 
     const loadApplicant = async (id_code) => {
       try {
+        const normalizedIdCode = id_code.toLowerCase().trim()
+
         // Use query to find participant by id_code field (like other views do)
         const q = query(
           collection(reunion_db, 'participants_2026'),
-          where('id_code', '==', id_code.toLowerCase().trim())
+          where('id_code', '==', normalizedIdCode)
         )
         const querySnapshot = await getDocs(q)
 
         if (querySnapshot.empty) {
           console.error('No participant found in participants_2026 with id_code:', id_code)
+          sendReunionDevops(
+            `⚠️ *Failed Contract Access — Invalid ID Code*\n*Page:* ${route.path}\n*Attempted Code:* \`${normalizedIdCode}\`\n*Time:* ${new Date().toISOString()}\n*User Agent:* ${navigator.userAgent}`
+          )
+          alert('Invalid ID code. Please try again.')
           router.push({ name: 'EnterIDCode' })
           return
         }
 
         const p = querySnapshot.docs[0].data()
         console.log('Found participant data:', p)
+
+        // Email verification (skip if already verified in session)
+        const storedAuth = sessionStorage.getItem(`verified_${normalizedIdCode}`)
+        if (!storedAuth) {
+          const participantEmail = (p.contact?.email || '').toLowerCase().trim()
+          const enteredEmail = prompt('For security, please enter the email address associated with this contract:')
+          
+          if (enteredEmail === null) {
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+
+          if (enteredEmail.toLowerCase().trim() !== participantEmail) {
+            sendReunionDevops(
+              `⚠️ *Failed Contract Access — Email Mismatch*\n*Page:* ${route.path}\n*ID Code:* \`${normalizedIdCode}\`\n*Entered Email:* ${enteredEmail.toLowerCase().trim()}\n*Time:* ${new Date().toISOString()}\n*User Agent:* ${navigator.userAgent}`
+            )
+            alert('Email does not match this contract. Access denied.')
+            router.push({ name: 'EnterIDCode' })
+            return
+          }
+
+          // Store verification for this session
+          sessionStorage.setItem(`verified_${normalizedIdCode}`, 'true')
+        }
 
         // Map unified structure to the flat applicant data the template expects
         const applicantData = {
@@ -359,6 +389,10 @@ export default {
         console.log('Loaded from participants_2026:', applicantData)
       } catch (error) {
         console.error('Error getting participant:', error)
+        sendReunionDevops(
+          `❌ *Contract Access Error*\n*Page:* ${route.path}\n*ID Code:* \`${id_code}\`\n*Error:* ${error.message}\n*Time:* ${new Date().toISOString()}\n*User Agent:* ${navigator.userAgent}`
+        )
+        alert('An error occurred. Please contact support.')
         router.push({ name: 'EnterIDCode' })
       }
     }
