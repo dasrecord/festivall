@@ -203,7 +203,9 @@ import {
   deleteDoc,
   onSnapshot,
   query,
-  serverTimestamp
+  serverTimestamp,
+  arrayRemove,
+  getDoc
 } from 'firebase/firestore'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
@@ -340,7 +342,8 @@ export default {
       })
     },
     resetForm() {
-      this.form = { id: '', team: '', date: '', start: '', end: '', capacity: 1, notes: '' }
+      this.form = { id: '', team: '', date: '', start: '', end: '', capacity: 1, notes: '', claimed: [] }
+      this.adminClaim = { id_code: '', fullname: '' }
     },
     editSlot(s) {
       console.log('Editing slot:', s)
@@ -373,40 +376,106 @@ export default {
       }
       if (this.form.id) {
         await updateDoc(doc(this.db, 'volunteer_slots_2026', this.form.id), payload)
+        console.log('✅ Slot updated successfully')
       } else {
         await addDoc(collection(this.db, 'volunteer_slots_2026'), {
           ...payload,
           created_at: serverTimestamp(),
           claimed: []
         })
+        console.log('✅ Slot created successfully')
       }
       this.resetForm()
-
     },
     addClaim() {
       if (!this.form.id || !this.adminClaim.id_code || !this.adminClaim.fullname) return
       // Prevent duplicate claim
       if (this.form.claimed.some(c => c.id_code === this.adminClaim.id_code)) return
+      
       this.form.claimed.push({
         id_code: this.adminClaim.id_code,
         fullname: this.adminClaim.fullname,
         claimed_at: new Date().toISOString()
       })
+      
+      // Also add to participant's claimed_slots
+      this.addClaimToParticipant(
+        this.adminClaim.id_code, 
+        this.form.id,
+        this.form.team,
+        this.form.date,
+        this.form.start,
+        this.form.end
+      )
+      
       this.adminClaim = { id_code: '', fullname: '' }
+    },
+    async addClaimToParticipant(id_code, slot_id, team, date, start, end) {
+      try {
+        const participantRef = doc(this.db, 'participants_2026', id_code)
+        const participantSnap = await getDoc(participantRef)
+        
+        if (participantSnap.exists()) {
+          const data = participantSnap.data()
+          const claimedSlots = data.volunteer?.claimed_slots || []
+          
+          // Check if already exists to avoid duplicates
+          const alreadyClaimed = claimedSlots.some(slot => slot.slot_id === slot_id)
+          if (alreadyClaimed) {
+            console.log(`Participant ${id_code} already has slot ${slot_id}`)
+            return
+          }
+          
+          // Add new slot
+          const newSlot = {
+            slot_id: slot_id,
+            team: team,
+            date: date,
+            start: start,
+            end: end,
+            created_at: new Date()
+          }
+          
+          await updateDoc(participantRef, {
+            'volunteer.claimed_slots': [...claimedSlots, newSlot]
+          })
+          
+          console.log(`Added slot ${slot_id} to participant ${id_code}`)
+        }
+      } catch (e) {
+        console.error('Failed to add claim to participant:', e)
+      }
     },
     removeClaim(idx) {
       if (!this.form.id) return
       const removed = this.form.claimed[idx]
       this.form.claimed.splice(idx, 1)
+      
       // Also remove from participant's claimed_slots
       if (removed && removed.id_code) {
-        const participantRef = doc(this.db, 'participants_2026', removed.id_code)
-        // Remove the slot with this slot id from claimed_slots
-        updateDoc(participantRef, {
-          'volunteer.claimed_slots': (window.firebase && window.firebase.firestore && window.firebase.firestore.FieldValue && window.firebase.firestore.FieldValue.arrayRemove)
-            ? window.firebase.firestore.FieldValue.arrayRemove({ slot_id: this.form.id })
-            : [] // fallback: do nothing if FieldValue is not available
-        }).catch(e => console.warn('Failed to update participant claimed_slots', e))
+        this.removeClaimFromParticipant(removed.id_code, this.form.id)
+      }
+    },
+    async removeClaimFromParticipant(id_code, slot_id) {
+      try {
+        const participantRef = doc(this.db, 'participants_2026', id_code)
+        const participantSnap = await getDoc(participantRef)
+        
+        if (participantSnap.exists()) {
+          const data = participantSnap.data()
+          const claimedSlots = data.volunteer?.claimed_slots || []
+          
+          // Filter out the slot with matching slot_id
+          const updatedSlots = claimedSlots.filter(slot => slot.slot_id !== slot_id)
+          
+          await updateDoc(participantRef, {
+            'volunteer.claimed_slots': updatedSlots
+          })
+          
+          console.log(`Removed slot ${slot_id} from participant ${id_code}`)
+        }
+      } catch (e) {
+        console.error('Failed to update participant claimed_slots:', e)
       }
     },
     async toggleActive(s) {

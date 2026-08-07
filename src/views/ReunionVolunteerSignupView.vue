@@ -10,6 +10,17 @@
       <h1 class="highlight">Volunteer Signup</h1>
       <h2 class="subtitle">Pick a shift</h2>
 
+      <!-- User's Claimed Shifts Summary -->
+      <div v-if="participant && myClaimedShifts.length > 0" class="my-shifts-summary">
+        <h3>✅ Your Claimed Shifts ({{ myClaimedShifts.length }})</h3>
+        <div class="mini-shifts">
+          <div v-for="shift in myClaimedShifts" :key="shift.id" class="mini-shift">
+            <img v-if="teamIcons[shift.team]" :src="teamIcons[shift.team]" class="mini-icon" :alt="shift.team" />
+            <span>{{ teamLabels[shift.team] || shift.team }} • {{ shift.date }} {{ shift.start }}–{{ shift.end }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="form-wrap">
         <div class="form-section">
           <label for="idCode">Your ID Code</label>
@@ -42,12 +53,55 @@
             </button>
           </div>
         </div>
+
+        <div class="filters-section">
+          <div class="filter-group">
+            <label for="dayFilter">Day</label>
+            <select id="dayFilter" v-model="selectedDay">
+              <option value="all">All Days</option>
+              <option v-for="day in availableDays" :key="day" :value="day">{{ formatDate(day) }}</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="availabilityFilter">Show</label>
+            <select id="availabilityFilter" v-model="availabilityFilter">
+              <option value="all">All Shifts</option>
+              <option value="open">Open Slots Only</option>
+              <option value="full">Full Slots Only</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="sortBy">Sort By</label>
+            <select id="sortBy" v-model="sortBy">
+              <option value="date">Date & Time</option>
+              <option value="availability">Availability</option>
+              <option value="team">Team Name</option>
+            </select>
+          </div>
+
+          <div v-if="hasActiveFilters" class="filter-group clear-filters">
+            <label>&nbsp;</label>
+            <button @click="clearFilters" class="clear-btn">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="filteredSlots.length > 0 && slots.length > 0" class="results-count">
+        Showing {{ filteredSlots.length }} shift{{ filteredSlots.length !== 1 ? 's' : '' }}
+        <span v-if="filteredSlots.length !== slots.length"> of {{ slots.length }} total</span>
       </div>
 
       <div class="slot-grid">
-        <div class="slot-card" v-for="slot in filteredSlots" :key="slot.id">
+        <div class="slot-card" v-for="slot in filteredSlots" :key="slot.id" :class="{ 'claimed-by-me': isClaimedByMe(slot) }">
           <div class="slot-left">
-            <div class="slot-team">{{ teamLabels[slot.team] || slot.team }}</div>
+            <div class="slot-header">
+              <img v-if="teamIcons[slot.team]" :src="teamIcons[slot.team]" class="team-icon" :alt="slot.team" />
+              <div class="slot-team">{{ teamLabels[slot.team] || slot.team }}</div>
+            </div>
             <div class="slot-time">{{ slot.date }} • {{ slot.start }}–{{ slot.end }}</div>
             <div class="slot-notes" v-if="slot.notes">{{ slot.notes }}</div>
           </div>
@@ -58,9 +112,27 @@
             >
               {{ Math.max(slot.remaining, 0) }} of {{ slot.capacity || 1 }} left
             </span>
-            <small v-if="slot.claimed?.length" class="claimed"
-              >Claimed by {{ slot.claimed.length }}</small
-            >
+            <div v-if="slot.claimed?.length" class="claimed-names">
+              <div v-if="slot.claimed.length === 1" class="name-badge">
+                👤 {{ slot.claimed[0].fullname }}
+              </div>
+              <div v-else-if="slot.claimed.length <= 3">
+                <div v-for="(claim, idx) in slot.claimed" :key="idx" class="name-badge">
+                  👤 {{ claim.fullname }}
+                </div>
+              </div>
+              <div v-else class="expandable-names">
+                <div v-for="(claim, idx) in slot.claimed.slice(0, 2)" :key="idx" class="name-badge">
+                  👤 {{ claim.fullname }}
+                </div>
+                <details class="more-names">
+                  <summary>+{{ slot.claimed.length - 2 }} more</summary>
+                  <div v-for="(claim, idx) in slot.claimed.slice(2)" :key="idx" class="name-badge">
+                    👤 {{ claim.fullname }}
+                  </div>
+                </details>
+              </div>
+            </div>
           </div>
           <div class="slot-right">
             <button
@@ -108,6 +180,12 @@ import {
   runTransaction
 } from 'firebase/firestore'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
+import foodteam_icon from '@/assets/images/icons/food.png'
+import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
+import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
+import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
+import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
 
 export default {
   name: 'ReunionVolunteerSignupView',
@@ -118,6 +196,14 @@ export default {
     return {
       reunion_emblem,
       db: reunion_db,
+      teamIcons: {
+        frontgate: frontgate_icon,
+        foodteam: foodteam_icon,
+        setupcrew: setupcrew_icon,
+        stagecrew: stagecrew_icon,
+        cleanupcrew: cleanupcrew_icon,
+        arcadeattendant: arcadeattendant_icon
+      },
       idCode: localStorage.getItem('volunteer_id_code') || '',
       participant: null,
       teamKeyLocal: '',
@@ -125,6 +211,9 @@ export default {
       loadingSlots: false,
       claimingId: '',
       resultMessage: '',
+      selectedDay: 'all',
+      availabilityFilter: 'all',
+      sortBy: 'date',
       teamLabels: {
         frontgate: 'Front Gate',
         foodteam: 'Food Team',
@@ -147,20 +236,58 @@ export default {
       })
       return result
     },
+    myClaimedShifts() {
+      if (!this.participant) return []
+      return this.slots.filter(slot => this.isClaimedByMe(slot))
+    },
+    availableDays() {
+      const days = [...new Set(this.slots.map(s => s.date))]
+      return days.sort()
+    },
+    hasActiveFilters() {
+      return this.selectedDay !== 'all' || 
+             this.availabilityFilter !== 'all' || 
+             (this.effectiveTeamKey !== 'multi' && this.effectiveTeamKey !== '')
+    },
     filteredSlots() {
       console.log('Filtering slots. effectiveTeamKey:', this.effectiveTeamKey)
       console.log('Total slots:', this.slots.length)
       console.log('Available teams in slots:', [...new Set(this.slots.map((s) => s.team))])
 
-      if (!this.effectiveTeamKey || this.effectiveTeamKey === 'multi') return this.slots
-      const key = this.effectiveTeamKey
-      const filtered = this.slots.filter((s) => {
-        if (key === 'stagecrew') return s.team === 'stagecrew' || s.team?.startsWith('stagecrew_')
-        if (key === 'setupcrew') return s.team === 'setupcrew' || s.team?.startsWith('setupcrew_')
-        return s.team === key
-      })
+      let filtered = this.slots
 
-      console.log(`Filtered to ${filtered.length} slots for team "${key}"`)
+      // Filter by team
+      if (this.effectiveTeamKey && this.effectiveTeamKey !== 'multi') {
+        const key = this.effectiveTeamKey
+        filtered = filtered.filter((s) => {
+          if (key === 'stagecrew') return s.team === 'stagecrew' || s.team?.startsWith('stagecrew_')
+          if (key === 'setupcrew') return s.team === 'setupcrew' || s.team?.startsWith('setupcrew_')
+          return s.team === key
+        })
+      }
+
+      // Filter by day
+      if (this.selectedDay !== 'all') {
+        filtered = filtered.filter(s => s.date === this.selectedDay)
+      }
+
+      // Filter by availability
+      if (this.availabilityFilter === 'open') {
+        filtered = filtered.filter(s => s.remaining > 0)
+      } else if (this.availabilityFilter === 'full') {
+        filtered = filtered.filter(s => s.remaining <= 0)
+      }
+
+      // Sort
+      if (this.sortBy === 'date') {
+        filtered = filtered.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))
+      } else if (this.sortBy === 'availability') {
+        filtered = filtered.sort((a, b) => b.remaining - a.remaining)
+      } else if (this.sortBy === 'team') {
+        filtered = filtered.sort((a, b) => a.team.localeCompare(b.team))
+      }
+
+      console.log(`Filtered to ${filtered.length} slots`)
       return filtered
     }
   },
@@ -253,15 +380,37 @@ export default {
       if (!this.loadingSlots) {
         const filteredCount = this.filteredSlots.length
         const totalCount = this.slots.length
-        const teamName =
-          this.effectiveTeamKey === 'multi'
-            ? 'All Teams'
-            : this.teamLabels[this.effectiveTeamKey] || this.effectiveTeamKey
-        this.resultMessage = `Refreshed! Showing ${filteredCount} of ${totalCount} slots for ${teamName}.`
+        
+        // Build filter description
+        const filters = []
+        if (this.effectiveTeamKey !== 'multi') {
+          filters.push(this.teamLabels[this.effectiveTeamKey] || this.effectiveTeamKey)
+        }
+        if (this.selectedDay !== 'all') {
+          filters.push(this.formatDate(this.selectedDay))
+        }
+        if (this.availabilityFilter === 'open') {
+          filters.push('open slots')
+        } else if (this.availabilityFilter === 'full') {
+          filters.push('full slots')
+        }
+        
+        const filterDesc = filters.length > 0 ? filters.join(', ') : 'all filters'
+        this.resultMessage = `Refreshed! Showing ${filteredCount} of ${totalCount} slots (${filterDesc})`
         setTimeout(() => {
           this.resultMessage = ''
         }, 3000)
       }
+    },
+    formatDate(dateStr) {
+      const date = new Date(dateStr + 'T00:00:00')
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    },
+    clearFilters() {
+      this.selectedDay = 'all'
+      this.availabilityFilter = 'all'
+      this.teamKeyLocal = 'multi'
+      this.sortBy = 'date'
     },
     isClaimedByMe(slot) {
       if (!this.participant) return false
@@ -353,6 +502,80 @@ export default {
   margin: 0 auto;
   padding: 1rem;
 }
+@media (max-width: 600px) {
+  .content {
+    padding: 0.5rem;
+  }
+  .header-emblem {
+    width: 80px;
+    margin: 0.25rem auto 0.5rem;
+  }
+  .highlight {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0.75rem;
+  }
+  .form-wrap {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .form-section {
+    padding: 0.5rem;
+  }
+  .filters-section {
+    padding: 0.5rem;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .my-shifts-summary {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .my-shifts-summary h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+  .mini-shift {
+    font-size: 0.85rem;
+  }
+  .results-count {
+    padding: 0.25rem;
+    margin: 0.5rem 0 0.25rem;
+    font-size: 0.85rem;
+  }
+  .slot-grid {
+    gap: 0.5rem;
+  }
+  .slot-card {
+    padding: 0.5rem;
+    gap: 0.5rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .slot-right {
+    justify-self: stretch;
+  }
+  .claim-btn {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .slot-time,
+  .slot-notes {
+    margin-left: 38px;
+  }
+  .team-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .name-badge {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
 .header-emblem {
   width: 120px;
   display: block;
@@ -419,6 +642,55 @@ select {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.filters-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+@media (max-width: 600px) {
+  .filters-section {
+    grid-template-columns: 1fr;
+  }
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+.filter-group label {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.filter-group select {
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+}
+.clear-filters {
+  display: flex;
+  align-items: flex-end;
+}
+.clear-btn {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ff6666;
+  background: transparent;
+  color: #ff6666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.clear-btn:hover {
+  background: rgba(255, 102, 102, 0.1);
+}
+
 .id-status {
   margin-top: 0.35rem;
   font-size: 0.95rem;
@@ -428,6 +700,15 @@ select {
 }
 .id-status.bad {
   color: #ff6666;
+}
+
+.results-count {
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  color: var(--reunion-frog-green, #4caf50);
 }
 
 .slot-grid {
@@ -443,17 +724,34 @@ select {
   border: 1px solid #444;
   border-radius: 10px;
   padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+.slot-card.claimed-by-me {
+  border-color: var(--reunion-frog-green, #4caf50);
+  background: rgba(76, 175, 80, 0.05);
+}
+.slot-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.team-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 .slot-team {
   font-weight: 700;
 }
 .slot-time {
   opacity: 0.9;
+  margin-left: 42px;
 }
 .slot-notes {
   color: #ccc;
   font-size: 0.9rem;
   margin-top: 0.2rem;
+  margin-left: 42px;
 }
 .remaining.full {
   color: #ff6666;
@@ -485,5 +783,74 @@ select {
   margin-top: 1rem;
   color: var(--reunion-frog-green, #4caf50);
   text-align: center;
+}
+
+.my-shifts-summary {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid var(--reunion-frog-green, #4caf50);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+.my-shifts-summary h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--reunion-frog-green, #4caf50);
+  font-size: 1rem;
+}
+.mini-shifts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.mini-shift {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+.mini-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.claimed-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+.name-badge {
+  font-size: 0.85rem;
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+.expandable-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.more-names {
+  margin-top: 0.25rem;
+}
+.more-names summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--reunion-frog-green, #4caf50);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(76, 175, 80, 0.1);
+  display: inline-block;
+  user-select: none;
+}
+.more-names summary:hover {
+  background: rgba(76, 175, 80, 0.2);
+}
+.more-names[open] summary {
+  margin-bottom: 0.25rem;
 }
 </style>
