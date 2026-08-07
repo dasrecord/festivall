@@ -105,7 +105,7 @@
           </strong>
         </p>
         <p
-          class="status-btn"
+          class="status-btn my-shifts-btn"
           v-if="
             (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
             order.applicant_types.includes('Volunteer') &&
@@ -484,6 +484,10 @@
               reunionvolunteercoordinator@festivall.ca
             </a>
           </h3>
+
+          <button v-if="mergedClaimedSlots && mergedClaimedSlots.length > 0" @click="goToShiftSignup">
+            📅 Claim More Shifts
+          </button>
           <button @click="showVolunteerShiftsModal = false">Close</button>
         </div>
       </div>
@@ -814,10 +818,11 @@
         <RouterLink
           v-if="
             (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
-            order.applicant_types.includes('Volunteer')
+            order.applicant_types.includes('Volunteer') &&
+            (!order.volunteer_claimed_slots || order.volunteer_claimed_slots.length === 0)
           "
           style="grid-column: span 2"
-          to="/reunion-volunteer-welcome"
+          :to="order.slack_id ? '/reunion-volunteer-signup' : '/reunion-volunteer-welcome'"
           id="volunteer-welcome"
         >
           <p>
@@ -1045,6 +1050,13 @@ export default {
   setup() {
     const route = useRoute()
     const router = useRouter()
+
+    const goToShiftSignup = () => {
+      if (order.value?.id_code) {
+        localStorage.setItem('volunteer_id_code', order.value.id_code)
+      }
+      router.push('/reunion-volunteer-signup')
+    }
     const { currentAct } = useLineupState()
     const order = ref(null)
     const orderUnsubscribe = ref(null)
@@ -1417,7 +1429,9 @@ export default {
               // Raw application.data for self-edit modals (read-only snapshot)
               application_data: p.application?.data || {},
               // Volunteer shift data
-              volunteer_claimed_slots: p.volunteer?.claimed_slots || []
+              volunteer_claimed_slots: p.volunteer?.claimed_slots || [],
+              // Slack integration
+              slack_id: p.slack_id || ''
             }
 
             // Load attendee slots if available (new system)
@@ -1667,6 +1681,7 @@ export default {
       showEntranceActivityModal,
       showFMRadioModal,
       showVolunteerShiftsModal,
+      goToShiftSignup,
       showAdHocMealModal,
       isAdHocSubmitting,
       showTransferModal,
@@ -1877,6 +1892,11 @@ a {
 .status-btn.waiver-btn-large {
   grid-column: span 2;
   padding: 1rem;
+}
+
+.status-btn.my-shifts-btn {
+  grid-column: span 2;
+  margin-top: 0;
 }
 
 @keyframes pulse {
