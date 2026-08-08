@@ -67,19 +67,29 @@ export const REUNION_FESTIVAL = {
   get participantsCollection() { return `participants_${this.year}` },
   priorYearCollection: 'orders_2025', // 2025 used 'orders_2025' naming; update each year
 
+  // Edit these menu items when each meal is finalized.
+  mealMenus: {
+    fridayLunch: ['Placeholder Friday Lunch'],
+    fridaySupper: ['Placeholder Friday Supper'],
+    saturdayLunch: ['Placeholder Saturday Lunch'],
+    saturdaySupper: ['Placeholder Saturday Supper'],
+    sundayLunch: ['Placeholder Sunday Lunch'],
+    sundaySupper: ['Placeholder Sunday Supper'],
+  },
+
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
   get meals() {
     const days = [
-      { label: 'Friday', date: this.fridayDate },
-      { label: 'Saturday', date: this.saturdayDate },
-      { label: 'Sunday', date: this.sundayDate },
+      { label: 'Friday', key: 'friday', date: this.fridayDate },
+      { label: 'Saturday', key: 'saturday', date: this.saturdayDate },
+      { label: 'Sunday', key: 'sunday', date: this.sundayDate },
     ]
     const toDateStr = (d) => d.toISOString().slice(0, 10) // 'YYYY-MM-DD'
     const meals = []
-    days.forEach(({ label, date }) => {
+    days.forEach(({ label, key, date }) => {
       const ds = toDateStr(date)
-      meals.push({ label: `${label} Lunch`, time: `${ds}T12:00:00-06:00`, menu: ['Placeholder Lunch 1', 'Placeholder Lunch 2'] })
-      meals.push({ label: `${label} Supper`, time: `${ds}T18:00:00-06:00`, menu: ['Placeholder Supper 1', 'Placeholder Supper 2'] })
+      meals.push({ label: `${label} Lunch`, time: `${ds}T12:00:00-06:00`, menu: this.mealMenus[`${key}Lunch`] })
+      meals.push({ label: `${label} Supper`, time: `${ds}T18:00:00-06:00`, menu: this.mealMenus[`${key}Supper`] })
     })
     return meals
   },

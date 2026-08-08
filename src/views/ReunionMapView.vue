@@ -120,6 +120,7 @@ const showShiftInfoModal = ref(false)
 const selectedShiftTeam = ref('')
 const selectedShiftIcon = ref('')
 function openShiftInfoModal(team, icon = '') {
+  closeAllModals()
   selectedShiftTeam.value = team
   selectedShiftIcon.value = icon
   showShiftInfoModal.value = true
@@ -242,6 +243,7 @@ function onMapDblClick(e) {
 }
 
 function openLostFoundDetail(item) {
+  closeAllModals()
   selectedLostFoundItem.value = item
   showLostFoundDetailCard.value = true
 }
@@ -252,6 +254,7 @@ const lostFoundItems = ref([])
 const checkinNames = ref([])
 
 function closeAllModals() {
+  showShiftInfoModal.value = false
   showKitchenModal.value = false
   showKitchenAlertsModal.value = false
   showWashroomAlertsModal.value = false
@@ -262,9 +265,11 @@ function closeAllModals() {
   showShowersModal.value = false
   showFirepitModal.value = false
   showInventoryLocationModal.value = false
+  showLostFoundDetailCard.value = false
   bioOpen.value = false
   mealCardOpen.value = false
   settingsOpen.value = false
+  showWelcomeModal.value = false
 }
 
 function openKitchenModal() {
@@ -273,6 +278,7 @@ function openKitchenModal() {
   showKitchenModal.value = true
 }
 function openLostFoundModal(item = null) {
+  closeAllModals()
   if (item) {
     editingLostFoundId.value = item.id
     alertInput.value = { ...item, type: 'lostfound' }
@@ -899,6 +905,32 @@ function openInfoModal(content) {
   showInfoModal.value = true
 }
 
+function openBioCard() {
+  closeAllModals()
+  bioOpen.value = true
+}
+
+function toggleBioCard() {
+  if (bioOpen.value) bioOpen.value = false
+  else openBioCard()
+}
+
+function toggleMealCard() {
+  if (mealCardOpen.value) mealCardOpen.value = false
+  else {
+    closeAllModals()
+    mealCardOpen.value = true
+  }
+}
+
+function toggleSettings() {
+  if (settingsOpen.value) settingsOpen.value = false
+  else {
+    closeAllModals()
+    settingsOpen.value = true
+  }
+}
+
 // ── Water station alert modal ─────────────────────────────────────────────────
 const waterStationAlerts = ref([])
 const showWaterStationModal = ref(false)
@@ -1216,6 +1248,7 @@ const showWelcomeModal = ref(false)
 const welcomeStep = ref(0)
 
 function openWelcomeModal() {
+  closeAllModals()
   welcomeStep.value = 0
   showWelcomeModal.value = true
 }
@@ -1276,7 +1309,7 @@ onMounted(async () => {
         :key="overlay.label"
         class="stage-overlay"
         :style="overlay.style"
-        @click="bioOpen = !bioOpen"
+        @click="toggleBioCard"
       >
         <!-- NOW PLAYING row -->
         <template v-if="currentAct">
@@ -1324,7 +1357,7 @@ onMounted(async () => {
         :key="index"
         class="meal-overlay"
         :style="overlay.style"
-        @click="mealCardOpen ? (mealCardOpen = false) : (closeAllModals(), mealCardOpen = true)"
+        @click="toggleMealCard"
       >
         <div class="meal-badge" :class="{ 'meal-badge--now': nextMeal.isNow }">
           {{ nextMeal.isNow ? '🍽 NOW SERVING' : '🍽 NEXT MEAL' }}
@@ -1681,7 +1714,7 @@ onMounted(async () => {
     <button class="help-toggle" @click="openWelcomeModal" title="How to use this map">?</button>
 
     <!-- Settings toggle -->
-    <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="settingsOpen = !settingsOpen" title="Map settings">⚙</button>
+    <button class="settings-toggle" :class="{ 'settings-toggle--active': settingsOpen }" @click="toggleSettings" title="Map settings">⚙</button>
     <Transition name="bio">
       <div v-if="settingsOpen" class="settings-panel">
         <p class="settings-title">Map Overlays</p>
