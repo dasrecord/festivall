@@ -32,8 +32,8 @@ watch(
       const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
       posterSrc.value = poster2026
       posterHint.value = ''
-      posterHintTitle.value = 'Reunion Festival 2026'
-      posterHintBody.value = 'Tap anywhere to enter. Pinch or scroll to zoom.'
+      posterHintTitle.value = 'REUNION 2026'
+      posterHintBody.value = 'This year is going to be Iconic'
       showBitcoinBlockPartyInfo.value = false
       showReunionInfo.value = true
       activePosterStorageKey.value = STORAGE_KEY
@@ -45,8 +45,8 @@ watch(
       const shown = parseInt(sessionStorage.getItem(BITCOIN_BLOCK_PARTY_STORAGE_KEY) || '0')
       posterSrc.value = bitcoinBlockPartyPoster
       posterHint.value = ''
-      posterHintTitle.value = BBP.splash?.title || `${BBP.name} ${BBP.year}`
-      posterHintBody.value = BBP.splash?.hintBody || 'Tap the poster to enter. Pinch or scroll to zoom.'
+      posterHintTitle.value = 'Tap anywhere to enter'
+      posterHintBody.value = 'Pinch or scroll to zoom'
       showBitcoinBlockPartyInfo.value = true
       showReunionInfo.value = false
       activePosterStorageKey.value = BITCOIN_BLOCK_PARTY_STORAGE_KEY

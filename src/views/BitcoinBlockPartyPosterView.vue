@@ -2,8 +2,8 @@
   <main class="bbp-poster-page">
     <PosterSplash
       :src="posterSrc"
-      :hint-title="BBP.splash?.title || `${BBP.name} ${BBP.year}`"
-      :hint-body="BBP.splash?.hintBody || 'Tap the poster to enter. Pinch or scroll to zoom.'"
+      hint-title="Tap anywhere to enter"
+      hint-body="Pinch or scroll to zoom"
       :show-bitcoin-block-party-info="true"
       @dismissed="goToLanding"
     />

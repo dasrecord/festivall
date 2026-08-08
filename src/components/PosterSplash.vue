@@ -20,8 +20,8 @@ const props = withDefaults(defineProps<{
   showReunionInfo?: boolean
 }>(), {
   hint: 'REUNION 2026<br>This year is going to be Iconic',
-  hintTitle: '',
-  hintBody: '',
+  hintTitle: 'REUNION 2026',
+  hintBody: 'This year is going to be Iconic',
   showBitcoinBlockPartyInfo: false,
   showReunionInfo: false,
 })
@@ -690,15 +690,14 @@ onBeforeUnmount(() => {
 }
 
 .poster-hint-copy {
-  display: inline;
-  min-width: 0;
-  line-height: inherit;
-}
-.poster-hint--bbp .poster-hint-copy {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
   line-height: 1.35;
+}
+.poster-hint--bbp .poster-hint-copy {
+  align-items: flex-start;
 }
 .poster-hint-copy strong {
   color: var(--bbp-white);
