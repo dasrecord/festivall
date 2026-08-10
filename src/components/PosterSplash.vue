@@ -4,6 +4,7 @@ import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { useReunionPosterData } from '@/composables/useReunionPosterData.js'
+import { useReunionAdmin } from '@/composables/useReunionAdmin.js'
 
 interface ScheduleItem {
   label: string
@@ -62,6 +63,26 @@ const { itinerary: liveItinerary } = useBbpSchedule()
 
 // ── Reunion Firestore data ────────────────────────────────────────────────────
 const { signedArtists, signedWorkshops } = useReunionPosterData()
+const { isAdmin } = useReunionAdmin()
+
+function exportReunionPoster() {
+  const previousTransform = {
+    scale: mapScale.value,
+    tx: mapTx.value,
+    ty: mapTy.value,
+  }
+
+  mapScale.value = 1
+  mapTx.value = 0
+  mapTy.value = 0
+
+  nextTick(() => {
+    window.print()
+    mapScale.value = previousTransform.scale
+    mapTx.value = previousTransform.tx
+    mapTy.value = previousTransform.ty
+  })
+}
 
 const reunionDateStr = computed(() => {
   const { year, month, day, endDay } = REUNION_FESTIVAL
@@ -335,6 +356,15 @@ onBeforeUnmount(() => {
             <span v-else v-html="props.hint"></span>
           </span>
         </div>
+        <button
+          v-if="isAdmin && props.showReunionInfo"
+          type="button"
+          class="poster-export-button"
+          title="Export poster as PDF"
+          @click.stop="exportReunionPoster"
+        >
+          Export PDF
+        </button>
       </div>
     </Transition>
   </Teleport>
@@ -385,13 +415,13 @@ onBeforeUnmount(() => {
   height: min(100dvh, calc(100vw * 17 / 11));
   container-type: inline-size;
 }
-/* Reunion 2026 poster: 948.091 × 1698.663 viewBox */
+/* Reunion 2026 poster: 792 × 1224 viewBox (11×17 at 72dpi) */
 .poster-zoom-wrapper--reunion {
   position: absolute;
   left: 0;
   top: 0;
-  width: min(100vw, calc(100dvh * 948.091 / 1698.663));
-  height: min(100dvh, calc(100vw * 1698.663 / 948.091));
+  width: min(100vw, calc(100dvh * 792 / 1224));
+  height: min(100dvh, calc(100vw * 1224 / 792));
   container-type: inline-size;
 }
 
@@ -433,10 +463,10 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-/* Artists — polygon bounds x=77–868 y=315–514 */
+/* Artists — x=64.594 y=232.308 w=662.811 h=182.176 (viewBox 792×1224) */
 .reunion-artists {
   position: absolute;
-  left: 8.18%; top: 18.57%; width: 83.41%; height: 11.73%;
+  left: 8.16%; top: 18.98%; width: 83.69%; height: 14.89%;
   display: flex;
   flex-wrap: wrap;
   align-content: space-between;
@@ -461,10 +491,10 @@ onBeforeUnmount(() => {
   opacity: 0.75;
 }
 
-/* Workshops — polygon bounds x=78–868 y=514–663 */
+/* Workshops — x=64.594 y=414.484 w=662.811 h=72.528 (viewBox 792×1224) */
 .reunion-workshops {
   position: absolute;
-  left: 8.23%; top: 30.29%; width: 83.33%; height: 8.74%;
+  left: 8.16%; top: 33.86%; width: 83.69%; height: 5.93%;
   display: flex;
   flex-wrap: wrap;
   align-content: space-evenly;
@@ -714,6 +744,52 @@ onBeforeUnmount(() => {
   color: var(--bbp-white);
   min-width: 1.25ch;
   text-align: center;
+}
+
+.poster-export-button {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top, 0px));
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  z-index: 10001;
+  border: 1px solid color-mix(in srgb, var(--bbp-white) 35%, transparent);
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  background: var(--bbp-black);
+  color: var(--bbp-white);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@page {
+  size: 792px 1224px;
+  margin: 0;
+}
+
+@media print {
+  :global(body > *:not(.poster-splash)) {
+    display: none !important;
+  }
+
+  .poster-splash,
+  .poster-container,
+  .poster-zoom-wrapper--reunion {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 792px !important;
+    height: 1224px !important;
+    overflow: hidden !important;
+    background: transparent !important;
+  }
+
+  .poster-zoom-wrapper--reunion {
+    transform: none !important;
+  }
+
+  .poster-hint,
+  .poster-export-button {
+    display: none !important;
+  }
 }
 
 .poster-fade-enter-active,
