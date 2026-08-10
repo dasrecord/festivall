@@ -547,6 +547,107 @@
                     <option value="BTC">BTC</option>
                   </select>
                 </div>
+                
+                <!-- Payment Schedule Toggle -->
+                <label class="addon-toggle schedule-toggle">
+                  <input type="checkbox" v-model="applicant.comp_has_payment_schedule" />
+                  <span>Payment Schedule</span>
+                </label>
+                
+                <!-- Payment Schedule Inputs -->
+                <div v-if="applicant.comp_has_payment_schedule" class="payment-schedule-inputs">
+                  <div class="schedule-section">
+                    <label class="schedule-label">Deposit (upfront)</label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0"
+                      v-model="applicant.comp_deposit_amount"
+                      placeholder="Deposit amount"
+                      class="comp-text-input schedule-input"
+                    />
+                    <label class="addon-toggle"><input type="checkbox" v-model="applicant.comp_deposit_refundable" /> Refundable</label>
+                    <input
+                      type="text"
+                      v-model="applicant.comp_deposit_notes"
+                      placeholder="Deposit notes (e.g., for travel expenses)"
+                      class="comp-text-input"
+                    />
+                  </div>
+                  <div class="schedule-section">
+                    <label class="schedule-label">Balance</label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0"
+                      v-model="applicant.comp_balance_amount"
+                      placeholder="Balance amount"
+                      class="comp-text-input schedule-input"
+                    />
+                    <select v-model="applicant.comp_balance_due" class="comp-currency-select">
+                      <option value="upfront">Upfront</option>
+                      <option value="before_event">Before Event</option>
+                      <option value="upon_completion">Upon Completion</option>
+                      <option value="after_event">After Event (30 days)</option>
+                    </select>
+                    <input
+                      type="text"
+                      v-model="applicant.comp_balance_trigger"
+                      placeholder="Trigger (e.g., Completion of 90 min set)"
+                      class="comp-text-input"
+                    />
+                  </div>
+                </div>
+                
+                <!-- Performance Terms Toggle (Artists only) -->
+                <label
+                  v-if="applicant.applicant_types && applicant.applicant_types.includes('Artist')"
+                  class="addon-toggle schedule-toggle"
+                >
+                  <input type="checkbox" v-model="applicant.comp_has_performance_terms" />
+                  <span>Performance Terms</span>
+                </label>
+                
+                <!-- Performance Terms Inputs -->
+                <div v-if="applicant.comp_has_performance_terms" class="performance-terms-inputs">
+                  <div class="perf-duration-row">
+                    <input
+                      type="number"
+                      min="0"
+                      v-model="applicant.comp_min_duration"
+                      placeholder="Min (min)"
+                      class="comp-text-input perf-input"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      v-model="applicant.comp_max_duration"
+                      placeholder="Max (min)"
+                      class="comp-text-input perf-input"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    v-model="applicant.comp_set_summary"
+                    placeholder="Set summary (e.g., 1-2 sets)"
+                    class="comp-text-input"
+                  />
+                  <input
+                    type="text"
+                    v-model="applicant.comp_performance_notes"
+                    placeholder="Performance notes"
+                    class="comp-text-input"
+                  />
+                </div>
+                
+                <!-- Special Terms -->
+                <textarea
+                  v-model="applicant.comp_special_terms"
+                  placeholder="Special contract terms (optional)"
+                  class="comp-text-input special-terms-input"
+                  rows="2"
+                ></textarea>
+                
                 <input
                   type="text"
                   v-model="applicant.comp_non_monetary"
@@ -584,6 +685,40 @@
                   <p v-if="applicant.rates.monetary_amount" class="comp-current-line">
                     <strong>Fee:</strong> ${{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
                   </p>
+                  
+                  <!-- Payment Schedule Display -->
+                  <div v-if="applicant.rates.payment_schedule" class="payment-schedule-display">
+                    <p class="schedule-header"><strong>Payment Schedule:</strong></p>
+                    <div v-if="applicant.rates.payment_schedule.deposit" class="payment-item">
+                      <span class="payment-label">Deposit (upfront):</span>
+                      <span class="payment-value">${{ applicant.rates.payment_schedule.deposit.amount }} {{ applicant.rates.monetary_currency }}</span>
+                      <span v-if="!applicant.rates.payment_schedule.deposit.refundable" class="non-refundable-badge">Non-refundable</span>
+                      <p v-if="applicant.rates.payment_schedule.deposit.notes" class="payment-notes">{{ applicant.rates.payment_schedule.deposit.notes }}</p>
+                    </div>
+                    <div v-if="applicant.rates.payment_schedule.balance" class="payment-item">
+                      <span class="payment-label">Balance:</span>
+                      <span class="payment-value">${{ applicant.rates.payment_schedule.balance.amount }} {{ applicant.rates.monetary_currency }}</span>
+                      <span class="payment-due">Due: {{ formatBalanceDue(applicant.rates.payment_schedule.balance.due) }}</span>
+                      <p v-if="applicant.rates.payment_schedule.balance.trigger" class="payment-notes">{{ applicant.rates.payment_schedule.balance.trigger }}</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Performance Terms Display -->
+                  <div v-if="applicant.rates.performance_terms" class="performance-terms-display">
+                    <p class="schedule-header"><strong>Performance Terms:</strong></p>
+                    <div class="perf-item">
+                      <span v-if="applicant.rates.performance_terms.min_duration">Min: {{ applicant.rates.performance_terms.min_duration }} min</span>
+                      <span v-if="applicant.rates.performance_terms.max_duration"> • Max: {{ applicant.rates.performance_terms.max_duration }} min</span>
+                      <span v-if="applicant.rates.performance_terms.sets"> • {{ applicant.rates.performance_terms.sets }}</span>
+                    </div>
+                    <p v-if="applicant.rates.performance_terms.notes" class="payment-notes">{{ applicant.rates.performance_terms.notes }}</p>
+                  </div>
+                  
+                  <!-- Special Terms Display -->
+                  <p v-if="applicant.rates.special_terms" class="special-terms-display">
+                    <strong>Special Terms:</strong> {{ applicant.rates.special_terms }}
+                  </p>
+                  
                   <p v-if="applicant.rates.non_monetary" class="comp-current-line">
                     <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
                   </p>
@@ -1481,6 +1616,16 @@ export default {
       }
     }
 
+    const formatBalanceDue = (due) => {
+      const dueMap = {
+        'upfront': 'Upfront',
+        'before_event': 'Before Event',
+        'upon_completion': 'Upon Completion',
+        'after_event': 'After Event (30 days)'
+      }
+      return dueMap[due] || due
+    }
+
     const updateCompensation = async (applicant) => {
       const rawAmount = applicant.comp_amount
       const amount = rawAmount !== '' && rawAmount !== null && rawAmount !== undefined
@@ -1498,8 +1643,58 @@ export default {
       }
       const hasMonetary = amount !== null && !isNaN(amount)
       const hasAddons = Object.values(addons).some(Boolean)
+      
+      // Payment Schedule
+      const hasPaymentSchedule = !!applicant.comp_has_payment_schedule
+      let payment_schedule = null
+      if (hasPaymentSchedule) {
+        const depositAmt = parseFloat(applicant.comp_deposit_amount)
+        const balanceAmt = parseFloat(applicant.comp_balance_amount)
+        
+        if (isNaN(depositAmt) && isNaN(balanceAmt)) {
+          alert('Payment schedule requires at least deposit or balance amount.')
+          return
+        }
+        
+        payment_schedule = {}
+        if (!isNaN(depositAmt) && depositAmt > 0) {
+          payment_schedule.deposit = {
+            amount: depositAmt,
+            due: 'upfront',
+            refundable: !!applicant.comp_deposit_refundable,
+            notes: (applicant.comp_deposit_notes || '').trim() || null
+          }
+        }
+        if (!isNaN(balanceAmt) && balanceAmt > 0) {
+          payment_schedule.balance = {
+            amount: balanceAmt,
+            due: applicant.comp_balance_due || 'upon_completion',
+            trigger: (applicant.comp_balance_trigger || '').trim() || null
+          }
+        }
+      }
+      
+      // Performance Terms
+      const hasPerformanceTerms = !!applicant.comp_has_performance_terms
+      let performance_terms = null
+      if (hasPerformanceTerms) {
+        const minDur = parseInt(applicant.comp_min_duration)
+        const maxDur = parseInt(applicant.comp_max_duration)
+        
+        if (!isNaN(minDur) || !isNaN(maxDur) || applicant.comp_set_summary || applicant.comp_performance_notes) {
+          performance_terms = {
+            min_duration: !isNaN(minDur) ? minDur : null,
+            max_duration: !isNaN(maxDur) ? maxDur : null,
+            sets: (applicant.comp_set_summary || '').trim() || null,
+            notes: (applicant.comp_performance_notes || '').trim() || null
+          }
+        }
+      }
+      
+      // Special Terms
+      const special_terms = (applicant.comp_special_terms || '').trim() || null
 
-      if (!hasMonetary && !non_monetary && !hasAddons) {
+      if (!hasMonetary && !non_monetary && !hasAddons && !payment_schedule && !performance_terms && !special_terms) {
         alert('Please fill in at least one compensation field before saving.')
         return
       }
@@ -1527,6 +1722,20 @@ export default {
 
       const parts = []
       if (hasMonetary) parts.push(`Fee: ${amount} ${currency}${cadHint}`)
+      if (payment_schedule) {
+        const schedParts = []
+        if (payment_schedule.deposit) schedParts.push(`Deposit: $${payment_schedule.deposit.amount} (${payment_schedule.deposit.refundable ? 'refundable' : 'non-refundable'})`)
+        if (payment_schedule.balance) schedParts.push(`Balance: $${payment_schedule.balance.amount} (${formatBalanceDue(payment_schedule.balance.due)})`)
+        parts.push(`Payment Schedule: ${schedParts.join(', ')}`)
+      }
+      if (performance_terms) {
+        const perfParts = []
+        if (performance_terms.min_duration) perfParts.push(`Min: ${performance_terms.min_duration} min`)
+        if (performance_terms.max_duration) perfParts.push(`Max: ${performance_terms.max_duration} min`)
+        if (performance_terms.sets) perfParts.push(performance_terms.sets)
+        parts.push(`Performance: ${perfParts.join(', ')}`)
+      }
+      if (special_terms) parts.push(`Special Terms: ${special_terms}`)
       if (non_monetary) parts.push(`Non-monetary: ${non_monetary}`)
       if (hasAddons) parts.push(`Add-ons: ${Object.entries(addons).filter(([, v]) => v).map(([k]) => k.replace(/_/g, ' ')).join(', ')}`)
       const accNotes = applicant.comp_accommodation && applicant.comp_accommodation_notes ? applicant.comp_accommodation_notes.trim() : null
@@ -1540,10 +1749,39 @@ export default {
         non_monetary,
         preferred_payment_method: applicant.comp_payment_method || null,
         accommodation_notes: applicant.comp_accommodation && applicant.comp_accommodation_notes ? applicant.comp_accommodation_notes.trim() : null,
-        addons
+        addons,
+        payment_schedule,
+        performance_terms,
+        special_terms
       }
 
-      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false, comp_shuttle: false, comp_backline: false, comp_accommodation: false, comp_accommodation_notes: '', comp_payment_method: '' }
+      const resetComp = { 
+        comp_amount: '', 
+        comp_currency: 'CAD', 
+        comp_non_monetary: '', 
+        comp_tent: false, 
+        comp_sleeping_bag: false, 
+        comp_airport_pickup: false, 
+        comp_airport_dropoff: false, 
+        comp_shuttle: false, 
+        comp_backline: false, 
+        comp_accommodation: false, 
+        comp_accommodation_notes: '', 
+        comp_payment_method: '',
+        comp_has_payment_schedule: false,
+        comp_deposit_amount: '',
+        comp_deposit_refundable: false,
+        comp_deposit_notes: '',
+        comp_balance_amount: '',
+        comp_balance_due: 'upon_completion',
+        comp_balance_trigger: '',
+        comp_has_performance_terms: false,
+        comp_min_duration: '',
+        comp_max_duration: '',
+        comp_set_summary: '',
+        comp_performance_notes: '',
+        comp_special_terms: ''
+      }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
         await updateDoc(docRef, { 'application.data.rates': ratesObj })
@@ -1556,7 +1794,33 @@ export default {
     }
 
     const clearCompensation = async (applicant) => {
-      const resetComp = { comp_amount: '', comp_currency: 'CAD', comp_non_monetary: '', comp_tent: false, comp_sleeping_bag: false, comp_airport_pickup: false, comp_airport_dropoff: false, comp_shuttle: false, comp_backline: false, comp_accommodation: false, comp_accommodation_notes: '', comp_payment_method: '' }
+      const resetComp = { 
+        comp_amount: '', 
+        comp_currency: 'CAD', 
+        comp_non_monetary: '', 
+        comp_tent: false, 
+        comp_sleeping_bag: false, 
+        comp_airport_pickup: false, 
+        comp_airport_dropoff: false, 
+        comp_shuttle: false, 
+        comp_backline: false, 
+        comp_accommodation: false, 
+        comp_accommodation_notes: '', 
+        comp_payment_method: '',
+        comp_has_payment_schedule: false,
+        comp_deposit_amount: '',
+        comp_deposit_refundable: false,
+        comp_deposit_notes: '',
+        comp_balance_amount: '',
+        comp_balance_due: 'upon_completion',
+        comp_balance_trigger: '',
+        comp_has_performance_terms: false,
+        comp_min_duration: '',
+        comp_max_duration: '',
+        comp_set_summary: '',
+        comp_performance_notes: '',
+        comp_special_terms: ''
+      }
       try {
         const docRef = doc(reunion_db, currentCollection.value, applicant.id)
         await updateDoc(docRef, { 'application.data.rates': null })
@@ -2459,6 +2723,7 @@ export default {
       receipt_icon,
       sendEmail,
       compensation_icon,
+      formatBalanceDue,
       updateCompensation,
       clearCompensation,
       lineup_icon,
@@ -3579,6 +3844,68 @@ a {
   white-space: nowrap;
 }
 
+.schedule-toggle {
+  margin-top: 0.3rem;
+  font-weight: 600;
+}
+
+/* Payment Schedule Inputs */
+.payment-schedule-inputs {
+  margin-top: 0.3rem;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+}
+
+.schedule-section {
+  margin-bottom: 0.4rem;
+}
+
+.schedule-section:last-child {
+  margin-bottom: 0;
+}
+
+.schedule-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #aaa;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.schedule-input {
+  margin-bottom: 0.3rem;
+}
+
+/* Performance Terms Inputs */
+.performance-terms-inputs {
+  margin-top: 0.3rem;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+}
+
+.perf-duration-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.perf-input {
+  width: 100%;
+}
+
+.special-terms-input {
+  margin-top: 0.3rem;
+  resize: vertical;
+  min-height: 50px;
+}
+
 /* ── Payment method pills ─────────────────────────────────────────────────── */
 .comp-payment-method {
   display: flex;
@@ -3629,6 +3956,85 @@ a {
   font-size: 0.7rem;
   white-space: nowrap;
 }
+
+/* Payment Schedule & Performance Terms Styles */
+.payment-schedule-display,
+.performance-terms-display {
+  margin-top: 0.4rem;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+}
+
+.special-terms-display {
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.schedule-header {
+  margin: 0 0 0.3rem 0 !important;
+  font-size: 0.75rem;
+  color: #aaa;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.payment-item,
+.perf-item {
+  margin: 0.25rem 0;
+  padding-left: 0;
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.payment-label {
+  display: inline-block;
+  min-width: 95px;
+  font-weight: 600;
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.payment-value {
+  color: #d0d0d0;
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-right: 0.4rem;
+}
+
+.payment-due {
+  color: #888;
+  font-size: 0.7rem;
+  font-style: italic;
+}
+
+.non-refundable-badge {
+  display: inline-block;
+  padding: 1px 4px;
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+  border-radius: 2px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-left: 0.3rem;
+}
+
+.payment-notes {
+  margin: 0.15rem 0 0 0 !important;
+  padding-left: 0;
+  color: #777;
+  font-size: 0.7rem;
+  font-style: italic;
+  line-height: 1.3;
+}
+
 .comp-clear-btn {
   font-size: 0.7rem;
   padding: 0.2rem 0.5rem;

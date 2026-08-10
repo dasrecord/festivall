@@ -500,6 +500,36 @@
                 <p v-if="applicant.rates.monetary_amount" class="current-compensation">
                   <strong>Fee:</strong> ${{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}
                 </p>
+                <!-- Payment Schedule Display -->
+                <div v-if="applicant.rates.payment_schedule" class="payment-schedule-display">
+                  <p class="schedule-header"><strong>Payment Schedule:</strong></p>
+                  <div v-if="applicant.rates.payment_schedule.deposit" class="payment-item">
+                    <span class="payment-label">Deposit (upfront):</span>
+                    <span class="payment-value">${{ applicant.rates.payment_schedule.deposit.amount }} {{ applicant.rates.monetary_currency }}</span>
+                    <span v-if="!applicant.rates.payment_schedule.deposit.refundable" class="non-refundable-badge">Non-refundable</span>
+                    <p v-if="applicant.rates.payment_schedule.deposit.notes" class="payment-notes">{{ applicant.rates.payment_schedule.deposit.notes }}</p>
+                  </div>
+                  <div v-if="applicant.rates.payment_schedule.balance" class="payment-item">
+                    <span class="payment-label">Balance:</span>
+                    <span class="payment-value">${{ applicant.rates.payment_schedule.balance.amount }} {{ applicant.rates.monetary_currency }}</span>
+                    <span class="payment-due">Due: {{ formatBalanceDue(applicant.rates.payment_schedule.balance.due) }}</span>
+                    <p v-if="applicant.rates.payment_schedule.balance.trigger" class="payment-notes">{{ applicant.rates.payment_schedule.balance.trigger }}</p>
+                  </div>
+                </div>
+                <!-- Performance Terms Display -->
+                <div v-if="applicant.rates.performance_terms" class="performance-terms-display">
+                  <p class="schedule-header"><strong>Performance Terms:</strong></p>
+                  <div class="perf-item">
+                    <span v-if="applicant.rates.performance_terms.min_duration">Min: {{ applicant.rates.performance_terms.min_duration }} min</span>
+                    <span v-if="applicant.rates.performance_terms.max_duration"> • Max: {{ applicant.rates.performance_terms.max_duration }} min</span>
+                    <span v-if="applicant.rates.performance_terms.sets"> • {{ applicant.rates.performance_terms.sets }}</span>
+                  </div>
+                  <p v-if="applicant.rates.performance_terms.notes" class="payment-notes">{{ applicant.rates.performance_terms.notes }}</p>
+                </div>
+                <!-- Special Terms Display -->
+                <p v-if="applicant.rates.special_terms" class="special-terms-display">
+                  <strong>Special Terms:</strong> {{ applicant.rates.special_terms }}
+                </p>
                 <p v-if="applicant.rates.non_monetary" class="current-compensation">
                   <strong>Non-monetary:</strong> {{ applicant.rates.non_monetary }}
                 </p>
@@ -521,7 +551,7 @@
                   step="any"
                   min="0"
                   v-model="compAmount"
-                  placeholder="Amount"
+                  placeholder="Total Amount"
                   class="compensation-input"
                 />
                 <select v-model="compCurrency" class="comp-currency-select">
@@ -533,6 +563,107 @@
                   <option value="BTC">BTC</option>
                 </select>
               </div>
+              
+              <!-- Payment Schedule Toggle -->
+              <label class="addon-toggle schedule-toggle">
+                <input type="checkbox" v-model="hasPaymentSchedule" />
+                <span>Payment Schedule (deposit + balance)</span>
+              </label>
+              
+              <!-- Payment Schedule Fields -->
+              <div v-if="hasPaymentSchedule" class="payment-schedule-inputs">
+                <div class="schedule-section">
+                  <label class="schedule-label">Deposit (upfront)</label>
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    v-model="depositAmount"
+                    placeholder="Deposit amount"
+                    class="compensation-input schedule-input"
+                  />
+                  <label class="addon-toggle"><input type="checkbox" v-model="depositRefundable" /> Refundable</label>
+                  <input
+                    type="text"
+                    v-model="depositNotes"
+                    placeholder="Deposit notes (e.g., for travel expenses)"
+                    class="compensation-input"
+                  />
+                </div>
+                <div class="schedule-section">
+                  <label class="schedule-label">Balance</label>
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    v-model="balanceAmount"
+                    placeholder="Balance amount"
+                    class="compensation-input schedule-input"
+                  />
+                  <select v-model="balanceDue" class="comp-currency-select">
+                    <option value="upfront">Upfront</option>
+                    <option value="before_event">Before Event</option>
+                    <option value="upon_completion">Upon Completion</option>
+                    <option value="after_event">After Event (30 days)</option>
+                  </select>
+                  <input
+                    type="text"
+                    v-model="balanceTrigger"
+                    placeholder="Trigger (e.g., Completion of 90 min set)"
+                    class="compensation-input"
+                  />
+                </div>
+              </div>
+              
+              <!-- Performance Terms Toggle (Artists only) -->
+              <label
+                v-if="applicant.applicant_types && applicant.applicant_types.includes('Artist')"
+                class="addon-toggle schedule-toggle"
+              >
+                <input type="checkbox" v-model="hasPerformanceTerms" />
+                <span>Performance Terms</span>
+              </label>
+              
+              <!-- Performance Terms Fields -->
+              <div v-if="hasPerformanceTerms" class="performance-terms-inputs">
+                <div class="perf-duration-row">
+                  <input
+                    type="number"
+                    min="0"
+                    v-model="minDuration"
+                    placeholder="Min (min)"
+                    class="compensation-input perf-input"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    v-model="maxDuration"
+                    placeholder="Max (min)"
+                    class="compensation-input perf-input"
+                  />
+                </div>
+                <input
+                  type="text"
+                  v-model="setSummary"
+                  placeholder="Set summary (e.g., 1-2 sets)"
+                  class="compensation-input"
+                />
+                <input
+                  type="text"
+                  v-model="performanceNotes"
+                  placeholder="Performance notes"
+                  class="compensation-input"
+                />
+              </div>
+              
+              <!-- Special Terms -->
+              <textarea
+                v-model="specialTerms"
+                placeholder="Special contract terms (optional)"
+                class="compensation-input special-terms-input"
+                rows="2"
+              ></textarea>
+              
               <!-- Non-monetary -->
               <input
                 type="text"
@@ -690,6 +821,21 @@ export default {
     const compCurrency = ref('CAD')
     const compNonMonetary = ref('')
     const compAddons = ref({ tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false })
+    // Payment schedule fields
+    const hasPaymentSchedule = ref(false)
+    const depositAmount = ref('')
+    const depositRefundable = ref(false)
+    const depositNotes = ref('')
+    const balanceAmount = ref('')
+    const balanceDue = ref('upon_completion')
+    const balanceTrigger = ref('')
+    // Performance terms fields
+    const hasPerformanceTerms = ref(false)
+    const minDuration = ref('')
+    const maxDuration = ref('')
+    const setSummary = ref('')
+    const performanceNotes = ref('')
+    const specialTerms = ref('')
     const newSettime = ref('')
     const newSettimeType = ref('act')
     const contractEmailBody = ref('')
@@ -1008,7 +1154,64 @@ export default {
       const hasMonetary = amount !== null && !isNaN(amount)
       const hasAddons = Object.values(addons).some(Boolean)
 
-      if (!hasMonetary && !non_monetary && !hasAddons) {
+      // Payment schedule validation
+      let payment_schedule = null
+      if (hasPaymentSchedule.value) {
+        const deposit = depositAmount.value !== '' ? parseFloat(depositAmount.value) : null
+        const balance = balanceAmount.value !== '' ? parseFloat(balanceAmount.value) : null
+        
+        if (deposit !== null || balance !== null) {
+          payment_schedule = {}
+          if (deposit !== null && deposit > 0) {
+            payment_schedule.deposit = {
+              amount: deposit,
+              due: 'upfront',
+              refundable: depositRefundable.value,
+              notes: depositNotes.value.trim() || null
+            }
+          }
+          if (balance !== null && balance > 0) {
+            payment_schedule.balance = {
+              amount: balance,
+              due: balanceDue.value,
+              trigger: balanceTrigger.value.trim() || null
+            }
+          }
+          
+          // Validate that deposit + balance equals total amount (if both specified)
+          if (deposit !== null && balance !== null && hasMonetary) {
+            const scheduleTotal = deposit + balance
+            if (Math.abs(scheduleTotal - amount) > 0.01) {
+              if (!confirm(`⚠️ Payment schedule total ($${scheduleTotal}) doesn't match total amount ($${amount}). Continue anyway?`)) {
+                return
+              }
+            }
+          }
+        }
+      }
+
+      // Performance terms
+      let performance_terms = null
+      if (hasPerformanceTerms.value) {
+        const min = minDuration.value !== '' ? parseInt(minDuration.value) : null
+        const max = maxDuration.value !== '' ? parseInt(maxDuration.value) : null
+        const sets = setSummary.value.trim() || null
+        const notes = performanceNotes.value.trim() || null
+        
+        if (min !== null || max !== null || sets || notes) {
+          performance_terms = {
+            min_duration: min,
+            max_duration: max,
+            sets: sets,
+            notes: notes
+          }
+        }
+      }
+
+      // Special terms
+      const special_terms = specialTerms.value.trim() || null
+
+      if (!hasMonetary && !non_monetary && !hasAddons && !payment_schedule && !performance_terms && !special_terms) {
         alert('Please fill in at least one compensation field before saving.')
         return
       }
@@ -1017,7 +1220,7 @@ export default {
         return
       }
       if (hasMonetary && currency === 'BTC' && amount > 0.1) {
-        if (!confirm(`\u26a0\ufe0f ${amount} BTC is a very large amount. Are you sure?`)) return
+        if (!confirm(`⚠️ ${amount} BTC is a very large amount. Are you sure?`)) return
       }
 
       let warnPrefix = ''
@@ -1026,35 +1229,70 @@ export default {
         if (currency !== 'CAD') {
           const cad = await fetchCADEquivalent(amount, currency)
           if (cad !== null) {
-            cadHint = ` (\u2248 $${cad.toLocaleString('en-CA', { maximumFractionDigits: 0 })} CAD)`
-            if (cad >= 5000) warnPrefix = `\u26a0\ufe0f WARNING: \u2248 $${cad.toFixed(0)} CAD equivalent.\n\n`
+            cadHint = ` (≈ $${cad.toLocaleString('en-CA', { maximumFractionDigits: 0 })} CAD)`
+            if (cad >= 5000) warnPrefix = `⚠️ WARNING: ≈ $${cad.toFixed(0)} CAD equivalent.\n\n`
           }
         } else if (amount >= 5000) {
-          warnPrefix = `\u26a0\ufe0f WARNING: $${amount} CAD is a large amount.\n\n`
+          warnPrefix = `⚠️ WARNING: $${amount} CAD is a large amount.\n\n`
         }
       }
 
       const parts = []
       if (hasMonetary) parts.push(`Fee: ${amount} ${currency}${cadHint}`)
+      if (payment_schedule) {
+        if (payment_schedule.deposit) {
+          parts.push(`  - Deposit: $${payment_schedule.deposit.amount} (${payment_schedule.deposit.refundable ? 'refundable' : 'non-refundable'})`)
+        }
+        if (payment_schedule.balance) {
+          parts.push(`  - Balance: $${payment_schedule.balance.amount} (${payment_schedule.balance.due})`)
+        }
+      }
+      if (performance_terms) {
+        const perfParts = []
+        if (performance_terms.min_duration) perfParts.push(`${performance_terms.min_duration}min`)
+        if (performance_terms.max_duration) perfParts.push(`${performance_terms.max_duration}min`)
+        if (perfParts.length) parts.push(`Performance: ${perfParts.join('-')}`)
+      }
+      if (special_terms) parts.push(`Special Terms: ${special_terms}`)
       if (non_monetary) parts.push(`Non-monetary: ${non_monetary}`)
       if (hasAddons) parts.push(`Add-ons: ${Object.entries(addons).filter(([, v]) => v).map(([k]) => k.replace(/_/g, ' ')).join(', ')}`)
+      
       if (!confirm(`${warnPrefix}Save compensation?\n\n${parts.join('\n')}`)) return
 
       const ratesObj = {
         monetary_amount: hasMonetary ? amount : null,
         monetary_currency: hasMonetary ? currency : null,
         non_monetary,
-        addons
+        addons,
+        payment_schedule,
+        performance_terms,
+        special_terms
       }
 
       try {
         const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
         await updateDoc(docRef, { 'application.data.rates': ratesObj })
         applicant.value.rates = ratesObj
+        
+        // Reset all fields
         compAmount.value = ''
         compCurrency.value = 'CAD'
         compNonMonetary.value = ''
         compAddons.value = { tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false }
+        hasPaymentSchedule.value = false
+        depositAmount.value = ''
+        depositRefundable.value = false
+        depositNotes.value = ''
+        balanceAmount.value = ''
+        balanceDue.value = 'upon_completion'
+        balanceTrigger.value = ''
+        hasPerformanceTerms.value = false
+        minDuration.value = ''
+        maxDuration.value = ''
+        setSummary.value = ''
+        performanceNotes.value = ''
+        specialTerms.value = ''
+        
         console.log('Compensation updated for:', applicant.value.fullname)
       } catch (error) {
         console.error('Error updating compensation:', error)
@@ -1067,10 +1305,26 @@ export default {
           const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
           await updateDoc(docRef, { 'application.data.rates': null })
           applicant.value.rates = null
+          
+          // Reset all compensation fields
           compAmount.value = ''
           compCurrency.value = 'CAD'
           compNonMonetary.value = ''
           compAddons.value = { tent: false, sleeping_bag: false, airport_pickup: false, airport_dropoff: false }
+          hasPaymentSchedule.value = false
+          depositAmount.value = ''
+          depositRefundable.value = false
+          depositNotes.value = ''
+          balanceAmount.value = ''
+          balanceDue.value = 'upon_completion'
+          balanceTrigger.value = ''
+          hasPerformanceTerms.value = false
+          minDuration.value = ''
+          maxDuration.value = ''
+          setSummary.value = ''
+          performanceNotes.value = ''
+          specialTerms.value = ''
+          
           console.log('Compensation cleared for:', applicant.value.fullname)
         } catch (error) {
           console.error('Error clearing compensation:', error)
@@ -1466,6 +1720,16 @@ export default {
       }
     }
 
+    const formatBalanceDue = (due) => {
+      const dueMap = {
+        'upfront': 'Upfront',
+        'before_event': 'Before Event',
+        'upon_completion': 'Upon Completion',
+        'after_event': 'After Event (30 days)'
+      }
+      return dueMap[due] || due
+    }
+
     return {
       applicant,
       loading,
@@ -1482,6 +1746,20 @@ export default {
       compCurrency,
       compNonMonetary,
       compAddons,
+      hasPaymentSchedule,
+      depositAmount,
+      depositRefundable,
+      depositNotes,
+      balanceAmount,
+      balanceDue,
+      balanceTrigger,
+      hasPerformanceTerms,
+      minDuration,
+      maxDuration,
+      setSummary,
+      performanceNotes,
+      specialTerms,
+      formatBalanceDue,
       newSettime,
       newSettimeType,
       confirmPaymentReceived,
@@ -1962,8 +2240,14 @@ h1 {
 }
 
 .sms-input::placeholder,
-.compensation-input::placeholder {
+.compensation-input::placeholder,
+.settime-input::placeholder,
+.schedule-input::placeholder,
+.perf-input::placeholder,
+.special-terms-input::placeholder {
   color: #666;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 /* Button Variations */
@@ -2448,4 +2732,152 @@ h1 {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+/* Payment Schedule & Performance Terms Styles */
+.payment-schedule-display,
+.performance-terms-display {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+}
+
+.special-terms-display {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid #444;
+  border-radius: 3px;
+  font-size: 10px;
+  color: #bbb;
+}
+
+.schedule-header {
+  margin: 0 0 0.4rem 0 !important;
+  font-size: 10px;
+  color: #aaa;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-item,
+.perf-item {
+  margin: 0.3rem 0;
+  padding-left: 0;
+  font-size: 10px;
+  color: #bbb;
+}
+
+.payment-label {
+  display: inline-block;
+  min-width: 100px;
+  font-weight: 600;
+  color: #999;
+  font-size: 10px;
+}
+
+.payment-value {
+  color: #d0d0d0;
+  font-weight: 600;
+  font-size: 10px;
+  margin-right: 0.5rem;
+}
+
+.payment-due {
+  color: #888;
+  font-size: 9px;
+  font-style: italic;
+}
+
+.non-refundable-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+  border-radius: 2px;
+  font-size: 9px;
+  font-weight: 600;
+  margin-left: 0.4rem;
+}
+
+.payment-notes {
+  margin: 0.2rem 0 0 0 !important;
+  padding-left: 0;
+  color: #777;
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* Payment Schedule Inputs */
+.schedule-toggle {
+  display: block !important;
+  margin: 0.5rem 0 0.3rem 0;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #bbb;
+}
+
+.schedule-toggle span {
+  margin-left: 0.4rem;
+}
+
+.payment-schedule-inputs,
+.performance-terms-inputs {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+.schedule-section {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #333;
+}
+
+.schedule-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.schedule-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #999;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.schedule-input {
+  margin-bottom: 0.4rem;
+}
+
+.perf-duration-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.perf-input {
+  margin: 0;
+}
+
+.special-terms-input {
+  resize: vertical;
+  min-height: 50px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
 </style>

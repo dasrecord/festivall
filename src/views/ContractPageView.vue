@@ -106,9 +106,54 @@
         <span v-if="applicant.rates.monetary_amount">${{ applicant.rates.monetary_amount }} {{ applicant.rates.monetary_currency }}</span>
         <span v-if="applicant.rates.monetary_amount && applicant.rates.non_monetary"> — </span>
         <span v-if="applicant.rates.non_monetary">{{ applicant.rates.non_monetary }}</span>
-        <br v-if="applicant.rates.monetary_amount" />
-        <template v-if="applicant.rates.monetary_amount"><strong>Balance Due:</strong> no later than 30 days after Event Date unless otherwise specified.</template>
       </p>
+      
+      <!-- Payment Schedule -->
+      <template v-if="applicant.rates.payment_schedule">
+        <p><strong>Payment Schedule:</strong></p>
+        <ul style="margin-top: 0.5rem;">
+          <li v-if="applicant.rates.payment_schedule.deposit">
+            <strong>Deposit (Upfront):</strong> ${{ applicant.rates.payment_schedule.deposit.amount }} {{ applicant.rates.monetary_currency }}
+            <span v-if="!applicant.rates.payment_schedule.deposit.refundable"> — Non-refundable</span>
+            <span v-if="applicant.rates.payment_schedule.deposit.notes"> — {{ applicant.rates.payment_schedule.deposit.notes }}</span>
+          </li>
+          <li v-if="applicant.rates.payment_schedule.balance">
+            <strong>Balance:</strong> ${{ applicant.rates.payment_schedule.balance.amount }} {{ applicant.rates.monetary_currency }}
+            — Due {{ formatBalanceDue(applicant.rates.payment_schedule.balance.due) }}
+            <span v-if="applicant.rates.payment_schedule.balance.trigger"> upon {{ applicant.rates.payment_schedule.balance.trigger.toLowerCase() }}</span>
+          </li>
+        </ul>
+      </template>
+      <template v-else>
+        <p v-if="applicant.rates.monetary_amount">
+          <strong>Balance Due:</strong> no later than 30 days after Event Date unless otherwise specified.
+        </p>
+      </template>
+      
+      <!-- Performance Terms -->
+      <template v-if="applicant.rates.performance_terms && (applicant.rates.performance_terms.min_duration || applicant.rates.performance_terms.max_duration || applicant.rates.performance_terms.sets)">
+        <p><strong>Performance Terms:</strong></p>
+        <ul style="margin-top: 0.5rem;">
+          <li v-if="applicant.rates.performance_terms.min_duration || applicant.rates.performance_terms.max_duration">
+            <strong>Duration:</strong>
+            <span v-if="applicant.rates.performance_terms.min_duration">{{ applicant.rates.performance_terms.min_duration }} minutes</span>
+            <span v-if="applicant.rates.performance_terms.min_duration && applicant.rates.performance_terms.max_duration"> to </span>
+            <span v-if="applicant.rates.performance_terms.max_duration">{{ applicant.rates.performance_terms.max_duration }} minutes</span>
+          </li>
+          <li v-if="applicant.rates.performance_terms.sets">
+            <strong>Sets:</strong> {{ applicant.rates.performance_terms.sets }}
+          </li>
+          <li v-if="applicant.rates.performance_terms.notes">
+            {{ applicant.rates.performance_terms.notes }}
+          </li>
+        </ul>
+      </template>
+      
+      <!-- Special Terms -->
+      <p v-if="applicant.rates.special_terms" style="margin-top: 1rem;">
+        <strong>Special Terms:</strong> {{ applicant.rates.special_terms }}
+      </p>
+      
       <div v-if="applicant.rates.addons && (applicant.rates.addons.tent || applicant.rates.addons.sleeping_bag || applicant.rates.addons.airport_pickup || applicant.rates.addons.airport_dropoff || applicant.rates.addons.shuttle || applicant.rates.addons.backline || applicant.rates.addons.accommodation)">
         <p><strong>Provided Accommodations &amp; Logistics:</strong></p>
         <ul>
@@ -303,10 +348,21 @@ export default {
       const baseCopy = 'One complimentary meal package for each festival day worked.'
 
       if (remainingTickets >= totalTickets) {
-        return `${baseCopy} Starting with ${totalTickets} meal ${ticketLabel} for the 2 day minimum. Additional packages will be added based on your participation.`
+        return `${baseCopy} (${totalTickets} ${ticketLabel} total)`
+      } else {
+        const used = totalTickets - remainingTickets
+        return `${baseCopy} (${used}/${totalTickets} ${ticketLabel} used)`
       }
+    }
 
-      return `${baseCopy} (${remainingTickets} of ${totalTickets} meal ${ticketLabel} remaining)`
+    const formatBalanceDue = (due) => {
+      const dueMap = {
+        'upfront': 'upfront',
+        'before_event': 'before Event Date',
+        'upon_completion': 'upon completion of performance',
+        'after_event': 'no later than 30 days after Event Date'
+      }
+      return dueMap[due] || due
     }
 
     const loadApplicant = async (id_code) => {
@@ -600,7 +656,8 @@ export default {
       sendSMS,
       sendEmail,
       formatDate,
-      formatMealTicketSummary
+      formatMealTicketSummary,
+      formatBalanceDue
     }
   }
 }
@@ -655,6 +712,18 @@ ul {
   text-indent: -1.25rem;
 }
 
+ul li {
+  margin: 0.25rem 0;
+}
+
+ul li strong {
+  color: #333;
+}
+
+ul li span {
+  text-indent: 0;
+}
+
 .signature {
   margin-top: 2rem;
   display: flex;
@@ -688,5 +757,39 @@ button {
 
 button:hover {
   background-color: #404224;
+}
+
+.signed-contract {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f0f8f0;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 8px;
+}
+
+.signed-contract p {
+  margin: 0.5rem 0;
+  color: #2d5016;
+}
+
+@media print {
+  .contract-page {
+    box-shadow: none;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  button {
+    display: none;
+  }
+
+  h1, h2 {
+    color: #5b7c42 !important;
+  }
+
+  h3 {
+    color: #c00000 !important;
+  }
 }
 </style>
