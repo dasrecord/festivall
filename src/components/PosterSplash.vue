@@ -65,23 +65,57 @@ const { itinerary: liveItinerary } = useBbpSchedule()
 const { signedArtists, signedWorkshops } = useReunionPosterData()
 const { isAdmin } = useReunionAdmin()
 
-function exportReunionPoster() {
+async function exportReunionPoster() {
+  if (!posterZoomWrapperEl.value) return
+
+  // Store original transform
   const previousTransform = {
     scale: mapScale.value,
     tx: mapTx.value,
     ty: mapTy.value,
   }
 
+  // Reset transform for export
   mapScale.value = 1
   mapTx.value = 0
   mapTy.value = 0
 
-  nextTick(() => {
-    window.print()
+  await nextTick()
+
+  try {
+    // Import html2canvas dynamically
+    const { default: html2canvas } = await import('html2canvas')
+
+    // 300 DPI for print: 11×17 inches = 3300×5100 pixels
+    const scale = 3300 / posterZoomWrapperEl.value.offsetWidth
+
+    const canvas = await html2canvas(posterZoomWrapperEl.value, {
+      scale,
+      backgroundColor: null,
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+    })
+
+    // Convert to blob and download
+    canvas.toBlob((blob) => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `reunion-2026-poster-${Date.now()}.png`
+      link.click()
+      URL.revokeObjectURL(url)
+    }, 'image/png', 1.0)
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Export failed. Please try again.')
+  } finally {
+    // Restore original transform
     mapScale.value = previousTransform.scale
     mapTx.value = previousTransform.tx
     mapTy.value = previousTransform.ty
-  })
+  }
 }
 
 const reunionDateStr = computed(() => {
@@ -360,10 +394,10 @@ onBeforeUnmount(() => {
           v-if="isAdmin && props.showReunionInfo"
           type="button"
           class="poster-export-button"
-          title="Export poster as PDF"
+          title="Export poster as high-resolution PNG (300 DPI, 11×17 inches)"
           @click.stop="exportReunionPoster"
         >
-          Export PDF
+          Export PNG
         </button>
       </div>
     </Transition>
@@ -501,7 +535,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 0.1rem 0.6rem;
   overflow: hidden;
-  padding: 0.25rem 0;
+  padding: 0rem 0;
 }
 .reunion-workshop-chip {
   font-size: var(--r-fs-workshops);
@@ -759,37 +793,6 @@ onBeforeUnmount(() => {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-}
-
-@page {
-  size: 792px 1224px;
-  margin: 0;
-}
-
-@media print {
-  :global(body > *:not(.poster-splash)) {
-    display: none !important;
-  }
-
-  .poster-splash,
-  .poster-container,
-  .poster-zoom-wrapper--reunion {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 792px !important;
-    height: 1224px !important;
-    overflow: hidden !important;
-    background: transparent !important;
-  }
-
-  .poster-zoom-wrapper--reunion {
-    transform: none !important;
-  }
-
-  .poster-hint,
-  .poster-export-button {
-    display: none !important;
-  }
 }
 
 .poster-fade-enter-active,
