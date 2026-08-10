@@ -334,14 +334,20 @@ onBeforeUnmount(() => {
             <!-- Fallback if fetch fails -->
             <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
             <div v-if="props.showReunionInfo" class="reunion-splash-info" :style="{
-              '--r-primary':     REUNION_FESTIVAL.poster.colorPrimary,
-              '--r-accent':      REUNION_FESTIVAL.poster.colorAccent,
-              '--r-fs-date':     REUNION_FESTIVAL.poster.fontSizes.date,
-              '--r-fs-year':     REUNION_FESTIVAL.poster.fontSizes.year,
-              '--r-fs-artists':  REUNION_FESTIVAL.poster.fontSizes.artists,
-              '--r-fs-workshops':REUNION_FESTIVAL.poster.fontSizes.workshops,
-              '--r-fs-pricing':  REUNION_FESTIVAL.poster.fontSizes.pricing,
-              '--r-fs-ages':     REUNION_FESTIVAL.poster.fontSizes.ages,
+              '--r-primary':           REUNION_FESTIVAL.poster.colorPrimary,
+              '--r-accent':            REUNION_FESTIVAL.poster.colorAccent,
+              '--r-fs-date-mobile':    REUNION_FESTIVAL.poster.fontSizesMobile.date,
+              '--r-fs-year-mobile':    REUNION_FESTIVAL.poster.fontSizesMobile.year,
+              '--r-fs-artists-mobile': REUNION_FESTIVAL.poster.fontSizesMobile.artists,
+              '--r-fs-workshops-mobile': REUNION_FESTIVAL.poster.fontSizesMobile.workshops,
+              '--r-fs-pricing-mobile': REUNION_FESTIVAL.poster.fontSizesMobile.pricing,
+              '--r-fs-ages-mobile':    REUNION_FESTIVAL.poster.fontSizesMobile.ages,
+              '--r-fs-date-desktop':   REUNION_FESTIVAL.poster.fontSizesDesktop.date,
+              '--r-fs-year-desktop':   REUNION_FESTIVAL.poster.fontSizesDesktop.year,
+              '--r-fs-artists-desktop': REUNION_FESTIVAL.poster.fontSizesDesktop.artists,
+              '--r-fs-workshops-desktop': REUNION_FESTIVAL.poster.fontSizesDesktop.workshops,
+              '--r-fs-pricing-desktop': REUNION_FESTIVAL.poster.fontSizesDesktop.pricing,
+              '--r-fs-ages-desktop':   REUNION_FESTIVAL.poster.fontSizesDesktop.ages,
             }">
               <!-- <div class="reunion-date">{{ reunionDateStr }}</div> -->
               <!-- <div class="reunion-year">{{ REUNION_FESTIVAL.year }}</div> -->
@@ -475,12 +481,18 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--r-fs-date);
+  font-size: var(--r-fs-date-mobile);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--r-primary);
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .reunion-date {
+    font-size: var(--r-fs-date-desktop);
+  }
 }
 
 /* Year — polygon bounds x=365–583 y=242–316 */
@@ -490,11 +502,17 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--r-fs-year);
+  font-size: var(--r-fs-year-mobile);
   font-weight: 900;
   letter-spacing: 0.06em;
   color: var(--r-primary);
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .reunion-year {
+    font-size: var(--r-fs-year-desktop);
+  }
 }
 
 /* Artists — x=64.594 y=232.308 w=662.811 h=182.176 (viewBox 792×1224) */
@@ -510,7 +528,7 @@ onBeforeUnmount(() => {
   padding: 0.25rem 0;
 }
 .reunion-artist-chip {
-  font-size: var(--r-fs-artists);
+  font-size: var(--r-fs-artists-mobile);
   font-weight: 700;
   line-height: 0.8;
   letter-spacing: 0.1em;
@@ -519,9 +537,14 @@ onBeforeUnmount(() => {
   color: var(--r-primary);
   white-space: nowrap;
 }
+
+@media (min-width: 768px) {
+  .reunion-artist-chip {
+    font-size: var(--r-fs-artists-desktop);
+  }
+}
 .reunion-artist-chip + .reunion-artist-chip::before {
   content: '·';
-  margin-right: 0.25rem;
   opacity: 0.75;
 }
 
@@ -538,7 +561,7 @@ onBeforeUnmount(() => {
   padding: 0rem 0;
 }
 .reunion-workshop-chip {
-  font-size: var(--r-fs-workshops);
+  font-size: var(--r-fs-workshops-mobile);
   font-weight: 700;
   line-height: 0.75;
   letter-spacing: 0.14em;
@@ -546,16 +569,28 @@ onBeforeUnmount(() => {
   color: var(--r-accent);
   white-space: nowrap;
 }
+
+@media (min-width: 768px) {
+  .reunion-workshop-chip {
+    font-size: var(--r-fs-workshops-desktop);
+  }
+}
 .reunion-workshop-chip + .reunion-workshop-chip::before {
   content: '·';
-  margin-right: 0.35rem;
+  margin-right: 0.25rem;
   opacity: 0.45;
 }
 
 .reunion-placeholder {
-  font-size: var(--r-fs-workshops);
+  font-size: var(--r-fs-workshops-mobile);
   opacity: 0.45;
   font-style: italic;
+}
+
+@media (min-width: 768px) {
+  .reunion-placeholder {
+    font-size: var(--r-fs-workshops-desktop);
+  }
 }
 
 /* Pricing — rect x=127 y=931 w=276 h=149 */

@@ -39,15 +39,25 @@ export const REUNION_FESTIVAL = {
   poster: {
     colorPrimary: '#aa3a24',   // artist names, pricing values, year
     colorAccent:  '#092442',   // workshops, labels, dividers
-    // Per-section font sizes — use clamp(min, preferred, max) for responsive scaling
-    // Use cqw (container query width) instead of vw for consistent print/screen sizing
-    fontSizes: {
-      date:      'clamp(0.8rem, 4cqw, 1.0rem)',
-      year:      'clamp(0.8rem, 4cqw, 1.0rem)',
-      artists:   'clamp(0.8rem, 5cqw, 1.8rem)',
-      workshops: 'clamp(0.7rem, 4cqw, 1.2rem)',
-      pricing:   'clamp(0.8rem, 4cqw, 1.0rem)',
-      ages:      'clamp(0.8rem, 4cqw, 1.0rem)',
+    
+    // Mobile font sizes (screens < 768px)
+    fontSizesMobile: {
+      date:      '0.8rem',
+      year:      '0.8rem',
+      artists:   '1.2rem',
+      workshops: '0.8rem',
+      pricing:   '0.8rem',
+      ages:      '0.8rem',
+    },
+    
+    // Desktop font sizes (screens >= 768px)
+    fontSizesDesktop: {
+      date:      '1.0rem',
+      year:      '1.0rem',
+      artists:   '1.8rem',
+      workshops: '1.2rem',
+      pricing:   '1.0rem',
+      ages:      '1.0rem',
     },
   },
 
