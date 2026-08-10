@@ -77,8 +77,9 @@
     <!-- ── QUICK ACTIONS ──────────────────────────────────────────────────── -->
     <section class="bbp-quick-actions" aria-label="Bitcoin Block Party quick actions">
       <div class="bbp-container bbp-quick-actions-inner">
-        <router-link :to="BBP.routes.quiz">Bitcoin Quiz</router-link>
-        <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }">Wallet Guide</router-link>
+        <router-link :to="BBP.routes.quiz">Quiz</router-link>
+        <a href="https://blockparty-raffle.these3remain.workers.dev" target="_blank" rel="noopener noreferrer">Raffle</a>
+        <router-link :to="{ path: BBP.routes.wallet, query: { wallet: 'zeus' } }">Wallets</router-link>
         <router-link :to="BBP.routes.sponsorApply">Sponsor</router-link>
         <router-link :to="BBP.routes.vendorApply">Vendor</router-link>
         <router-link :to="BBP.routes.volunteer">Volunteer</router-link>
