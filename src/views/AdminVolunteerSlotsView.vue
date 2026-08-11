@@ -164,18 +164,36 @@
           <h4 class="group-title">
             {{ group.label }} <small v-if="group.items.length">• {{ group.items.length }}</small>
           </h4>
-          <div class="slot-row" v-for="s in group.items" :key="s.id">
-            <div class="meta">
-              <strong>{{ teamLabels[s.team] || s.team }}</strong>
-              <div>{{ s.date }} • {{ s.start }}-{{ s.end }}</div>
-              <small v-if="s.notes">{{ s.notes }}</small>
+          <div class="slot-card" v-for="s in group.items" :key="s.id" :class="[statusOf(s), s.active === false ? 'inactive' : '']">
+            <div class="slot-left">
+              <div class="slot-header">
+                <img v-if="teamIcons[s.team]" :src="teamIcons[s.team]" class="team-icon" :alt="s.team" />
+                <div class="slot-team">{{ teamLabels[s.team] || s.team }}</div>
+              </div>
+              <div class="slot-time">{{ s.date }} • {{ s.start }}–{{ s.end }}</div>
+              <div class="slot-notes" v-if="s.notes">{{ s.notes }}</div>
             </div>
-            <div class="capacity">
-              {{ s.claimed?.length || 0 }} / {{ s.capacity }} filled
-              <span class="status-badge" :class="statusOf(s)">{{ statusOf(s) }}</span>
-              <span v-if="s.active === false" class="inactive-badge">inactive</span>
+            <div class="slot-mid">
+              <div class="slot-status-row">
+                <span class="remaining" :class="statusOf(s)">{{ (s.claimed?.length || 0) }} / {{ s.capacity || 1 }} filled</span>
+                <span class="status-badge" :class="statusOf(s)">{{ statusOf(s) }}</span>
+                <span v-if="s.active === false" class="inactive-badge">inactive</span>
+              </div>
+              <div v-if="s.claimed?.length" class="claimed-names">
+                <div v-if="s.claimed.length === 1" class="name-badge">👤 {{ s.claimed[0].fullname || '(no name)' }}</div>
+                <div v-else-if="s.claimed.length <= 3">
+                  <div v-for="(claim, idx) in s.claimed" :key="idx" class="name-badge">👤 {{ claim.fullname || '(no name)' }}</div>
+                </div>
+                <div v-else class="expandable-names">
+                  <div v-for="(claim, idx) in s.claimed.slice(0, 2)" :key="idx" class="name-badge">👤 {{ claim.fullname || '(no name)' }}</div>
+                  <details class="more-names">
+                    <summary>+{{ s.claimed.length - 2 }} more</summary>
+                    <div v-for="(claim, idx) in s.claimed.slice(2)" :key="idx" class="name-badge">👤 {{ claim.fullname || '(no name)' }}</div>
+                  </details>
+                </div>
+              </div>
             </div>
-            <div class="controls">
+            <div class="slot-right">
               <button class="btn outline" @click="editSlot(s)">Edit</button>
               <button class="btn" @click="toggleActive(s)">
                 {{ s.active !== false ? 'Disable' : 'Enable' }}
@@ -208,6 +226,13 @@ import {
   getDoc
 } from 'firebase/firestore'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.png'
+import foodteam_icon from '@/assets/images/icons/food.png'
+import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
+import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
+import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
+import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
+import location_icon from '@/assets/images/icons/location.png'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 export default {
@@ -225,6 +250,15 @@ export default {
           cleanupcrew: 'Cleanup Crew',
           arcadeattendant: 'Arcade Attendant',
           artisttransportation: 'Artist Transportation'
+        },
+        teamIcons: {
+          frontgate: frontgate_icon,
+          foodteam: foodteam_icon,
+          setupcrew: setupcrew_icon,
+          stagecrew: stagecrew_icon,
+          cleanupcrew: cleanupcrew_icon,
+          arcadeattendant: arcadeattendant_icon,
+          artisttransportation: location_icon
         },
         teamFilter: 'all',
         groupBy: 'day',
@@ -801,19 +835,72 @@ export default {
   margin: 0.25rem 0 0.5rem;
   color: #ddd;
 }
-.slot-row {
+.slot-card {
   display: grid;
   grid-template-columns: 2fr 1fr auto;
   gap: 0.75rem;
   align-items: center;
   padding: 0.75rem;
-  border-bottom: 1px solid #333;
+  border: 1px solid #333;
+  border-radius: 10px;
+  background: #1a1a1a;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
 }
-.slot-row:last-child {
-  border-bottom: none;
+.slot-card:last-child {
+  margin-bottom: 0;
+}
+.slot-card.full {
+  border-color: rgba(244, 67, 54, 0.35);
+}
+.slot-card.partial {
+  border-color: rgba(255, 193, 7, 0.35);
+}
+.slot-card.inactive {
+  opacity: 0.75;
+}
+.slot-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.team-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.slot-team {
+  font-weight: 700;
+}
+.slot-time {
+  margin-left: 36px;
+  opacity: 0.9;
+}
+.slot-notes {
+  margin-left: 36px;
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+.slot-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+.remaining {
+  font-weight: 600;
+}
+.remaining.full {
+  color: #f44336;
+}
+.remaining.partial {
+  color: #ffc107;
+}
+.remaining.open {
+  color: #4caf50;
 }
 .status-badge {
-  margin-left: 0.5rem;
   padding: 2px 6px;
   border-radius: 8px;
   font-size: 12px;
@@ -834,7 +921,6 @@ export default {
   color: #f44336;
 }
 .inactive-badge {
-  margin-left: 0.5rem;
   padding: 2px 6px;
   border-radius: 8px;
   font-size: 12px;
@@ -843,8 +929,65 @@ export default {
   border: 1px solid #666;
   color: #aaa;
 }
+.claimed-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+.name-badge {
+  font-size: 0.85rem;
+  color: #aaa;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+.expandable-names {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.more-names {
+  margin-top: 0.25rem;
+}
+.more-names summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--reunion-frog-green, #4caf50);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(76, 175, 80, 0.1);
+  display: inline-block;
+  user-select: none;
+}
+.more-names summary:hover {
+  background: rgba(76, 175, 80, 0.2);
+}
+.more-names[open] summary {
+  margin-bottom: 0.25rem;
+}
+.slot-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
 .controls button {
   margin-left: 0.25rem;
+}
+@media (max-width: 800px) {
+  .slot-card {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .slot-right {
+    justify-content: flex-start;
+  }
+  .slot-time,
+  .slot-notes {
+    margin-left: 36px;
+  }
 }
 
 /* Buttons */
