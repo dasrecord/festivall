@@ -346,105 +346,98 @@ export default {
 </script>
 
 <style scoped>
+/* Reuse the same modal chrome variables/colors as other modals */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  z-index: 1000;
+  z-index: 10;
   padding: 1rem;
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border: 2px solid var(--reunion-frog-green);
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 600px;
   width: 100%;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  position: relative;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   color: white;
-}
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.modal-close:hover {
-  opacity: 1;
-}
-
-.modal-close::before,
-.modal-close::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 2px;
-  background: white;
-}
-
-.modal-close::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.modal-close::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.8);
+  font-size: 16px;
+  position: relative;
+  margin-top: 2rem;
 }
 
 .festivall-emblem {
-  display: block;
-  margin: 0 auto 1rem;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
-h2 {
-  text-align: center;
-  margin: 0.5rem 0 1.5rem;
-  color: var(--reunion-frog-green);
+.modal-close {
+  position: sticky;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 12;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  align-self: flex-end;
+  margin-bottom: -30px;
 }
+.modal-close::before { content: '✕'; }
+.modal-close:hover { background-color: rgba(255, 255, 255, 0.2); }
 
-h3 {
-  margin: 1rem 0 0.5rem;
-  color: var(--reunion-frog-green);
-}
-
-h4 {
-  margin: 1rem 0 0.5rem;
-  color: #ccc;
-  font-size: 1rem;
-}
+.modal-content h2 { font-size: 1.5rem; margin: 1rem 0; color: white; }
+.modal-content h3 { font-size: 1rem; line-height: 1.4; margin: 0.75rem 0; }
+.modal-content h4 { font-size: 0.95rem; margin: 0.75rem 0; color: #ccc; }
+.modal-content img { margin: 0 0 0.5rem 0; }
 
 .travel-form {
+  width: 100%;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.25rem;
 }
 
 .travel-section {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.75rem;
   border-radius: 8px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.travel-section h3 {
+  text-align: left;
+  margin: 0 0 0.5rem;
 }
 
 .travel-group {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -454,38 +447,43 @@ h4 {
   padding-bottom: 0;
 }
 
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #ccc;
-}
-
-input,
-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.3);
+.travel-form label {
   color: white;
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--reunion-frog-green);
-}
-
-small {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-top: 0.75rem;
   display: block;
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
 }
 
-button {
+.travel-form small {
+  color: #bbb;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+
+.travel-form input[type='text'],
+.travel-form input[type='tel'],
+.travel-form input[type='datetime-local'],
+.travel-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--reunion-frog-green);
+  background: #111;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.travel-form textarea { 
+  resize: vertical; 
+  min-height: 60px; 
+}
+
+.travel-form button {
   padding: 0.75rem 1.5rem;
   border: 2px solid var(--reunion-frog-green);
   border-radius: 8px;
@@ -495,29 +493,32 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
+  margin-top: 0.5rem;
 }
 
-button:hover:not(:disabled) {
+.travel-form button:hover:not(:disabled) {
   background: transparent;
   color: var(--reunion-frog-green);
 }
 
-button:disabled {
+.travel-form button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .existing-info {
-  margin-top: 1.5rem;
-  padding: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: left;
 }
 
 .info-item {
   margin-bottom: 0.5rem;
   color: #ccc;
+  font-size: 0.9rem;
 }
 
 .info-item:last-child {
