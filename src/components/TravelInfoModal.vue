@@ -130,7 +130,7 @@ import { doc, updateDoc, collection, addDoc, query, where, getDocs, serverTimest
 import { reunion_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
-import travel_icon from '@/assets/images/icons/location.png'
+import travel_icon from '@/assets/images/icons/travel_info.png'
 
 export default {
   name: 'TravelInfoModal',
