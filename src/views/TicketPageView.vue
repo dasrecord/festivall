@@ -447,7 +447,8 @@
                           setupcrew: 'Setup Crew',
                           stagecrew: 'Stage Crew',
                           cleanupcrew: 'Cleanup Crew',
-                          arcadeattendant: 'Arcade Attendant'
+                          arcadeattendant: 'Arcade Attendant',
+                          artisttransportation: 'Artist Transportation'
                         }[slot.team && slot.team.toLowerCase()] || slot.team }}
                         <span v-if="slot.active === false" class="inactive-badge">inactive</span>
                       </span>
@@ -465,6 +466,13 @@
                 <div v-if="slot.active === false" style="color: #b0b0b0; font-size: 0.92em; margin-top: 0.2em;">
                   <span style="font-size: 1em;">This shift was disabled by organizers.<br> You do not need to attend.</span>
                 </div>
+                <button
+                  v-if="slot.active !== false"
+                  @click="downloadVolunteerShiftICS(slot)"
+                  style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.85rem; background: var(--reunion-frog-green); color: black; border: none; border-radius: 4px; cursor: pointer;"
+                >
+                  📅 Add to Calendar
+                </button>
                   <div v-if="teamManuals[slot.team]" style="margin-top: 0.5em;">
                     <!-- Manual link now shown as icon on the right, so this is removed. -->
                   </div>
@@ -847,23 +855,14 @@
             />
             Download Your Set Times:
             <span v-for="(settime, index) in order.settimes" :key="index">
-              {{
-                new Date(settime).toLocaleString([], {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
-                })
-              }}
+              {{ formatSettime(settime) }}
             </span>
           </p>
         </div>
 
         <!-- Artist self-service chips -->
         <div
-          v-if="isArtistEditEligible || isVisualsPickerEligible"
+          v-if="isArtistEditEligible || isVisualsPickerEligible || isTravelInfoEligible"
           class="artist-chips"
           style="grid-column: span 2;"
         >
@@ -874,6 +873,14 @@
             @click="showEditArtistModal = true"
           >
             ✏️ Edit My Artist Info
+          </button>
+          <button
+            v-if="isTravelInfoEligible"
+            type="button"
+            class="artist-chip"
+            @click="showTravelInfoModal = true"
+          >
+            ✈️ Update Travel Info
           </button>
           <button
             v-if="isVisualsPickerEligible"
@@ -945,6 +952,17 @@
       :application-data="order.application_data || {}"
       @close="showEditArtistModal = false"
       @saved="onArtistInfoSaved"
+    />
+
+    <TravelInfoModal
+      v-if="showTravelInfoModal"
+      :order="order"
+      :has-arrival="hasAirportPickup"
+      :has-departure="hasAirportDropoff"
+      :has-shuttle="hasShuttle"
+      :existing-travel="order.travel_info || null"
+      @close="showTravelInfoModal = false"
+      @saved="onTravelInfoSaved"
     />
 
     <VisualsPickerModal
@@ -1030,6 +1048,7 @@ import CountdownTimer from '@/components/CountdownTimer.vue'
 import PosterSplash from '@/components/PosterSplash.vue'
 import EditArtistInfoModal from '@/components/EditArtistInfoModal.vue'
 import VisualsPickerModal from '@/components/VisualsPickerModal.vue'
+import TravelInfoModal from '@/components/TravelInfoModal.vue'
 import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
 import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
@@ -1043,6 +1062,7 @@ export default {
     PosterSplash,
     EditArtistInfoModal,
     VisualsPickerModal,
+    TravelInfoModal,
     AttendeeNamingModal,
     WaiverAcceptanceModal
   },
@@ -1079,6 +1099,7 @@ export default {
     const showTransferModal = ref(false)
     const isTransferSubmitting = ref(false)
     const showEditArtistModal = ref(false)
+    const showTravelInfoModal = ref(false)
     const showVisualsPickerModal = ref(false)
     const showAttendeeNamingModal = ref(false)
     const showWaiverModal = ref(false)
@@ -1109,6 +1130,7 @@ export default {
       stagecrew: stagecrew_icon,
       cleanupcrew: cleanupcrew_icon,
       arcadeattendant: arcadeattendant_icon,
+      artisttransportation: location_icon,
     }
 
     const fetchBtcRate = async () => {
@@ -1470,6 +1492,47 @@ export default {
       }
     }
 
+    // Format settime for display - handles Firebase Timestamps, Date objects, and strings
+    const formatSettime = (settime) => {
+      if (!settime) return 'Invalid Date'
+      
+      try {
+        let date
+        
+        // Handle Firebase Timestamp object (has toDate method)
+        if (settime && typeof settime === 'object' && typeof settime.toDate === 'function') {
+          date = settime.toDate()
+        }
+        // Handle datetime-local format string (YYYY-MM-DDTHH:mm)
+        else if (typeof settime === 'string' && settime.includes('T') && !settime.includes('Z') && !settime.includes('+')) {
+          const [datePart, timePart] = settime.split('T')
+          const [year, month, day] = datePart.split('-').map(Number)
+          const [hour, minute] = timePart.split(':').map(Number)
+          date = new Date(year, month - 1, day, hour, minute || 0)
+        }
+        // Handle standard Date object, ISO string, or timestamp
+        else {
+          date = new Date(settime)
+        }
+        
+        if (isNaN(date.getTime())) {
+          return 'Invalid Date'
+        }
+        
+        return date.toLocaleString([], {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })
+      } catch (error) {
+        console.error('Error formatting settime:', error, settime)
+        return 'Invalid Date'
+      }
+    }
+
     const downloadSettimes = () => {
       if (!order.value || !order.value.settimes || order.value.settimes.length === 0) {
         alert('Set time information not available')
@@ -1502,7 +1565,25 @@ export default {
 
       // Iterate over all settimes and create a VEVENT for each
       order.value.settimes.forEach((settime, index) => {
-        const startDate = new Date(settime)
+        // Parse settime - handle Firebase Timestamp, Date objects, and strings
+        let startDate
+        
+        // Handle Firebase Timestamp object
+        if (settime && typeof settime === 'object' && typeof settime.toDate === 'function') {
+          startDate = settime.toDate()
+        }
+        // Handle datetime-local format string
+        else if (typeof settime === 'string' && settime.includes('T') && !settime.includes('Z') && !settime.includes('+')) {
+          const [datePart, timePart] = settime.split('T')
+          const [year, month, day] = datePart.split('-').map(Number)
+          const [hour, minute] = timePart.split(':').map(Number)
+          startDate = new Date(year, month - 1, day, hour, minute || 0)
+        }
+        // Handle standard Date, ISO string, or timestamp
+        else {
+          startDate = new Date(settime)
+        }
+        
         const endDate = new Date(startDate.getTime() + 60 * 60 * 1000) // Add 1 hour to start time
 
         const startFormatted = formatDate(startDate)
@@ -1547,6 +1628,101 @@ export default {
       URL.revokeObjectURL(url)
     }
 
+    const downloadVolunteerShiftICS = (slot) => {
+      // Helper function to format dates for iCalendar (YYYYMMDDTHHMMSS)
+      const formatDate = (date) => {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0')
+        const seconds = String(date.getSeconds()).padStart(2, '0')
+        return `${year}${month}${day}T${hours}${minutes}${seconds}`
+      }
+
+      // Parse shift date and times
+      const [year, month, day] = slot.date.split('-').map(Number)
+      const [startHour, startMin] = slot.start.split(':').map(Number)
+      const [endHour, endMin] = slot.end.split(':').map(Number)
+      
+      const startDate = new Date(year, month - 1, day, startHour, startMin)
+      const endDate = new Date(year, month - 1, day, endHour, endMin)
+      
+      const now = new Date()
+      const timestamp = formatDate(now)
+      
+      // Team names mapping
+      const teamNames = {
+        frontgate: 'Front Gate',
+        foodteam: 'Food Team',
+        setupcrew: 'Setup Crew',
+        stagecrew: 'Stage Crew',
+        cleanupcrew: 'Cleanup Crew',
+        arcadeattendant: 'Arcade Attendant',
+        artisttransportation: 'Artist Transportation'
+      }
+      
+      const teamName = teamNames[slot.team?.toLowerCase()] || slot.team
+      const uid = `volunteer-${slot.id}-${order.value.id_code}@festivall.ca`
+      
+      // Build description based on team
+      let description = `Your volunteer shift for ${teamName} at Reunion Festival ${REUNION_FESTIVAL.year}.`
+      
+      if (slot.notes) {
+        description += `\\n\\nNotes: ${slot.notes}`
+      }
+      
+      // Add specific info for artist transportation
+      if (slot.team === 'artisttransportation') {
+        description += `\\n\\nArtist: ${slot.artist_name || 'TBD'}`
+        if (slot.flight_number) {
+          description += `\\nFlight: ${slot.flight_number}`
+        }
+        description += `\\n\\nPlease coordinate with the artist using their contact information.`
+      }
+      
+      description += `\\n\\nFor questions, contact reunionvolunteercoordinator@festivall.ca`
+      
+      // Build ICS content
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Festivall//Reunion Festival Volunteer//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${timestamp}`,
+        `CREATED:${timestamp}`,
+        `DTSTART:${formatDate(startDate)}`,
+        `DTEND:${formatDate(endDate)}`,
+        `SUMMARY:Volunteer: ${teamName}`,
+        'LOCATION:Reunion Festival',
+        `DESCRIPTION:${description}`,
+        'STATUS:CONFIRMED',
+        'SEQUENCE:0',
+        'TRANSP:OPAQUE',
+        'CLASS:PUBLIC',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ]
+      
+      // Create blob and trigger download
+      const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      
+      const link = document.createElement('a')
+      link.href = url
+      const fileName = `reunion_volunteer_${slot.team}_${slot.date}.ics`
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+      
+      // Clean up
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    }
+
     watch(showReferralModal, async (isVisible) => {
       if (isVisible && order.value) {
         await nextTick() // Wait for the DOM to update
@@ -1566,10 +1742,19 @@ export default {
 
     // A settime falls in the nighttime window if its LOCAL hour:minute is inside
     // [start, end). The window is wrap-around (e.g. 20:50–04:00 crosses midnight).
-    const isInNighttimeWindow = (isoTime) => {
+    const isInNighttimeWindow = (settime) => {
       const { start, end } = REUNION_FESTIVAL.visuals.nighttimeWindow
-      const d = new Date(isoTime)
+      
+      // Handle Firebase Timestamp, Date objects, and strings
+      let d
+      if (settime && typeof settime === 'object' && typeof settime.toDate === 'function') {
+        d = settime.toDate()
+      } else {
+        d = new Date(settime)
+      }
+      
       if (isNaN(d.getTime())) return false
+      
       // Format in Mountain Time regardless of viewer locale.
       const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'America/Regina', hour12: false,
@@ -1594,12 +1779,37 @@ export default {
       return settimes.some(isInNighttimeWindow)
     })
 
+    // Travel info eligibility - Artists with airport or shuttle services
+    const hasAirportPickup = computed(() => 
+      !!order.value?.rates?.addons?.airport_pickup
+    )
+    
+    const hasAirportDropoff = computed(() => 
+      !!order.value?.rates?.addons?.airport_dropoff
+    )
+    
+    const hasShuttle = computed(() => 
+      !!order.value?.rates?.addons?.shuttle
+    )
+    
+    const isTravelInfoEligible = computed(() => {
+      if (!order.value?.applicant_types?.includes('Artist')) return false
+      if (!beforeEditCutoff()) return false
+      return hasAirportPickup.value || hasAirportDropoff.value || hasShuttle.value
+    })
+
     // After a successful save, merge changes into the local order so the UI
     // reflects them without a full reload.
     const onArtistInfoSaved = ({ values }) => {
       if (!order.value) return
       order.value.application_data = { ...order.value.application_data, ...values }
       if ('rates' in values) order.value.rates = values.rates
+    }
+
+    const onTravelInfoSaved = ({ values }) => {
+      if (!order.value) return
+      order.value.travel_info = { ...values }
+      console.log('✅ Travel info updated successfully')
     }
 
     const onVisualsSelectionSaved = (visuals_selection) => {
@@ -1687,6 +1897,7 @@ export default {
       showTransferModal,
       isTransferSubmitting,
       showEditArtistModal,
+      showTravelInfoModal,
       showVisualsPickerModal,
       showAttendeeNamingModal,
       showWaiverModal,
@@ -1700,7 +1911,12 @@ export default {
       unacceptedWaiverCount,
       isArtistEditEligible,
       isVisualsPickerEligible,
+      isTravelInfoEligible,
+      hasAirportPickup,
+      hasAirportDropoff,
+      hasShuttle,
       onArtistInfoSaved,
+      onTravelInfoSaved,
       onVisualsSelectionSaved,
       transferForm,
       submitTransfer,
@@ -1709,7 +1925,9 @@ export default {
       pendingMealPurchases,
       calculateAdHocMealPrice,
       submitAdHocMealOrder,
+      formatSettime,
       downloadSettimes,
+      downloadVolunteerShiftICS,
       ticket_icon,
       meals_icon,
       payment_icon,

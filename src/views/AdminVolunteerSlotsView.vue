@@ -223,7 +223,8 @@ export default {
           setupcrew: 'Setup Crew',
           stagecrew: 'Stage Crew',
           cleanupcrew: 'Cleanup Crew',
-          arcadeattendant: 'Arcade Attendant'
+          arcadeattendant: 'Arcade Attendant',
+          artisttransportation: 'Artist Transportation'
         },
         teamFilter: 'all',
         groupBy: 'day',

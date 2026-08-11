@@ -169,6 +169,23 @@
             SIGNUP: {{ signupOpen.arcadeattendant }}<br />
           </li>
         </ul>
+        <ul class="crew">
+          <img :src="location_icon" alt="Artist Transportation Icon" />
+          <li>
+            <strong>Artist Transportation:</strong><br />
+            <p class="minimum">[{{ vsp.artisttransportation.minimumLabel }}]</p>
+            <p>
+              Artist Transportation Volunteers provide airport pickup/dropoff service for performing artists
+              traveling to/from YXE (Saskatoon airport), and assist with festival shuttle service between
+              accommodation and festival grounds. This role requires a reliable vehicle and flexible availability
+              based on artist flight schedules.
+            </p>
+            <p>Team Lead: Brandon</p>
+            SCHEDULE: As needed (based on artist travel schedules)<br />
+            DURATION: ~1 hour per pickup/dropoff<br />
+            SIGNUP: {{ signupOpen.artisttransportation }}<br />
+          </li>
+        </ul>
       </ul>
 
       <h3 style="margin-top: 1rem">
@@ -191,6 +208,7 @@ import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.png'
 import food_team_icon from '../assets/images/icons/meals.png'
 import front_gate_icon from '../assets/images/icons/front_gate.png'
 import arcade_attendant_icon from '../assets/images/icons/arcade.png'
+import location_icon from '../assets/images/icons/location.png'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const vsp = REUNION_FESTIVAL.volunteerShiftParams
@@ -234,12 +252,13 @@ const { phase1End, phase2End } = REUNION_FESTIVAL.volunteerPhases
 const fmtPhaseDate = (d) => d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', timeZone: 'America/Regina' })
 const now = new Date()
 const signupOpen = {
-  setupcrew:       now >= new Date(0)   ? 'Now Open'                         : 'Now Open',
-  frontgate:       now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
-  foodteam:        now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
-  arcadeattendant: now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
-  stagecrew:       now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
-  cleanupcrew:     now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
+  setupcrew:           now >= new Date(0)   ? 'Now Open'                         : 'Now Open',
+  frontgate:           now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  foodteam:            now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  arcadeattendant:     now >= phase1End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase1End)}`,
+  stagecrew:           now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
+  cleanupcrew:         now >= phase2End     ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
+  artisttransportation: now >= phase2End    ? 'Now Open'                         : `Opens ${fmtPhaseDate(phase2End)}`,
 }
 </script>
 

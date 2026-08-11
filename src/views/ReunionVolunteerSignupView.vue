@@ -47,6 +47,7 @@
               <option value="stagecrew">Stage Crew</option>
               <option value="cleanupcrew">Cleanup Crew</option>
               <option value="arcadeattendant">Arcade Attendant</option>
+              <option value="artisttransportation">Artist Transportation</option>
             </select>
             <button class="refresh" @click="refreshSlots" :disabled="loadingSlots">
               {{ loadingSlots ? 'Loading...' : 'Refresh' }}
@@ -186,6 +187,7 @@ import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
 import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
 import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
+import location_icon from '@/assets/images/icons/location.png'
 
 export default {
   name: 'ReunionVolunteerSignupView',
@@ -202,7 +204,8 @@ export default {
         setupcrew: setupcrew_icon,
         stagecrew: stagecrew_icon,
         cleanupcrew: cleanupcrew_icon,
-        arcadeattendant: arcadeattendant_icon
+        arcadeattendant: arcadeattendant_icon,
+        artisttransportation: location_icon
       },
       idCode: localStorage.getItem('volunteer_id_code') || '',
       participant: null,
@@ -220,7 +223,8 @@ export default {
         setupcrew: 'Setup Crew',
         stagecrew: 'Stage Crew',
         cleanupcrew: 'Cleanup Crew',
-        arcadeattendant: 'Arcade Attendant'
+        arcadeattendant: 'Arcade Attendant',
+        artisttransportation: 'Artist Transportation'
       }
     }
   },

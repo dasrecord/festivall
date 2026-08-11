@@ -120,13 +120,13 @@ export const REUNION_FESTIVAL = {
   },
 
   // Master ordered list of all volunteer teams (display names)
-  orderedVolunteerTeams: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew'],
+  orderedVolunteerTeams: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew', 'Artist Transportation'],
 
   // Teams visible per phase
   volunteerTeamsByPhase: {
     phase1: ['Setup Crew'],
     phase2: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant'],
-    phase3: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew'],
+    phase3: ['Setup Crew', 'Front Gate', 'Food Team', 'Arcade Attendant', 'Stage Crew', 'Cleanup Crew', 'Artist Transportation'],
   },
 
   // Volunteer shift parameters for each team (minimalist structure)
@@ -178,6 +178,13 @@ export const REUNION_FESTIVAL = {
       days: [[9, 4, 9, 6]],
       duration: 4,
       repeat: true
+    },
+    artisttransportation: {
+      label: 'Artist Transportation',
+      minimumLabel: 'Airport Pickup/Dropoff Shifts (as needed)',
+      // No fixed shifts - created dynamically when artists submit travel info
+      duration: 1,
+      description: 'Drive artists to/from YXE airport and/or provide festival shuttle service'
     }
   },
 
