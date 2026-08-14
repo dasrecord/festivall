@@ -437,6 +437,7 @@ const reset = () => {
 
 const resetForm = () => {
   submitAttempted.value = false
+  submitting.value = false
   submitError.value = ''
   form.value = { category: 'infrastructure', description: '', amount: '', receiptUrl: '', file: null }
   if (fileInput.value) fileInput.value.value = ''
