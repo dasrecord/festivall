@@ -27,6 +27,7 @@ const FestivallConfig = {
 const reunion_app = initializeApp(ReunionConfig, 'reunion')
 const reunion_db = getFirestore(reunion_app)
 const reunion_storage = getStorage(reunion_app)
+const reunion_auth = getAuth(reunion_app)
 const reunion_analytics = getAnalytics(reunion_app)
 
 const festivall_app = initializeApp(FestivallConfig, 'festivall')
@@ -34,4 +35,4 @@ const festivall_db = getFirestore(festivall_app)
 const festivall_auth = getAuth(festivall_app)
 const festivall_analytics = getAnalytics(festivall_app)
 
-export { festivall_auth, reunion_db, reunion_storage, festivall_db, reunion_analytics, festivall_analytics }
+export { festivall_auth, reunion_auth, reunion_db, reunion_storage, festivall_db, reunion_analytics, festivall_analytics }

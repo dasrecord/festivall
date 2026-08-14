@@ -200,7 +200,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { reunion_db, reunion_storage } from '@/firebase'
+import { reunion_db, reunion_storage, reunion_auth } from '@/firebase'
 import {
   collection,
   addDoc,
@@ -211,6 +211,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { signInAnonymously, signOut } from 'firebase/auth'
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const step = ref(1)
@@ -301,6 +302,10 @@ const validateIdCode = async () => {
 
     volunteerName.value = p.contact?.fullname || code
     confirmedIdCode.value = code
+    
+    // Sign in anonymously for Storage access
+    await signInAnonymously(reunion_auth)
+    
     step.value = 2
   } catch (e) {
     console.error('ID validation error:', e)
@@ -425,8 +430,9 @@ const subscribeHistory = () => {
 }
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
-const reset = () => {
+const reset = async () => {
   if (unsubHistory) { unsubHistory(); unsubHistory = null }
+  await signOut(reunion_auth)
   idCodeInput.value = ''
   idError.value = ''
   volunteerName.value = ''
