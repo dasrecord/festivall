@@ -44,7 +44,7 @@ export const REUNION_FESTIVAL = {
     fontSizesMobile: {
       date:      '0.8rem',
       year:      '0.8rem',
-      artists:   '1.2rem',
+      artists:   '0.8rem',
       workshops: '0.8rem',
       pricing:   '0.8rem',
       ages:      '0.8rem',
@@ -54,7 +54,7 @@ export const REUNION_FESTIVAL = {
     fontSizesDesktop: {
       date:      '1.0rem',
       year:      '1.0rem',
-      artists:   '1.8rem',
+      artists:   '1.6rem',
       workshops: '1.2rem',
       pricing:   '1.0rem',
       ages:      '1.0rem',
