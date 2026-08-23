@@ -862,7 +862,7 @@
 
         <!-- Artist self-service chips -->
         <div
-          v-if="isArtistEditEligible || isVisualsPickerEligible || isTravelInfoEligible"
+          v-if="isArtistEditEligible || isVisualsPickerEligible || isTravelInfoEligible || isOpenDecksEligible"
           class="artist-chips"
           style="grid-column: span 2;"
         >
@@ -889,6 +889,14 @@
             @click="showVisualsPickerModal = true"
           >
             🎞️ Choose Your Visuals
+          </button>
+          <button
+            v-if="isOpenDecksEligible"
+            type="button"
+            class="artist-chip chip-open-decks"
+            @click="showOpenDecksModal = true"
+          >
+            🎧 Open Decks
           </button>
         </div>
         <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
@@ -973,6 +981,13 @@
       @saved="onVisualsSelectionSaved"
     />
 
+    <OpenDecksModal
+      v-if="showOpenDecksModal"
+      :participant-id="order.participant_id || order.id_code"
+      :participant-name="order.roles?.act_name || order.fullname"
+      @close="showOpenDecksModal = false"
+    />
+
     <AttendeeNamingModal
       v-if="showAttendeeNamingModal"
       :show="showAttendeeNamingModal"
@@ -1049,6 +1064,7 @@ import PosterSplash from '@/components/PosterSplash.vue'
 import EditArtistInfoModal from '@/components/EditArtistInfoModal.vue'
 import VisualsPickerModal from '@/components/VisualsPickerModal.vue'
 import TravelInfoModal from '@/components/TravelInfoModal.vue'
+import OpenDecksModal from '@/components/OpenDecksModal.vue'
 import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
 import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
@@ -1063,6 +1079,7 @@ export default {
     EditArtistInfoModal,
     VisualsPickerModal,
     TravelInfoModal,
+    OpenDecksModal,
     AttendeeNamingModal,
     WaiverAcceptanceModal
   },
@@ -1101,6 +1118,7 @@ export default {
     const showEditArtistModal = ref(false)
     const showTravelInfoModal = ref(false)
     const showVisualsPickerModal = ref(false)
+    const showOpenDecksModal = ref(false)
     const showAttendeeNamingModal = ref(false)
     const showWaiverModal = ref(false)
     const attendeeSlots = ref([])
@@ -1444,10 +1462,16 @@ export default {
               applicant_types: p.roles?.applicant_types || [],
               payment_type: p.order?.payment_type || '',
               rates: p.application?.data?.rates || '',
+              // Contract data
+              contract: p.contract || {},
+              roles: p.roles || {},
+              participant_id: p.id || p.id_code,
               // Settimes are stored at the document root (written by DashboardPanel's
               // updateSettime as `settimes: [...]`), with a legacy fallback to
               // application.data.settimes for older records.
               settimes: p.settimes || p.application?.data?.settimes || [],
+              set_durations: p.set_durations || [],
+              set_types: p.set_types || [],
               // Raw application.data for self-edit modals (read-only snapshot)
               application_data: p.application?.data || {},
               // Volunteer shift data
@@ -1584,7 +1608,9 @@ export default {
           startDate = new Date(settime)
         }
         
-        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000) // Add 1 hour to start time
+        // Get duration from set_durations array or default to 60 minutes
+        const durationMinutes = order.value.set_durations?.[index] || 60
+        const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000)
 
         const startFormatted = formatDate(startDate)
         const endFormatted = formatDate(endDate)
@@ -1798,6 +1824,12 @@ export default {
       return hasAirportPickup.value || hasAirportDropoff.value || hasShuttle.value
     })
 
+    // Open Decks eligibility - Signed artists only
+    const isOpenDecksEligible = computed(() => {
+      if (!order.value?.applicant_types?.includes('Artist')) return false
+      return !!order.value?.contract?.signed
+    })
+
     // After a successful save, merge changes into the local order so the UI
     // reflects them without a full reload.
     const onArtistInfoSaved = ({ values }) => {
@@ -1912,12 +1944,14 @@ export default {
       isArtistEditEligible,
       isVisualsPickerEligible,
       isTravelInfoEligible,
+      isOpenDecksEligible,
       hasAirportPickup,
       hasAirportDropoff,
       hasShuttle,
       onArtistInfoSaved,
       onTravelInfoSaved,
       onVisualsSelectionSaved,
+      showOpenDecksModal,
       transferForm,
       submitTransfer,
       btcRate,

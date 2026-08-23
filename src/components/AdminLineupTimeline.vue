@@ -12,6 +12,17 @@
         </template>
         <!-- Edit mode -->
         <template v-else>
+          <div class="default-duration-control">
+            <label for="defaultDuration">Default:</label>
+            <select id="defaultDuration" v-model="defaultSetDuration" class="duration-select">
+              <option :value="15">15 min</option>
+              <option :value="30">30 min</option>
+              <option :value="45">45 min</option>
+              <option :value="60">60 min</option>
+              <option :value="90">90 min</option>
+              <option :value="120">120 min</option>
+            </select>
+          </div>
           <span v-if="unsavedCount > 0" class="unsaved-badge">{{ unsavedCount }} unsaved</span>
           <button v-if="unsavedCount > 0" class="alt-discard-btn" @click="resetChanges">Discard</button>
           <button
@@ -30,6 +41,17 @@
     <!-- ── Act chips ── -->
     <div class="alt-chips">
       <div class="alt-chips-wrap">
+        <!-- Open Decks special chip -->
+        <div
+          class="alt-chip chip-open-decks"
+          :class="{ 'chip-pending': pendingChipId === 'open_decks::special' }"
+          draggable="true"
+          @dragstart="onChipDragStart($event, 'open_decks::special')"
+          @click="onChipTap('open_decks::special')"
+        >
+          🎧 Open Decks
+          <span v-if="openDecksCount > 0" class="alt-chip-badge">×{{ openDecksCount }}</span>
+        </div>
         <div
           v-for="act in chipActs"
           :key="act.chipId"
@@ -94,7 +116,8 @@
               :class="{
                 unsaved:  unsavedIds.has(block.blockId),
                 'is-new': block.isNew,
-                selected: selectedIds.has(block.blockId)
+                selected: selectedIds.has(block.blockId),
+                'block-open-decks': block.type === 'open_decks'
               }"
               :style="blockStyle(block)"
               @click.self="toggleSelect(block.blockId)"
@@ -102,7 +125,8 @@
               <div class="resize-top" />
               <div class="alt-block-content" @click="toggleSelect(block.blockId)">
                 <div class="alt-block-header">
-                  <img :src="block.type === 'workshop' ? workshop_icon : dj_icon" class="block-type-icon" />
+                  <span v-if="block.type === 'open_decks'" class="block-type-icon">🎧</span>
+                  <img v-else :src="block.type === 'workshop' ? workshop_icon : dj_icon" class="block-type-icon" />
                   <div class="alt-block-name">{{ block.act_name }}</div>
                 </div>
                 <div class="alt-block-time">{{ formatBlockTime(block) }}</div>
@@ -130,6 +154,7 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import interact from 'interactjs'
 import { useLineupAdmin } from '@/composables/useLineupAdmin'
+import { reunion_db } from '@/firebase'
 import dj_icon from '@/assets/images/icons/dj.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
 
@@ -250,10 +275,46 @@ function buildBlocks(events) {
   return blocks
 }
 
+// Fetch Open Decks blocks for this day from Firestore
+async function fetchOpenDecksBlocks() {
+  try {
+    const { collection, query, where, getDocs } = await import('firebase/firestore')
+    const openDecksCol = collection(reunion_db, 'open_decks_2026')
+    const q = query(openDecksCol, where('day', '==', props.day))
+    const snapshot = await getDocs(q)
+    
+    return snapshot.docs.map(docSnap => {
+      const data = docSnap.data()
+      const settime = data.settime.toDate ? data.settime.toDate().toISOString() : data.settime
+      const claimed = data.claimed_slots || []
+      const totalClaimed = claimed.reduce((sum, slot) => sum + (slot.duration || 0), 0)
+      const availableMinutes = data.duration - totalClaimed
+      
+      return {
+        blockId:   docSnap.id,
+        eventId:   'open_decks',
+        type:      'open_decks',
+        settime:   settime,
+        duration:  data.duration,
+        availableMinutes: availableMinutes,
+        claimed_slots: claimed,
+        act_name:  `Open Decks (${availableMinutes}min available)`,
+        genre:     '',
+        isNew:     false
+      }
+    })
+  } catch (err) {
+    console.error('Error fetching Open Decks blocks:', err)
+    return []
+  }
+}
+
 watch(
   () => props.events,
-  (incoming) => {
-    localBlocks.value = buildBlocks(incoming)
+  async (incoming) => {
+    const participantBlocks = buildBlocks(incoming)
+    const openDecksBlocks = await fetchOpenDecksBlocks()
+    localBlocks.value = [...participantBlocks, ...openDecksBlocks]
     unsavedIds.value  = new Set()
     nextTick(bindInteract)
   },
@@ -262,6 +323,12 @@ watch(
 
 // ── Chip panel ───────────────────────────────────────────────────────────────
 const pendingChipId = ref(null)  // for tap-to-place on touch
+const defaultSetDuration = ref(60)  // default set duration in minutes
+
+// Count Open Decks slots on this day
+const openDecksCount = computed(() => {
+  return localBlocks.value.filter(b => b.type === 'open_decks').length
+})
 
 const chipActs = computed(() => {
   const chips = []
@@ -351,6 +418,15 @@ function updateBlockDuration(blockId, newDuration) {
   const block = localBlocks.value.find(b => b.blockId === blockId)
   if (!block) return
   block.duration = newDuration
+  
+  // Update available minutes for Open Decks blocks
+  if (block.type === 'open_decks') {
+    const claimed = block.claimed_slots || []
+    const totalClaimed = claimed.reduce((sum, slot) => sum + (slot.duration || 0), 0)
+    block.availableMinutes = newDuration - totalClaimed
+    block.act_name = `Open Decks (${block.availableMinutes}min available)`
+  }
+  
   markUnsaved(blockId)
   cascadeOverlaps(blockId)
 }
@@ -450,6 +526,28 @@ function onChipDrop(e) {
 }
 
 function addBlockFromChip(chipId, dropPx) {
+  // Handle Open Decks special chip
+  if (chipId === 'open_decks::special') {
+    const snapped = Math.max(0, Math.round(dropPx / SNAP_PX) * SNAP_PX)
+    const blockId = `open_decks::new::${++nextNewId}`
+    localBlocks.value.push({
+      blockId,
+      eventId: 'open_decks',
+      type:    'open_decks',
+      settime:  pixelToTime(snapped),
+      duration: defaultSetDuration.value,
+      act_name: `Open Decks (${defaultSetDuration.value}min available)`,
+      genre:    '',
+      isNew:    true,
+      claimed_slots: [],
+      availableMinutes: defaultSetDuration.value
+    })
+    markUnsaved(blockId)
+    cascadeOverlaps(blockId)
+    nextTick(bindInteract)
+    return
+  }
+
   const [docId, type] = chipId.split('::')
   const ev = props.allEvents.find(e => e.id === docId)
   if (!ev) return
@@ -463,7 +561,7 @@ function addBlockFromChip(chipId, dropPx) {
     eventId: docId,
     type:    type === 'workshop' ? 'workshop' : 'act',
     settime:  pixelToTime(snapped),
-    duration: 60,
+    duration: defaultSetDuration.value,
     act_name: label,
     genre:    type === 'act' ? (ev.genre || '') : '',
     isNew:    true
@@ -624,8 +722,10 @@ function bindInteract() {
 // ── Save: smart merge — preserve settimes outside this day's window ─────────────
 const { saving, saveError, batchUpdateSettimes } = useLineupAdmin()
 
-function resetChanges() {
-  localBlocks.value = buildBlocks(props.events)
+async function resetChanges() {
+  const participantBlocks = buildBlocks(props.events)
+  const openDecksBlocks = await fetchOpenDecksBlocks()
+  localBlocks.value = [...participantBlocks, ...openDecksBlocks]
   unsavedIds.value  = new Set()
   selectedIds.value = new Set()
   nextTick(bindInteract)
@@ -637,13 +737,29 @@ async function handleSave() {
   const deletedEventIds = [...unsavedIds.value]
     .filter(bid => !localBlocks.value.find(b => b.blockId === bid))
     .map(bid => bid.split('::')[0])
-  const allAffectedEventIds = [...new Set([
-    ...modified.map(b => b.eventId),
-    ...deletedEventIds
+  
+  // Separate Open Decks blocks from regular participant blocks
+  const openDecksBlocks = modified.filter(b => b.eventId === 'open_decks')
+  const participantEventIds = [...new Set([
+    ...modified.filter(b => b.eventId !== 'open_decks').map(b => b.eventId),
+    ...deletedEventIds.filter(id => id !== 'open_decks')
   ])]
-  if (!allAffectedEventIds.length) return
+  
+  // Save Open Decks blocks to separate collection
+  if (openDecksBlocks.length > 0 || deletedEventIds.includes('open_decks')) {
+    await saveOpenDecksSlots(openDecksBlocks)
+  }
+  
+  // Save regular participant blocks
+  if (participantEventIds.length === 0) {
+    if (!saveError.value) {
+      for (const block of localBlocks.value) block.isNew = false
+      unsavedIds.value = new Set()
+    }
+    return
+  }
 
-  const eventIds = allAffectedEventIds
+  const eventIds = participantEventIds
   const dayStart = new Date(props.date)
   dayStart.setHours(DAY_START_H, 0, 0, 0)
   const dayEnd = new Date(props.date)
@@ -685,6 +801,53 @@ async function handleSave() {
   if (!saveError.value) {
     for (const block of localBlocks.value) block.isNew = false
     unsavedIds.value = new Set()
+  }
+}
+
+// Save Open Decks slots to dedicated collection
+async function saveOpenDecksSlots(blocks) {
+  try {
+    const { doc, setDoc, deleteDoc, collection, query, where, getDocs } = await import('firebase/firestore')
+    const openDecksCol = collection(reunion_db, 'open_decks_2026')
+    
+    // Get all existing Open Decks for this day from Firestore
+    const q = query(openDecksCol, where('day', '==', props.day))
+    const snapshot = await getDocs(q)
+    const existingIds = new Set(snapshot.docs.map(d => d.id))
+    
+    // Get current block IDs (filter out new ones, keep existing doc IDs)
+    const currentBlocks = localBlocks.value.filter(b => b.eventId === 'open_decks')
+    const currentIds = new Set(
+      currentBlocks
+        .filter(b => !b.blockId.includes('::new::'))
+        .map(b => b.blockId)
+    )
+    
+    // Delete blocks that were removed
+    for (const existingId of existingIds) {
+      if (!currentIds.has(existingId)) {
+        await deleteDoc(doc(openDecksCol, existingId))
+      }
+    }
+    
+    // Save or update current blocks
+    for (const block of currentBlocks) {
+      let slotId = block.blockId
+      // Generate new ID for new blocks
+      if (slotId.includes('::new::')) {
+        slotId = `open_decks::${props.day.toLowerCase()}::${new Date(block.settime).getTime()}`
+      }
+      const slotRef = doc(openDecksCol, slotId)
+      await setDoc(slotRef, {
+        settime: new Date(block.settime),
+        duration: block.duration,
+        claimed_slots: block.claimed_slots || [],
+        day: props.day
+      })
+    }
+  } catch (err) {
+    saveError.value = err.message || 'Failed to save Open Decks'
+    throw err
   }
 }
 
@@ -937,6 +1100,14 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.block-type-icon:not(img) {
+  font-size: 12px;
+  line-height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .alt-block-name {
   font-size: 0.78rem;
   font-weight: 700;
@@ -1136,5 +1307,51 @@ onUnmounted(() => {
 .alt-cancel-sel-btn:hover {
   color: #ccc;
   border-color: #666;
+}
+
+/* ── Default Duration Control ───────────────────────────────────────────────── */
+.default-duration-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.default-duration-control label {
+  font-weight: 600;
+}
+
+.duration-select {
+  padding: 0.25rem 0.5rem;
+  background: #1a1a1a;
+  color: #fff;
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.duration-select:hover {
+  background: #252525;
+}
+
+/* ── Open Decks Styles ──────────────────────────────────────────────────────── */
+.alt-chip.chip-open-decks {
+  background: linear-gradient(135deg, #430789 0%, #7a0fb8 100%);
+  border-color: #b24ff5;
+  color: #fff;
+  font-weight: 700;
+}
+
+.alt-chip.chip-open-decks:hover {
+  background: linear-gradient(135deg, #5a0ba8 0%, #9412d8 100%);
+  border-color: #d668ff;
+}
+
+.block-open-decks {
+  background: linear-gradient(135deg, #2a0348 0%, #430789 100%);
+  border-color: #b24ff5;
 }
 </style>
