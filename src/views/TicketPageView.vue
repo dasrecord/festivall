@@ -276,8 +276,8 @@
             alt="Festivall Emblem"
           />
           <img
-            :src="status_icon"
-            style="height: 64px; width: auto; margin: 0; filter: invert(1)"
+            :src="ticket_white_icon"
+            style="height: 64px; width: auto; margin: 0"
             alt="Entrance Icon"
           />
           <h2>Entrance Activity History</h2>
@@ -1034,6 +1034,7 @@ import festivall_emblem_black from '@/assets/images/festivall_emblem_black.png'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
 import poster_footer from '@/assets/images/poster_footer_v1.png'
 import ticket_icon from '@/assets/images/icons/ticket_black.png'
+import ticket_white_icon from '@/assets/images/icons/ticket.png'
 import meals_icon from '@/assets/images/icons/meals_black.png'
 import payment_icon from '@/assets/images/icons/compensation.png'
 import status_icon from '@/assets/images/icons/front_gate.png'
@@ -1963,6 +1964,7 @@ export default {
       downloadSettimes,
       downloadVolunteerShiftICS,
       ticket_icon,
+      ticket_white_icon,
       meals_icon,
       payment_icon,
       status_icon,
@@ -2442,12 +2444,14 @@ a:hover {
   font-size: 1.5rem;
   margin: 1rem 0;
   color: white;
+  font-weight: bold;
 }
 
 .modal-content h3 {
   font-size: 1rem;
   line-height: 1.4;
   margin: 0.75rem 0;
+  font-weight: normal;
 }
 
 /* Improved history list styling */

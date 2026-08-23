@@ -49,7 +49,7 @@
           @dragstart="onChipDragStart($event, 'open_decks::special')"
           @click="onChipTap('open_decks::special')"
         >
-          🎧 Open Decks
+          <img :src="headphones_icon" style="height: 16px; width: auto; margin-right: 4px; vertical-align: middle;" /> Open Decks
           <span v-if="openDecksCount > 0" class="alt-chip-badge">×{{ openDecksCount }}</span>
         </div>
         <div
@@ -125,7 +125,7 @@
               <div class="resize-top" />
               <div class="alt-block-content" @click="toggleSelect(block.blockId)">
                 <div class="alt-block-header">
-                  <span v-if="block.type === 'open_decks'" class="block-type-icon">🎧</span>
+                  <img v-if="block.type === 'open_decks'" :src="headphones_icon" class="block-type-icon" />
                   <img v-else :src="block.type === 'workshop' ? workshop_icon : dj_icon" class="block-type-icon" />
                   <div class="alt-block-name">{{ block.act_name }}</div>
                 </div>
@@ -157,6 +157,7 @@ import { useLineupAdmin } from '@/composables/useLineupAdmin'
 import { reunion_db } from '@/firebase'
 import dj_icon from '@/assets/images/icons/dj.png'
 import workshop_icon from '@/assets/images/icons/workshop.png'
+import headphones_icon from '@/assets/images/icons/headphones.png'
 
 const props = defineProps({
   events:    { type: Array, required: true },   // day-filtered events
@@ -1094,18 +1095,10 @@ onUnmounted(() => {
 }
 
 .block-type-icon {
-  width: 12px;
   height: 12px;
+  width: auto;
   opacity: 0.7;
   flex-shrink: 0;
-}
-
-.block-type-icon:not(img) {
-  font-size: 12px;
-  line-height: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .alt-block-name {

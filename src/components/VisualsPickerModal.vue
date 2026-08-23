@@ -8,7 +8,7 @@
         style="height: 64px; width: auto"
         alt="Festivall Emblem"
       />
-      <img :src="dj_icon" style="height: 64px; width: auto; margin: 0" alt="Visuals Icon" />
+      <img :src="vectors_icon" style="height: 64px; width: auto; margin: 0" alt="Visuals Icon" />
       <h2>Choose Your Visuals</h2>
 
       <h3 v-if="cutoffReached" style="color: orange;">
@@ -164,7 +164,7 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { sendReunionApplications } from '/scripts/notifications.js'
 import catalog from '@/data/visuals_catalog.json'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
-import dj_icon from '@/assets/images/icons/dj.png'
+import vectors_icon from '@/assets/images/icons/vectors.png'
 
 export default {
   name: 'VisualsPickerModal',
@@ -258,7 +258,7 @@ export default {
 
     return {
       festivall_emblem_white,
-      dj_icon,
+      vectors_icon,
       catalog,
       limits,
       selected,
@@ -308,11 +308,10 @@ export default {
   margin-top: 0.5rem;
 }
 
-.festivall-emblem { position: absolute; top: 8px; left: 8px; height: 40px !important; }
-.modal-content h2 { font-size: 1.25rem; margin: 0.5rem 0; color: white; }
-.modal-content h3 { font-size: 0.95rem; line-height: 1.35; margin: 0.4rem 0; }
+.festivall-emblem { position: absolute; top: 10px; left: 10px; }
+.modal-content h2 { font-size: 1.5rem; margin: 1rem 0; color: white; font-weight: bold; }
+.modal-content h3 { font-size: 1rem; line-height: 1.4; margin: 0.75rem 0; font-weight: normal; }
 .modal-content img { margin: 0; }
-.modal-content > img { height: 40px !important; }
 
 .modal-close {
   position: sticky;

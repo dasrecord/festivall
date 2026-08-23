@@ -1,8 +1,19 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
-    <div class="modal-content open-decks-modal">
-      <button class="modal-close" @click="$emit('close')">×</button>
-      <h2>🎧 Open Decks</h2>
+    <div class="modal-content">
+      <div class="modal-close" @click="$emit('close')"></div>
+      <img
+        class="festivall-emblem"
+        :src="festivall_emblem_white"
+        style="height: 64px; width: auto"
+        alt="Festivall Emblem"
+      />
+      <img
+        :src="headphones_icon"
+        style="height: 64px; width: auto; margin: 0"
+        alt="Open Decks Icon"
+      />
+      <h2>Open Decks</h2>
       <p class="modal-subtitle">
         Claim a 20-minute slot to showcase your music! 
         <span v-if="!loading" class="slots-info">({{ myClaimedSlots.length }} claimed)</span>
@@ -62,6 +73,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc, query, orderBy, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
+import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
+import headphones_icon from '@/assets/images/icons/headphones.png'
 
 const props = defineProps({
   participantId: { type: String, required: true },
@@ -317,68 +330,99 @@ onMounted(() => {
   bottom: 0;
   background: rgba(0, 0, 0, 0.85);
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
   z-index: 9999;
   padding: 1rem;
 }
 
 .modal-content {
-  background: var(--reunion-light-gray);
-  border: 2px solid var(--reunion-frog-green);
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 800px;
   width: 100%;
-  max-height: 85vh;
+  max-width: 900px;
+  max-height: 90vh;
   overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  color: white;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.8);
   position: relative;
+  margin-top: 2rem;
+}
+
+.festivall-emblem {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 .modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  font-size: 2rem;
-  color: #aaa;
+  position: sticky;
+  top: 15px;
+  font-size: 24px;
+  color: white;
   cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  width: 32px;
-  height: 32px;
+  z-index: 12;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  align-self: flex-end;
+  margin-bottom: -30px;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close::before {
+  content: '✕';
 }
 
 .modal-close:hover {
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 h2 {
-  color: var(--reunion-frog-green);
-  margin: 0 0 0.5rem;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  margin: 1rem 0;
+  color: white;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0.75rem 0;
+  font-weight: normal;
 }
 
 .modal-subtitle {
-  color: #aaa;
+  color: #ddd;
   margin: 0 0 1.5rem;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 .slots-info {
   color: var(--reunion-frog-green);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .loading-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: #888;
+  color: #aaa;
   font-size: 1rem;
 }
 
@@ -388,44 +432,44 @@ h2 {
 }
 
 .no-slots p {
-  color: #888;
+  color: #aaa;
   margin: 0.5rem 0;
 }
 
 .no-slots .hint {
   font-size: 0.85rem;
-  color: #666;
+  color: #888;
 }
 
 .slots-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
 }
 
 .slot-card {
-  background: #1a1a1a;
+  background: rgba(0, 0, 0, 0.4);
   border: 2px solid var(--reunion-frog-green);
   border-radius: 10px;
   padding: 1rem;
   transition: all 0.2s;
+  width: 100%;
+  max-width: 320px;
+  min-width: 280px;
 }
 
-.slot-card:not(.slot-claimed):not(.slot-mine):hover {
+.slot-card:not(.slot-mine):hover {
   border-color: #fff;
   box-shadow: 0 4px 12px rgba(106, 204, 106, 0.3);
   transform: translateY(-2px);
 }
 
-.slot-card.slot-claimed {
-  opacity: 0.6;
-  border-color: #444;
-}
-
 .slot-card.slot-mine {
   border-color: #6acc6a;
-  background: linear-gradient(135deg, #1a3520 0%, #1a1a1a 100%);
+  background: rgba(106, 204, 106, 0.15);
 }
 
 .slot-header {
@@ -450,9 +494,10 @@ h2 {
 }
 
 .slot-duration {
-  color: #888;
+  color: #aaa;
   font-size: 0.85rem;
   margin-bottom: 1rem;
+  text-align: left;
 }
 
 .slot-status {
@@ -463,13 +508,8 @@ h2 {
   text-align: center;
 }
 
-.slot-status.claimed {
-  background: rgba(255, 255, 255, 0.05);
-  color: #888;
-}
-
 .slot-status.mine {
-  background: rgba(106, 204, 106, 0.15);
+  background: rgba(106, 204, 106, 0.2);
   color: #6acc6a;
   display: flex;
   justify-content: space-between;
@@ -478,20 +518,21 @@ h2 {
 
 .claim-btn {
   width: 100%;
+  min-height: 48px;
   padding: 0.6rem 1rem;
-  background: var(--reunion-frog-green);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+  background-color: var(--reunion-frog-green);
+  color: white;
+  border: 2px solid var(--reunion-frog-green);
+  border-radius: 25px;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .claim-btn:hover {
-  background: #fff;
-  color: #000;
+  background-color: transparent;
+  color: var(--reunion-frog-green);
   transform: scale(1.02);
 }
 
@@ -508,15 +549,16 @@ h2 {
 }
 
 .unclaim-btn {
-  padding: 0.25rem 0.75rem;
+  padding: 0.35rem 0.75rem;
   background: transparent;
   color: #f66;
   border: 1px solid #f66;
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .unclaim-btn:hover {
@@ -533,19 +575,75 @@ h2 {
   color: #f66;
   font-size: 0.9rem;
   text-align: center;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
   .modal-content {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
+    max-width: 100%;
   }
   
   .slots-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .slot-card {
+    max-width: 100%;
+    min-width: 0;
   }
   
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+  }
+  
+  .modal-subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .slot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .slot-time {
+    font-size: 1rem;
+  }
+  
+  .slot-status.mine {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .unclaim-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    padding: 1.5rem 0.75rem;
+    border-radius: 10px;
+  }
+  
+  h2 {
+    font-size: 1.2rem;
+  }
+  
+  .slot-card {
+    padding: 0.75rem;
+  }
+  
+  img[alt="Festivall Emblem"],
+  img[alt="Open Decks Icon"] {
+    height: 48px !important;
   }
 }
 </style>
