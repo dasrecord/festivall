@@ -117,7 +117,8 @@
                 unsaved:  unsavedIds.has(block.blockId),
                 'is-new': block.isNew,
                 selected: selectedIds.has(block.blockId),
-                'block-open-decks': block.type === 'open_decks'
+                'block-open-decks': block.type === 'open_decks',
+                'block-workshop': block.type === 'workshop'
               }"
               :style="blockStyle(block)"
               @click.self="toggleSelect(block.blockId)"
@@ -130,7 +131,7 @@
                   <div class="alt-block-name">{{ block.act_name }}</div>
                 </div>
                 <div class="alt-block-time">{{ formatBlockTime(block) }}</div>
-                <div v-if="block.genre" class="alt-block-genre">{{ block.genre }}</div>
+                <div v-if="block.genre && block.type !== 'workshop'" class="alt-block-genre">{{ block.genre }}</div>
               </div>
               <button class="alt-block-delete" @click.stop="deleteBlock(block.blockId)" title="Remove set">×</button>
               <div class="resize-bottom" />
@@ -170,7 +171,7 @@ const props = defineProps({
 const PX_PER_MIN  = 2
 const SNAP_MIN    = 15
 const SNAP_PX     = SNAP_MIN * PX_PER_MIN
-const DAY_START_H = 12   // noon
+const DAY_START_H = 9    // 9 AM
 const DAY_END_H   = 28   // 4 AM next day
 const TOTAL_HOURS = DAY_END_H - DAY_START_H
 const timelineHeight = TOTAL_HOURS * 60 * PX_PER_MIN  // 1920px
@@ -261,13 +262,14 @@ function buildBlocks(events) {
       ? ev.set_types
       : ev.settimes.map(() => ev.is_workshop ? 'workshop' : 'act')
     for (let i = 0; i < ev.settimes.length; i++) {
+      const blockType = types[i] || (ev.is_workshop ? 'workshop' : 'act')
       blocks.push({
         blockId:  `${ev.id}::${ev.settimes[i]}`,
         eventId:  ev.id,
-        type:     types[i] || (ev.is_workshop ? 'workshop' : 'act'),
+        type:     blockType,
         settime:  ev.settimes[i],
         duration: durations[i] || 60,
-        act_name: ev.act_name,
+        act_name: blockType === 'workshop' ? (ev.workshop_title || ev.act_name) : ev.act_name,
         genre:    ev.genre,
         isNew:    false
       })
@@ -1346,5 +1348,18 @@ onUnmounted(() => {
 .block-open-decks {
   background: linear-gradient(135deg, #2a0348 0%, #430789 100%);
   border-color: #b24ff5;
+}
+
+.alt-block.block-workshop {
+  background: #1a1f2f;
+  border-color: #6080c0;
+}
+
+.alt-block.block-workshop .alt-block-name {
+  color: #aac0f0;
+}
+
+.alt-block.block-workshop .alt-block-genre {
+  color: #6080c0;
 }
 </style>
