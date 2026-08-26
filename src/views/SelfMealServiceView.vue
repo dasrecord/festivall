@@ -119,8 +119,8 @@
     <div class="meal-info">
       <h3>🕐 Meal Service Hours</h3>
       <div class="service-hours">
-        <div class="meal-time"><strong>Lunch:</strong> 11:00 AM - 3:00 PM</div>
-        <div class="meal-time"><strong>Dinner:</strong> 5:00 PM - 9:00 PM</div>
+        <div class="meal-time"><strong>Lunch:</strong> 12:00 PM - 2:00 PM</div>
+        <div class="meal-time"><strong>Dinner:</strong> 6:00 PM - 8:00 PM</div>
       </div>
     </div>
 
@@ -204,14 +204,19 @@ export default {
 
         if (!querySnapshot.empty) {
           const p = querySnapshot.docs[0].data()
-          participant.value = {
-            id_code: p.id_code,
-            id_code_long: p.id_code_long,
-            fullname: p.contact?.fullname || '',
-            ticket_type: p.order?.ticket_type || '',
-            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            meal_redemption_history: p.order?.meal_redemption_history || [],
-            last_meal_redemption: p.order?.last_meal_redemption || null
+          // Don't allow declined applicants to redeem meals
+          if (p.status === 'declined') {
+            participant.value = null
+          } else {
+            participant.value = {
+              id_code: p.id_code,
+              id_code_long: p.id_code_long,
+              fullname: p.contact?.fullname || '',
+              ticket_type: p.order?.ticket_type || '',
+              meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+              meal_redemption_history: p.order?.meal_redemption_history || [],
+              last_meal_redemption: p.order?.last_meal_redemption || null
+            }
           }
         } else {
           participant.value = null

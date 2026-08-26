@@ -1413,6 +1413,13 @@ export default {
           if (!querySnapshot.empty) {
             const p = querySnapshot.docs[0].data()
 
+            // Don't allow declined applicants to access their ticket page
+            if (p.status === 'declined') {
+              alert('This application has been declined. Please contact admin if you have questions.')
+              router.push({ name: 'EnterIDCode' })
+              return
+            }
+
             // Check if participant has a valid ticket (either purchased or earned through contract)
             const hasValidOrder = p.order && p.order.paid === true
             const hasSignedContract = p.contract && p.contract.signed === true

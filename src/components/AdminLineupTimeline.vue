@@ -271,6 +271,7 @@ function buildBlocks(events) {
         duration: durations[i] || 60,
         act_name: blockType === 'workshop' ? (ev.workshop_title || ev.act_name) : ev.act_name,
         genre:    ev.genre,
+        lane:     blockType === 'workshop' ? 1 : 0,  // workshops in lane 1, DJs in lane 0
         isNew:    false
       })
     }
@@ -303,6 +304,7 @@ async function fetchOpenDecksBlocks() {
         claimed_slots: claimed,
         act_name:  `Open Decks (${availableMinutes}min available)`,
         genre:     '',
+        lane:      0,  // Open Decks in DJ lane
         isNew:     false
       }
     })
@@ -363,9 +365,13 @@ const chipActs = computed(() => {
 // ── Block styles & display ──────────────────────────────────────────────────
 function blockStyle(block) {
   if (!block.settime) return {}
+  const lane = block.lane || 0
+  const laneWidth = 50  // percentage
   return {
     top:    `${timeToPixel(block.settime)}px`,
-    height: `${block.duration * PX_PER_MIN}px`
+    height: `${block.duration * PX_PER_MIN}px`,
+    left:   `${lane * laneWidth}%`,
+    width:  `${laneWidth}%`
   }
 }
 
@@ -979,6 +985,19 @@ onUnmounted(() => {
   bottom: 0;
 }
 
+/* Lane divider */
+.alt-acts-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #2a2a2a 0%, #3a3a3a 50%, #2a2a2a 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .alt-grid {
   position: absolute;
   left: 0;
@@ -1036,10 +1055,9 @@ onUnmounted(() => {
 
 .alt-block {
   position: absolute;
-  left: 6px;
-  right: 6px;
   background: #1a3520;
   border: 1px solid var(--reunion-frog-green);
+  padding: 0 6px;
   border-radius: 6px;
   box-sizing: border-box;
   cursor: grab;

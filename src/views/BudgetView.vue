@@ -566,7 +566,9 @@ const removeReceipt = async (id) => {
 // ── Data loading ──────────────────────────────────────────────────────────────
 const loadParticipants = async () => {
   const snap = await getDocs(collection(reunion_db, 'participants_2026'))
-  participants.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  participants.value = snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((p) => p.status !== 'declined')
 }
 
 const subscribeBudget = () => {

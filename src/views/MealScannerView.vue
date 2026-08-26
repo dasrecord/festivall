@@ -568,30 +568,33 @@ export default {
     try {
       const participantsCollection = collection(this.db, 'participants_2026')
       this.unsubscribeOrders = onSnapshot(participantsCollection, (snap) => {
-        this.orders = snap.docs.map((d) => {
-          const p = d.data()
-          return {
-            id_code: p.id_code,
-            id_code_long: p.id_code_long,
-            fullname: p.contact?.fullname || '',
-            email: p.contact?.email || '',
-            phone: p.contact?.phone || '',
-            ticket_type: p.order?.ticket_type || '',
-            selected_day: p.order?.selected_day || '',
-            total_price: p.order?.fiat_total_price_cad || 0,
-            currency: 'CAD',
-            paid: p.order?.paid || false,
-            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
-            ticket_quantity: p.order?.ticket_quantity || 0,
-            meal_packages: p.order?.meal_packages || 0,
-            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            checked_in: p.order?.checked_in || false,
-            meal_redemption_history: p.order?.meal_redemption_history || [],
-            last_meal_redemption: p.order?.last_meal_redemption || null,
-            pending_meal_purchases: p.order?.pending_meal_purchases || [],
-            ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || []
-          }
-        })
+        this.orders = snap.docs
+          .map((d) => {
+            const p = d.data()
+            return {
+              id_code: p.id_code,
+              id_code_long: p.id_code_long,
+              fullname: p.contact?.fullname || '',
+              email: p.contact?.email || '',
+              phone: p.contact?.phone || '',
+              ticket_type: p.order?.ticket_type || '',
+              selected_day: p.order?.selected_day || '',
+              total_price: p.order?.fiat_total_price_cad || 0,
+              currency: 'CAD',
+              paid: p.order?.paid || false,
+              original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+              ticket_quantity: p.order?.ticket_quantity || 0,
+              meal_packages: p.order?.meal_packages || 0,
+              meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+              checked_in: p.order?.checked_in || false,
+              meal_redemption_history: p.order?.meal_redemption_history || [],
+              last_meal_redemption: p.order?.last_meal_redemption || null,
+              pending_meal_purchases: p.order?.pending_meal_purchases || [],
+              ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || [],
+              status: p.status
+            }
+          })
+          .filter((order) => order.status !== 'declined')
         console.log(`Orders synced: ${this.orders.length} participants`)
       }, (error) => {
         console.error('Snapshot error:', error)
@@ -851,30 +854,33 @@ export default {
       try {
         const participantsCollection = collection(this.db, 'participants_2026')
         const snap = await getDocs(participantsCollection)
-        this.orders = snap.docs.map((d) => {
-          const p = d.data()
-          return {
-            id_code: p.id_code,
-            id_code_long: p.id_code_long,
-            fullname: p.contact?.fullname || '',
-            email: p.contact?.email || '',
-            phone: p.contact?.phone || '',
-            ticket_type: p.order?.ticket_type || '',
-            selected_day: p.order?.selected_day || '',
-            total_price: p.order?.fiat_total_price_cad || 0,
-            currency: 'CAD',
-            paid: p.order?.paid || false,
-            original_ticket_quantity: p.order?.original_ticket_quantity || 0,
-            ticket_quantity: p.order?.ticket_quantity || 0,
-            meal_packages: p.order?.meal_packages || 0,
-            meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
-            checked_in: p.order?.checked_in || false,
-            meal_redemption_history: p.order?.meal_redemption_history || [],
-            last_meal_redemption: p.order?.last_meal_redemption || null,
-            pending_meal_purchases: p.order?.pending_meal_purchases || [],
-            ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || []
-          }
-        })
+        this.orders = snap.docs
+          .map((d) => {
+            const p = d.data()
+            return {
+              id_code: p.id_code,
+              id_code_long: p.id_code_long,
+              fullname: p.contact?.fullname || '',
+              email: p.contact?.email || '',
+              phone: p.contact?.phone || '',
+              ticket_type: p.order?.ticket_type || '',
+              selected_day: p.order?.selected_day || '',
+              total_price: p.order?.fiat_total_price_cad || 0,
+              currency: 'CAD',
+              paid: p.order?.paid || false,
+              original_ticket_quantity: p.order?.original_ticket_quantity || 0,
+              ticket_quantity: p.order?.ticket_quantity || 0,
+              meal_packages: p.order?.meal_packages || 0,
+              meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
+              checked_in: p.order?.checked_in || false,
+              meal_redemption_history: p.order?.meal_redemption_history || [],
+              last_meal_redemption: p.order?.last_meal_redemption || null,
+              pending_meal_purchases: p.order?.pending_meal_purchases || [],
+              ad_hoc_meal_orders: p.order?.ad_hoc_meal_orders || [],
+              status: p.status
+            }
+          })
+          .filter((order) => order.status !== 'declined')
         console.log('Orders refreshed successfully')
       } catch (error) {
         console.error('Error refreshing orders:', error)
