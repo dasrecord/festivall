@@ -460,8 +460,8 @@ function listenToVolunteerShifts() {
 // Add an entry for each feature, matching the SVG layer name and desired offset.
 
 // ── Behaviour constants ───────────────────────────────────────────────────────
-const CHECKIN_DECAY_MS = 10 * 60 * 1000   // how long a check-in stays visible on the map
-const MEAL_WINDOW_MS   = 90 * 60 * 1000   // how long "now serving" stays active (1.5 h)
+const CHECKIN_DECAY_MS = 30 * 60 * 1000   // how long a check-in stays visible on the map
+const MEAL_WINDOW_MS   = 120 * 60 * 1000   // how long "now serving" stays active (2 h)
 const MIN_SCALE = 1   // minimum map zoom level
 const MAX_SCALE = 10   // maximum map zoom level
 
