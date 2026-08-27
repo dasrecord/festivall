@@ -80,12 +80,12 @@ export const REUNION_FESTIVAL = {
 
   // Edit these menu items when each meal is finalized.
   mealMenus: {
-    fridayLunch: ['Placeholder Friday Lunch'],
-    fridaySupper: ['Placeholder Friday Supper'],
-    saturdayLunch: ['Placeholder Saturday Lunch'],
-    saturdaySupper: ['Placeholder Saturday Supper'],
-    sundayLunch: ['Placeholder Sunday Lunch'],
-    sundaySupper: ['Placeholder Sunday Supper'],
+    fridayLunch: ['Cheddar Smokies & Garlic Bread'],
+    fridaySupper: ['Turkey Dinner'],
+    saturdayLunch: ['Soup & Biscuits'],
+    saturdaySupper: ['Bao Bun with Asian Slaw & Soy Garlic Cucumbers'],
+    sundayLunch: ['Mediterranean Ricebowl with Hummus & Tzatziki'],
+    sundaySupper: ['Pulled Pork Sandwich with Mac & Cheese'],
   },
 
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
