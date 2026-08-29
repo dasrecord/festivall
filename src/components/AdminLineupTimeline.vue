@@ -445,13 +445,15 @@ function cascadeOverlaps(draggedBlockId = null) {
   const sorted = () =>
     [...localBlocks.value].sort((a, b) => new Date(a.settime) - new Date(b.settime))
 
-  // Forward pass — push later blocks DOWN
+  // Forward pass — push later blocks DOWN (only within same lane)
   const fwd = sorted()
   for (let i = 0; i < fwd.length - 1; i++) {
     const curr = localBlocks.value.find(b => b.blockId === fwd[i].blockId)
     const next = localBlocks.value.find(b => b.blockId === fwd[i + 1].blockId)
     if (!curr || !next) continue
     if (draggedBlockId && next.blockId === draggedBlockId) continue
+    // Only cascade if blocks are in the same lane
+    if ((curr.lane || 0) !== (next.lane || 0)) continue
     const currEnd = new Date(curr.settime).getTime() + curr.duration * 60_000
     if (new Date(next.settime).getTime() < currEnd) {
       next.settime = new Date(Math.ceil(currEnd / snapMs) * snapMs).toISOString()
@@ -459,13 +461,15 @@ function cascadeOverlaps(draggedBlockId = null) {
     }
   }
 
-  // Backward pass — push earlier blocks UP
+  // Backward pass — push earlier blocks UP (only within same lane)
   const bwd = sorted()
   for (let i = bwd.length - 1; i > 0; i--) {
     const later   = localBlocks.value.find(b => b.blockId === bwd[i].blockId)
     const earlier = localBlocks.value.find(b => b.blockId === bwd[i - 1].blockId)
     if (!later || !earlier) continue
     if (draggedBlockId && earlier.blockId === draggedBlockId) continue
+    // Only cascade if blocks are in the same lane
+    if ((later.lane || 0) !== (earlier.lane || 0)) continue
     const prevEnd = new Date(earlier.settime).getTime() + earlier.duration * 60_000
     if (new Date(later.settime).getTime() < prevEnd) {
       const newStart = Math.floor((new Date(later.settime).getTime() - earlier.duration * 60_000) / snapMs) * snapMs
@@ -547,6 +551,7 @@ function addBlockFromChip(chipId, dropPx) {
       duration: defaultSetDuration.value,
       act_name: `Open Decks (${defaultSetDuration.value}min available)`,
       genre:    '',
+      lane:     0,  // Open Decks in DJ lane
       isNew:    true,
       claimed_slots: [],
       availableMinutes: defaultSetDuration.value
@@ -565,14 +570,16 @@ function addBlockFromChip(chipId, dropPx) {
     : (ev.act_name || ev.workshop_title)
   const snapped = Math.max(0, Math.round(dropPx / SNAP_PX) * SNAP_PX)
   const blockId = `${docId}::new::${++nextNewId}`
+  const blockType = type === 'workshop' ? 'workshop' : 'act'
   localBlocks.value.push({
     blockId,
     eventId: docId,
-    type:    type === 'workshop' ? 'workshop' : 'act',
+    type:    blockType,
     settime:  pixelToTime(snapped),
     duration: defaultSetDuration.value,
     act_name: label,
     genre:    type === 'act' ? (ev.genre || '') : '',
+    lane:     blockType === 'workshop' ? 1 : 0,  // workshops in lane 1, acts in lane 0
     isNew:    true
   })
   markUnsaved(blockId)
