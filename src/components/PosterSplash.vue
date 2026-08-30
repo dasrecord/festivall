@@ -521,7 +521,7 @@ onBeforeUnmount(() => {
   left: 8.16%; top: 18.98%; width: 83.69%; height: 14.89%;
   display: flex;
   flex-wrap: wrap;
-  align-content: space-between;
+  align-content: space-around;
   justify-content: center;
   gap: 0rem 0rem;
   overflow: hidden;

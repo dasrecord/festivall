@@ -4,7 +4,7 @@
 
     <!-- ── Top bar ── -->
     <div class="gm-bar">
-      <RouterLink to="/" class="gm-back">←</RouterLink>
+      <RouterLink :to="backLink" class="gm-back">←</RouterLink>
       <span class="gm-title">The Sound of Reunion {{ REUNION_FESTIVAL.year }}</span>
 
       <!-- Search -->
@@ -305,6 +305,13 @@ import { PILLARS, PILLAR_MAP, PILLAR_BRIDGES, resolveGenreToNodeId } from '@/con
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const route = useRoute()
+
+// Navigate back to ticket page if coming from there, otherwise home
+const backLink = computed(() => {
+  const idCode = route.query.id_code
+  return idCode ? `/reunionticket/${idCode}` : '/'
+})
+
 const INTRO_STORAGE_KEY = 'reunion_genre_map_intro_seen_2026'
 const INTRO_SLIDES = [
   {
