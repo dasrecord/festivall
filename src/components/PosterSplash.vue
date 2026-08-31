@@ -65,7 +65,7 @@ const { itinerary: liveItinerary } = useBbpSchedule()
 const { signedArtists, signedWorkshops } = useReunionPosterData()
 const { isAdmin } = useReunionAdmin()
 
-async function exportReunionPoster() {
+async function exportReunionPoster(format: 'png' | 'pdf' = 'png') {
   if (!posterZoomWrapperEl.value) return
 
   // Store original transform
@@ -97,16 +97,38 @@ async function exportReunionPoster() {
       allowTaint: true,
     })
 
-    // Convert to blob and download
-    canvas.toBlob((blob) => {
-      if (!blob) return
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `reunion-2026-poster-${Date.now()}.png`
-      link.click()
-      URL.revokeObjectURL(url)
-    }, 'image/png', 1.0)
+    if (format === 'pdf') {
+      // Import jsPDF dynamically
+      const { jsPDF } = await import('jspdf')
+
+      // Create PDF with 11×17 inch page (tabloid size)
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'in',
+        format: [11, 17],
+        compress: true,
+      })
+
+      // Convert canvas to image data
+      const imgData = canvas.toDataURL('image/png', 1.0)
+
+      // Add image to PDF at full page size
+      pdf.addImage(imgData, 'PNG', 0, 0, 11, 17, undefined, 'FAST')
+
+      // Save PDF
+      pdf.save(`reunion-2026-poster-${Date.now()}.pdf`)
+    } else {
+      // Convert to blob and download as PNG
+      canvas.toBlob((blob) => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `reunion-2026-poster-${Date.now()}.png`
+        link.click()
+        URL.revokeObjectURL(url)
+      }, 'image/png', 1.0)
+    }
   } catch (error) {
     console.error('Export failed:', error)
     alert('Export failed. Please try again.')
@@ -396,15 +418,24 @@ onBeforeUnmount(() => {
             <span v-else v-html="props.hint"></span>
           </span>
         </div>
-        <button
-          v-if="isAdmin && props.showReunionInfo"
-          type="button"
-          class="poster-export-button"
-          title="Export poster as high-resolution PNG (300 DPI, 11×17 inches)"
-          @click.stop="exportReunionPoster"
-        >
-          Export PNG
-        </button>
+        <div v-if="isAdmin && props.showReunionInfo" class="poster-export-buttons">
+          <button
+            type="button"
+            class="poster-export-button"
+            title="Export poster as high-resolution PDF (300 DPI, 11×17 inches)"
+            @click.stop="exportReunionPoster('pdf')"
+          >
+            Export PDF
+          </button>
+          <button
+            type="button"
+            class="poster-export-button"
+            title="Export poster as high-resolution PNG (300 DPI, 11×17 inches)"
+            @click.stop="exportReunionPoster('png')"
+          >
+            Export PNG
+          </button>
+        </div>
       </div>
     </Transition>
   </Teleport>
@@ -815,11 +846,16 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.poster-export-button {
+.poster-export-buttons {
   position: fixed;
   top: max(1rem, env(safe-area-inset-top, 0px));
   right: max(1rem, env(safe-area-inset-right, 0px));
   z-index: 10001;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.poster-export-button {
   border: 1px solid color-mix(in srgb, var(--bbp-white) 35%, transparent);
   border-radius: 6px;
   padding: 0.65rem 1rem;
@@ -828,6 +864,12 @@ onBeforeUnmount(() => {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.poster-export-button:hover {
+  background: color-mix(in srgb, var(--bbp-white) 8%, var(--bbp-black));
+  border-color: color-mix(in srgb, var(--bbp-white) 50%, transparent);
 }
 
 .poster-fade-enter-active,
