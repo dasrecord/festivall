@@ -136,11 +136,19 @@ onUnmounted(() => {
 // Flatten: one slot per settime
 const flatSlots = computed(() => {
   const slots = []
+  const seenKeys = new Set()  // Track unique event+time combinations
+  
   for (const event of props.events) {
     const types = Array.isArray(event.set_types) ? event.set_types : []
     for (let i = 0; i < event.settimes.length; i++) {
       const slotType = types[i] || (event.is_workshop ? 'workshop' : 'act')
       const isWorkshop = slotType === 'workshop'
+      const uniqueKey = `${event.id}::${event.settimes[i]}`
+      
+      // Skip if we've already added this exact event+time combination
+      if (seenKeys.has(uniqueKey)) continue
+      seenKeys.add(uniqueKey)
+      
       slots.push({
         ...event,
         settimes:   [event.settimes[i]],
