@@ -787,7 +787,7 @@ async function handleSave() {
   dayStart.setHours(DAY_START_H, 0, 0, 0)
   const dayEnd = new Date(props.date)
   dayEnd.setDate(dayEnd.getDate() + 1)
-  dayEnd.setHours(DAY_END_H - 24, 0, 0, 0)  // 4 AM next day
+  dayEnd.setHours(DAY_END_H - 24, 0, 0, 0)  // 5 AM next day
 
   const updates = []
   for (const eid of eventIds) {

@@ -185,13 +185,13 @@ const getEventsByDay = (targetDate) => {
       const filteredSettimes = event.settimes.filter((settime, index) => {
         const date = new Date(settime)
 
-        // Create time boundaries for this "festival day"
+        // Create time boundaries for this "festival day" (8 AM to 5 AM next day)
         const dayStart = new Date(targetDay)
-        dayStart.setHours(3, 0, 0, 0) // Start at 3:00 AM
+        dayStart.setHours(8, 0, 0, 0) // Start at 8:00 AM
 
         const dayEnd = new Date(targetDay)
         dayEnd.setDate(dayEnd.getDate() + 1)
-        dayEnd.setHours(3, 0, 0, 0) // End at 3:00 AM next day
+        dayEnd.setHours(5, 0, 0, 0) // End at 5:00 AM next day
 
         const isInDay = date >= dayStart && date < dayEnd
         if (isInDay) filteredIndices.push(index)
