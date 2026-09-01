@@ -32,6 +32,7 @@ dotenv.config()
 // ---------------------------------------------------------------------------
 const SUBJECT_KEYWORD = "You've received"  // matches auto-deposit: "You've received $X from [NAME] and it has been automatically deposited."
 const GMAIL_LABEL = 'Processed_2026'
+const REVIEW_LABEL = 'Review_2026'
 const FIREBASE_COLLECTION = 'participants_2026'
 const RELAY_BASE = 'https://relayproxy.vercel.app'
 const TICKET_EMAIL_SUBJECT = 'Reunion 2026'
@@ -108,6 +109,14 @@ async function sendSlackNotification(fullname, id_code) {
   })
 }
 
+async function sendManualReviewSlack({ uid, reason, from, subject, transferAmount, details = '' }) {
+  const amountLine = transferAmount != null ? `\n:moneybag: $${transferAmount} CAD` : ''
+  const detailsLine = details ? `\n:memo: ${details}` : ''
+  await postRelay('/reunion_sales', {
+    text: `:warning: E-Transfer needs manual review\n:email: UID ${uid} | From: ${from}${amountLine}\n:label: Reason: ${reason}\n:book: Subject: ${subject}${detailsLine}`
+  })
+}
+
 /**
  * Ensure the Gmail label exists. Creates it if missing.
  * Returns the label name (ImapFlow uses string names for IMAP labels).
@@ -124,6 +133,24 @@ async function ensureLabel(client) {
     // Non-fatal — label may already exist or creation may fail silently on some servers
     console.warn(`[label] Could not verify/create label "${GMAIL_LABEL}": ${err.message}`)
   }
+}
+
+async function ensureMailboxLabel(client, label) {
+  try {
+    const mailboxes = await client.list()
+    const exists = mailboxes.some(m => m.name === label || m.path === label)
+    if (!exists) {
+      await client.mailboxCreate(label)
+      console.log(`[label] Created Gmail label: ${label}`)
+    }
+  } catch (err) {
+    console.warn(`[label] Could not verify/create label "${label}": ${err.message}`)
+  }
+}
+
+function amountsMatch(a, b, tolerance = 0.01) {
+  if (a == null || b == null || Number.isNaN(a) || Number.isNaN(b)) return false
+  return Math.abs(Number(a) - Number(b)) < tolerance
 }
 
 // Walk bodyStructure and collect MIME part numbers by content type.
@@ -208,22 +235,20 @@ async function processPendingMealOrders(docRef, data, amount, dryRun) {
 
   if (pending.length === 0) {
     console.log(`[meal] No pending e-transfer meal orders found`)
-    return false
+    return 'meal_no_pending'
   }
 
-  // Match by amount (within 1 cent), fallback to sole entry
-  let match = amount != null
-    ? pending.find(p => Math.abs(p.fiat_total - amount) < 0.01)
-    : null
-
-  if (!match && pending.length === 1) {
-    console.warn(`[meal] Amount ${amount} didn't match fiat_total ${pending[0].fiat_total} — using sole pending entry as fallback`)
-    match = pending[0]
+  if (amount == null) {
+    console.warn('[meal] Could not parse transfer amount from subject — cannot safely auto-approve pending meal orders')
+    return 'meal_needs_review_missing_amount'
   }
+
+  // Strict match by amount (within 1 cent). No fallback.
+  const match = pending.find(p => amountsMatch(p.fiat_total, amount))
 
   if (!match) {
     console.warn(`[meal] Amount $${amount} does not match any pending e-transfer entry (found: ${pending.map(p => `$${p.fiat_total}`).join(', ')}) — skipping meal approval`)
-    return false
+    return 'meal_needs_review_amount_mismatch'
   }
 
   const { id_code, meal_quantity, fiat_total } = match
@@ -309,7 +334,7 @@ async function processEmail(client, uid, envelope, dryRun = false) {
 
   if (candidates.length === 0) {
     console.warn(`[email] UID ${uid} — no id_code candidates found in body, skipping`)
-    return false
+    return 'needs_review_missing_id'
   }
 
   console.log(`[email] UID ${uid} — candidates: ${candidates.join(', ')}`)
@@ -329,7 +354,11 @@ async function processEmail(client, uid, envelope, dryRun = false) {
       console.log(`[skip] UID ${uid} — id_code "${candidate}" already paid, checking for pending meal orders`)
       // Check for pending e-transfer meal orders — auto-approve if found
       const mealResult = await processPendingMealOrders(docRef, data, transferAmount, dryRun)
-      return mealResult || 'already_paid'
+      if (mealResult === 'meal_approved') return 'meal_approved'
+      if (mealResult === 'meal_needs_review_missing_amount' || mealResult === 'meal_needs_review_amount_mismatch') {
+        return mealResult
+      }
+      return 'already_paid'
     }
 
     const email = data.contact?.email
@@ -338,6 +367,17 @@ async function processEmail(client, uid, envelope, dryRun = false) {
     if (!email) {
       console.error(`[error] UID ${uid} — id_code "${candidate}" has no contact email in Firestore`)
       return false
+    }
+
+    if (transferAmount == null) {
+      console.warn(`[email] UID ${uid} — unable to parse transfer amount from subject; requires manual review`)
+      return 'needs_review_missing_amount'
+    }
+
+    const expectedAmount = Number(data.order?.fiat_total_price_cad)
+    if (!amountsMatch(expectedAmount, transferAmount)) {
+      console.warn(`[email] UID ${uid} — amount mismatch for "${candidate}": expected $${expectedAmount}, received $${transferAmount}`)
+      return 'needs_review_amount_mismatch'
     }
 
     console.log(`[match] id_code="${candidate}" | name="${fullname}" | email="${email}" | paid=${data.order?.paid ?? false}`)
@@ -368,7 +408,7 @@ async function processEmail(client, uid, envelope, dryRun = false) {
   }
 
   console.warn(`[email] UID ${uid} — no valid id_code found among candidates, skipping`)
-  return false
+  return 'needs_review_unknown_id'
 }
 
 // ---------------------------------------------------------------------------
@@ -400,6 +440,7 @@ async function main() {
 
   try {
     await ensureLabel(client)
+    await ensureMailboxLabel(client, REVIEW_LABEL)
 
     // For date-filtered test runs, search All Mail AND Spam to find any Interac emails
     const mailboxesToSearch = DATE_FILTER
@@ -465,6 +506,49 @@ async function main() {
               }
             }
             console.log(`[done] UID ${uid} — marked read and labeled ${GMAIL_LABEL}`)
+          }
+        } else if (
+          result === 'needs_review_missing_id' ||
+          result === 'needs_review_unknown_id' ||
+          result === 'needs_review_missing_amount' ||
+          result === 'needs_review_amount_mismatch' ||
+          result === 'meal_needs_review_missing_amount' ||
+          result === 'meal_needs_review_amount_mismatch'
+        ) {
+          const reason = result
+          const detailsByReason = {
+            needs_review_missing_id: 'No id_code candidate found in email body.',
+            needs_review_unknown_id: 'Candidate id_code values were found but none matched Firestore.',
+            needs_review_missing_amount: 'Could not parse transfer amount from subject.',
+            needs_review_amount_mismatch: 'Transfer amount did not match the participant order total.',
+            meal_needs_review_missing_amount: 'Pending meal purchase exists but transfer amount was missing.',
+            meal_needs_review_amount_mismatch: 'Pending meal purchase exists but amount did not match any pending entry.'
+          }
+          const details = detailsByReason[reason] || ''
+
+          await sendManualReviewSlack({
+            uid,
+            reason,
+            from,
+            subject,
+            transferAmount: extractAmountFromSubject(subject),
+            details
+          })
+
+          if (DRY_RUN) {
+            console.log(`[dry-run] Would mark read and label ${REVIEW_LABEL} — skipping`)
+          } else {
+            await client.messageFlagsAdd(`${uid}`, ['\\Seen'], { uid: true })
+            try {
+              await client.messageMove(`${uid}`, REVIEW_LABEL, { uid: true })
+            } catch (labelErr) {
+              try {
+                await client.messageCopy(`${uid}`, REVIEW_LABEL, { uid: true })
+              } catch (copyErr) {
+                console.warn(`[label] Could not apply label "${REVIEW_LABEL}": ${copyErr.message}`)
+              }
+            }
+            console.log(`[review] UID ${uid} — marked read and labeled ${REVIEW_LABEL}`)
           }
         }
       }

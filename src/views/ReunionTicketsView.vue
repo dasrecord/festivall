@@ -226,7 +226,19 @@ const calculateTotalPrice = () => {
 
 const generatePaymentInstructions = () => {
   if (form.value.payment_type === 'etransfer') {
-    paymentInstructions.value = `Please etransfer $${form.value.total_price} CAD to humanoidtwo@gmail.com\nEnter this id_code in the message section: ${form.value.id_code}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nIf you still wish to get 25% off but need help getting setup with bitcoin, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop with us.`
+    paymentInstructions.value =
+      `<p>Thank you, <strong>${form.value.fullname}</strong>!</p>` +
+      `<p>Please e-transfer <strong>$${form.value.total_price} CAD</strong> to <strong>humanoidtwo@gmail.com</strong>.</p>` +
+      `<p>Important: include this ID code in your e-transfer message: <strong>${form.value.id_code}</strong></p>` +
+      `<p><strong>Order Details</strong><br />` +
+      `Full Name: ${form.value.fullname}<br />` +
+      `Ticket Type: ${form.value.ticket_type}<br />` +
+      `Ticket Quantity: ${form.value.ticket_quantity}<br />` +
+      `Meal Packages: ${form.value.meal_packages}</p>` +
+      `<p>Our system automatically checks for e-transfer payments every 3 hours.</p>` +
+      `<p>Once payment is received and matched to your ID code, your ticket is delivered automatically by email.</p>` +
+      `<p>If you still want 25% off and need help with Bitcoin setup, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop.</p>` +
+      `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
   } else if (form.value.payment_type === 'bitcoin') {
     paymentInstructions.value = `Pay with BTC Pay Server:\n ${REUNION_FESTIVAL.btcPayServerUrl}&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
   } else if (form.value.payment_type === 'cash') {
@@ -243,7 +255,14 @@ const generatePaymentInstructions = () => {
 
 const textPaymentInstructions = async () => {
   try {
-    const smsInstructions = paymentInstructions.value.replace(/<[^>]*>/g, '') // Remove HTML tags for SMS
+    const smsInstructions = paymentInstructions.value
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<li>/gi, '- ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
     await axios.post(
       'https://relayproxy.vercel.app/sms',
       {
@@ -264,7 +283,10 @@ const textPaymentInstructions = async () => {
 
 const emailPaymentInstructions = async () => {
   try {
-    const emailInstructions = paymentInstructions.value.replace(/\n/g, '<br />') // Add line breaks for email
+    const hasHtmlTag = /<[a-z][\s\S]*>/i.test(paymentInstructions.value)
+    const emailInstructions = hasHtmlTag
+      ? paymentInstructions.value
+      : paymentInstructions.value.replace(/\n/g, '<br />')
     await axios.post(
       'https://relayproxy.vercel.app/reunion_email',
       {
@@ -577,7 +599,7 @@ const submitForm = async () => {
       }
 
       alert(
-        'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.'
+        'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.\nOur system checks for e-transfer payments every 3 hours and auto-delivers your ticket after payment is matched.'
       )
 
       // Store timestamp for rate limiting
