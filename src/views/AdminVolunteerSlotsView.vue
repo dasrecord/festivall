@@ -990,6 +990,93 @@ export default {
   }
 }
 
+/* Mobile responsive styles for inputs and forms */
+@media (max-width: 600px) {
+  .form .grid {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  
+  .form .grid label {
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+  
+  .form .grid label:first-child {
+    margin-top: 0;
+  }
+  
+  .form input,
+  .form select {
+    width: 100%;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .admin-claims .add-claim-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .admin-claims .add-claim-row input {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 16px;
+  }
+  
+  .admin-claims .add-claim-row button {
+    width: 100%;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .toolbar label {
+    margin-left: 0 !important;
+  }
+  
+  .toolbar select,
+  .toolbar button {
+    width: 100%;
+    font-size: 16px;
+  }
+  
+  .gen-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  
+  .gen-row label {
+    font-weight: 600;
+  }
+  
+  .gen-row input {
+    width: 100%;
+    font-size: 16px;
+  }
+  
+  .capacity-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  
+  .capacity-item input {
+    width: 100%;
+    font-size: 16px;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions button {
+    width: 100%;
+  }
+}
+
 /* Buttons */
 .btn {
   padding: 0.5rem 0.75rem;
