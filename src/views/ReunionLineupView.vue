@@ -181,7 +181,8 @@ const getEventsByDay = (targetDate) => {
 
   return events.value
     .map((event) => {
-      const filteredSettimes = event.settimes.filter((settime) => {
+      const filteredIndices = []
+      const filteredSettimes = event.settimes.filter((settime, index) => {
         const date = new Date(settime)
 
         // Create time boundaries for this "festival day"
@@ -192,14 +193,27 @@ const getEventsByDay = (targetDate) => {
         dayEnd.setDate(dayEnd.getDate() + 1)
         dayEnd.setHours(3, 0, 0, 0) // End at 3:00 AM next day
 
-        return date >= dayStart && date < dayEnd
+        const isInDay = date >= dayStart && date < dayEnd
+        if (isInDay) filteredIndices.push(index)
+        return isInDay
       })
 
       if (filteredSettimes.length === 0) return null
 
+      // Filter set_durations and set_types to match filtered settimes
+      const filteredDurations = Array.isArray(event.set_durations)
+        ? filteredIndices.map(i => event.set_durations[i] || 60)
+        : filteredSettimes.map(() => 60)
+      
+      const filteredTypes = Array.isArray(event.set_types)
+        ? filteredIndices.map(i => event.set_types[i] || 'act')
+        : filteredSettimes.map(() => 'act')
+
       return {
         ...event,
-        settimes: filteredSettimes
+        settimes: filteredSettimes,
+        set_durations: filteredDurations,
+        set_types: filteredTypes
       }
     })
     .filter(Boolean)

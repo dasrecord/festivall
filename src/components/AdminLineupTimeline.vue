@@ -171,10 +171,10 @@ const props = defineProps({
 const PX_PER_MIN  = 2
 const SNAP_MIN    = 15
 const SNAP_PX     = SNAP_MIN * PX_PER_MIN
-const DAY_START_H = 9    // 9 AM
-const DAY_END_H   = 28   // 4 AM next day
+const DAY_START_H = 8    // 8 AM
+const DAY_END_H   = 29   // 5 AM next day
 const TOTAL_HOURS = DAY_END_H - DAY_START_H
-const timelineHeight = TOTAL_HOURS * 60 * PX_PER_MIN  // 1920px
+const timelineHeight = TOTAL_HOURS * 60 * PX_PER_MIN  // 2520px
 
 // ── Time helpers ──────────────────────────────────────────────────────
 function adjustedHour(date) {
@@ -260,16 +260,17 @@ function buildBlocks(events) {
       : ev.settimes.map(() => 60)
     const types = Array.isArray(ev.set_types)
       ? ev.set_types
-      : ev.settimes.map(() => ev.is_workshop ? 'workshop' : 'act')
+      : ev.settimes.map(() => 'act')  // Default to 'act' - type should be explicitly set via set_types
+    
     for (let i = 0; i < ev.settimes.length; i++) {
-      const blockType = types[i] || (ev.is_workshop ? 'workshop' : 'act')
+      const blockType = types[i] || 'act'
       blocks.push({
         blockId:  `${ev.id}::${ev.settimes[i]}`,
         eventId:  ev.id,
         type:     blockType,
         settime:  ev.settimes[i],
         duration: durations[i] || 60,
-        act_name: blockType === 'workshop' ? (ev.workshop_title || ev.act_name) : ev.act_name,
+        act_name: blockType === 'workshop' ? (ev.workshop_title || ev.act_name) : (ev.act_name || ev.workshop_title),
         genre:    ev.genre,
         lane:     blockType === 'workshop' ? 1 : 0,  // workshops in lane 1, DJs in lane 0
         isNew:    false
@@ -340,15 +341,19 @@ const chipActs = computed(() => {
   for (const ev of props.allEvents) {
     const actName      = ev.act_name?.trim()
     const workshopName = ev.workshop_title?.trim()
-    if (actName) {
+    
+    // Always show DJ chip if participant has any name
+    if (actName || workshopName) {
       chips.push({
         chipId:      `${ev.id}::act`,
         eventId:     ev.id,
-        label:       actName,
+        label:       actName || workshopName,  // Fallback to workshop name if no DJ name
         genre:       ev.genre || '',
         daySetCount: localBlocks.value.filter(b => b.eventId === ev.id && b.type !== 'workshop').length
       })
     }
+    
+    // Show workshop chip if they have a workshop title (and it's different from act name)
     if (workshopName && workshopName !== actName) {
       chips.push({
         chipId:      `${ev.id}::workshop`,
@@ -565,12 +570,14 @@ function addBlockFromChip(chipId, dropPx) {
   const [docId, type] = chipId.split('::')
   const ev = props.allEvents.find(e => e.id === docId)
   if (!ev) return
-  const label = type === 'workshop'
-    ? (ev.workshop_title?.trim() || ev.act_name)
-    : (ev.act_name || ev.workshop_title)
+  
+  const blockType = type === 'workshop' ? 'workshop' : 'act'
+  const label = blockType === 'workshop'
+    ? (ev.workshop_title?.trim() || ev.act_name?.trim() || 'Workshop')
+    : (ev.act_name?.trim() || ev.workshop_title?.trim() || 'DJ Set')
+  
   const snapped = Math.max(0, Math.round(dropPx / SNAP_PX) * SNAP_PX)
   const blockId = `${docId}::new::${++nextNewId}`
-  const blockType = type === 'workshop' ? 'workshop' : 'act'
   localBlocks.value.push({
     blockId,
     eventId: docId,
@@ -791,7 +798,7 @@ async function handleSave() {
       : orig.settimes.map(() => 60)
     const origTypes = Array.isArray(orig.set_types)
       ? orig.set_types
-      : orig.settimes.map(() => orig.is_workshop ? 'workshop' : 'act')
+      : orig.settimes.map(() => 'act')  // Default to 'act' - type should be explicitly set via set_types
     // Keep settimes that belong to OTHER days
     const outside = orig.settimes
       .map((t, i) => ({ settime: t, duration: origDurs[i] || 60, type: origTypes[i] || 'act' }))
@@ -805,6 +812,7 @@ async function handleSave() {
       .map(b => ({ settime: b.settime, duration: b.duration, type: b.type || 'act' }))
     const combined = [...outside, ...dayBlocks]
       .sort((a, b) => new Date(a.settime) - new Date(b.settime))
+    
     updates.push({
       id:            eid,
       settimes:      combined.map(p => p.settime),
