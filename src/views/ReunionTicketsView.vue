@@ -425,27 +425,23 @@ const submitForm = async () => {
       return
     }
 
-    // 3. Content validation for suspicious patterns
+    // 3. Content validation for suspicious patterns (name only - emails legitimately contain .com/.net/etc.)
     const suspiciousPatterns = [
       'http',
       'https',
       'www.',
-      '.com',
-      '.net',
-      '.org',
       'bitcoin',
       'crypto',
       'btc',
       'eth',
       'spam',
-      'test',
       'admin',
       'root',
       'null',
       'undefined'
     ]
 
-    const textToCheck = `${form.value.fullname} ${form.value.email}`.toLowerCase()
+    const textToCheck = form.value.fullname.toLowerCase()
     if (suspiciousPatterns.some((pattern) => textToCheck.includes(pattern))) {
       alert('Please enter valid information.')
       isSubmitting.value = false
