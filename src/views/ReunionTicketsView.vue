@@ -235,7 +235,7 @@ const generatePaymentInstructions = () => {
       `Ticket Type: ${form.value.ticket_type}<br />` +
       `Ticket Quantity: ${form.value.ticket_quantity}<br />` +
       `Meal Packages: ${form.value.meal_packages}</p>` +
-      `<p>Our system automatically checks for e-transfer payments every 3 hours.</p>` +
+      `<p>Our system automatically checks for e-transfer payments every hour.</p>` +
       `<p>Once payment is received and matched to your ID code, your ticket is delivered automatically by email.</p>` +
       `<p>If you still want 25% off and need help with Bitcoin setup, <a href='mailto:reunion@festivall.ca'>email reunion@festivall.ca</a> to arrange it.</p>` +
       `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
@@ -595,7 +595,7 @@ const submitForm = async () => {
       }
 
       alert(
-        'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.\nOur system checks for e-transfer payments every 3 hours and auto-delivers your ticket after payment is matched.'
+        'Your ticket request has been submitted successfully!\nCheck your email and phone for payment instructions.\nOur system checks for e-transfer payments every hour and auto-delivers your ticket after payment is matched.'
       )
 
       // Store timestamp for rate limiting

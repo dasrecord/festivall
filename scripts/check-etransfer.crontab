@@ -7,4 +7,4 @@
 SHELL=/bin/bash
 PATH=/usr/local/bin:/usr/bin:/bin
 
-0 */3 * * * /bin/bash -lc 'LOCKDIR=/tmp/check-etransfer.lock; if mkdir "$LOCKDIR" 2>/dev/null; then trap '\''rmdir "$LOCKDIR"'\'' EXIT; cd /Users/PD/PROJECTS/WEBSITES/festivall && /usr/local/bin/node /Users/PD/PROJECTS/WEBSITES/festivall/scripts/check-etransfer.js >> /Users/PD/PROJECTS/WEBSITES/festivall/scripts/check-etransfer.log 2>&1; fi'
+0 * * * * /bin/bash -lc 'LOCKDIR=/tmp/check-etransfer.lock; if mkdir "$LOCKDIR" 2>/dev/null; then trap '\''rmdir "$LOCKDIR"'\'' EXIT; cd /Users/PD/PROJECTS/WEBSITES/festivall && /usr/local/bin/node /Users/PD/PROJECTS/WEBSITES/festivall/scripts/check-etransfer.js >> /Users/PD/PROJECTS/WEBSITES/festivall/scripts/check-etransfer.log 2>&1; fi'
