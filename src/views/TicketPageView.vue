@@ -107,7 +107,6 @@
         <p
           class="status-btn my-shifts-btn"
           v-if="
-            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
             order.applicant_types.includes('Volunteer') &&
             order.volunteer_claimed_slots && order.volunteer_claimed_slots.length > 0
           "
@@ -825,7 +824,6 @@
       <div class="links">
         <RouterLink
           v-if="
-            (order.payment_type === 'inkind' || order.payment_type === 'In Kind') &&
             order.applicant_types.includes('Volunteer') &&
             (!order.volunteer_claimed_slots || order.volunteer_claimed_slots.length === 0)
           "
