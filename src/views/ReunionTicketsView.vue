@@ -237,7 +237,7 @@ const generatePaymentInstructions = () => {
       `Meal Packages: ${form.value.meal_packages}</p>` +
       `<p>Our system automatically checks for e-transfer payments every 3 hours.</p>` +
       `<p>Once payment is received and matched to your ID code, your ticket is delivered automatically by email.</p>` +
-      `<p>If you still want 25% off and need help with Bitcoin setup, <a href='https://festivall.ca/bitcoinmeetup'>click here</a> to book a free workshop.</p>` +
+      `<p>If you still want 25% off and need help with Bitcoin setup, <a href='mailto:reunion@festivall.ca'>email reunion@festivall.ca</a> to arrange it.</p>` +
       `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
   } else if (form.value.payment_type === 'bitcoin') {
     paymentInstructions.value = `Pay with BTC Pay Server:\n ${REUNION_FESTIVAL.btcPayServerUrl}&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
