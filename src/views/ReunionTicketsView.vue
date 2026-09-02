@@ -268,7 +268,7 @@ const textPaymentInstructions = async () => {
       {
         value1: form.value.phone,
         value2: smsInstructions,
-        value3: '⟢Powered by Festivall⟣'
+        value3: ''
       },
       {
         headers: {
