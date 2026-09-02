@@ -557,7 +557,7 @@ const submitForm = async () => {
     const response = await axios.post(
       'https://relayproxy.vercel.app/reunion_sales',
       {
-        text: `:bust_in_silhouette: ${form.value.fullname}\\n:email: ${form.value.email}\\n:phone: ${form.value.phone}\\n:ticket: ${form.value.ticket_type}\\n:hash: ${form.value.ticket_quantity}\\n:knife_fork_plate: ${form.value.meal_packages}\\n:id: ${form.value.id_code}\\n:label: ${form.value.referral_id_code || 'None'}\\n${displayPrice}`
+        text: `:bust_in_silhouette: ${form.value.fullname}\n:email: ${form.value.email}\n:phone: ${form.value.phone}\n:ticket: ${form.value.ticket_type}\n:hash: ${form.value.ticket_quantity}\n:knife_fork_plate: ${form.value.meal_packages}\n:id: ${form.value.id_code}\n:label: ${form.value.referral_id_code || 'None'}\n${displayPrice}`
       },
       {
         headers: {
