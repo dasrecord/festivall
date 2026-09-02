@@ -461,7 +461,7 @@ export default {
     const saveContract = async () => {
       if (!signature.value) {
         alert('Please enter your signature.')
-        return
+        return false
       }
 
       try {
@@ -484,6 +484,7 @@ export default {
         applicant.value.signature = signature.value
         applicant.value.signedAt = nowIso
         alert('Contract saved successfully!')
+        return true
       } catch (error) {
         console.error('Error saving contract:', error)
         alert('Failed to save the contract.')
@@ -577,7 +578,10 @@ export default {
         await updateApplication()
         console.log('✅ Application updated')
 
-        await saveContract()
+        const contractSaved = await saveContract()
+        if (!contractSaved) {
+          return
+        }
         console.log('✅ Contract saved')
 
         await addOrder()
@@ -633,6 +637,8 @@ export default {
       } catch (error) {
         console.error('Error in handleSubmit:', error)
         alert('An error occurred while processing your contract. Please try again.')
+      } finally {
+        isSubmitting.value = false
       }
     }
 

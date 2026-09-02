@@ -39,13 +39,11 @@ const TICKET_EMAIL_SUBJECT = 'Reunion 2026'
 
 // DRY_RUN: set to true to log matches without writing to Firebase or sending emails.
 // DATE_FILTER: set to { since, before } (Date objects) to narrow the IMAP search,
-//   or null to search all unread emails.
-const DRY_RUN = true
+//   or null to use the rolling 3-hour window.
+// POLL_HOURS: rolling window — each run only sees emails from the last N hours (matches cron interval).
+const DRY_RUN = false
+const POLL_HOURS = 3
 const DATE_FILTER = null
-// const DATE_FILTER = {
-//   since: new Date('2025-08-27T00:00:00-04:00'),
-//   before: new Date('2025-08-30T00:00:00-04:00')
-// }
 
 // id_code is the first 5 chars of a UUID v4 (lowercase hex + digits), e.g. "vaa72"
 // The regex scans ALL 5-char lowercase alphanumeric tokens in the email body.
@@ -453,10 +451,11 @@ async function main() {
 
       try {
         // Search for Interac e-Transfer emails (read or unread when using DATE_FILTER for testing)
+        const rollingWindowSince = new Date(Date.now() - POLL_HOURS * 60 * 60 * 1000)
         const searchCriteria = {
           ...(DATE_FILTER
             ? { since: DATE_FILTER.since, before: DATE_FILTER.before }  // no subject filter — shows all emails that day for debugging
-            : { seen: false, subject: SUBJECT_KEYWORD })
+            : { seen: false, subject: SUBJECT_KEYWORD, since: rollingWindowSince })
         }
         console.log('[search] Criteria:', JSON.stringify({ ...searchCriteria, since: searchCriteria.since?.toISOString(), before: searchCriteria.before?.toISOString() }))
       const uids = await client.search(searchCriteria, { uid: true })
