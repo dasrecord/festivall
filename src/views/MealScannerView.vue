@@ -171,33 +171,6 @@
       ⚠️ Please enter a valid Scanner Operator ID to enable meal ticket redemption.
     </div>
 
-    <!-- Pending Meal Purchases (all types) -->
-    <div
-      v-if="matchingOrder && typeof matchingOrder === 'object' && matchingOrder.pending_meal_purchases && matchingOrder.pending_meal_purchases.filter(p => p.status === 'pending').length > 0"
-      style="background:rgba(255,165,0,0.15);border:1px solid orange;border-radius:8px;padding:0.75rem;margin:0.5rem 0;"
-    >
-      <h4 style="color:orange;margin:0 0 0.5rem 0;">⏳ Pending Meal Orders</h4>
-      <div
-        v-for="(purchase, index) in matchingOrder.pending_meal_purchases.filter(p => p.status === 'pending')"
-        :key="index"
-        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;"
-      >
-        <span style="font-size:0.85rem;">
-          {{ purchase.meal_quantity }} meal(s) — ${{ purchase.fiat_total }}
-          <span style="text-transform:capitalize;">{{ purchase.payment_type }}</span>
-        </span>
-        <button
-          v-if="purchase.payment_type === 'cash'"
-          @click="confirmPendingCashMeal(matchingOrder, purchase)"
-          :disabled="isProcessing || !isValidOperator"
-          style="font-size:0.75rem;padding:4px 10px;border-radius:20px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
-        >✓ Confirm Cash</button>
-        <span
-          v-else
-          style="font-size:0.72rem;color:#aaa;font-style:italic;"
-        >Awaiting admin approval</span>
-      </div>
-    </div>
   </div>
   <div class="at-a-glance">
     <h2>At A Glance</h2>
@@ -458,6 +431,29 @@
               </div>
             </div>
           </div>
+
+          <!-- Pending Meal Purchases (all types) -->
+          <div
+            v-if="order.pending_meal_purchases && order.pending_meal_purchases.filter(p => p.status === 'pending').length > 0"
+            style="background:rgba(255,165,0,0.15);border:1px solid orange;border-radius:8px;padding:0.75rem;margin-top:0.5rem;"
+          >
+            <h5 style="color:orange;margin:0 0 0.5rem 0;">⏳ Pending Meal Orders</h5>
+            <div
+              v-for="(purchase, index) in order.pending_meal_purchases.filter(p => p.status === 'pending')"
+              :key="index"
+              style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;"
+            >
+              <span style="font-size:0.85rem;">
+                {{ purchase.meal_quantity }} meal(s) — ${{ purchase.fiat_total }}
+                <span style="text-transform:capitalize;">{{ purchase.payment_type }}</span>
+              </span>
+              <button
+                @click="confirmPendingMealPayment(order, purchase)"
+                :disabled="isProcessing || !isValidOperator"
+                style="font-size:0.75rem;padding:4px 10px;border-radius:20px;border:none;background:orange;color:black;cursor:pointer;font-weight:bold;"
+              >✓ Confirm {{ purchase.payment_type === 'cash' ? 'Cash' : 'Payment Received' }}</button>
+            </div>
+          </div>
         </div>
       </li>
     </ul>
@@ -677,7 +673,7 @@ export default {
         console.warn('Audio playback failed:', error)
       }
     },
-    async confirmPendingCashMeal(order, purchase) {
+    async confirmPendingMealPayment(order, purchase) {
       if (this.isProcessing || !this.isValidOperator) return
       this.isProcessing = true
       try {
@@ -697,11 +693,12 @@ export default {
         // Update local state
         order.meal_tickets_remaining += Number(purchase.meal_quantity)
         order.pending_meal_purchases = order.pending_meal_purchases.filter(p => p !== purchase)
+        const paymentLabel = purchase.payment_type === 'cash' ? 'CASH MEAL CONFIRMED' : 'MEAL PAYMENT CONFIRMED'
         sendReunionFood(
-          `:fork_and_knife: CASH MEAL CONFIRMED\n:bust_in_silhouette: ${order.fullname}\n:id: ${order.id_code}\n:knife_fork_plate: +${purchase.meal_quantity} meal ticket(s)\n:moneybag: $${purchase.fiat_total} cash received\n:white_check_mark: Confirmed by: ${this.operatorFullName || this.operatorIdCode}`
+          `:fork_and_knife: ${paymentLabel}\n:bust_in_silhouette: ${order.fullname}\n:id: ${order.id_code}\n:knife_fork_plate: +${purchase.meal_quantity} meal ticket(s)\n:moneybag: $${purchase.fiat_total} ${purchase.payment_type}\n:white_check_mark: Confirmed by: ${this.operatorFullName || this.operatorIdCode}`
         )
       } catch (error) {
-        console.error('Error confirming cash meal:', error)
+        console.error('Error confirming meal payment:', error)
         alert('Failed to confirm. Please try again.')
       } finally {
         this.isProcessing = false
