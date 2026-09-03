@@ -77,7 +77,7 @@
               class="event-desc"
               :class="{ expanded: expandedSlots.has(slotKey(item)) }"
             >
-              {{ item.act_description || item.workshop_description || '' }}
+              {{ (item.is_workshop ? (item.workshop_description || item.act_description) : (item.act_description || item.workshop_description)) || '' }}
             </div>
             <button
               v-if="(item.act_description || item.workshop_description)"
