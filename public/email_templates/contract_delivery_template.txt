@@ -7,6 +7,8 @@
 
 <p>and enter your ID_CODE: <strong>{id_code}</strong></p>
 
+{vendor_fee_note}
+
 <p>Looking forward to your positive response.</p>
 
 <p>Best regards,<br>

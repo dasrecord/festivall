@@ -65,6 +65,46 @@
             <span class="line-amount muted">{{ fmtCAD(p.order?.fiat_total_price_cad) }}</span>
           </div>
           <div v-if="!unpaidParticipants.length" class="empty-row">None</div>
+
+          <div class="section-sep"></div>
+
+          <div class="section-label">Other Revenue</div>
+          <div v-for="r in otherRevenueItems" :key="r.id" class="line-item">
+            <span class="line-name">{{ r.label }}</span>
+            <span class="line-amount green">{{ fmtCAD(r.amount) }}</span>
+            <button
+              v-if="isAdmin"
+              class="del-btn"
+              @click="removeOtherRevenue(r.id)"
+              title="Remove"
+            >×</button>
+          </div>
+          <div v-if="!otherRevenueItems.length" class="empty-row">No entries yet</div>
+
+          <div v-if="isAdmin" class="add-form">
+            <input
+              v-model="newRevenueLabel"
+              class="input-label"
+              placeholder="Description (e.g. vendor fee)"
+              @keyup.enter="submitOtherRevenue"
+            />
+            <input
+              v-model="newRevenueAmount"
+              class="input-amount"
+              placeholder="$"
+              type="number"
+              min="0"
+              step="1"
+              @keyup.enter="submitOtherRevenue"
+            />
+            <button
+              class="add-btn"
+              :disabled="!newRevenueLabel.trim() || !newRevenueAmount || saving"
+              @click="submitOtherRevenue"
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         <!-- Meal Tickets card -->
@@ -280,8 +320,12 @@ const saving = ref(false)
 const participants = ref([])
 const budgetItems = ref([])
 const receiptItems = ref([])
+const otherRevenueItems = ref([])
+const newRevenueLabel = ref('')
+const newRevenueAmount = ref('')
 let unsubscribeBudget = null
 let unsubscribeReceipts = null
+let unsubscribeOtherRevenue = null
 
 // ── Participant derived data ──────────────────────────────────────────────────
 // Expected vs Actual Revenue
@@ -355,7 +399,11 @@ const totalRevenue = computed(() =>
   paidParticipants.value.reduce(
     (sum, p) => sum + Number(p.order?.fiat_total_price_cad || 0),
     0
-  )
+  ) + otherRevenueTotal.value
+)
+
+const otherRevenueTotal = computed(() =>
+  otherRevenueItems.value.reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
 // ── Compensation helpers ──────────────────────────────────────────────────────
@@ -563,6 +611,33 @@ const removeReceipt = async (id) => {
   }
 }
 
+const submitOtherRevenue = async () => {
+  if (!isAdmin.value || !newRevenueLabel.value.trim() || !newRevenueAmount.value) return
+  saving.value = true
+  try {
+    await addDoc(collection(reunion_db, 'other_revenue_2026'), {
+      label: newRevenueLabel.value.trim(),
+      amount: Number(newRevenueAmount.value),
+      createdAt: serverTimestamp()
+    })
+    newRevenueLabel.value = ''
+    newRevenueAmount.value = ''
+  } catch (e) {
+    console.error('Error adding other revenue item:', e)
+  } finally {
+    saving.value = false
+  }
+}
+
+const removeOtherRevenue = async (id) => {
+  if (!isAdmin.value) return
+  try {
+    await deleteDoc(doc(reunion_db, 'other_revenue_2026', id))
+  } catch (e) {
+    console.error('Error deleting other revenue item:', e)
+  }
+}
+
 // ── Data loading ──────────────────────────────────────────────────────────────
 const loadParticipants = async () => {
   const snap = await getDocs(collection(reunion_db, 'participants_2026'))
@@ -583,17 +658,25 @@ const subscribeReceipts = () => {
   })
 }
 
+const subscribeOtherRevenue = () => {
+  unsubscribeOtherRevenue = onSnapshot(collection(reunion_db, 'other_revenue_2026'), (snap) => {
+    otherRevenueItems.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  })
+}
+
 onMounted(async () => {
   checkAuth()
   await loadParticipants()
   subscribeBudget()
   subscribeReceipts()
+  subscribeOtherRevenue()
   loading.value = false
 })
 
 onUnmounted(() => {
   if (unsubscribeBudget) unsubscribeBudget()
   if (unsubscribeReceipts) unsubscribeReceipts()
+  if (unsubscribeOtherRevenue) unsubscribeOtherRevenue()
   if (authCheckHandler) window.removeEventListener('storage', authCheckHandler)
 })
 </script>
@@ -776,6 +859,69 @@ h1 {
   color: #555;
   padding: 3px 0;
   font-style: italic;
+}
+
+.add-form {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #333;
+}
+
+.add-form input {
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #1f1e22;
+  color: #e0e0e0;
+  font-size: 11px;
+  min-width: 0;
+}
+
+.add-form input::placeholder {
+  color: #555;
+}
+
+.input-label {
+  flex: 2;
+}
+
+.input-amount {
+  flex: 1;
+  width: 60px;
+}
+
+.add-btn {
+  padding: 3px 8px;
+  background-color: var(--festivall-baby-blue);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.add-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.del-btn {
+  padding: 0 5px;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.del-btn:hover {
+  color: #ff6b6b;
 }
 
 /* ── State row ───────────────────────────────────────────────────────────────── */
