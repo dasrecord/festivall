@@ -116,6 +116,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useWaiverStatus } from '@/composables/useWaiverStatus'
+import { sendReunionFrontGate } from '/scripts/notifications.js'
 
 const props = defineProps({
   show: {
@@ -273,7 +274,11 @@ const submitWaiver = async () => {
 
   if (result.success) {
     successMessage.value = 'Waiver accepted successfully!'
-    
+
+    sendReunionFrontGate(
+      `:page_facing_up: ${typedName.value.trim()} has accepted the safety waiver.\n:id: ${props.idCode}\n:bust_in_silhouette: ${props.operator ? `Operator: ${props.operator}` : `Source: ${props.source}`}`
+    )
+
     // Notify parent and close after brief delay
     setTimeout(() => {
       emit('accepted', {
