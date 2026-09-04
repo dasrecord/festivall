@@ -1068,6 +1068,7 @@ import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
 import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { useWaiverStatus } from '@/composables/useWaiverStatus'
+import { useAttendeeSlots } from '@/composables/useAttendeeSlots'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
 export default {
@@ -1128,6 +1129,7 @@ export default {
     const adHocMealForm = ref({ meal_quantity: 1, payment_type: '', total_price: 0 })
     const pendingMealPurchases = ref([])
     const activePoster = ref(null)
+    const { initializeSlots } = useAttendeeSlots()
 
       // Efficient team manual links map
       const teamManuals = {
@@ -1317,6 +1319,47 @@ export default {
       }
     }
 
+    const ensureAttendeeSlots = async (participantData) => {
+      const existingSlots = Array.isArray(participantData.order?.attendee_slots)
+        ? participantData.order.attendee_slots
+        : []
+
+      if (existingSlots.length > 0) {
+        return existingSlots
+      }
+
+      const originalQuantity = Number(participantData.order?.original_ticket_quantity || 0)
+      const currentQuantity = Number(participantData.order?.ticket_quantity || 0)
+      const slotCount = Math.max(originalQuantity, currentQuantity)
+
+      if (slotCount <= 0) {
+        return existingSlots
+      }
+
+      const passType = participantData.order?.ticket_type === 'Day Pass' ? 'Day Pass' : 'Weekend Pass'
+      const validDays =
+        passType === 'Day Pass' && participantData.order?.selected_day
+          ? [participantData.order.selected_day]
+          : undefined
+
+      const generatedSlots = initializeSlots(slotCount, passType, validDays)
+      if (generatedSlots[0] && participantData.contact?.fullname) {
+        generatedSlots[0].attendee_name = participantData.contact.fullname
+        generatedSlots[0].attendee_name_pending = false
+      }
+
+      try {
+        await updateDoc(doc(reunion_db, 'participants_2026', participantData.id_code), {
+          'order.attendee_slots': generatedSlots,
+          'order.slots_active': true
+        })
+      } catch (error) {
+        console.error('Failed to backfill attendee slots:', error)
+      }
+
+      return generatedSlots
+    }
+
     const loadOrder = async (id_code) => {
       // Clean up previous listener if exists
       if (orderUnsubscribe.value) {
@@ -1486,9 +1529,10 @@ export default {
               slack_id: p.slack_id || ''
             }
 
-            // Load attendee slots if available (new system)
-            attendeeSlots.value = p.order?.attendee_slots || []
-            slotsActive.value = p.order?.slots_active || false
+            // Load attendee slots if available, and backfill missing legacy data when needed
+            const resolvedSlots = await ensureAttendeeSlots(p)
+            attendeeSlots.value = resolvedSlots
+            slotsActive.value = resolvedSlots.length > 0 ? true : p.order?.slots_active || false
 
             // Merge claimed slots with up-to-date status and set mergedClaimedSlots
             pendingMealPurchases.value = p.order?.pending_meal_purchases || []
