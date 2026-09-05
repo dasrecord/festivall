@@ -165,7 +165,7 @@
     },
     {
       "text": "Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.",
-      "subtext": "Hint: Don't forget to count the quadrilaterals of all dimensions. including the clue itself! ",
+      "subtext": "Hint: Don't forget to count the quadrilaterals of all dimensions. not including the clue itself! ",
       "answer": "121",
       "type": "text",
       "category": "Quest",
