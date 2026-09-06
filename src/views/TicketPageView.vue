@@ -525,8 +525,8 @@
           <h3>
             🔊
             <strong style="text-decoration: underline; color: orange">Broadcast Frequency:</strong><br />
-            <strong style="font-size: 1.5rem; color: orange">TBA</strong><br />
-            Check back closer to the festival for the exact frequency.<br />
+            <strong style="font-size: 1.5rem; color: orange">89.5 FM</strong><br />
+            <!-- Check back closer to the festival for the exact frequency.<br /> -->
           </h3>
           <h3>
             ℹ️
