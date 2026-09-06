@@ -84,8 +84,8 @@ export const REUNION_FESTIVAL = {
     fridaySupper: ['Turkey Dinner'],
     saturdayLunch: ['Soup & Biscuits'],
     saturdaySupper: ['Bao Bun with Asian Slaw & Soy Garlic Cucumbers'],
-    sundayLunch: ['Mediterranean Ricebowl with Hummus & Tzatziki'],
-    sundaySupper: ['Pulled Pork Sandwich with Mac & Cheese'],
+    sundayLunch: ['Pulled Pork Sandwich with Mac & Cheese'],
+    sundaySupper: ['Lemon Potato with Hummus & Dip'],
   },
 
   // Meals Config — programmatically generated for Lunch and Supper on main festival days
