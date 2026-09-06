@@ -203,9 +203,9 @@ export const REUNION_FESTIVAL = {
     // Logo upload constraints
     maxLogoMB: 5,
     allowedLogoMimes: ['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'],
-    // Hard cutoff: 1 weeks before festival start. After this date, edits & visuals
+    // Hard cutoff: end of festival (mondayDate) plus 1 day. After this date, edits & visuals
     // selection are blocked (chips hide, save fails fast with a friendly message).
-    editCutoff: new Date('2026-09-04T00:00:00-06:00'),
+    editCutoff: new Date('2026-09-08T00:00:00-06:00'),
   },
 
   // Visuals picker (TicketPageView "Choose Your Visuals" modal)

@@ -111,7 +111,7 @@ export function useWaiverStatus() {
 
         const slot = slots[slotIndex]
 
-        // Create waiver acceptance record
+        // Create waiver acceptance record (omit optional fields when undefined — Firestore rejects undefined values)
         const waiverAcceptance: WaiverAcceptance = {
           waiver_version: activeWaiver.value!.version,
           typed_name: typedName.trim(),
@@ -119,9 +119,9 @@ export function useWaiverStatus() {
           accepted_at: new Date().toISOString(),
           festival_day: festivalDay,
           source,
-          operator,
-          ip_address: ipAddress,
-          user_agent: userAgent
+          ...(operator !== undefined && { operator }),
+          ...(ipAddress !== undefined && { ip_address: ipAddress }),
+          ...(userAgent !== undefined && { user_agent: userAgent })
         }
 
         // Update slot with waiver

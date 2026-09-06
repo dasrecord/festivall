@@ -165,8 +165,8 @@
     },
     {
       "text": "Look for the quadrilateral puzzle somewhere on the festival grounds\nA map might be helpful for this one.",
-      "subtext": "Hint: Don't forget to count the quadrilaterals of all dimensions. including the clue itself! ",
-      "answer": "121",
+      "subtext": "Hint: Don't forget to count the quadrilaterals of all dimensions. not including the clue itself! ",
+      "answer": "120",
       "type": "text",
       "category": "Quest",
       "iconKey": "quest"
@@ -317,7 +317,7 @@
     },
     {
       "text": "Complete the Flipbook Station for your next clue.",
-      "answer": "animated",
+      "answer": "iconic",
       "type": "text",
       "category": "Quest",
       "iconKey": "quest"

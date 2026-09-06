@@ -143,11 +143,8 @@ const fetchEvents = async (signedOnly = true) => {
         mix_track_url: appData.mix_track_url || data.mix_track_url || '',
         social_url: appData.social_url || data.social_url || '',
         genre: appData.genre || data.genre || '',
-        act_description:
-          appData.act_description ||
-          appData.workshop_description ||
-          data.act_description ||
-          '',
+        act_description: appData.act_description || data.act_description || '',
+        workshop_description: appData.workshop_description || data.workshop_description || '',
         set_types: Array.isArray(data.set_types) ? data.set_types : [],
         settimes: Array.isArray(data.settimes)
           ? data.settimes.map((t) => {

@@ -2152,10 +2152,14 @@ export default {
         const roles = applicant.applicant_types && applicant.applicant_types.length
           ? applicant.applicant_types.join(', and ')
           : 'Participant'
+        const vendorFeeNote = applicant.applicant_types?.includes('Vendor')
+          ? `<p>If you owe a vendor fee or any other payment to Reunion, please e-transfer to <strong>humanoidtwo@gmail.com</strong> and include your ID_CODE <strong>${applicant.id_code || ''}</strong> in the e-transfer message — this lets our system match and confirm your payment automatically.</p>`
+          : ''
         const personalizedBody = contractEmailBody.value
           .replace('{name}', applicant.fullname || '')
           .replace('{roles}', roles)
           .replace('{id_code}', applicant.id_code || '')
+          .replace('{vendor_fee_note}', vendorFeeNote)
         
         await sendEmail(applicant.email, 'Reunion 2026 — Contract Ready', personalizedBody)
         

@@ -215,6 +215,15 @@ export default {
       })
     }
 
+    // toISOString() converts to UTC, which rolls the date forward for evening
+    // local times (Saskatchewan is UTC-6) - use local date parts instead
+    const toLocalDateStr = (date) => {
+      const y = date.getFullYear()
+      const m = String(date.getMonth() + 1).padStart(2, '0')
+      const d = String(date.getDate()).padStart(2, '0')
+      return `${y}-${m}-${d}`
+    }
+
     const createVolunteerSlot = async (slotData) => {
       try {
         const slotPayload = {
@@ -293,7 +302,7 @@ export default {
           const pickupDate = new Date(arrivalDate.getTime() + 20 * 60 * 1000) // +20 minutes
           
           await createVolunteerSlot({
-            date: pickupDate.toISOString().split('T')[0],
+            date: toLocalDateStr(pickupDate),
             start: pickupDate.toTimeString().substring(0, 5),
             end: new Date(pickupDate.getTime() + 60 * 60 * 1000).toTimeString().substring(0, 5), // +1 hour
             notes: `Airport pickup for ${props.order.fullname} - Flight ${form.arrival_flight}`,
@@ -307,7 +316,7 @@ export default {
           const dropoffDate = new Date(departureDate.getTime() - 90 * 60 * 1000) // -90 minutes
           
           await createVolunteerSlot({
-            date: dropoffDate.toISOString().split('T')[0],
+            date: toLocalDateStr(dropoffDate),
             start: dropoffDate.toTimeString().substring(0, 5),
             end: new Date(dropoffDate.getTime() + 60 * 60 * 1000).toTimeString().substring(0, 5), // +1 hour
             notes: `Airport dropoff for ${props.order.fullname} - Flight ${form.departure_flight}`,

@@ -19,7 +19,7 @@
 
 import { ImapFlow } from 'imapflow'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
 import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -113,6 +113,27 @@ async function sendManualReviewSlack({ uid, reason, from, subject, transferAmoun
   await postRelay('/reunion_sales', {
     text: `:warning: E-Transfer needs manual review\n:email: UID ${uid} | From: ${from}${amountLine}\n:label: Reason: ${reason}\n:book: Subject: ${subject}${detailsLine}`
   })
+}
+
+// Persist unmatched/unreconciled payments so they are never silently dropped from revenue —
+// e.g. vendor fees or other one-off e-transfers with no id_code in the memo.
+async function recordUnmatchedPayment({ uid, reason, from, subject, transferAmount, dryRun }) {
+  if (dryRun) {
+    console.log(`[dry-run] Would record unmatched payment UID ${uid} in unmatched_payments_2026 — skipping write`)
+    return
+  }
+  const docId = `uid_${uid}`
+  await setDoc(doc(reunion_db, 'unmatched_payments_2026', docId), {
+    uid,
+    reason,
+    from,
+    subject,
+    amount: transferAmount,
+    currency: 'CAD',
+    resolved: false,
+    recorded_at: new Date().toISOString()
+  })
+  console.log(`[firebase] Recorded unmatched payment in unmatched_payments_2026/${docId}`)
 }
 
 /**
@@ -533,6 +554,19 @@ async function main() {
             transferAmount: extractAmountFromSubject(subject),
             details
           })
+
+          // Persist genuinely unattributable payments (no id_code match at all) so
+          // they still surface in revenue/reconciliation instead of vanishing.
+          if (reason === 'needs_review_missing_id' || reason === 'needs_review_unknown_id') {
+            await recordUnmatchedPayment({
+              uid,
+              reason,
+              from,
+              subject,
+              transferAmount: extractAmountFromSubject(subject),
+              dryRun: DRY_RUN
+            })
+          }
 
           if (DRY_RUN) {
             console.log(`[dry-run] Would mark read and label ${REVIEW_LABEL} — skipping`)

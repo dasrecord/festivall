@@ -40,7 +40,10 @@
 
     <!-- ── Act chips ── -->
     <div class="alt-chips">
-      <div class="alt-chips-wrap">
+      <button class="alt-chips-toggle" @click="chipsExpanded = !chipsExpanded">
+        {{ chipsExpanded ? 'Show as scroll ↔' : 'Show all ↓' }}
+      </button>
+      <div class="alt-chips-wrap" :class="{ 'chips-expanded': chipsExpanded }">
         <!-- Open Decks special chip -->
         <div
           class="alt-chip chip-open-decks"
@@ -330,6 +333,7 @@ watch(
 // ── Chip panel ───────────────────────────────────────────────────────────────
 const pendingChipId = ref(null)  // for tap-to-place on touch
 const defaultSetDuration = ref(60)  // default set duration in minutes
+const chipsExpanded = ref(false)  // mobile: wrap to show all chips vs. single scrollable row
 
 // Count Open Decks slots on this day
 const openDecksCount = computed(() => {
@@ -342,12 +346,12 @@ const chipActs = computed(() => {
     const actName      = ev.act_name?.trim()
     const workshopName = ev.workshop_title?.trim()
     
-    // Always show DJ chip if participant has any name
-    if (actName || workshopName) {
+    // DJ chip only when they actually have a DJ act name (not a workshop-only signup)
+    if (actName) {
       chips.push({
         chipId:      `${ev.id}::act`,
         eventId:     ev.id,
-        label:       actName || workshopName,  // Fallback to workshop name if no DJ name
+        label:       actName,
         genre:       ev.genre || '',
         daySetCount: localBlocks.value.filter(b => b.eventId === ev.id && b.type !== 'workshop').length
       })
@@ -896,6 +900,11 @@ onUnmounted(() => {
   padding: 0.6rem 1rem;
   background: #111;
   border-bottom: 1px solid var(--reunion-frog-green);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .alt-day-label {
@@ -1168,6 +1177,19 @@ onUnmounted(() => {
   animation: blink 1s step-end infinite;
 }
 
+.alt-chips-toggle {
+  display: none;
+  margin-bottom: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: transparent;
+  color: var(--reunion-frog-green);
+  border: 1px solid var(--reunion-frog-green);
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @keyframes blink {
   50% { opacity: 0; }
 }
@@ -1394,5 +1416,72 @@ onUnmounted(() => {
 
 .alt-block.block-workshop .alt-block-genre {
   color: #6080c0;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────
+   Header wraps to two rows so the day label stays put and the action group
+   gets its own full-width row (scrollable) instead of squeezing Save off-screen. */
+@media (max-width: 640px) {
+  .alt-header {
+    align-items: flex-start;
+  }
+
+  .alt-day-label {
+    flex: 0 0 100%;
+  }
+
+  /* Wrap instead of horizontal-scroll so every button (incl. Save) is always
+     visible on its own line — nothing gets cut off on the right edge */
+  .alt-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .alt-save-btn {
+    flex: 1 1 auto;
+  }
+
+  /* Time labels stay visible while horizontally nothing scrolls, but keep them
+     legible and out of the way of taps */
+  .alt-time-labels {
+    width: 54px;
+  }
+
+  .alt-acts-wrapper {
+    left: 54px;
+  }
+
+  .alt-time-label {
+    font-size: 0.62rem;
+  }
+
+  /* Give more vertical room on small screens since there's less width to work with */
+  .alt-scroll {
+    max-height: 60vh;
+  }
+
+  .alt-chips-toggle {
+    display: inline-block;
+  }
+
+  /* Chip panel default: scroll horizontally instead of wrapping into many rows,
+     which cuts down on vertical scrolling to find a chip. "Show all" toggles
+     it to wrap via the chips-expanded class when the user wants to see everything. */
+  .alt-chips-wrap {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+  }
+
+  .alt-chips-wrap.chips-expanded {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .alt-chip {
+    flex-shrink: 0;
+  }
 }
 </style>
