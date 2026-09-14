@@ -137,6 +137,15 @@
             <span class="line-name">{{ a.roles?.act_name || a.contact?.fullname }}</span>
             <div class="line-right">
               <span class="line-amount red">{{ fmtAmount(a.parsedAmount, a.parsedCurrency) }}</span>
+              <button
+                v-if="isAdmin"
+                class="mini-toggle"
+                :class="getCompPaid(a.application?.data?.rates) ? 'paid' : 'pending'"
+                @click="toggleCompensationPaid(a.id)"
+                :title="getCompPaid(a.application?.data?.rates) ? 'Mark as unpaid' : 'Mark as paid'"
+              >
+                {{ getCompPaid(a.application?.data?.rates) ? 'Paid' : 'Mark paid' }}
+              </button>
               <span v-if="advancesByArtist[a.id_code]" class="advance-tag" :title="`${fmtCAD(advancesByArtist[a.id_code])} advanced`">adv. −{{ fmtCAD(advancesByArtist[a.id_code]) }}</span>
               <span v-if="getAddons(a.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
               <span v-if="getAddons(a.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
@@ -172,6 +181,15 @@
             <span class="line-meta">{{ s.roles?.volunteer_type }}</span>
             <div class="line-right">
               <span class="line-amount red">{{ fmtAmount(s.parsedAmount, s.parsedCurrency) }}</span>
+              <button
+                v-if="isAdmin"
+                class="mini-toggle"
+                :class="getCompPaid(s.application?.data?.rates) ? 'paid' : 'pending'"
+                @click="toggleCompensationPaid(s.id)"
+                :title="getCompPaid(s.application?.data?.rates) ? 'Mark as unpaid' : 'Mark as paid'"
+              >
+                {{ getCompPaid(s.application?.data?.rates) ? 'Paid' : 'Mark paid' }}
+              </button>
               <span v-if="getAddons(s.application?.data?.rates).tent" class="addon-tag" title="Tent">Tent</span>
               <span v-if="getAddons(s.application?.data?.rates).sleeping_bag" class="addon-tag" title="Sleeping Bag">SB</span>
               <span v-if="getAddons(s.application?.data?.rates).airport_pickup" class="addon-tag" title="Airport Pickup">&#x2191;YXE</span>
@@ -215,6 +233,15 @@
                 title="View receipt"
               >&#128206;</a>
               <span class="line-amount amber">{{ fmtCAD(r.amount) }}</span>
+              <button
+                v-if="isAdmin"
+                class="mini-toggle"
+                :class="r.paid === true ? 'paid' : 'pending'"
+                @click="toggleReceiptPaid(r.id)"
+                :title="r.paid === true ? 'Mark as unpaid' : 'Mark as paid'"
+              >
+                {{ r.paid === true ? 'Paid' : 'Mark paid' }}
+              </button>
             </div>
           </template>
 
@@ -238,6 +265,8 @@
           @add="addItem"
           @remove="removeItem"
           @remove-receipt="removeReceipt"
+          @toggle-paid="toggleItemPaid"
+          @toggle-receipt-paid="toggleReceiptPaid"
         />
 
         <!-- Marketing -->
@@ -252,6 +281,8 @@
           @add="addItem"
           @remove="removeItem"
           @remove-receipt="removeReceipt"
+          @toggle-paid="toggleItemPaid"
+          @toggle-receipt-paid="toggleReceiptPaid"
         />
 
         <!-- Food -->
@@ -266,6 +297,8 @@
           @add="addItem"
           @remove="removeItem"
           @remove-receipt="removeReceipt"
+          @toggle-paid="toggleItemPaid"
+          @toggle-receipt-paid="toggleReceiptPaid"
         />
 
         <!-- Miscellaneous -->
@@ -280,6 +313,8 @@
           @add="addItem"
           @remove="removeItem"
           @remove-receipt="removeReceipt"
+          @toggle-paid="toggleItemPaid"
+          @toggle-receipt-paid="toggleReceiptPaid"
         />
 
       </div>
@@ -297,7 +332,8 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc
 } from 'firebase/firestore'
 import ManualCategoryCard from '@/components/ManualCategoryCard.vue'
 import { BUDGET_TARGETS } from '@/config/festivalConfig'
@@ -440,6 +476,11 @@ const getAddons = (rates) => {
   return rates.addons || {}
 }
 
+const getCompPaid = (rates) => {
+  if (!rates || typeof rates !== 'object') return false
+  return rates.paid === true
+}
+
 const fmtAmount = (amount, currency) => {
   if (!amount) return ''
   if (currency === 'BTC') return `${amount} BTC`
@@ -501,11 +542,15 @@ const staffNonMonetary = computed(() =>
 )
 
 const artistMonetaryTotal = computed(() =>
-  artistsMonetary.value.filter((a) => a.parsedCurrency === 'CAD').reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
+  artistsMonetary.value
+    .filter((a) => a.parsedCurrency === 'CAD' && getCompPaid(a.application?.data?.rates) === true)
+    .reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
 )
 
 const staffMonetaryTotal = computed(() =>
-  staffMonetary.value.filter((s) => s.parsedCurrency === 'CAD').reduce((sum, s) => sum + (s.parsedAmount || 0), 0)
+  staffMonetary.value
+    .filter((s) => s.parsedCurrency === 'CAD' && getCompPaid(s.application?.data?.rates) === true)
+    .reduce((sum, s) => sum + (s.parsedAmount || 0), 0)
 )
 
 const artistsNonCAD = computed(() => artistsMonetary.value.filter((a) => a.parsedCurrency !== 'CAD'))
@@ -515,7 +560,9 @@ const staffNonCAD = computed(() => staffMonetary.value.filter((s) => s.parsedCur
 const itemsByCategory = (cat) => budgetItems.value.filter((i) => i.category === cat)
 
 const manualTotal = computed(() =>
-  budgetItems.value.reduce((sum, i) => sum + Number(i.amount || 0), 0)
+  budgetItems.value
+    .filter((i) => i.paid === true)
+    .reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
 
 // ── Receipt items ─────────────────────────────────────────────────────────────
@@ -523,7 +570,7 @@ const receiptsByCategory = (cat) => receiptItems.value.filter((r) => r.category 
 
 const receiptTotal = computed(() =>
   receiptItems.value
-    .filter((r) => r.category !== 'recoupable')
+    .filter((r) => r.category !== 'recoupable' && r.paid === true)
     .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
@@ -532,12 +579,15 @@ const recoupableItems = computed(() =>
 )
 
 const recoupableTotal = computed(() =>
-  recoupableItems.value.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+  recoupableItems.value
+    .filter((r) => r.paid !== true)
+    .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
 const recoupableByPerson = computed(() => {
   const map = {}
   recoupableItems.value.forEach((r) => {
+    if (r.paid === true) return
     const name = r.volunteer_name || r.id_code
     if (!map[name]) map[name] = { name, items: [], total: 0 }
     map[name].items.push(r)
@@ -584,12 +634,61 @@ const addItem = async ({ category, label, amount }) => {
       category,
       label,
       amount: Number(amount),
+      paid: false,
       createdAt: serverTimestamp()
     })
   } catch (e) {
     console.error('Error adding budget item:', e)
   } finally {
     saving.value = false
+  }
+}
+
+const toggleItemPaid = async (id) => {
+  if (!isAdmin.value) return
+  const target = budgetItems.value.find((item) => item.id === id)
+  if (!target) return
+
+  try {
+    await updateDoc(doc(reunion_db, 'budget_2026', id), {
+      paid: target.paid === false
+    })
+  } catch (e) {
+    console.error('Error updating budget item paid state:', e)
+  }
+}
+
+const toggleReceiptPaid = async (id) => {
+  if (!isAdmin.value) return
+  const target = receiptItems.value.find((item) => item.id === id)
+  if (!target) return
+
+  try {
+    await updateDoc(doc(reunion_db, 'receipts_2026', id), {
+      paid: target.paid === false
+    })
+  } catch (e) {
+    console.error('Error updating receipt paid state:', e)
+  }
+}
+
+const toggleCompensationPaid = async (participantId) => {
+  if (!isAdmin.value) return
+  const participant = participants.value.find((p) => p.id === participantId)
+  if (!participant) return
+
+  const rates = participant.application?.data?.rates || {}
+  const nextPaid = rates.paid === false
+
+  try {
+    await updateDoc(doc(reunion_db, 'participants_2026', participantId), {
+      'application.data.rates': {
+        ...rates,
+        paid: nextPaid
+      }
+    })
+  } catch (e) {
+    console.error('Error updating compensation paid state:', e)
   }
 }
 
@@ -815,7 +914,7 @@ h1 {
 /* ── Line items ──────────────────────────────────────────────────────────────── */
 .line-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.4rem;
   padding: 2px 0;
   border-bottom: 1px solid #2e2e32;
@@ -954,9 +1053,45 @@ h1 {
 .line-right {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  justify-content: flex-end;
+  gap: 0.25rem;
   margin-left: auto;
+  flex-wrap: wrap;
 }
+
+.mini-toggle {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6e6e6;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mini-toggle:hover {
+  filter: brightness(1.08);
+}
+
+.mini-toggle.paid {
+  border-color: rgba(94, 214, 122, 0.9);
+  background: rgba(94, 214, 122, 0.12);
+  color: #9ef0b4;
+}
+
+.mini-toggle.pending {
+  border-color: rgba(255, 180, 70, 0.9);
+  background: rgba(255, 180, 70, 0.12);
+  color: #ffd37a;
+}
+
 .addon-tag {
   font-size: 12px;
   opacity: 0.75;

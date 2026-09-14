@@ -19,6 +19,15 @@
       <span class="line-amount red">{{ fmtCAD(item.amount) }}</span>
       <button
         v-if="isAdmin"
+        class="mini-toggle"
+        :class="item.paid === true ? 'paid' : 'pending'"
+        @click="$emit('toggle-paid', item.id)"
+        :title="item.paid === true ? 'Mark as unpaid' : 'Mark as paid'"
+      >
+        {{ item.paid === true ? 'Paid' : 'Mark paid' }}
+      </button>
+      <button
+        v-if="isAdmin"
         class="del-btn"
         @click="$emit('remove', item.id)"
         title="Remove"
@@ -48,6 +57,15 @@
           title="View receipt"
         >&#128206;</a>
         <span class="line-amount amber">{{ fmtCAD(r.amount) }}</span>
+        <button
+          v-if="isAdmin"
+          class="mini-toggle"
+          :class="r.paid === true ? 'paid' : 'pending'"
+          @click="$emit('toggle-receipt-paid', r.id)"
+          :title="r.paid === true ? 'Mark as unpaid' : 'Mark as paid'"
+        >
+          {{ r.paid === true ? 'Paid' : 'Mark paid' }}
+        </button>
         <button
           v-if="isAdmin"
           class="del-btn"
@@ -101,17 +119,21 @@ const props = defineProps({
   saving: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['add', 'remove', 'remove-receipt'])
+const emit = defineEmits(['add', 'remove', 'remove-receipt', 'toggle-paid', 'toggle-receipt-paid'])
 
 const newLabel = ref('')
 const newAmount = ref('')
 
 const subtotal = computed(() =>
-  props.items.reduce((sum, i) => sum + Number(i.amount || 0), 0)
+  props.items
+    .filter((i) => i.paid === true)
+    .reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
 
 const receiptSubtotal = computed(() =>
-  props.receipts.reduce((sum, r) => sum + Number(r.amount || 0), 0)
+  props.receipts
+    .filter((r) => r.paid === true)
+    .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
 const grandTotal = computed(() => subtotal.value + receiptSubtotal.value)
@@ -167,10 +189,11 @@ const submit = () => {
 
 .line-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.4rem;
   padding: 2px 0;
   border-bottom: 1px solid #2e2e32;
+  flex-wrap: wrap;
 }
 
 .line-name {
@@ -257,6 +280,39 @@ const submit = () => {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.mini-toggle {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6e6e6;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mini-toggle:hover {
+  filter: brightness(1.08);
+}
+
+.mini-toggle.paid {
+  border-color: rgba(94, 214, 122, 0.9);
+  background: rgba(94, 214, 122, 0.12);
+  color: #9ef0b4;
+}
+
+.mini-toggle.pending {
+  border-color: rgba(255, 180, 70, 0.9);
+  background: rgba(255, 180, 70, 0.12);
+  color: #ffd37a;
 }
 
 .add-btn:disabled {
