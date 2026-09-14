@@ -126,13 +126,13 @@ const newAmount = ref('')
 
 const subtotal = computed(() =>
   props.items
-    .filter((i) => i.paid === true)
+    .filter((i) => i.paid !== true)
     .reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
 
 const receiptSubtotal = computed(() =>
   props.receipts
-    .filter((r) => r.paid === true)
+    .filter((r) => r.paid !== true)
     .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 

@@ -384,20 +384,34 @@ const expectedMealCost = computed(() => expectedMealTickets.value * 15)
 
 
 const expectedArtistTotal = computed(() =>
-  artistsMonetary.value.reduce((sum, a) => sum + (a.parsedAmount || 0), 0) +
+  artistsMonetary.value
+    .filter((a) => a.parsedCurrency === 'CAD')
+    .reduce((sum, a) => sum + (a.parsedAmount || 0), 0) +
   artistsNonMonetary.value.length * 0 // If you want to estimate non-monetary, adjust here
 )
 const expectedStaffTotal = computed(() =>
-  staffMonetary.value.reduce((sum, s) => sum + (s.parsedAmount || 0), 0) +
+  staffMonetary.value
+    .filter((s) => s.parsedCurrency === 'CAD')
+    .reduce((sum, s) => sum + (s.parsedAmount || 0), 0) +
   staffNonMonetary.value.length * 0 // If you want to estimate non-monetary, adjust here
+)
+
+const expectedManualTotal = computed(() =>
+  budgetItems.value.reduce((sum, i) => sum + Number(i.amount || 0), 0)
+)
+
+const expectedReceiptTotal = computed(() =>
+  receiptItems.value
+    .filter((r) => r.category !== 'recoupable')
+    .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
 const expectedExpenses = computed(() =>
   expectedArtistTotal.value +
   expectedStaffTotal.value +
   expectedMealCost.value +
-  manualTotal.value +
-  receiptTotal.value
+  expectedManualTotal.value +
+  expectedReceiptTotal.value
 )
 
 const expectedNet = computed(() => expectedRevenue.value - expectedExpenses.value)
@@ -543,13 +557,13 @@ const staffNonMonetary = computed(() =>
 
 const artistMonetaryTotal = computed(() =>
   artistsMonetary.value
-    .filter((a) => a.parsedCurrency === 'CAD' && getCompPaid(a.application?.data?.rates) === true)
+    .filter((a) => a.parsedCurrency === 'CAD' && getCompPaid(a.application?.data?.rates) !== true)
     .reduce((sum, a) => sum + (a.parsedAmount || 0), 0)
 )
 
 const staffMonetaryTotal = computed(() =>
   staffMonetary.value
-    .filter((s) => s.parsedCurrency === 'CAD' && getCompPaid(s.application?.data?.rates) === true)
+    .filter((s) => s.parsedCurrency === 'CAD' && getCompPaid(s.application?.data?.rates) !== true)
     .reduce((sum, s) => sum + (s.parsedAmount || 0), 0)
 )
 
@@ -561,7 +575,7 @@ const itemsByCategory = (cat) => budgetItems.value.filter((i) => i.category === 
 
 const manualTotal = computed(() =>
   budgetItems.value
-    .filter((i) => i.paid === true)
+    .filter((i) => i.paid !== true)
     .reduce((sum, i) => sum + Number(i.amount || 0), 0)
 )
 
@@ -570,7 +584,7 @@ const receiptsByCategory = (cat) => receiptItems.value.filter((r) => r.category 
 
 const receiptTotal = computed(() =>
   receiptItems.value
-    .filter((r) => r.category !== 'recoupable' && r.paid === true)
+    .filter((r) => r.category !== 'recoupable' && r.paid !== true)
     .reduce((sum, r) => sum + Number(r.amount || 0), 0)
 )
 
