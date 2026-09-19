@@ -23,6 +23,19 @@
       (Squamish), Tsleil-Waututh & Musqueam First Nations.
     </p>
 
+    <div class="video-wrapper">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/1m7-O6Xq6EQ?si=cMLFUZ56fAeJC4yS"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+
     <div class="contact-form">
       <div class="contact-us">
         <h2>Drop Us A Line</h2>
@@ -200,6 +213,22 @@ p {
   color: #531a4a;
   text-align: center;
   margin: 1rem 0;
+}
+
+.video-wrapper {
+  width: min(100%, 720px);
+  margin: 1rem auto 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(83, 26, 74, 0.2);
+}
+
+.video-wrapper iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
 }
 
 /* Social Icons */
