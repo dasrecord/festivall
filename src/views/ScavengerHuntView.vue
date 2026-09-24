@@ -716,7 +716,7 @@ export default {
         )
         const all = snap.docs.map((d) => d.data()).filter((d) => d.scavenger_hunt?.score != null)
         const toEntry = (d) => ({
-          name: d.fullname || 'Unknown',
+          name: d.contact?.fullname?.trim() || d.fullname?.trim() || 'Unknown',
           score: d.scavenger_hunt.score,
           total: d.scavenger_hunt.total
         })
