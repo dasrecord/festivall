@@ -5,6 +5,7 @@ import FuseCollectiveView from '@/views/FuseCollectiveView.vue'
 import ReunionView from '@/views/ReunionView.vue'
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
+import ReunionTrickOrTreatView from '@/views/ReunionTrickOrTreatView.vue'
 import ReunionTeamView from '@/views/ReunionTeamView.vue'
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
 import ReunionLineupView from '@/views/ReunionLineupView.vue'
@@ -281,6 +282,12 @@ const routes = [
     name: 'reunionfamily',
     component: ReunionFamilyView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/trick-or-treat',
+    name: 'reunion-trick-or-treat',
+    component: ReunionTrickOrTreatView,
+    meta: { showHeader: false }
   },
   {
     path: '/reunionteam',
