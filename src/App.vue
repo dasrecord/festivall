@@ -102,6 +102,7 @@ const PUBLIC_PATHS = [
   '/', '/about', '/reunion', '/blessedcoast', '/blessedcoastlineup',
   '/fusecollective', '/dasrecord', '/synergistic', '/services', '/testimonials',
   '/reunionlineup', '/reuniontickets', '/reunionapplication', '/reunionfaq', '/reunionamenities',
+  '/reunion-trick-or-treat', '/reunion-trick-or-treat/poster',
   '/reunionfamily', '/reunionteam', '/reunionsoundsystem',
   '/art-and-photography', '/coding-and-webdev', '/soundtech', '/reunioncontact',
   '/bitcoinblockparty', '/bitcoinblockparty/archive', '/bitcoinblockparty/poster', '/bitcoinblockpartymap', '/bitcoinquiz', '/bitcoin-wallet',
