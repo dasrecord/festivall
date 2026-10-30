@@ -12,7 +12,7 @@
         class="emblem-nav"
         alt="Festivall Emblem"
       />
-      <h1 class="nav-title">REUNION 2026 SELF MEAL SERVICE</h1>
+      <h1 class="nav-title">REUNION {{ festivalConfig.year }} SELF MEAL SERVICE</h1>
     </div>
 
     <!-- Main Container -->
@@ -25,7 +25,7 @@
           class="emblem"
           alt="Festivall Emblem"
         />
-        <h1 v-if="!isLandscape">REUNION 2026<br>SELF MEAL SERVICE</h1>
+        <h1 v-if="!isLandscape">REUNION {{ festivalConfig.year }}<br>SELF MEAL SERVICE</h1>
 
         <div class="instructions">
         <h3>🍽️ How to Use:</h3>
@@ -279,11 +279,11 @@ export default {
         const searchValue = idCode.value.toLowerCase().trim()
         // Try short id_code first (manual entry), then id_code_long (QR scan)
         let querySnapshot = await getDocs(
-          query(collection(reunion_db, 'participants_2026'), where('id_code', '==', searchValue))
+          query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code', '==', searchValue))
         )
         if (querySnapshot.empty) {
           querySnapshot = await getDocs(
-            query(collection(reunion_db, 'participants_2026'), where('id_code_long', '==', searchValue))
+            query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code_long', '==', searchValue))
           )
         }
 
@@ -335,7 +335,7 @@ export default {
         const existingHistory = participant.value.meal_redemption_history || []
         const updatedHistory = [...existingHistory, redemptionEntry]
 
-        await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
+        await updateDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, participant.value.id_code), {
           'order.meal_tickets_remaining': newMealTickets,
           'order.last_meal_redemption': timestamp,
           'order.meal_redemption_history': updatedHistory
@@ -367,7 +367,7 @@ export default {
 
     const getFestivalDay = (timestamp) => {
       const date = new Date(timestamp)
-      const festivalStart = new Date('2026-09-04T12:00:00')
+      const festivalStart = REUNION_FESTIVAL.startDate
       const daysDiff = Math.floor((date - festivalStart) / (1000 * 60 * 60 * 24))
 
       if (daysDiff < 0) return 'Pre-Festival'

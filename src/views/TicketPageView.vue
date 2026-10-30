@@ -3,7 +3,7 @@
     <div class="ticket-header">
       <img :src="festivall_emblem_black" style="height: 38px; width: auto" alt="Festivall Emblem" />
       <div class="ticket-title">
-        <h1>Reunion Festival {{ new Date().getFullYear() }}</h1>
+        <h1>Reunion Festival {{ REUNION_FESTIVAL.year }}</h1>
         <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
         <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
       </div>
@@ -19,7 +19,7 @@
       </div>
       <p class="ticket-valid">
         <strong>Valid:</strong>
-        <span v-if="order.ticket_type === 'Weekend Pass'">Sep 4–7, 2026 · 12PM–12PM</span>
+        <span v-if="order.ticket_type === 'Weekend Pass'">{{ REUNION_FESTIVAL.dateRangeLabel }} · 12PM–12PM</span>
         <span v-else>{{ order.selected_day }} · 24H</span>
       </p>
 
@@ -904,7 +904,11 @@
               Location
             </p>
           </RouterLink>
-          <div class="poster-tile" @click="activePoster = poster2026">
+          <div
+            v-if="REUNION_FESTIVAL.posterSplash.ticketPageEnabled"
+            class="poster-tile"
+            @click="activePoster = poster2026"
+          >
             <p>
               <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
               Poster
@@ -926,13 +930,13 @@
         <RouterLink v-if="new Date() >= REUNION_FESTIVAL.lineupRevealDate" to="/reunionlineup">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px" alt="Lineup Icon" />
-            2026 Lineup<br />Look & Listen!<br />
+            {{ REUNION_FESTIVAL.year }} Lineup<br />Look & Listen!<br />
           </p>
         </RouterLink>
         <RouterLink v-else to="#">
           <p>
             <img :src="lineup_icon" style="height: auto; width: 32px; " alt="Coming Soon Icon" />
-            2026 Lineup<br />TBA
+            {{ REUNION_FESTIVAL.year }} Lineup<br />TBA
           </p>
         </RouterLink>
 
@@ -946,7 +950,7 @@
     </div>
 
     <PosterSplash
-      v-if="activePoster"
+      v-if="activePoster && REUNION_FESTIVAL.posterSplash.ticketPageEnabled"
       :src="activePoster"
       :show-reunion-info="activePoster === poster2026"
       @dismissed="activePoster = null"
@@ -1218,7 +1222,7 @@ export default {
         }, { headers: { 'Content-Type': 'application/json' } })
 
         // Firestore update — write as PENDING, no increment yet
-        const participantRef = doc(reunion_db, 'participants_2026', order.value.id_code)
+        const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, order.value.id_code)
         const pendingEntry = {
           timestamp: new Date().toISOString(),
           meal_quantity: Number(meal_quantity),
@@ -1291,7 +1295,7 @@ export default {
     const calculateReferralEarnings = async (id_code) => {
       try {
         const referralQuery = query(
-          collection(reunion_db, 'participants_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
           where('referral.referral_id_code', '==', id_code)
         )
 
@@ -1334,7 +1338,7 @@ export default {
             try {
               // Firestore 'in' query supports up to 10 items; fallback to individual fetch if needed
               if (slotIds.length <= 10) {
-                const slotsQuery = query(collection(reunion_db, 'volunteer_slots_2026'), where('__name__', 'in', slotIds))
+                const slotsQuery = query(collection(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots), where('__name__', 'in', slotIds))
                 const snap = await getDocs(slotsQuery)
                 slotDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
               } else {
@@ -1342,7 +1346,7 @@ export default {
                 slotDocs = []
                 for (const slot_id of slotIds) {
                   try {
-                    const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                    const d = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots, slot_id))
                     if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
                   } catch { /* skip missing slot */ }
                 }
@@ -1352,7 +1356,7 @@ export default {
               slotDocs = []
               for (const slot_id of slotIds) {
                 try {
-                  const d = await getDoc(doc(reunion_db, 'volunteer_slots_2026', slot_id))
+                  const d = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots, slot_id))
                   if (d.exists()) slotDocs.push({ id: d.id, ...d.data() })
                 } catch { /* skip missing slot */ }
               }
@@ -1385,7 +1389,7 @@ export default {
 
           // Verify email matches participant contact
           const verificationQuery = query(
-            collection(reunion_db, 'participants_2026'),
+            collection(reunion_db, REUNION_FESTIVAL.collections.participants),
             where('id_code', '==', id_code),
             where('contact.email', '==', email.toLowerCase().trim())
           )
@@ -1403,7 +1407,7 @@ export default {
 
         // Load participant by id_code with real-time listener
         const q = query(
-          collection(reunion_db, 'participants_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
           where('id_code', '==', id_code)
         )
         

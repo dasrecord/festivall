@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc, query, orderBy, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
@@ -137,7 +138,7 @@ async function fetchData() {
   error.value = null
   try {
     // Fetch Open Decks windows
-    const col = collection(reunion_db, 'open_decks_2026')
+    const col = collection(reunion_db, REUNION_FESTIVAL.collections.openDecks)
     const q = query(col, orderBy('settime', 'asc'))
     const snapshot = await getDocs(q)
     openDecksWindows.value = snapshot.docs.map(docSnap => ({
@@ -146,7 +147,7 @@ async function fetchData() {
     }))
 
     // Fetch artist's current settimes and set_types
-    const participantRef = doc(reunion_db, 'participants_2026', props.participantId)
+    const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, props.participantId)
     const participantSnap = await getDoc(participantRef)
     if (participantSnap.exists()) {
       const data = participantSnap.data()
@@ -184,7 +185,7 @@ async function claimFromWindow(window) {
     const slotStart = new Date(windowStart + startOffset * 60 * 1000)
     
     // Get current participant data
-    const participantRef = doc(reunion_db, 'participants_2026', props.participantId)
+    const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, props.participantId)
     const participantSnap = await getDoc(participantRef)
     const data = participantSnap.data()
     
@@ -201,7 +202,7 @@ async function claimFromWindow(window) {
     })
     
     // Add to Open Decks window's claimed_slots
-    const windowRef = doc(reunion_db, 'open_decks_2026', window.id)
+    const windowRef = doc(reunion_db, REUNION_FESTIVAL.collections.openDecks, window.id)
     await updateDoc(windowRef, {
       claimed_slots: arrayUnion({
         participantId: props.participantId,
@@ -249,7 +250,7 @@ async function releaseSlot(mySlot) {
     }
     
     // Remove from artist's settimes using array manipulation
-    const participantRef = doc(reunion_db, 'participants_2026', props.participantId)
+    const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, props.participantId)
     const participantSnap = await getDoc(participantRef)
     const data = participantSnap.data()
     const settimes = [...(data.settimes || [])]
@@ -281,7 +282,7 @@ async function releaseSlot(mySlot) {
     }
     
     // Remove from Open Decks window's claimed_slots
-    const windowRef = doc(reunion_db, 'open_decks_2026', foundWindow.id)
+    const windowRef = doc(reunion_db, REUNION_FESTIVAL.collections.openDecks, foundWindow.id)
     const windowSnap = await getDoc(windowRef)
     const windowData = windowSnap.data()
     const claimedSlots = (windowData.claimed_slots || []).filter(

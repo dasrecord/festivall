@@ -437,7 +437,7 @@ const validateIdCode = async () => {
 
   try {
     // Check participants_2026 for ticket holders (volunteers should have tickets)
-    const pDoc = await getDoc(doc(reunion_db, 'participants_2026', userIdCode.value))
+    const pDoc = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, userIdCode.value))
     if (pDoc.exists()) {
       const data = pDoc.data()
       userName.value = data.contact?.fullname || data.fullname || ''
@@ -467,7 +467,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'task_status_2026')
+    const statusRef = collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus)
     const q = query(statusRef, where('department', '==', 'front_gate'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -527,7 +527,7 @@ const claimTask = async (taskId) => {
       frontGateTasks.value[taskIndex].assignedToName = userName.value
 
       // Save only the status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
         taskId: taskId,
         department: 'front_gate',
         assignedTo: userIdCode.value,
@@ -551,7 +551,7 @@ const unclaimTask = async (taskId) => {
       frontGateTasks.value[taskIndex].assignedToName = null
 
       // Remove status from Firestore or update to unclaimed
-      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
         taskId: taskId,
         department: 'front_gate',
         assignedTo: null,
@@ -580,7 +580,7 @@ const completeTask = async (taskId) => {
 
       if (task.type === 'personal') {
         // Personal tasks: save with user-specific ID
-        await setDoc(doc(reunion_db, 'task_status_2026', `${taskId}_${userIdCode.value}`), {
+        await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, `${taskId}_${userIdCode.value}`), {
           taskId: `${taskId}_${userIdCode.value}`,
           originalTaskId: taskId,
           department: 'front_gate',
@@ -594,7 +594,7 @@ const completeTask = async (taskId) => {
         })
       } else {
         // One-time tasks: save completion status to Firestore
-        await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+        await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
           taskId: taskId,
           department: 'front_gate',
           assignedTo: userIdCode.value,
@@ -649,7 +649,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus),
       where('department', '==', 'front_gate')
     )
     console.log('Querying for front_gate tasks...')

@@ -54,7 +54,7 @@ async function claimNextShiftForTeam() {
     // Lookup participant info
     const idCode = effectiveIdCode.value?.toLowerCase().trim()
     if (!idCode) throw new Error('No ID code found. Please access the map with your ticket link or login.')
-    const q = query(collection(reunion_db, 'participants_2026'), where('id_code', '==', idCode))
+    const q = query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code', '==', idCode))
     const querySnapshot = await getDocs(q)
     if (querySnapshot.empty) throw new Error('Participant not found for your ID code.')
     const p = querySnapshot.docs[0].data()
@@ -64,7 +64,7 @@ async function claimNextShiftForTeam() {
     }
 
     // Firestore transaction to claim the slot
-    const slotRef = doc(reunion_db, 'volunteer_slots_2026', nextShift.id)
+    const slotRef = doc(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots, nextShift.id)
     await runTransaction(reunion_db, async (tx) => {
       const snap = await tx.get(slotRef)
       if (!snap.exists()) throw new Error('Slot no longer exists.')
@@ -92,12 +92,12 @@ async function claimNextShiftForTeam() {
       created_at: new Date()
     }
     await updateDoc(
-      doc(reunion_db, 'participants_2026', participant.id_code),
+      doc(reunion_db, REUNION_FESTIVAL.collections.participants, participant.id_code),
       { 'volunteer.claimed_slots': arrayUnion(claimSummary) }
     )
 
     // Audit trail
-    await addDoc(collection(reunion_db, 'volunteer_signups_2026'), {
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.collections.volunteerSignups), {
       id_code: participant.id_code,
       fullname: participant.fullname,
       team: nextShift.team,
@@ -159,7 +159,7 @@ async function fetchParticipantFullname() {
   const idCode = effectiveIdCode.value?.toLowerCase().trim()
   if (!idCode) return
   try {
-    const q = query(collection(reunion_db, 'participants_2026'), where('id_code', '==', idCode))
+    const q = query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code', '==', idCode))
     const snap = await getDocs(q)
     if (!snap.empty) {
       const p = snap.docs[0].data()
@@ -290,7 +290,7 @@ function openLostFoundModal(item = null) {
 }
 
 async function submitAlert() {
-  const col = collection(reunion_db, 'alerts_2026')
+  const col = collection(reunion_db, REUNION_FESTIVAL.collections.alerts)
   if (alertInput.value.type === 'lostfound' && editingLostFoundId.value) {
     await updateDoc(doc(col, editingLostFoundId.value), {
       message: alertInput.value.message,
@@ -330,7 +330,7 @@ async function submitAlert() {
 }
 
 async function clearAlert(alert) {
-  const col = collection(reunion_db, 'alerts_2026')
+  const col = collection(reunion_db, REUNION_FESTIVAL.collections.alerts)
   await deleteDoc(doc(col, alert.id))
   const clearerName = participantFullname.value || (effectiveIdCode.value ? `User ${effectiveIdCode.value.slice(-5)}` : 'admin')
   let msg = ''
@@ -342,7 +342,7 @@ async function clearAlert(alert) {
 }
 
 async function claimLostFoundItem(item) {
-  const col = collection(reunion_db, 'alerts_2026')
+  const col = collection(reunion_db, REUNION_FESTIVAL.collections.alerts)
   const userId = effectiveIdCode.value || 'ANONYMOUS'
   const claimedByName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
   await updateDoc(doc(col, item.id), {
@@ -356,7 +356,7 @@ async function claimLostFoundItem(item) {
 }
 
 function listenToAlerts() {
-  const alertsCol = collection(reunion_db, 'alerts_2026')
+  const alertsCol = collection(reunion_db, REUNION_FESTIVAL.collections.alerts)
   onSnapshot(alertsCol, (snapshot) => {
     const kitchen = []
     const washroom = []
@@ -390,7 +390,7 @@ function pruneCheckins() {
 }
 
 function listenToCheckins() {
-  const participantsCol = collection(reunion_db, 'participants_2026')
+  const participantsCol = collection(reunion_db, REUNION_FESTIVAL.collections.participants)
   onSnapshot(participantsCol, (snapshot) => {
     const checkedIn = []
     snapshot.forEach((docSnap) => {
@@ -413,7 +413,7 @@ const volunteerShiftsCurrent = ref([])
 const volunteerShiftsNext = ref([])
 
 function listenToVolunteerShifts() {
-  const slotsCol = collection(reunion_db, 'volunteer_slots_2026')
+  const slotsCol = collection(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots)
   onSnapshot(slotsCol, (snapshot) => {
     const now = new Date()
     const allShifts = []
@@ -555,13 +555,18 @@ const showMealOverlay  = ref(true)
 const showCheckinOverlay = ref(true)
 const showLostFoundOverlay = ref(true)
 
-// Festival active window — Sept 4–7, 2026
+// Festival active window from the central Reunion event dates
 const isFestivalActive = computed(() => {
   const now = new Date()
-  const festEnd = new Date('2026-09-07T23:59:59')
+  const festEnd = new Date(REUNION_FESTIVAL.mondayDate)
+  festEnd.setHours(23, 59, 59, 999)
   return now >= REUNION_FESTIVAL.startDate && now <= festEnd
 })
-const festivalEnded = computed(() => new Date() > new Date('2026-09-07T23:59:59'))
+const festivalEnded = computed(() => {
+  const festEnd = new Date(REUNION_FESTIVAL.mondayDate)
+  festEnd.setHours(23, 59, 59, 999)
+  return new Date() > festEnd
+})
 
 // Teams currently open for sign-up based on volunteer phase dates
 const currentPhaseTeams = computed(() => {
@@ -740,7 +745,7 @@ async function fetchAndUpdateCurrentAct() {
   if (currentAct.value !== null) return
   try {
     const q = query(
-      collection(reunion_db, 'participants_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.participants),
       where('contract.signed', '==', true)
     )
     const snapshot = await getDocs(q)
@@ -968,7 +973,7 @@ async function submitWaterStationAlert() {
   try {
     const userId = effectiveIdCode.value || 'ANONYMOUS'
     const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
-    await addDoc(collection(reunion_db, 'alerts_2026'), {
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.collections.alerts), {
       type: 'water_station',
       status: 'low',
       location: 'Water Station',
@@ -1009,7 +1014,7 @@ async function submitFirewoodAlert() {
   try {
     const userId = effectiveIdCode.value || 'ANONYMOUS'
     const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
-    await addDoc(collection(reunion_db, 'alerts_2026'), {
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.collections.alerts), {
       type: 'firewood',
       status: 'needed',
       location: 'Fire Pit',
@@ -1031,7 +1036,7 @@ async function submitWashroomSupplyAlert() {
   washroomSupplySubmitting.value = true
   washroomSupplyError.value = ''
   try {
-    const col = collection(reunion_db, 'alerts_2026')
+    const col = collection(reunion_db, REUNION_FESTIVAL.collections.alerts)
     const userId = effectiveIdCode.value || 'ANONYMOUS'
     const userName = participantFullname.value || (userId !== 'ANONYMOUS' ? `User ${userId.slice(-5)}` : 'Anonymous')
     const supply = washroomSupplyType.value
@@ -1243,7 +1248,7 @@ const WELCOME_SLIDES = [
   },
 ]
 
-const WELCOME_STORAGE_KEY = 'reunion_welcomed_2026'
+const WELCOME_STORAGE_KEY = `reunion_welcomed_${REUNION_FESTIVAL.year}`
 const showWelcomeModal = ref(false)
 const welcomeStep = ref(0)
 

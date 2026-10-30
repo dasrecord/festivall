@@ -1,3 +1,4 @@
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 /**
  * Composable for managing waiver acceptance
  * Integrates with attendee slots and gate operations
@@ -91,7 +92,7 @@ export function useWaiverStatus() {
     error.value = null
 
     try {
-      const orderRef = doc(reunion_db, 'participants_2026', idCode)
+      const orderRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, idCode)
       const festivalDay = getCurrentFestivalDay()
 
       await runTransaction(reunion_db, async (transaction) => {

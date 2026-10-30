@@ -187,6 +187,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, onUnmounted, onMounted } from 'vue'
 import { reunion_db } from '@/firebase'
 import {
@@ -369,7 +370,7 @@ const validateIdCode = async () => {
 
   try {
     // Check participants_2026 for ticket holders (volunteers should have tickets)
-    const pDoc = await getDoc(doc(reunion_db, 'participants_2026', userIdCode.value))
+    const pDoc = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, userIdCode.value))
     if (pDoc.exists()) {
       const data = pDoc.data()
       userName.value = data.contact?.fullname || data.fullname || ''
@@ -399,7 +400,7 @@ const loadTasks = async () => {
     const defaultTasks = initializeTasks()
 
     // Set up real-time listener for task status from Firestore
-    const statusRef = collection(reunion_db, 'task_status_2026')
+    const statusRef = collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus)
     const q = query(statusRef, where('department', '==', 'stage_crew'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -434,7 +435,7 @@ const claimTask = async (taskId) => {
       stageTasks.value[taskIndex].assignedToName = userName.value
 
       // Save only the status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: userIdCode.value,
@@ -458,7 +459,7 @@ const unclaimTask = async (taskId) => {
       stageTasks.value[taskIndex].assignedToName = null
 
       // Remove status from Firestore or update to unclaimed
-      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: null,
@@ -484,7 +485,7 @@ const completeTask = async (taskId) => {
       stageTasks.value[taskIndex].completedAt = new Date().toISOString()
 
       // Save completion status to Firestore
-      await setDoc(doc(reunion_db, 'task_status_2026', taskId), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId), {
         taskId: taskId,
         department: 'stage_crew',
         assignedTo: userIdCode.value,
@@ -530,7 +531,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus),
       where('department', '==', 'stage_crew')
     )
     const querySnapshot = await getDocs(q)

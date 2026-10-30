@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { collection, getDocs, query, where } from 'firebase/firestore'
@@ -36,9 +37,9 @@ export default {
         // Convert to lowercase since UUIDs are stored in lowercase
         const normalizedIdCode = idCode.value.toLowerCase()
 
-        // Check if the ID code exists in 'participants_2026'
+        // Check if the ID code exists in REUNION_FESTIVAL.collections.participants
         const q = query(
-          collection(reunion_db, 'participants_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
           where('id_code', '==', normalizedIdCode)
         )
         const querySnapshot = await getDocs(q)

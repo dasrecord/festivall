@@ -1,3 +1,4 @@
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 /**
  * Composable for managing attendee-level admission slots
  * Provides transactional gate operations and slot management
@@ -199,7 +200,7 @@ export function useAttendeeSlots() {
     error.value = null
 
     try {
-      const orderRef = doc(reunion_db, 'participants_2026', idCode)
+      const orderRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, idCode)
       const festivalDay = getCurrentFestivalDay()
 
       const result = await runTransaction(reunion_db, async (transaction) => {
@@ -293,7 +294,7 @@ export function useAttendeeSlots() {
     error.value = null
 
     try {
-      const orderRef = doc(reunion_db, 'participants_2026', idCode)
+      const orderRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, idCode)
       const festivalDay = getCurrentFestivalDay()
 
       const result = await runTransaction(reunion_db, async (transaction) => {
@@ -401,7 +402,7 @@ export function useAttendeeSlots() {
     error.value = null
 
     try {
-      const orderRef = doc(reunion_db, 'participants_2026', idCode)
+      const orderRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, idCode)
       const festivalDay = getCurrentFestivalDay()
 
       await runTransaction(reunion_db, async (transaction) => {

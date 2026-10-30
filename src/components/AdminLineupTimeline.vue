@@ -155,6 +155,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import interact from 'interactjs'
 import { useLineupAdmin } from '@/composables/useLineupAdmin'
@@ -287,7 +288,7 @@ function buildBlocks(events) {
 async function fetchOpenDecksBlocks() {
   try {
     const { collection, query, where, getDocs } = await import('firebase/firestore')
-    const openDecksCol = collection(reunion_db, 'open_decks_2026')
+    const openDecksCol = collection(reunion_db, REUNION_FESTIVAL.collections.openDecks)
     const q = query(openDecksCol, where('day', '==', props.day))
     const snapshot = await getDocs(q)
     
@@ -836,7 +837,7 @@ async function handleSave() {
 async function saveOpenDecksSlots(blocks) {
   try {
     const { doc, setDoc, deleteDoc, collection, query, where, getDocs } = await import('firebase/firestore')
-    const openDecksCol = collection(reunion_db, 'open_decks_2026')
+    const openDecksCol = collection(reunion_db, REUNION_FESTIVAL.collections.openDecks)
     
     // Get all existing Open Decks for this day from Firestore
     const q = query(openDecksCol, where('day', '==', props.day))

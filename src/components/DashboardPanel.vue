@@ -176,8 +176,8 @@
       <h2>Ticket Pool</h2>
       <div class="buttons">
         <button @click="loadApplicants('orders_2025', true)">Reunion Orders 2025</button>
-        <button @click="loadApplicants('participants_2026', true)">
-          Reunion Participants 2026
+        <button @click="loadApplicants(REUNION_FESTIVAL.dashboardCollections.participants, true)">
+          Reunion Participants {{ REUNION_FESTIVAL.dashboardYear }}
         </button>
       </div>
       <!-- <h2>Talent Pool</h2> -->
@@ -283,8 +283,8 @@
               <p v-if="applicant.id_code" class="id_code">
                 <a
                   :href="
-                    currentCollection === 'participants_2026'
-                      ? 'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
+                    currentCollection === REUNION_FESTIVAL.dashboardCollections.participants
+                      ? `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2F${REUNION_FESTIVAL.dashboardCollections.participants}~2F` +
                         applicant.id_code
                       : 'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Forders_2025~2F' +
                         applicant.id_code
@@ -979,7 +979,7 @@ export default {
   setup() {
     const applicants = ref([])
     const filteredApplicants = ref([])
-    const currentCollection = ref('participants_2026')
+    const currentCollection = ref(REUNION_FESTIVAL.dashboardCollections.participants)
     const collectionUnsubscribe = ref(null)
 
     const expandedCards = reactive(new Set())
@@ -1048,43 +1048,43 @@ export default {
       { property: 'status', value: 'participant', label: 'Participants' },
 
       // Application type filters (for applicants)
-      { property: 'applicant_types', value: 'Artist', label: 'Artists', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'applicant_types', value: 'Workshop', label: 'Workshops', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'applicant_types', value: 'Vendor', label: 'Vendors', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'applicant_types', value: 'Artist', label: 'Artists', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'applicant_types', value: 'Volunteer', label: 'Volunteers', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'applicant_types', value: 'Workshop', label: 'Workshops', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'applicant_types', value: 'Art Installation', label: 'Art Installations', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'applicant_types', value: 'Vendor', label: 'Vendors', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
 
       // Act type filters (for artists)
-      { property: 'act_type', value: 'DJ', label: 'DJs', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Musician', label: 'Musicians', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Live Band', label: 'Live Bands', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Dancer', label: 'Dancers', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Spoken Word', label: 'Spoken Word', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_type', value: 'Rapper', label: 'Rappers', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'act_type', value: 'DJ', label: 'DJs', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Musician', label: 'Musicians', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Live Band', label: 'Live Bands', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Dancer', label: 'Dancers', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Spoken Word', label: 'Spoken Word', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Singer/Songwriter', label: 'Singer/Songwriter', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_type', value: 'Rapper', label: 'Rappers', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
 
       // Volunteer team filters
-      { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'volunteer_type', value: 'Food Team', label: 'Food Team', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'volunteer_type', value: 'Arcade Attendant', label: 'Arcade Attendant', collections: ['participants_2026'] },
+      { property: 'volunteer_type', value: 'Setup Crew', label: 'Setup Crew', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'volunteer_type', value: 'Cleanup Crew', label: 'Cleanup Crew', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'volunteer_type', value: 'Stage Crew', label: 'Stage Crew', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'volunteer_type', value: 'Front Gate', label: 'Front Gate', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'volunteer_type', value: 'Food Team', label: 'Food Team', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'volunteer_type', value: 'Arcade Attendant', label: 'Arcade Attendant', collections: [REUNION_FESTIVAL.dashboardCollections.participants] },
 
       // Application data filters
-      { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'act_website', value: 'has_value', label: 'Has Website', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'workshop_title', value: 'has_value', label: 'Has Workshop', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'vendor_type', value: 'has_value', label: 'Has Vendor Info', collections: ['applications_2025', 'participants_2026'] },
-      { property: 'installation_title', value: 'has_value', label: 'Has Installation', collections: ['applications_2025', 'participants_2026'] },
+      { property: 'mix_track_url', value: 'has_value', label: 'Has Mix/Track', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'mix_track_url', value: 'no_value', label: 'No Mix/Track', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'act_website', value: 'has_value', label: 'Has Website', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'workshop_title', value: 'has_value', label: 'Has Workshop', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'vendor_type', value: 'has_value', label: 'Has Vendor Info', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'installation_title', value: 'has_value', label: 'Has Installation', collections: ['applications_2025', REUNION_FESTIVAL.dashboardCollections.participants] },
 
       // Contract filters (applies to both applicants and customers)
       { property: 'contract_signed', value: true, label: 'Contract Signed' },
       { property: 'contract_signed', value: false, label: 'Contract Not Signed' },
-      { property: 'contract_sent_at', value: 'has_value', label: 'Contract Sent', collections: ['participants_2026'] },
-      { property: 'contract_sent_not_signed', value: true, label: 'Contract Sent - Not Signed', collections: ['participants_2026'] },
-      { property: 'ticket_sent_at', value: 'has_value', label: 'Ticket Sent', collections: ['participants_2026', 'orders_2025'] },
+      { property: 'contract_sent_at', value: 'has_value', label: 'Contract Sent', collections: [REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'contract_sent_not_signed', value: true, label: 'Contract Sent - Not Signed', collections: [REUNION_FESTIVAL.dashboardCollections.participants] },
+      { property: 'ticket_sent_at', value: 'has_value', label: 'Ticket Sent', collections: [REUNION_FESTIVAL.dashboardCollections.participants, 'orders_2025'] },
 
       // Leads filters (festivall_db leads collection)
       { property: 'source', value: 'reunion', label: 'Source: Reunion', collections: ['leads'] },
@@ -1191,7 +1191,7 @@ export default {
                 ...docData,
                 fullname: docData.full_name || '',
               }
-            } else if (type === 'participants_2026') {
+            } else if (type === REUNION_FESTIVAL.dashboardCollections.participants) {
               return {
                 id: doc.id,
                 id_code: docData.id_code,
@@ -1426,7 +1426,7 @@ export default {
     }
 
     const openReunionPosterSplash = () => {
-      sessionStorage.removeItem('posterSplashShown_2026')
+      sessionStorage.removeItem(`posterSplashShown_${REUNION_FESTIVAL.year}`)
     }
 
     const contractEmailBody = ref('')
@@ -2327,7 +2327,7 @@ export default {
     })
 
     onMounted(() => {
-      loadApplicants('participants_2026', true)
+      loadApplicants(REUNION_FESTIVAL.dashboardCollections.participants, true)
       loadContractDeliveryTemplate()
       loadTicketDeliveryTemplate()
       loadTransferTemplate()
@@ -2689,6 +2689,7 @@ export default {
     }
 
     return {
+      REUNION_FESTIVAL,
       applicants,
       filteredApplicants,
       currentCollection,

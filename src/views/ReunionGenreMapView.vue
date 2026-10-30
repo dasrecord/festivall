@@ -312,7 +312,7 @@ const backLink = computed(() => {
   return idCode ? `/reunionticket/${idCode}` : '/'
 })
 
-const INTRO_STORAGE_KEY = 'reunion_genre_map_intro_seen_2026'
+const INTRO_STORAGE_KEY = `reunion_genre_map_intro_seen_${REUNION_FESTIVAL.year}`
 const INTRO_SLIDES = [
   {
     icon: '✦',

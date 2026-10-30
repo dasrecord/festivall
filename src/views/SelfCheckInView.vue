@@ -231,11 +231,11 @@ export default {
         const searchValue = idCode.value.toLowerCase().trim()
         // Try short id_code first (manual entry), then id_code_long (QR scan)
         let querySnapshot = await getDocs(
-          query(collection(reunion_db, 'participants_2026'), where('id_code', '==', searchValue))
+          query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code', '==', searchValue))
         )
         if (querySnapshot.empty) {
           querySnapshot = await getDocs(
-            query(collection(reunion_db, 'participants_2026'), where('id_code_long', '==', searchValue))
+            query(collection(reunion_db, REUNION_FESTIVAL.collections.participants), where('id_code_long', '==', searchValue))
           )
         }
 
@@ -294,7 +294,7 @@ export default {
         const existingHistory = participant.value.entrance_activity_history || []
         const updatedHistory = [...existingHistory, activityEntry]
 
-        await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
+        await updateDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, participant.value.id_code), {
           'order.checked_in': true,
           'order.ticket_quantity': newTicketQuantity,
           'order.original_ticket_quantity': participant.value.original_ticket_quantity,
@@ -351,7 +351,7 @@ export default {
         const existingHistory = participant.value.entrance_activity_history || []
         const updatedHistory = [...existingHistory, activityEntry]
 
-        await updateDoc(doc(reunion_db, 'participants_2026', participant.value.id_code), {
+        await updateDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, participant.value.id_code), {
           'order.checked_in': newTicketQuantity > 0,
           'order.ticket_quantity': newTicketQuantity,
           'order.original_ticket_quantity': participant.value.original_ticket_quantity,

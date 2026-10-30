@@ -243,7 +243,7 @@ export default {
           claimed: []
         }
         
-        await addDoc(collection(reunion_db, 'volunteer_slots_2026'), slotPayload)
+        await addDoc(collection(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots), slotPayload)
         console.log(`✅ Created ${slotData.transport_type} volunteer slot`)
       } catch (error) {
         console.error(`Error creating volunteer slot:`, error)
@@ -255,7 +255,7 @@ export default {
       // Delete any existing volunteer slots for this artist's transportation
       try {
         const q = query(
-          collection(reunion_db, 'volunteer_slots_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.volunteerSlots),
           where('team', '==', 'artisttransportation'),
           where('artist_id_code', '==', props.order.id_code)
         )

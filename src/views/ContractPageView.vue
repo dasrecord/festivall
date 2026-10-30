@@ -311,6 +311,7 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { setDoc, doc, query, where, collection, getDocs, runTransaction } from 'firebase/firestore'
@@ -371,7 +372,7 @@ export default {
 
         // Use query to find participant by id_code field (like other views do)
         const q = query(
-          collection(reunion_db, 'participants_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
           where('id_code', '==', normalizedIdCode)
         )
         const querySnapshot = await getDocs(q)
@@ -467,7 +468,7 @@ export default {
       try {
         const nowIso = new Date().toISOString()
         await setDoc(
-          doc(reunion_db, 'participants_2026', applicant.value.id_code),
+          doc(reunion_db, REUNION_FESTIVAL.collections.participants, applicant.value.id_code),
           {
             contract: {
               signed: true,
@@ -501,7 +502,7 @@ export default {
         const mealPkgs = isVolunteer ? 2 : 0
         const mealRemain = isVolunteer ? 4 : 0
         await setDoc(
-          doc(reunion_db, 'participants_2026', applicant.value.id_code),
+          doc(reunion_db, REUNION_FESTIVAL.collections.participants, applicant.value.id_code),
           {
             updatedAt: nowIso,
             order: {
@@ -529,7 +530,7 @@ export default {
     }
 
     const markContractNotificationsSent = async () => {
-      const participantRef = doc(reunion_db, 'participants_2026', applicant.value.id_code)
+      const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, applicant.value.id_code)
 
       return runTransaction(reunion_db, async (transaction) => {
         const snap = await transaction.get(participantRef)
@@ -563,7 +564,7 @@ export default {
 
         // Guard against double-submission (e.g. two open tabs)
         const guardQuery = query(
-          collection(reunion_db, 'participants_2026'),
+          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
           where('id_code', '==', applicant.value.id_code)
         )
         const guardSnap = await getDocs(guardQuery)

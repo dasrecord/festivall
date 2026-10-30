@@ -255,6 +255,7 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import faded_frog from '@/assets/images/scavenger_hunt/faded_frog.png'
 import chess_2 from '@/assets/images/scavenger_hunt/chess_2.png'
 import binary from '@/assets/images/scavenger_hunt/binary.png'
@@ -523,7 +524,7 @@ export default {
       this.persistProgress()
       if (this.id_code) {
         try {
-          await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
+          await updateDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, this.id_code), {
             'scavenger_hunt.hintsUsed': arrayUnion(index)
           })
         } catch (e) {
@@ -662,7 +663,7 @@ export default {
       try {
         // Write score to participant's existing record in participants_2026
         const hintsUsedCount = Object.keys(this.hintsUsed).length
-        await updateDoc(doc(reunion_db, 'participants_2026', this.id_code), {
+        await updateDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, this.id_code), {
           scavenger_hunt: {
             score,
             total,
@@ -709,7 +710,7 @@ export default {
       try {
         const snap = await getDocs(
           query(
-            collection(reunion_db, 'participants_2026'),
+            collection(reunion_db, REUNION_FESTIVAL.collections.participants),
             orderBy('scavenger_hunt.score', 'desc'),
             limit(20)
           )

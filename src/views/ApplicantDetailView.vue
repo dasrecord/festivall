@@ -800,6 +800,7 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore'
@@ -881,7 +882,7 @@ export default {
         const applicantId = route.params.id
 
         // Load from consolidated participants_2026 collection
-        const docRef = doc(reunion_db, 'participants_2026', applicantId)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicantId)
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
@@ -990,7 +991,7 @@ export default {
 
     const firestoreUrl = computed(() => {
       if (!applicant.value?.id_code) return '#'
-      return `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F${applicant.value.id_code}`
+      return `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2F${REUNION_FESTIVAL.dashboardCollections.participants}~2F${applicant.value.id_code}`
     })
 
     const emailLink = computed(() => {
@@ -1003,7 +1004,7 @@ export default {
     // Payment Actions
     const confirmPaymentReceived = async () => {
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { 'order.paid': true })
         applicant.value.paid = true
         console.log('Payment confirmed for:', applicant.value.fullname)
@@ -1015,7 +1016,7 @@ export default {
     const revokeTicket = async () => {
       if (confirm('Are you sure you want to revoke this ticket?')) {
         try {
-          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+          const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
           await updateDoc(docRef, { 'order.paid': false })
           applicant.value.paid = false
           console.log('Ticket revoked for:', applicant.value.fullname)
@@ -1064,7 +1065,7 @@ export default {
     const approvePendingMeal = async (purchase) => {
       if (!applicant.value) return
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const now = new Date().toISOString()
         const approvedEntry = { ...purchase, status: 'paid', approved_by: 'admin', approved_at: now }
         await updateDoc(docRef, {
@@ -1086,7 +1087,7 @@ export default {
     const updateMealTickets = async (newValue) => {
       if (!applicant.value) return
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { 'order.meal_tickets_remaining': newValue })
         applicant.value.meal_tickets_remaining = newValue
         mealTickets.value = newValue
@@ -1270,7 +1271,7 @@ export default {
       }
 
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { 'application.data.rates': ratesObj })
         applicant.value.rates = ratesObj
         
@@ -1302,7 +1303,7 @@ export default {
     const clearCompensation = async () => {
       if (confirm('Are you sure you want to clear the compensation?')) {
         try {
-          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+          const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
           await updateDoc(docRef, { 'application.data.rates': null })
           applicant.value.rates = null
           
@@ -1348,7 +1349,7 @@ export default {
         const updatedDurations  = [...currentDurations, 60]
         const updatedTypes      = [...currentTypes, newSettimeType.value || 'act']
 
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, {
           settimes:      updatedSettimes,
           set_durations: updatedDurations,
@@ -1376,7 +1377,7 @@ export default {
           updatedDurations.splice(index, 1)
           updatedTypes.splice(index, 1)
 
-          const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+          const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
           await updateDoc(docRef, {
             settimes:      updatedSettimes,
             set_durations: updatedDurations,
@@ -1402,7 +1403,7 @@ export default {
       try {
         const newQty = ticketQuantity.value - 1
         const activityTime = new Date().toISOString()
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const existingHistory = applicant.value.entrance_activity_history || []
         const newActivity = {
           timestamp: activityTime,
@@ -1437,7 +1438,7 @@ export default {
       try {
         const newQty = ticketQuantity.value + 1
         const activityTime = new Date().toISOString()
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const existingHistory = applicant.value.entrance_activity_history || []
         const newActivity = {
           timestamp: activityTime,
@@ -1469,7 +1470,7 @@ export default {
     const toggleContractSigned = async () => {
       const newStatus = !applicant.value.contract_signed
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { 'contract.signed': newStatus })
         applicant.value.contract_signed = newStatus
         console.log(`Contract status updated: ${newStatus}`)
@@ -1591,7 +1592,7 @@ export default {
         await sendEmail(applicant.value.email, 'Reunion 2026 — Contract Ready', personalizedBody)
         
         // Update Firestore with timestamp
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const timestamp = new Date().toISOString()
         await updateDoc(docRef, {
           contract_sent_at: timestamp,
@@ -1631,7 +1632,7 @@ export default {
         await sendEmail(applicant.value.email, 'Reunion 2026 — Your Ticket', personalizedBody)
         
         // Update Firestore with timestamp
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const timestamp = new Date().toISOString()
         await updateDoc(docRef, {
           ticket_sent_at: timestamp,
@@ -1651,7 +1652,7 @@ export default {
 
     const declineApplicant = async () => {
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { status: 'declined', updatedAt: new Date().toISOString() })
         applicant.value.status = 'declined'
 
@@ -1679,7 +1680,7 @@ export default {
       if (!confirm('Restore this applicant back to active applicant status?')) return
 
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { status: 'applicant', updatedAt: new Date().toISOString() })
         applicant.value.status = 'applicant'
         alert('Applicant status restored.')
@@ -1691,7 +1692,7 @@ export default {
 
     const updatePosterOrder = async () => {
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         const orderValue = posterOrder.value === '' || posterOrder.value === null ? null : Number(posterOrder.value)
         await updateDoc(docRef, { poster_order: orderValue })
         applicant.value.poster_order = orderValue
@@ -1713,7 +1714,7 @@ export default {
       }
       
       try {
-        const docRef = doc(reunion_db, 'participants_2026', applicant.value.id)
+        const docRef = doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, applicant.value.id)
         await updateDoc(docRef, { slack_id: slackIdValue || null })
         applicant.value.slack_id = slackIdValue
         console.log('Slack ID updated for:', applicant.value.fullname)

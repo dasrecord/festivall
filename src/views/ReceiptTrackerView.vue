@@ -199,6 +199,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { reunion_db, reunion_storage, reunion_auth } from '@/firebase'
 import {
@@ -282,7 +283,7 @@ const validateIdCode = async () => {
   validating.value = true
   try {
     const q = query(
-      collection(reunion_db, 'participants_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.participants),
       where('id_code', '==', code)
     )
     const snap = await getDocs(q)
@@ -323,7 +324,7 @@ const lookupArtist = async () => {
   lookingUpArtist.value = true
   try {
     const q = query(
-      collection(reunion_db, 'participants_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.participants),
       where('id_code', '==', code)
     )
     const snap = await getDocs(q)
@@ -396,7 +397,7 @@ const submitReceipt = async () => {
       docData.artist_name = resolvedArtist.value.name
     }
 
-    await addDoc(collection(reunion_db, 'receipts_2026'), docData)
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.collections.receipts), docData)
 
     lastSubmitted.value = {
       description: form.value.description.trim(),
@@ -418,7 +419,7 @@ const subscribeHistory = () => {
   if (unsubHistory) unsubHistory()
   loadingHistory.value = true
   const q = query(
-    collection(reunion_db, 'receipts_2026'),
+    collection(reunion_db, REUNION_FESTIVAL.collections.receipts),
     where('id_code', '==', confirmedIdCode.value)
   )
   unsubHistory = onSnapshot(q, (snap) => {

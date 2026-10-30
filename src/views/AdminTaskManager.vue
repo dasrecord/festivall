@@ -130,6 +130,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { reunion_db } from '@/firebase'
@@ -245,7 +246,7 @@ const loadAllTasks = async () => {
   loading.value = true
   try {
     // Fetch all status docs once
-    const q = query(collection(reunion_db, 'task_status_2026'))
+    const q = query(collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus))
     const snapshot = await getDocs(q)
     const byDept = {}
     snapshot.forEach((docSnap) => {
@@ -285,7 +286,7 @@ const loadDepartmentTasks = async () => {
   try {
     const deptId = selectedDepartment.value
     const baseTasks = getTasksForDepartment(deptId)
-    const q = query(collection(reunion_db, 'task_status_2026'), where('department', '==', deptId))
+    const q = query(collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
     const statuses = querySnapshot.docs.map((d) => d.data())
     departmentTasks.value = mergeBaseWithStatus(baseTasks, statuses)
@@ -306,7 +307,7 @@ const resetDepartment = async (deptId, deptName) => {
   loading.value = true
   try {
     // Get all task documents for this department
-    const q = query(collection(reunion_db, 'task_status_2026'), where('department', '==', deptId))
+    const q = query(collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus), where('department', '==', deptId))
     const querySnapshot = await getDocs(q)
 
     // Use batch delete for efficiency
@@ -348,7 +349,7 @@ const resetTask = async (taskId, taskTitle, deptId, taskType) => {
     if (taskType === 'personal') {
       // Personal tasks: find all user-specific docs via originalTaskId
       const q = query(
-        collection(reunion_db, 'task_status_2026'),
+        collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus),
         where('originalTaskId', '==', taskId)
       )
       const snap = await getDocs(q)
@@ -356,7 +357,7 @@ const resetTask = async (taskId, taskTitle, deptId, taskType) => {
       snap.forEach((d) => batch.delete(d.ref))
       await batch.commit()
     } else {
-      await deleteDoc(doc(reunion_db, 'task_status_2026', taskId))
+      await deleteDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId))
     }
 
     addLogEntry(`✅ Reset task: ${taskId} (${taskTitle})`)
@@ -389,9 +390,9 @@ const quickResetTask = async () => {
   try {
     // Delete direct doc (standard/one-time) and any personal docs with this originalTaskId
     const batch = writeBatch(reunion_db)
-    batch.delete(doc(reunion_db, 'task_status_2026', taskId))
+    batch.delete(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, taskId))
     const personalQ = query(
-      collection(reunion_db, 'task_status_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus),
       where('originalTaskId', '==', taskId)
     )
     const personalSnap = await getDocs(personalQ)

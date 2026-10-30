@@ -21,6 +21,7 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 
 const { year, month, day, endDay, pricing } = REUNION_FESTIVAL
 const monthName = months[month - 1]
 const dateRange = `${monthName} ${day}–${endDay}, ${year}`
+const weekendValidity = `12:00PM Friday ${monthName} ${day}, ${year} - 12:00PM Monday ${monthName} ${endDay}, ${year}`
 
 useHead({
   title: `Reunion Festival ${year} — Buy Tickets | Festivall`,
@@ -129,10 +130,10 @@ const validateReferralID = async (referral_id_code) => {
       return
     }
 
-    // Check 2025 Orders
-    const docRef2025 = doc(reunion_db, 'orders_2025', referral_id_code)
-    const docSnap2025 = await getDoc(docRef2025)
-    if (docSnap2025.exists()) {
+    // Check the previous Reunion ticket collection
+    const previousYearRef = doc(reunion_db, REUNION_FESTIVAL.priorYearCollection, referral_id_code)
+    const previousYearSnap = await getDoc(previousYearRef)
+    if (previousYearSnap.exists()) {
       // Track successful referral validation
       logEvent(reunion_analytics, 'select_content', {
         content_type: 'referral_code',
@@ -141,7 +142,7 @@ const validateReferralID = async (referral_id_code) => {
       })
 
       alert(
-        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${docSnap2025.data().fullname} at Reunion ${new Date().getFullYear()}.`
+        `This Festivall ID_CODE is valid!\n Thanks for supporting your friend ${previousYearSnap.data().fullname} at Reunion ${REUNION_FESTIVAL.year}.`
       )
     } else {
       // Track invalid referral attempt
@@ -782,7 +783,7 @@ onMounted(() => {
               <span style="font-size: 14px">(${{ REUNION_FESTIVAL.pricing.weekendPass + REUNION_FESTIVAL.pricing.cashSurchargeWeekend }} at the gate)</span><br />
             </h2>
             <h3>
-              (Valid from 12:00PM Friday September 4th, 2026 - 12:00PM Monday September 7th, 2026)
+              (Valid from {{ weekendValidity }})
             </h3>
           </div>
           <div class="ticket">

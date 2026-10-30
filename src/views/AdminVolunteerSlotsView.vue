@@ -370,7 +370,7 @@ export default {
   methods: {
     reload() {
       if (this.unsub) this.unsub()
-      const base = collection(this.db, 'volunteer_slots_2026')
+      const base = collection(this.db, REUNION_FESTIVAL.collections.volunteerSlots)
       const q = query(base)
       this.unsub = onSnapshot(q, (snap) => {
         this.slots = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
@@ -410,10 +410,10 @@ export default {
         ...(this.form.id ? { claimed: this.form.claimed } : {})
       }
       if (this.form.id) {
-        await updateDoc(doc(this.db, 'volunteer_slots_2026', this.form.id), payload)
+        await updateDoc(doc(this.db, REUNION_FESTIVAL.collections.volunteerSlots, this.form.id), payload)
         console.log('✅ Slot updated successfully')
       } else {
-        await addDoc(collection(this.db, 'volunteer_slots_2026'), {
+        await addDoc(collection(this.db, REUNION_FESTIVAL.collections.volunteerSlots), {
           ...payload,
           created_at: serverTimestamp(),
           claimed: []
@@ -447,7 +447,7 @@ export default {
     },
     async addClaimToParticipant(id_code, slot_id, team, date, start, end) {
       try {
-        const participantRef = doc(this.db, 'participants_2026', id_code)
+        const participantRef = doc(this.db, REUNION_FESTIVAL.collections.participants, id_code)
         const participantSnap = await getDoc(participantRef)
         
         if (participantSnap.exists()) {
@@ -493,7 +493,7 @@ export default {
     },
     async removeClaimFromParticipant(id_code, slot_id) {
       try {
-        const participantRef = doc(this.db, 'participants_2026', id_code)
+        const participantRef = doc(this.db, REUNION_FESTIVAL.collections.participants, id_code)
         const participantSnap = await getDoc(participantRef)
         
         if (participantSnap.exists()) {
@@ -514,14 +514,14 @@ export default {
       }
     },
     async toggleActive(s) {
-      await updateDoc(doc(this.db, 'volunteer_slots_2026', s.id), {
+      await updateDoc(doc(this.db, REUNION_FESTIVAL.collections.volunteerSlots, s.id), {
         active: !(s.active !== false),
         updated_at: serverTimestamp()
       })
     },
     async deleteSlot(s) {
       if (!confirm('Delete this slot? This cannot be undone.')) return
-      await deleteDoc(doc(this.db, 'volunteer_slots_2026', s.id))
+      await deleteDoc(doc(this.db, REUNION_FESTIVAL.collections.volunteerSlots, s.id))
       if (this.form.id === s.id) this.resetForm()
     },
     // Generator utilities
@@ -591,7 +591,7 @@ export default {
           return `${slug}_${mon}${d}_${time}`
         }
         const add = async (slot) =>
-          setDoc(doc(this.db, 'volunteer_slots_2026', slotId(slot)), {
+          setDoc(doc(this.db, REUNION_FESTIVAL.collections.volunteerSlots, slotId(slot)), {
             ...slot,
             active: true,
             created_at: serverTimestamp(),

@@ -1,22 +1,39 @@
 // Central festival date config — update here to reflect everywhere
 export const REUNION_FESTIVAL = {
-  year: 2026,
+  year: 2027,
+  dashboardYear: 2026,
   month: 9,       // 1-indexed (for CountdownTimer props)
-  day: 4,         // Friday start
-  endDay: 7,      // Monday end
+  day: 3,         // Friday start
+  endDay: 6,      // Monday end
 
   admins: ['Prasenjit', 'Brandon', 'Chris'],
   adminUids: ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2'],
 
   // Pre-built Date objects for programmatic use
-  startDate: new Date('2026-09-04T12:00:00'),           // scanners & check-in (local time)
-  fridayDate: new Date('2026-09-04T12:00:00-06:00'),    // lineup view (Mountain Time)
-  saturdayDate: new Date('2026-09-05T12:00:00-06:00'),
-  sundayDate: new Date('2026-09-06T12:00:00-06:00'),
-  mondayDate: new Date('2026-09-07T12:00:00-06:00'),
-  lineupRevealDate: new Date(2026, 7, 1),               // Aug 1: lineup link becomes visible
-  festivalOpenDate: new Date(2026, 8, 4, 12, 0, 0),    // Sept 4 12pm: scavenger hunt opens
+  startDate: new Date('2027-09-03T12:00:00'),           // scanners & check-in (local time)
+  fridayDate: new Date('2027-09-03T12:00:00-06:00'),    // lineup view (Mountain Time)
+  saturdayDate: new Date('2027-09-04T12:00:00-06:00'),
+  sundayDate: new Date('2027-09-05T12:00:00-06:00'),
+  mondayDate: new Date('2027-09-06T12:00:00-06:00'),
+  lineupRevealDate: new Date(2027, 7, 1),               // Aug 1: lineup link becomes visible
+  festivalOpenDate: new Date(2027, 8, 3, 12, 0, 0),    // Sept 3 12pm: scavenger hunt opens
   gateCloseTime: '2:00 AM',                            // Nightly Front Gate closing time
+
+  posterSplash: {
+    landingPageEnabled: false,
+    ticketPageEnabled: false,
+    applicationPageEnabled: false,
+  },
+
+  promotions: {
+    seasonal: {
+      startsAt: new Date('2026-10-30T00:00:00-06:00'),
+      endsAt: new Date('2026-12-31T23:59:59-06:00'),
+    },
+    promoCodes: {
+      FAMILYFRIENDLY27: { discountPercent: 25 },
+    },
+  },
 
   // Ticket pricing info — update here each year
   pricing: {
@@ -73,10 +90,45 @@ export const REUNION_FESTIVAL = {
     })
     return [this.fridayDate, this.saturdayDate, this.sundayDate].map(d => ({ value: fmt(d), label: fmt(d) }))
   },
+  get dateRangeLabel() {
+    const monthName = this.fridayDate.toLocaleDateString('en-CA', {
+      month: 'short',
+      timeZone: 'America/Regina',
+    })
+    return `${monthName} ${this.day}–${this.endDay}, ${this.year}`
+  },
 
   // Firestore collection names
-  get participantsCollection() { return `participants_${this.year}` },
-  priorYearCollection: 'orders_2025', // 2025 used 'orders_2025' naming; update each year
+  get collections() {
+    const year = this.year
+    return {
+      participants: `participants_${year}`,
+      volunteerSlots: `volunteer_slots_${year}`,
+      volunteerSignups: `volunteer_signups_${year}`,
+      openDecks: `open_decks_${year}`,
+      taskStatus: `task_status_${year}`,
+      alerts: `alerts_${year}`,
+      budget: `budget_${year}`,
+      receipts: `receipts_${year}`,
+      otherRevenue: `other_revenue_${year}`,
+    }
+  },
+  get dashboardCollections() {
+    const year = this.dashboardYear
+    return {
+      participants: `participants_${year}`,
+      volunteerSlots: `volunteer_slots_${year}`,
+      volunteerSignups: `volunteer_signups_${year}`,
+      openDecks: `open_decks_${year}`,
+      taskStatus: `task_status_${year}`,
+      alerts: `alerts_${year}`,
+      budget: `budget_${year}`,
+      receipts: `receipts_${year}`,
+      otherRevenue: `other_revenue_${year}`,
+    }
+  },
+  get participantsCollection() { return this.collections.participants },
+  get priorYearCollection() { return `participants_${this.year - 1}` },
 
   // Edit these menu items when each meal is finalized.
   mealMenus: {
@@ -205,7 +257,7 @@ export const REUNION_FESTIVAL = {
     allowedLogoMimes: ['image/png', 'image/svg+xml', 'image/jpeg', 'image/webp'],
     // Hard cutoff: end of festival (mondayDate) plus 1 day. After this date, edits & visuals
     // selection are blocked (chips hide, save fails fast with a friendly message).
-    editCutoff: new Date('2026-09-08T00:00:00-06:00'),
+    editCutoff: new Date('2027-09-07T00:00:00-06:00'),
   },
 
   // Visuals picker (TicketPageView "Choose Your Visuals" modal)

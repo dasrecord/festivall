@@ -365,7 +365,7 @@
           <h2>
             <a
               :href="
-                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
+                `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2F${REUNION_FESTIVAL.collections.participants}~2F` +
                 order.id_code
               "
               target="_blank"
@@ -562,7 +562,7 @@ export default {
     this.lastMealServiceEnd = localStorage.getItem('lastMealServiceEnd')
 
     try {
-      const participantsCollection = collection(this.db, 'participants_2026')
+      const participantsCollection = collection(this.db, REUNION_FESTIVAL.collections.participants)
       this.unsubscribeOrders = onSnapshot(participantsCollection, (snap) => {
         this.orders = snap.docs
           .map((d) => {
@@ -684,7 +684,7 @@ export default {
           approved_by: this.operatorIdCode.trim(),
           approved_at: now
         }
-        const orderRef = doc(this.db, 'participants_2026', order.id_code)
+        const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, order.id_code)
         await updateDoc(orderRef, {
           'order.meal_tickets_remaining': increment(Number(purchase.meal_quantity)),
           'order.pending_meal_purchases': arrayRemove(purchase),
@@ -728,7 +728,7 @@ export default {
         if (currentMealTickets >= amount) {
           const newMealTickets = currentMealTickets - amount
           const redemptionTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'participants_2026', order.id_code)
+          const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, order.id_code)
 
           // Get existing redemption history or initialize empty array
           const existingRedemptions = order.meal_redemption_history || []
@@ -802,7 +802,7 @@ export default {
         const { doc, getDoc } = await import('firebase/firestore')
 
         // Check participants_2026 collection
-        const ref = doc(this.db, 'participants_2026', idCode)
+        const ref = doc(this.db, REUNION_FESTIVAL.collections.participants, idCode)
         const snap = await getDoc(ref)
 
         if (snap.exists() && (snap.data().contact?.fullname || snap.data().fullname)) {
@@ -849,7 +849,7 @@ export default {
     },
     async refreshOrders() {
       try {
-        const participantsCollection = collection(this.db, 'participants_2026')
+        const participantsCollection = collection(this.db, REUNION_FESTIVAL.collections.participants)
         const snap = await getDocs(participantsCollection)
         this.orders = snap.docs
           .map((d) => {
@@ -934,7 +934,7 @@ export default {
         const updatePromises = ordersToUpdate.map(async (order) => {
           const newMealTickets = Math.max(0, order.meal_tickets_remaining - 1)
           const redemptionTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'participants_2026', order.id_code)
+          const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, order.id_code)
 
           // Get existing redemption history or initialize empty array
           const existingRedemptions = order.meal_redemption_history || []

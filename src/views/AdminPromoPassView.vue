@@ -223,7 +223,7 @@ const allocateIdCode = async (prefix) => {
   const attempts = 8
   for (let index = 0; index < attempts; index += 1) {
     const candidate = `${cleanPrefix || 'fp'}${uuidv4().slice(0, 3)}`.toLowerCase()
-    const snap = await getDoc(doc(reunion_db, 'participants_2026', candidate))
+    const snap = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, candidate))
     if (!snap.exists()) return candidate
   }
   throw new Error('Unable to allocate a unique ticket code')
@@ -310,7 +310,7 @@ const sendPromoPass = async () => {
       }
     }
 
-    await setDoc(doc(reunion_db, 'participants_2026', idCode), promoDoc)
+    await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, idCode), promoDoc)
 
     const { sendEmail } = await import('/scripts/notifications.js')
     const emailBody = renderTemplate(templateText.value, {

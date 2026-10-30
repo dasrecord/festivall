@@ -1,3 +1,4 @@
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { v4 as uuidv4 } from 'uuid'
 import {
   collection,
@@ -18,7 +19,7 @@ import {
   sendReunionApplications
 } from '/scripts/notifications.js'
 
-const COLLECTION = 'participants_2026'
+const COLLECTION = REUNION_FESTIVAL.collections.participants
 
 async function loadTransferTemplate() {
   const resp = await fetch('/email_templates/ticket_transfer_template.txt')

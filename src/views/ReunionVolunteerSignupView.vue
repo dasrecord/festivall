@@ -167,6 +167,7 @@
 </template>
 
 <script>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { reunion_db } from '@/firebase'
 import {
   doc,
@@ -321,7 +322,7 @@ export default {
       try {
         // Use query to find participant by id_code field (like other views do)
         const q = query(
-          collection(this.db, 'participants_2026'),
+          collection(this.db, REUNION_FESTIVAL.collections.participants),
           where('id_code', '==', this.idCode.toLowerCase().trim())
         )
         const querySnapshot = await getDocs(q)
@@ -344,7 +345,7 @@ export default {
     async loadSlots() {
       try {
         this.loadingSlots = true
-        const base = collection(this.db, 'volunteer_slots_2026')
+        const base = collection(this.db, REUNION_FESTIVAL.collections.volunteerSlots)
         const qy = query(base, where('active', '==', true))
         const snap = await getDocs(qy)
 
@@ -429,7 +430,7 @@ export default {
       this.claimingId = slot.id
 
       try {
-        const slotRef = doc(this.db, 'volunteer_slots_2026', slot.id)
+        const slotRef = doc(this.db, REUNION_FESTIVAL.collections.volunteerSlots, slot.id)
         await runTransaction(this.db, async (tx) => {
           const snap = await tx.get(slotRef)
           if (!snap.exists()) throw new Error('Slot no longer exists.')
@@ -465,12 +466,12 @@ export default {
         }
 
         await updateDoc(
-          doc(this.db, 'participants_2026', this.participant.id_code),
+          doc(this.db, REUNION_FESTIVAL.collections.participants, this.participant.id_code),
           { 'volunteer.claimed_slots': arrayUnion(claimSummary) }
         )
 
         // Also record in central collection (optional audit trail)
-        await addDoc(collection(this.db, 'volunteer_signups_2026'), {
+        await addDoc(collection(this.db, REUNION_FESTIVAL.collections.volunteerSignups), {
           id_code: this.participant.id_code,
           fullname: this.participant.fullname,
           team: slot.team,

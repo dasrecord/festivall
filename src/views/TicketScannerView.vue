@@ -375,7 +375,7 @@
           <h2>
             <a
               :href="
-                'https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2Fparticipants_2026~2F' +
+                `https://console.firebase.google.com/u/0/project/reunionfestivall/firestore/databases/-default-/data/~2F${REUNION_FESTIVAL.collections.participants}~2F` +
                 order.id_code
               "
               target="_blank"
@@ -494,7 +494,7 @@ export default {
     this.loadOperatorId()
 
     try {
-      const participantsCollection = collection(this.db, 'participants_2026')
+      const participantsCollection = collection(this.db, REUNION_FESTIVAL.collections.participants)
       this.unsubscribeOrders = onSnapshot(participantsCollection, (snap) => {
         this.orders = snap.docs
           .map((d) => {
@@ -622,7 +622,7 @@ export default {
         if (order.ticket_quantity > 0) {
           const newTicketQuantity = order.ticket_quantity - 1
           const activityTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'participants_2026', order.id_code)
+          const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, order.id_code)
 
           // Get existing entrance activity history or initialize empty array
           const existingActivity = order.entrance_activity_history || []
@@ -694,7 +694,7 @@ export default {
         if (order.ticket_quantity < order.original_ticket_quantity) {
           const newTicketQuantity = order.ticket_quantity + 1
           const activityTime = new Date().toISOString()
-          const orderRef = doc(this.db, 'participants_2026', order.id_code)
+          const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, order.id_code)
 
           // Get existing entrance activity history or initialize empty array
           const existingActivity = order.entrance_activity_history || []
@@ -745,7 +745,7 @@ export default {
     },
     async refreshOrders() {
       try {
-        const participantsCollection = collection(this.db, 'participants_2026')
+        const participantsCollection = collection(this.db, REUNION_FESTIVAL.collections.participants)
         const snap = await getDocs(participantsCollection)
         this.orders = snap.docs
           .map((d) => {
@@ -808,7 +808,7 @@ export default {
         const { doc, getDoc } = await import('firebase/firestore')
 
         // Check participants_2026 collection
-        const orderRef = doc(this.db, 'participants_2026', idCode)
+        const orderRef = doc(this.db, REUNION_FESTIVAL.collections.participants, idCode)
         const orderSnap = await getDoc(orderRef)
 
         if (

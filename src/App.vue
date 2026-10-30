@@ -4,6 +4,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useHead } from '@vueuse/head'
 import PosterSplash from './components/PosterSplash.vue'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import poster2026 from '@/assets/images/reunion_2026_poster_v2.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
@@ -12,13 +13,13 @@ import bitcoinBlockPartyPoster from '@/assets/images/bitcoin_block_party/bitcoin
 
 const POSTER_ROUTES = ['/reunion', '/reunionapplication', '/reuniontickets']
 const BITCOIN_BLOCK_PARTY_POSTER_ROUTES = ['/bitcoinblockparty']
-const STORAGE_KEY = 'posterSplashShown_2026'
+const STORAGE_KEY = `posterSplashShown_${REUNION_FESTIVAL.year}`
 const BITCOIN_BLOCK_PARTY_STORAGE_KEY = 'bitcoinBlockPartyPosterSplashShown_2026'
 
 const route = useRoute()
 const showPoster = ref(false)
 const posterSrc = ref(poster2025)
-const posterHint = ref('REUNION 2026<br>This year is going to be Iconic')
+const posterHint = ref(`REUNION ${REUNION_FESTIVAL.year}<br>This year is going to be Iconic`)
 const posterHintTitle = ref('')
 const posterHintBody = ref('')
 const showBitcoinBlockPartyInfo = ref(false)
@@ -29,10 +30,23 @@ watch(
   () => route.path,
   (path) => {
     if (POSTER_ROUTES.includes(path)) {
+      const reunionSplashEnabled = path === '/reunion'
+        ? REUNION_FESTIVAL.posterSplash.landingPageEnabled
+        : path === '/reuniontickets'
+          ? REUNION_FESTIVAL.posterSplash.ticketPageEnabled
+          : REUNION_FESTIVAL.posterSplash.applicationPageEnabled
+
+      if (!reunionSplashEnabled) {
+        showPoster.value = false
+        showBitcoinBlockPartyInfo.value = false
+        showReunionInfo.value = false
+        return
+      }
+
       const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
       posterSrc.value = poster2026
       posterHint.value = ''
-      posterHintTitle.value = 'REUNION 2026'
+      posterHintTitle.value = `REUNION ${REUNION_FESTIVAL.year}`
       posterHintBody.value = 'This year is going to be Iconic'
       showBitcoinBlockPartyInfo.value = false
       showReunionInfo.value = true

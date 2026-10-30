@@ -177,6 +177,7 @@
 </template>
 
 <script setup>
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { ref, computed, onUnmounted, onMounted } from 'vue'
 import { reunion_db } from '@/firebase'
 import {
@@ -339,7 +340,7 @@ const handleIdCodeInput = (event) => {
 const validateIdCode = async () => {
   if (!userIdCode.value || userIdCode.value.length !== 5) return false
   try {
-    const pDoc = await getDoc(doc(reunion_db, 'participants_2026', userIdCode.value))
+    const pDoc = await getDoc(doc(reunion_db, REUNION_FESTIVAL.collections.participants, userIdCode.value))
     if (pDoc.exists()) {
       const data = pDoc.data()
       userName.value = data.contact?.fullname || data.fullname || ''
@@ -365,7 +366,7 @@ const authenticateUser = async () => {
 const loadTasks = async () => {
   try {
     const defaultTasks = initializeTasks()
-    const statusRef = collection(reunion_db, 'task_status_2026')
+    const statusRef = collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus)
     const q = query(statusRef, where('department', '==', 'arcade_attendant'))
 
     unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -400,7 +401,7 @@ const completeTask = async (taskId) => {
       arcadeTasks.value[taskIndex].completedByName = userName.value
       arcadeTasks.value[taskIndex].completedAt = new Date().toISOString()
 
-      await setDoc(doc(reunion_db, 'task_status_2026', `${taskId}_${userIdCode.value}`), {
+      await setDoc(doc(reunion_db, REUNION_FESTIVAL.collections.taskStatus, `${taskId}_${userIdCode.value}`), {
         taskId: `${taskId}_${userIdCode.value}`,
         originalTaskId: taskId,
         department: 'arcade_attendant',
@@ -440,7 +441,7 @@ const resetAllTasks = async () => {
 
   try {
     const q = query(
-      collection(reunion_db, 'task_status_2026'),
+      collection(reunion_db, REUNION_FESTIVAL.collections.taskStatus),
       where('department', '==', 'arcade_attendant')
     )
     const querySnapshot = await getDocs(q)

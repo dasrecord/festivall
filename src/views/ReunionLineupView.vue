@@ -124,7 +124,7 @@ const showDays = reactive({
 const fetchEvents = async (signedOnly = true) => {
   loading.value = true
   try {
-    const col = collection(reunion_db, 'participants_2026')
+    const col = collection(reunion_db, REUNION_FESTIVAL.collections.participants)
     const q = signedOnly
       ? query(col, where('contract.signed', '==', true))
       : query(col)

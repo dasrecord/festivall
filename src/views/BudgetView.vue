@@ -6,7 +6,7 @@
       <RouterLink to="/dashboard">
         <img src="@/assets/images/festivall_emblem_white.png" alt="Festivall Logo" class="logo" />
       </RouterLink>
-      <h1>BUDGET 2026</h1>
+      <h1>BUDGET {{ REUNION_FESTIVAL.dashboardYear }}</h1>
       <RouterLink to="/dashboard" class="back-link">← Dashboard</RouterLink>
     </div>
 
@@ -336,7 +336,7 @@ import {
   updateDoc
 } from 'firebase/firestore'
 import ManualCategoryCard from '@/components/ManualCategoryCard.vue'
-import { BUDGET_TARGETS } from '@/config/festivalConfig'
+import { BUDGET_TARGETS, REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 const isAdmin = ref(false)
@@ -644,7 +644,7 @@ const addItem = async ({ category, label, amount }) => {
   if (!isAdmin.value || !label || !amount) return
   saving.value = true
   try {
-    await addDoc(collection(reunion_db, 'budget_2026'), {
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.budget), {
       category,
       label,
       amount: Number(amount),
@@ -664,7 +664,7 @@ const toggleItemPaid = async (id) => {
   if (!target) return
 
   try {
-    await updateDoc(doc(reunion_db, 'budget_2026', id), {
+    await updateDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.budget, id), {
       paid: target.paid === false
     })
   } catch (e) {
@@ -678,7 +678,7 @@ const toggleReceiptPaid = async (id) => {
   if (!target) return
 
   try {
-    await updateDoc(doc(reunion_db, 'receipts_2026', id), {
+    await updateDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.receipts, id), {
       paid: target.paid === false
     })
   } catch (e) {
@@ -695,7 +695,7 @@ const toggleCompensationPaid = async (participantId) => {
   const nextPaid = rates.paid === false
 
   try {
-    await updateDoc(doc(reunion_db, 'participants_2026', participantId), {
+    await updateDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants, participantId), {
       'application.data.rates': {
         ...rates,
         paid: nextPaid
@@ -709,7 +709,7 @@ const toggleCompensationPaid = async (participantId) => {
 const removeItem = async (id) => {
   if (!isAdmin.value) return
   try {
-    await deleteDoc(doc(reunion_db, 'budget_2026', id))
+    await deleteDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.budget, id))
   } catch (e) {
     console.error('Error deleting budget item:', e)
   }
@@ -718,7 +718,7 @@ const removeItem = async (id) => {
 const removeReceipt = async (id) => {
   if (!isAdmin.value) return
   try {
-    await deleteDoc(doc(reunion_db, 'receipts_2026', id))
+    await deleteDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.receipts, id))
   } catch (e) {
     console.error('Error deleting receipt:', e)
   }
@@ -728,7 +728,7 @@ const submitOtherRevenue = async () => {
   if (!isAdmin.value || !newRevenueLabel.value.trim() || !newRevenueAmount.value) return
   saving.value = true
   try {
-    await addDoc(collection(reunion_db, 'other_revenue_2026'), {
+    await addDoc(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.otherRevenue), {
       label: newRevenueLabel.value.trim(),
       amount: Number(newRevenueAmount.value),
       createdAt: serverTimestamp()
@@ -745,7 +745,7 @@ const submitOtherRevenue = async () => {
 const removeOtherRevenue = async (id) => {
   if (!isAdmin.value) return
   try {
-    await deleteDoc(doc(reunion_db, 'other_revenue_2026', id))
+    await deleteDoc(doc(reunion_db, REUNION_FESTIVAL.dashboardCollections.otherRevenue, id))
   } catch (e) {
     console.error('Error deleting other revenue item:', e)
   }
@@ -753,26 +753,26 @@ const removeOtherRevenue = async (id) => {
 
 // ── Data loading ──────────────────────────────────────────────────────────────
 const loadParticipants = async () => {
-  const snap = await getDocs(collection(reunion_db, 'participants_2026'))
+  const snap = await getDocs(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.participants))
   participants.value = snap.docs
     .map((d) => ({ id: d.id, ...d.data() }))
     .filter((p) => p.status !== 'declined')
 }
 
 const subscribeBudget = () => {
-  unsubscribeBudget = onSnapshot(collection(reunion_db, 'budget_2026'), (snap) => {
+  unsubscribeBudget = onSnapshot(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.budget), (snap) => {
     budgetItems.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
   })
 }
 
 const subscribeReceipts = () => {
-  unsubscribeReceipts = onSnapshot(collection(reunion_db, 'receipts_2026'), (snap) => {
+  unsubscribeReceipts = onSnapshot(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.receipts), (snap) => {
     receiptItems.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
   })
 }
 
 const subscribeOtherRevenue = () => {
-  unsubscribeOtherRevenue = onSnapshot(collection(reunion_db, 'other_revenue_2026'), (snap) => {
+  unsubscribeOtherRevenue = onSnapshot(collection(reunion_db, REUNION_FESTIVAL.dashboardCollections.otherRevenue), (snap) => {
     otherRevenueItems.value = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
   })
 }
