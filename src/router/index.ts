@@ -284,7 +284,7 @@ const routes = [
     meta: { showHeader: true }
   },
   {
-    path: '/trick-or-treat',
+    path: '/reunion-trick-or-treat',
     name: 'reunion-trick-or-treat',
     component: ReunionTrickOrTreatView,
     meta: { showHeader: false }
