@@ -124,9 +124,10 @@ async function copyPromoCode() {
           <p class="eyebrow"><span aria-hidden="true">✦</span> A little Halloween magic</p>
           <h1>Trick or treat?<br /><span>Try a festival.</span></h1>
           <p class="intro">
-            Thanks for stopping by! Give us your email for
-            <strong>25% off Reunion 2027</strong>,
-            and you’ll also be entered to win back what you spend on tickets.
+            Looking for a weekend the whole family can enjoy? Reunion is a family-friendly festival
+            with music, food, camping, and activities for all ages. Get
+            <strong>25% off Reunion 2027 tickets</strong> when you sign up, and you’ll also be
+            entered to win back what you spend on tickets.
           </p>
           <div class="perk-row" aria-label="Promotion highlights">
             <div class="perk"><strong>25%</strong><span>off your tickets</span></div>
@@ -255,6 +256,10 @@ async function copyPromoCode() {
             <span aria-hidden="true">↗</span>
           </a>
           <p class="draw-note">Keep an eye on your inbox for Reunion news and draw updates.</p>
+          <RouterLink class="reunion-link" to="/reunion">
+            See what Reunion is all about
+            <span aria-hidden="true">→</span>
+          </RouterLink>
         </div>
       </section>
 
@@ -760,6 +765,18 @@ h2 {
 .draw-note {
   margin-bottom: 0;
   font-size: 0.88rem;
+}
+
+.reunion-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  color: var(--green);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .calendar-link {
