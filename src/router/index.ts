@@ -5,7 +5,8 @@ import FuseCollectiveView from '@/views/FuseCollectiveView.vue'
 import ReunionView from '@/views/ReunionView.vue'
 import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
-import ReunionTrickOrTreatView from '@/views/ReunionTrickOrTreatView.vue'
+import SeasonalPromoView from '@/views/SeasonalPromoView.vue'
+import SeasonalPromoAdminView from '@/views/SeasonalPromoAdminView.vue'
 import ReunionTeamView from '@/views/ReunionTeamView.vue'
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
 import ReunionLineupView from '@/views/ReunionLineupView.vue'
@@ -203,6 +204,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/dashboard/seasonal-promos',
+    name: 'dashboard-seasonal-promos',
+    component: SeasonalPromoAdminView,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/admin/inventory',
     name: 'admin-inventory',
     component: AdminInventoryView,
@@ -286,7 +293,29 @@ const routes = [
   {
     path: '/reunion-trick-or-treat',
     name: 'reunion-trick-or-treat',
-    component: ReunionTrickOrTreatView,
+    component: SeasonalPromoView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/reunion-merry-christmas',
+    name: 'reunion-christmas-promo',
+    component: SeasonalPromoView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/reunion-christmas-promo',
+    redirect: '/reunion-merry-christmas'
+  },
+  {
+    path: '/reunion-:slug',
+    name: 'reunion-seasonal-promo',
+    component: SeasonalPromoView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/reunion-promo/:slug',
+    name: 'reunion-seasonal-promo-legacy',
+    component: SeasonalPromoView,
     meta: { showHeader: false }
   },
   {

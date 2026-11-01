@@ -150,6 +150,10 @@
           Promo Passes
         </RouterLink>
 
+        <RouterLink to="/dashboard/seasonal-promos" class="scanner-link">
+          Seasonal Promotions
+        </RouterLink>
+
         <RouterLink to="/admin/inventory" class="scanner-link">
           <img :src="inventory_icon" alt="Inventory" class="action-icon" style="width: 28px" />
           Inventory

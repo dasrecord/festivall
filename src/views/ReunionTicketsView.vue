@@ -6,13 +6,17 @@ import meals from '@/assets/images/icons/meals.png'
 import footer from '@/assets/images/poster_footer_v1.png'
 import bitcoin_icon from '../assets/images/bitcoin.svg?url'
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { reunion_db } from '@/firebase'
-import { getDoc, doc, setDoc } from 'firebase/firestore'
+import { collection, getDoc, getDocs, doc, setDoc } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
+import {
+  DEFAULT_SEASONAL_PROMOS,
+  seasonalPromoFromData
+} from '@/config/seasonalPromos'
 import { logEvent } from 'firebase/analytics'
 import { reunion_analytics } from '@/firebase'
 import { useHead } from '@vueuse/head'
@@ -92,6 +96,189 @@ onUnmounted(() => {
 })
 
 const route = useRoute()
+const promoCodeInput = ref('')
+const appliedSeasonalPromo = ref(null)
+const promoMessage = ref('')
+const isApplyingPromo = ref(false)
+const reunionToday = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Regina' }).format(new Date())
+
+const getCartTotals = () => {
+  const { weekendPass, dayPass, mealPackage } = REUNION_FESTIVAL.pricing
+  const ticketPrice =
+    form.value.ticket_type === 'Weekend Pass'
+      ? weekendPass
+      : form.value.ticket_type === 'Day Pass'
+        ? dayPass
+        : 0
+  const ticketsSubtotal = ticketPrice * Number(form.value.ticket_quantity || 0)
+  const mealsSubtotal = mealPackage * Number(form.value.meal_packages || 0)
+  return { ticketsSubtotal, mealsSubtotal, subtotal: ticketsSubtotal + mealsSubtotal }
+}
+
+const seasonalDiscountAmount = (promo = appliedSeasonalPromo.value) => {
+  if (!promo || promo.promoType === 'giveaway') return 0
+  const { ticketsSubtotal, subtotal } = getCartTotals()
+  if (promo.minimumSpend && subtotal < promo.minimumSpend) return 0
+  const discount =
+    promo.discountType === 'percent'
+      ? (ticketsSubtotal * promo.discountValue) / 100
+      : promo.discountValue
+  return Math.min(ticketsSubtotal, discount, promo.maxDiscountAmount ?? Number.POSITIVE_INFINITY)
+}
+
+const getDiscountSummary = () => {
+  const { subtotal } = getCartTotals()
+  const promoDiscount = seasonalDiscountAmount()
+  const bitcoinDiscount = form.value.payment_type === 'bitcoin' ? subtotal * 0.25 : 0
+  return {
+    seasonalDiscount: promoDiscount > bitcoinDiscount ? promoDiscount : 0,
+    discount: Math.max(promoDiscount, bitcoinDiscount),
+    subtotal
+  }
+}
+
+const getCheckoutFiatTotal = () => {
+  const { subtotal, discount } = getDiscountSummary()
+  let total = subtotal - discount
+  if (form.value.payment_type === 'cash') {
+    const { cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
+    const surcharge =
+      form.value.ticket_type === 'Weekend Pass'
+        ? cashSurchargeWeekend
+        : form.value.ticket_type === 'Day Pass'
+          ? cashSurchargeDayPass
+          : 0
+    total += surcharge * Number(form.value.ticket_quantity || 0)
+  }
+  return Number(total.toFixed(2))
+}
+
+const bitcoinAdditionalSavings = computed(() => {
+  const { subtotal } = getCartTotals()
+  const currentPromoDiscount = seasonalDiscountAmount()
+  const bitcoinTotal = subtotal - Math.max(currentPromoDiscount, subtotal * 0.25)
+  return Math.max(0, subtotal - currentPromoDiscount - bitcoinTotal)
+})
+
+const prefilledPromoCode = route.query.promo
+if (typeof prefilledPromoCode === 'string') {
+  promoCodeInput.value = prefilledPromoCode
+}
+
+const applyPromoCode = async () => {
+  promoMessage.value = ''
+  appliedSeasonalPromo.value = null
+  const code = promoCodeInput.value.trim()
+  if (!code) {
+    promoMessage.value = 'Enter a promotion code first.'
+    calculateTotalPrice()
+    return
+  }
+
+  isApplyingPromo.value = true
+  try {
+    const matches = await getDocs(collection(reunion_db, 'seasonal_promos'))
+    const codeMatches = matches.docs.filter(
+      (promoDoc) =>
+        typeof promoDoc.data().promoCode === 'string' &&
+        promoDoc.data().promoCode.trim().toLowerCase() === code.toLowerCase()
+    )
+    const fallback = DEFAULT_SEASONAL_PROMOS.find(
+      (promo) => promo.promoCode.trim().toLowerCase() === code.toLowerCase() && promo.enabled
+    )
+    if (codeMatches.length > 1) {
+      promoMessage.value = 'This code is assigned to multiple campaigns. Please contact Reunion support.'
+      calculateTotalPrice()
+      return
+    }
+    const match = codeMatches[0]
+    if (!match && !fallback) {
+      promoMessage.value = 'That code is invalid or no longer active.'
+      calculateTotalPrice()
+      return
+    }
+
+    const promo = match
+      ? seasonalPromoFromData(match.id, match.data(), DEFAULT_SEASONAL_PROMOS.find((item) => item.id === match.id))
+      : fallback
+    if (!promo || !promo.enabled) {
+      promoMessage.value = 'That code is invalid or no longer active.'
+      calculateTotalPrice()
+      return
+    }
+
+    const today = reunionToday()
+    if ((promo.startsAt && today < promo.startsAt) || (promo.endsAt && today > promo.endsAt)) {
+      promoMessage.value = 'That promotion is not active today.'
+      calculateTotalPrice()
+      return
+    }
+
+    appliedSeasonalPromo.value = promo
+    const discount = seasonalDiscountAmount(promo)
+    if (promo.promoType !== 'giveaway' && discount <= 0) {
+      appliedSeasonalPromo.value = null
+      promoMessage.value = promo.minimumSpend
+        ? `This code requires a minimum purchase of $${promo.minimumSpend.toFixed(2)} CAD.`
+        : 'This code does not apply to the selected items.'
+      calculateTotalPrice()
+      return
+    }
+
+    promoMessage.value =
+      promo.promoType === 'giveaway'
+        ? `${promo.name} giveaway code applied.`
+        : `${promo.name} code applied — $${discount.toFixed(2)} CAD off eligible tickets.`
+    calculateTotalPrice()
+  } catch (error) {
+    console.error('Unable to validate seasonal promotion code:', error)
+    promoMessage.value = 'We could not validate the code. Please try again.'
+    calculateTotalPrice()
+  } finally {
+    isApplyingPromo.value = false
+  }
+}
+
+const revalidateAppliedPromo = async () => {
+  const promo = appliedSeasonalPromo.value
+  if (!promo) return true
+
+  const snapshot = await getDoc(doc(reunion_db, 'seasonal_promos', promo.id))
+  if (!snapshot.exists()) {
+    appliedSeasonalPromo.value = null
+    promoMessage.value = 'This promotion is no longer available. Remove the code and try again.'
+    return false
+  }
+
+  const current = seasonalPromoFromData(
+    snapshot.id,
+    snapshot.data(),
+    DEFAULT_SEASONAL_PROMOS.find((item) => item.id === snapshot.id)
+  )
+  const today = reunionToday()
+  if (
+    !current.enabled ||
+    current.promoCode.trim().toLowerCase() !== promoCodeInput.value.trim().toLowerCase() ||
+    (current.startsAt && today < current.startsAt) ||
+    (current.endsAt && today > current.endsAt)
+  ) {
+    appliedSeasonalPromo.value = null
+    promoMessage.value = 'This promotion is no longer active. Remove the code and try again.'
+    calculateTotalPrice()
+    return false
+  }
+
+  appliedSeasonalPromo.value = current
+  if (current.promoType !== 'giveaway' && seasonalDiscountAmount(current) <= 0) {
+    promoMessage.value = current.minimumSpend
+      ? `This code requires a minimum purchase of $${current.minimumSpend.toFixed(2)} CAD.`
+      : 'This code does not apply to the selected items.'
+    calculateTotalPrice()
+    return false
+  }
+  return true
+}
 
 const validateReferralID = async (referral_id_code) => {
   try {
@@ -197,38 +384,40 @@ const calculateMealTickets = () => {
 }
 
 const calculateTotalPrice = () => {
-  const { weekendPass, dayPass, mealPackage, cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
-  let ticketPrice = 0
-  if (form.value.ticket_type === 'Weekend Pass') {
-    ticketPrice = weekendPass
-  } else if (form.value.ticket_type === 'Day Pass') {
-    ticketPrice = dayPass
+  const totalPrice = getCheckoutFiatTotal()
+  const promo = appliedSeasonalPromo.value
+  const { discount } = getDiscountSummary()
+  if (promo && promo.promoType !== 'giveaway' && seasonalDiscountAmount(promo) <= 0) {
+    promoMessage.value = promo.minimumSpend
+      ? `This code requires a minimum purchase of $${promo.minimumSpend.toFixed(2)} CAD.`
+      : 'This code does not apply to the selected items.'
+  } else if (promo && form.value.payment_type === 'bitcoin' && discount > seasonalDiscountAmount(promo)) {
+    promoMessage.value = `${promo.name} code is valid, but the Bitcoin discount is better. Discounts do not stack.`
+  } else if (promo) {
+    promoMessage.value =
+      promo.promoType === 'giveaway'
+        ? `${promo.name} giveaway code applied.`
+        : `${promo.name} code applied — $${seasonalDiscountAmount(promo).toFixed(2)} CAD off eligible tickets.`
   }
 
-  // Calculate total fiat price
-  let totalPrice = ticketPrice * form.value.ticket_quantity + form.value.meal_packages * mealPackage
-
   if (form.value.payment_type === 'bitcoin') {
-    totalPrice *= 0.75 // Apply 25% discount
+    // The existing Bitcoin offer and seasonal codes do not stack; apply the better discount.
     form.value.total_price = (totalPrice / btcRate.value).toFixed(8) // Store Bitcoin price
-  } else if (form.value.payment_type === 'cash') {
-    const surchargePer =
-      form.value.ticket_type === 'Weekend Pass'
-        ? cashSurchargeWeekend
-        : form.value.ticket_type === 'Day Pass'
-          ? cashSurchargeDayPass
-          : 0
-    totalPrice += surchargePer * form.value.ticket_quantity
-    form.value.total_price = totalPrice // Store fiat price with surcharge
   } else {
-    form.value.total_price = totalPrice // Store fiat price (e-transfer or others)
+    form.value.total_price = totalPrice
   }
 }
 
 const generatePaymentInstructions = () => {
+  const { seasonalDiscount } = getDiscountSummary()
+  const promoInstructions =
+    appliedSeasonalPromo.value && seasonalDiscount > 0
+      ? `<p>Seasonal code <strong>${appliedSeasonalPromo.value.promoCode}</strong> applied: <strong>$${seasonalDiscount.toFixed(2)} CAD</strong> off eligible tickets.</p>`
+      : ''
   if (form.value.payment_type === 'etransfer') {
     paymentInstructions.value =
       `<p>Thank you, <strong>${form.value.fullname}</strong>!</p>` +
+      promoInstructions +
       `<p>Please e-transfer <strong>$${form.value.total_price} CAD</strong> to <strong>humanoidtwo@gmail.com</strong>.</p>` +
       `<p>Important: include this ID code in your e-transfer message: <strong>${form.value.id_code}</strong></p>` +
       `<p><strong>Order Details</strong><br />` +
@@ -238,10 +427,14 @@ const generatePaymentInstructions = () => {
       `Meal Packages: ${form.value.meal_packages}</p>` +
       `<p>Our system automatically checks for e-transfer payments every hour.</p>` +
       `<p>Once payment is received and matched to your ID code, your ticket is delivered automatically by email.</p>` +
-      `<p>If you still want 25% off and need help with Bitcoin setup, <a href='mailto:reunion@festivall.ca'>email reunion@festivall.ca</a> to arrange it.</p>` +
+      `<p>Bitcoin pricing and seasonal offers do not stack; the checkout applies the better available discount. For help, <a href='mailto:reunion@festivall.ca'>email reunion@festivall.ca</a>.</p>` +
       `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
   } else if (form.value.payment_type === 'bitcoin') {
-    paymentInstructions.value = `Pay with BTC Pay Server:\n ${REUNION_FESTIVAL.btcPayServerUrl}&price=${form.value.total_price}&currency=BTC \nYour 25% discount has already been applied.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
+    const discountNote =
+      seasonalDiscount > 0
+        ? `Seasonal promo ${appliedSeasonalPromo.value?.promoCode} applied: $${seasonalDiscount.toFixed(2)} CAD off.`
+        : 'The 25% Bitcoin discount has been applied. Discounts do not stack.'
+    paymentInstructions.value = `Pay with BTC Pay Server:\n ${REUNION_FESTIVAL.btcPayServerUrl}&price=${form.value.total_price}&currency=BTC \n${discountNote}\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}`
   } else if (form.value.payment_type === 'cash') {
     const { cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
     const feeNote =
@@ -250,7 +443,7 @@ const generatePaymentInstructions = () => {
         : form.value.ticket_type === 'Day Pass'
           ? `$${cashSurchargeDayPass} per Day Pass`
           : '$0'
-    paymentInstructions.value = `Please bring $${form.value.total_price} CAD in cash to the front gate.\nAn admin fee (${feeNote}) is included in your total.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nID Code: ${form.value.id_code}`
+    paymentInstructions.value = `Please bring $${form.value.total_price} CAD in cash to the front gate.\n${seasonalDiscount > 0 ? `Seasonal promo ${appliedSeasonalPromo.value?.promoCode} applied: $${seasonalDiscount.toFixed(2)} CAD off eligible tickets.\n` : ''}An admin fee (${feeNote}) is included in your total.\nOrder Details:\nFull Name: ${form.value.fullname}\nTicket Type: ${form.value.ticket_type}\nTicket Quantity: ${form.value.ticket_quantity}\nMeal Packages: ${form.value.meal_packages}\nID Code: ${form.value.id_code}`
   }
 }
 
@@ -309,23 +502,8 @@ const emailPaymentInstructions = async () => {
 const addOrder = async () => {
   try {
     const nowIso = new Date().toISOString()
-    // Compute fiat total (discount applied for bitcoin)
-    const { weekendPass, dayPass, mealPackage, cashSurchargeWeekend, cashSurchargeDayPass } = REUNION_FESTIVAL.pricing
-    let ticketPrice = 0
-    if (form.value.ticket_type === 'Weekend Pass') ticketPrice = weekendPass
-    else if (form.value.ticket_type === 'Day Pass') ticketPrice = dayPass
-    let fiatTotal =
-      ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * mealPackage
-    if (form.value.payment_type === 'bitcoin') fiatTotal = fiatTotal * 0.75
-    else if (form.value.payment_type === 'cash') {
-      const surchargePer =
-        form.value.ticket_type === 'Weekend Pass'
-          ? cashSurchargeWeekend
-          : form.value.ticket_type === 'Day Pass'
-            ? cashSurchargeDayPass
-            : 0
-      fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
-    }
+    const { discount, seasonalDiscount } = getDiscountSummary()
+    const fiatTotal = getCheckoutFiatTotal()
 
     const participantsDocRef = doc(reunion_db, REUNION_FESTIVAL.participantsCollection, form.value.id_code)
 
@@ -344,6 +522,16 @@ const addOrder = async () => {
       meal_packages: Number(form.value.meal_packages || 0),
       meal_tickets_remaining: Number(form.value.meal_tickets_remaining || 0),
       checked_in: !!form.value.checked_in,
+      promo_code: appliedSeasonalPromo.value?.promoCode ?? null,
+      promo_campaign_id: appliedSeasonalPromo.value?.id ?? null,
+      promo_type: appliedSeasonalPromo.value?.promoType ?? null,
+      promo_discount_cad: Number(seasonalDiscount.toFixed(2)),
+      discount_source:
+        form.value.payment_type === 'bitcoin' && discount > seasonalDiscount
+          ? 'bitcoin'
+          : seasonalDiscount > 0
+            ? 'seasonal_promo'
+            : null,
       // Critical scanning history fields for scanners
       entrance_activity_history: [],
       last_entrance_activity: null,
@@ -389,6 +577,7 @@ const addOrder = async () => {
     console.log(`Wrote order to ${REUNION_FESTIVAL.participantsCollection}`)
   } catch (error) {
     console.error('Error writing document:', error)
+    throw error
   }
 }
 
@@ -516,6 +705,23 @@ const submitForm = async () => {
       return
     }
 
+    if (!(await revalidateAppliedPromo())) {
+      alert(promoMessage.value || 'The promotion code is no longer valid.')
+      isSubmitting.value = false
+      return
+    }
+    if (promoCodeInput.value.trim() && !appliedSeasonalPromo.value) {
+      alert('Apply the entered promotion code before submitting your ticket order.')
+      isSubmitting.value = false
+      return
+    }
+
+    if (form.value.payment_type === 'bitcoin' && (!Number.isFinite(btcRate.value) || btcRate.value <= 0)) {
+      alert('The Bitcoin exchange rate is unavailable. Please try again or choose another payment method.')
+      isSubmitting.value = false
+      return
+    }
+
     if (!form.value.id_code) {
       form.value.id_code_long = uuidv4()
       form.value.id_code = form.value.id_code_long.slice(0, 5)
@@ -523,11 +729,11 @@ const submitForm = async () => {
     calculateTotalPrice()
     calculateMealTickets()
     generatePaymentInstructions()
-    await textPaymentInstructions()
-    await emailPaymentInstructions()
 
     // Write to database FIRST
     await addOrder()
+    await textPaymentInstructions()
+    await emailPaymentInstructions()
 
     // Only send Slack notification AFTER successful database write
     // Calculate display prices for Slack notification
@@ -535,24 +741,7 @@ const submitForm = async () => {
     if (form.value.payment_type === 'bitcoin') {
       displayPrice = `:bitcoin: ${form.value.total_price} BTC`
     } else {
-      // For cash/etransfer, compute fiat total from config pricing
-      const { weekendPass: wp, dayPass: dp, mealPackage: mp, cashSurchargeWeekend: csw, cashSurchargeDayPass: csd } = REUNION_FESTIVAL.pricing
-      let ticketPrice = 0
-      if (form.value.ticket_type === 'Weekend Pass') ticketPrice = wp
-      else if (form.value.ticket_type === 'Day Pass') ticketPrice = dp
-      let fiatTotal =
-        ticketPrice * (form.value.ticket_quantity || 0) + (form.value.meal_packages || 0) * mp
-
-      if (form.value.payment_type === 'cash') {
-        const surchargePer =
-          form.value.ticket_type === 'Weekend Pass'
-            ? csw
-            : form.value.ticket_type === 'Day Pass'
-              ? csd
-              : 0
-        fiatTotal += surchargePer * (form.value.ticket_quantity || 0)
-      }
-      displayPrice = `:moneybag: $${fiatTotal}`
+      displayPrice = `:moneybag: $${getCheckoutFiatTotal()} CAD`
     }
 
     const response = await axios.post(
@@ -567,10 +756,11 @@ const submitForm = async () => {
       }
     )
     if (response.status === 200) {
+      const fiatOrderTotal = getCheckoutFiatTotal()
       // Track successful ticket purchase
       logEvent(reunion_analytics, 'purchase', {
         transaction_id: form.value.id_code,
-        value: form.value.total_price,
+        value: fiatOrderTotal,
         currency: 'CAD',
         items: [
           {
@@ -578,7 +768,7 @@ const submitForm = async () => {
             item_name: form.value.ticket_type,
             item_category: 'ticket',
             quantity: form.value.ticket_quantity,
-            price: form.value.total_price
+            price: fiatOrderTotal
           }
         ],
         payment_type: form.value.payment_type
@@ -586,7 +776,7 @@ const submitForm = async () => {
       // Track successful ticket purchase with Facebook Pixel
       if (typeof fbq !== 'undefined') {
         fbq('track', 'Purchase', {
-          value: form.value.total_price,
+          value: fiatOrderTotal,
           currency: 'CAD',
           content_name: form.value.ticket_type,
           content_category: 'Ticket',
@@ -601,6 +791,9 @@ const submitForm = async () => {
 
       // Store timestamp for rate limiting
       localStorage.setItem('lastTicketSubmission', Date.now().toString())
+      appliedSeasonalPromo.value = null
+      promoCodeInput.value = ''
+      promoMessage.value = ''
 
       form.value = {
         id_code_long: '',
@@ -731,6 +924,9 @@ onMounted(() => {
     console.log('Prefilled referral_id_code:', id_code)
   } else {
     console.log('No referral ID_CODE provided in the URL.')
+  }
+  if (typeof route.query.promo === 'string') {
+    promoCodeInput.value = route.query.promo
   }
 })
 </script>
@@ -872,6 +1068,24 @@ onMounted(() => {
             @blur="validateReferralID(form.referral_id_code)"
           />
         </div>
+        <div class="form-section promo-code-section">
+          <label for="seasonal_promo_code">Seasonal promo code:</label>
+          <div class="promo-code-controls">
+            <input
+              id="seasonal_promo_code"
+              v-model="promoCodeInput"
+              type="text"
+              maxlength="40"
+              autocomplete="off"
+              placeholder="Enter your promo code"
+              @input="appliedSeasonalPromo = null; promoMessage = ''; calculateTotalPrice()"
+            />
+            <button type="button" :disabled="isApplyingPromo" @click="applyPromoCode">
+              {{ isApplyingPromo ? 'Checking…' : appliedSeasonalPromo ? 'Update code' : 'Apply code' }}
+            </button>
+          </div>
+        </div>
+        <p v-if="promoMessage" class="promo-message" role="status">{{ promoMessage }}</p>
         <div class="form-section">
           <label for="name">Full Name:</label>
           <input
@@ -966,17 +1180,29 @@ onMounted(() => {
         <div class="total">
           <div v-if="form.payment_type === 'etransfer'">
             Total Fiat Price: ${{ form.total_price }} CAD<br />
-            <span v-if="form.payment_type === 'etransfer'" class="bitcoin">
-              (You could save ${{ (form.total_price * 0.25).toFixed(2) }} CAD by paying with
-              Bitcoin)
+            <span v-if="bitcoinAdditionalSavings > 0" class="bitcoin">
+              (You could save an additional ${{ bitcoinAdditionalSavings.toFixed(2) }} CAD by paying
+              with Bitcoin)
               <br />
               <a class="highlight" href="https://festivall.ca/bitcoinmeetup">Click here</a> to book
               a free workshop with us.
             </span>
           </div>
           <div v-else-if="form.payment_type === 'bitcoin'">
-            Total Price: {{ form.total_price }} BTC (25% Discount Applied)
+            Total Price: {{ form.total_price }} BTC
+            ({{ appliedSeasonalPromo && getDiscountSummary().seasonalDiscount > 0
+              ? 'best available discount applied; discounts do not stack'
+              : '25% Bitcoin discount applied' }})
           </div>
+          <div v-else-if="form.payment_type === 'cash'">
+            Total Cash Price: ${{ form.total_price }} CAD
+          </div>
+          <p v-if="appliedSeasonalPromo && getDiscountSummary().seasonalDiscount > 0">
+            Seasonal code discount: ${{ getDiscountSummary().seasonalDiscount.toFixed(2) }} CAD
+          </p>
+          <p v-else-if="appliedSeasonalPromo && form.payment_type === 'bitcoin'">
+            Bitcoin pricing already gives a greater discount; seasonal offers cannot be combined.
+          </p>
         </div>
         <button type="submit" :disabled="isSubmitting">
           {{ isSubmitting ? 'PROCESSING...' : 'CONFIRM' }}
@@ -1068,6 +1294,46 @@ select {
   padding: 5px;
   margin: 5px;
 }
+
+.promo-code-section label {
+  height: auto;
+}
+
+.promo-code-controls {
+  display: flex;
+  width: 67%;
+  align-items: center;
+  gap: 8px;
+}
+
+.promo-code-controls input {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+  margin-left: 0;
+  border-radius: 0 15px 15px 0;
+}
+
+.promo-code-controls button {
+  width: auto;
+  min-width: 105px;
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--reunion-frog-green);
+  color: white;
+  -webkit-text-fill-color: white;
+}
+
+.promo-code-controls button:disabled {
+  background: #ccc;
+}
+
+.promo-message {
+  margin: 4px 0 12px;
+  color: var(--reunion-frog-green);
+  font-weight: 700;
+}
+
 button {
   background-color: white;
   color: black; /* Explicit text color for iOS Safari */
@@ -1119,6 +1385,10 @@ button:disabled:hover {
   .form-section {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .promo-code-controls {
+    width: 100%;
   }
 
   label {

@@ -24,6 +24,7 @@ import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import dotenv from 'dotenv'
+import { REUNION_FESTIVAL } from '../src/config/festivalConfig.js'
 
 dotenv.config()
 
@@ -31,11 +32,12 @@ dotenv.config()
 // Configuration — adjust these if needed
 // ---------------------------------------------------------------------------
 const SUBJECT_KEYWORD = "You've received"  // matches auto-deposit: "You've received $X from [NAME] and it has been automatically deposited."
-const GMAIL_LABEL = 'Processed_2026'
-const REVIEW_LABEL = 'Review_2026'
-const FIREBASE_COLLECTION = 'participants_2026'
+const FESTIVAL_YEAR = REUNION_FESTIVAL.year
+const GMAIL_LABEL = `Processed_${FESTIVAL_YEAR}`
+const REVIEW_LABEL = `Review_${FESTIVAL_YEAR}`
+const FIREBASE_COLLECTION = REUNION_FESTIVAL.collections.participants
 const RELAY_BASE = 'https://relayproxy.vercel.app'
-const TICKET_EMAIL_SUBJECT = 'Reunion 2026'
+const TICKET_EMAIL_SUBJECT = `Reunion ${FESTIVAL_YEAR}`
 
 // DRY_RUN: set to true to log matches without writing to Firebase or sending emails.
 // DATE_FILTER: set to { since, before } (Date objects) to narrow the IMAP search,
@@ -119,11 +121,11 @@ async function sendManualReviewSlack({ uid, reason, from, subject, transferAmoun
 // e.g. vendor fees or other one-off e-transfers with no id_code in the memo.
 async function recordUnmatchedPayment({ uid, reason, from, subject, transferAmount, dryRun }) {
   if (dryRun) {
-    console.log(`[dry-run] Would record unmatched payment UID ${uid} in unmatched_payments_2026 — skipping write`)
+    console.log(`[dry-run] Would record unmatched payment UID ${uid} in unmatched_payments_${FESTIVAL_YEAR} — skipping write`)
     return
   }
   const docId = `uid_${uid}`
-  await setDoc(doc(reunion_db, 'unmatched_payments_2026', docId), {
+  await setDoc(doc(reunion_db, `unmatched_payments_${FESTIVAL_YEAR}`, docId), {
     uid,
     reason,
     from,
@@ -133,7 +135,7 @@ async function recordUnmatchedPayment({ uid, reason, from, subject, transferAmou
     resolved: false,
     recorded_at: new Date().toISOString()
   })
-  console.log(`[firebase] Recorded unmatched payment in unmatched_payments_2026/${docId}`)
+  console.log(`[firebase] Recorded unmatched payment in unmatched_payments_${FESTIVAL_YEAR}/${docId}`)
 }
 
 /**
@@ -221,12 +223,12 @@ async function sendMealConfirmationEmail(email, fullname, id_code, meal_quantity
     `<p>Your payment of <strong>$${fiat_total} CAD</strong> has been received and <strong>${meal_quantity} meal ticket(s)</strong> have been added to your account.</p>` +
     `<p>You can view your updated ticket at:<br><a href="https://festivall.ca/reunionticket">https://festivall.ca/reunionticket</a></p>` +
     `<p>Enter your ID code: <strong>${id_code}</strong></p>` +
-    `<p>See you at Reunion 2026!</p>` +
+    `<p>See you at Reunion ${FESTIVAL_YEAR}!</p>` +
     `<p>The Reunion Team</p>` +
     `<hr><p style="text-align:center;color:#666;">⟢Powered by Festivall⟣</p>`
   await postRelay('/reunion_email', {
     value1: email,
-    value2: 'Reunion 2026 — Meal Tickets Added',
+    value2: `Reunion ${FESTIVAL_YEAR} — Meal Tickets Added`,
     value3: body
   })
 }
