@@ -151,7 +151,8 @@
         </RouterLink>
 
         <RouterLink to="/dashboard/seasonal-promos" class="scanner-link">
-          Seasonal Promotions
+          <img :src="discounts_icon" alt="Seasonal Promotions" class="action-icon" style="width: 28px" />
+          Seasonal Promo
         </RouterLink>
 
         <RouterLink to="/admin/inventory" class="scanner-link">
@@ -972,6 +973,7 @@ import art_installation_icon from '@/assets/images/icons/art_installation.svg'
 import scavenger_hunt_icon from '@/assets/images/icons/quiz.svg'
 import task_icon from '@/assets/images/icons/task_icon.svg'
 import promo_icon from '@/assets/images/icons/promo.svg'
+import discounts_icon from '@/assets/images/icons/discounts.svg'
 import budget_icon from '@/assets/images/icons/budget.svg'
 import inventory_icon from '@/assets/images/icons/inventory.svg'
 import map_icon from '@/assets/images/icons/grounds_map.svg'
@@ -2725,6 +2727,7 @@ export default {
       scavenger_hunt_icon,
       task_icon,
       promo_icon,
+      discounts_icon,
       budget_icon,
       inventory_icon,
       map_icon,
