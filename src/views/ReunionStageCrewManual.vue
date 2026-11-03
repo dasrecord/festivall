@@ -202,7 +202,7 @@ import {
   writeBatch
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import stage_icon from '@/assets/images/icons/stage_crew.png'
+import stage_icon from '@/assets/images/icons/stage_crew.svg'
 import footer from '@/assets/images/poster_footer_v1.png'
 import { useInventory } from '@/composables/useInventory'
 

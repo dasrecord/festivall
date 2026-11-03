@@ -117,13 +117,13 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
-import volunteer_icon from '@/assets/images/icons/volunteer.png'
-import frontgate_icon from '@/assets/images/icons/front_gate.png'
-import foodteam_icon from '@/assets/images/icons/food.png'
-import setup_icon from '@/assets/images/icons/setup_crew.png'
-import stage_icon from '@/assets/images/icons/stage_crew.png'
-import cleanup_icon from '@/assets/images/icons/cleanup_crew.png'
-import arcade_icon from '@/assets/images/icons/arcade.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.svg'
+import frontgate_icon from '@/assets/images/icons/front_gate.svg'
+import foodteam_icon from '@/assets/images/icons/food.svg'
+import setup_icon from '@/assets/images/icons/setup_crew.svg'
+import stage_icon from '@/assets/images/icons/stage_crew.svg'
+import cleanup_icon from '@/assets/images/icons/cleanup_crew.svg'
+import arcade_icon from '@/assets/images/icons/arcade.svg'
 
 const router = useRouter()
 

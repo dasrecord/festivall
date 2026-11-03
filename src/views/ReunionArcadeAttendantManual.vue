@@ -192,7 +192,7 @@ import {
   writeBatch
 } from 'firebase/firestore'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import arcade_icon from '@/assets/images/icons/arcade.png'
+import arcade_icon from '@/assets/images/icons/arcade.svg'
 import footer from '@/assets/images/poster_footer_v1.png'
 import { useInventory } from '@/composables/useInventory'
 

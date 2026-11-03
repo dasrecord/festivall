@@ -202,13 +202,13 @@
 <script setup>
 import frog_image from '@/assets/images/frog.png'
 import reunion_emblem from '../assets/images/reunion_emblem_white.png'
-import setup_crew_icon from '../assets/images/icons/setup_crew.png'
-import stage_crew_icon from '../assets/images/icons/stage_crew.png'
-import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.png'
-import food_team_icon from '../assets/images/icons/meals.png'
-import front_gate_icon from '../assets/images/icons/front_gate.png'
-import arcade_attendant_icon from '../assets/images/icons/arcade.png'
-import location_icon from '../assets/images/icons/location.png'
+import setup_crew_icon from '../assets/images/icons/setup_crew.svg'
+import stage_crew_icon from '../assets/images/icons/stage_crew.svg'
+import cleanup_crew_icon from '../assets/images/icons/cleanup_crew.svg'
+import food_team_icon from '../assets/images/icons/meals.svg'
+import front_gate_icon from '../assets/images/icons/front_gate.svg'
+import arcade_attendant_icon from '../assets/images/icons/arcade.svg'
+import location_icon from '../assets/images/icons/location.svg'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const vsp = REUNION_FESTIVAL.volunteerShiftParams

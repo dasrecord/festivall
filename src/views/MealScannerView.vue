@@ -118,7 +118,7 @@
           Admit:
           <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
             <img
-              src="@/assets/images/icons/ticket.png"
+              src="@/assets/images/icons/ticket.svg"
               alt="Ticket"
               style="width: 24px; height: auto; transform: rotate(-45deg); margin: 5px"
             />
@@ -130,7 +130,7 @@
             <img
               v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
               :key="n"
-              src="@/assets/images/icons/meals.png"
+              src="@/assets/images/icons/meals.svg"
               alt="Meal Ticket"
               style="width: 24px; height: auto; margin: 5px"
             />
@@ -386,7 +386,7 @@
             <img
               v-for="n in parseInt(order.ticket_quantity) || 0"
               :key="n"
-              src="@/assets/images/icons/ticket.png"
+              src="@/assets/images/icons/ticket.svg"
               alt="Meal Ticket"
               style="width: 24px"
             />
@@ -403,7 +403,7 @@
               <img
                 v-for="n in parseInt(order.meal_tickets_remaining)"
                 :key="n"
-                src="@/assets/images/icons/meals.png"
+                src="@/assets/images/icons/meals.svg"
                 alt="Meal Ticket"
                 style="width: 24px"
               />

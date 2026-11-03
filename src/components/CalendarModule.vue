@@ -96,10 +96,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import link_icon from '@/assets/images/icons/link.png'
-import listen_icon from '@/assets/images/icons/mix_track.png'
-import dj_icon from '@/assets/images/icons/dj.png'
-import workshop_icon from '@/assets/images/icons/workshop.png'
+import link_icon from '@/assets/images/icons/link.svg'
+import listen_icon from '@/assets/images/icons/mix_track.svg'
+import dj_icon from '@/assets/images/icons/dj.svg'
+import workshop_icon from '@/assets/images/icons/workshop.svg'
 import { useLineupState } from '@/composables/useLineupState'
 
 const { toggleStar, isStarred } = useLineupState()

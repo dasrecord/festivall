@@ -160,9 +160,9 @@ import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import interact from 'interactjs'
 import { useLineupAdmin } from '@/composables/useLineupAdmin'
 import { reunion_db } from '@/firebase'
-import dj_icon from '@/assets/images/icons/dj.png'
-import workshop_icon from '@/assets/images/icons/workshop.png'
-import headphones_icon from '@/assets/images/icons/headphones.png'
+import dj_icon from '@/assets/images/icons/dj.svg'
+import workshop_icon from '@/assets/images/icons/workshop.svg'
+import headphones_icon from '@/assets/images/icons/headphones.svg'
 
 const props = defineProps({
   events:    { type: Array, required: true },   // day-filtered events

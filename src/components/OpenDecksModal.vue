@@ -75,7 +75,7 @@ import { ref, computed, onMounted } from 'vue'
 import { collection, getDocs, doc, updateDoc, getDoc, query, orderBy, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
-import headphones_icon from '@/assets/images/icons/headphones.png'
+import headphones_icon from '@/assets/images/icons/headphones.svg'
 
 const props = defineProps({
   participantId: { type: String, required: true },

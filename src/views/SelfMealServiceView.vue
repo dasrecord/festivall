@@ -93,7 +93,7 @@
           <img
             v-for="n in participant.meal_tickets_remaining"
             :key="n"
-            src="@/assets/images/icons/meals.png"
+            src="@/assets/images/icons/meals.svg"
             alt="Meal Ticket"
             class="meal-icon"
           />
