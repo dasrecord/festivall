@@ -8,7 +8,7 @@
         alt="Festivall Emblem"
       />
       <img
-        src="@/assets/images/icons/ticket_black.png"
+        src="@/assets/images/icons/ticket_black.svg"
         style="height: 64px; width: auto; margin: 0; filter: invert(1)"
         alt="Attendees Icon"
       />

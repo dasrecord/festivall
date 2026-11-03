@@ -196,7 +196,7 @@
           Admit: <br />
           <span v-for="n in parseInt(matchingOrder.ticket_quantity)" :key="n">
             <img
-              src="@/assets/images/icons/ticket.png"
+              src="@/assets/images/icons/ticket.svg"
               alt="Ticket"
               style="width: 24px; height: auto; transform: rotate(-45deg); margin: 5px"
             />
@@ -208,7 +208,7 @@
             <img
               v-for="n in parseInt(matchingOrder.meal_tickets_remaining) || 0"
               :key="n"
-              src="@/assets/images/icons/meals.png"
+              src="@/assets/images/icons/meals.svg"
               alt="Meal Ticket"
               style="width: 24px; height: auto; margin: 5px"
             />
@@ -397,7 +397,7 @@
             <img
               v-for="n in parseInt(order.ticket_quantity)"
               :key="n"
-              src="@/assets/images/icons/ticket.png"
+              src="@/assets/images/icons/ticket.svg"
               alt="Meal Ticket"
               style="width: 24px"
             />
@@ -422,9 +422,9 @@ import { collection, doc, updateDoc, onSnapshot, getDocs, arrayUnion } from 'fir
 import IconFestivall from '@/components/icons/IconFestivall.vue'
 import { sendReunionFrontGate } from '/scripts/notifications.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
-import artist_icon from '@/assets/images/icons/artist.png'
-import volunteer_icon from '@/assets/images/icons/volunteer.png'
-import workshop_icon from '@/assets/images/icons/workshop.png'
+import artist_icon from '@/assets/images/icons/artist.svg'
+import volunteer_icon from '@/assets/images/icons/volunteer.svg'
+import workshop_icon from '@/assets/images/icons/workshop.svg'
 
 export default {
   components: {

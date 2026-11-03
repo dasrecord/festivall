@@ -164,7 +164,7 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { sendReunionApplications } from '/scripts/notifications.js'
 import catalog from '@/data/visuals_catalog.json'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
-import vectors_icon from '@/assets/images/icons/vectors.png'
+import vectors_icon from '@/assets/images/icons/vectors.svg'
 
 export default {
   name: 'VisualsPickerModal',

@@ -357,9 +357,9 @@ import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { festivall_db } from '@/firebase.js'
 import { collection, getDocs, query, where, doc, setDoc } from 'firebase/firestore'
-import bitcoinIcon from '@/assets/images/icons/bitcoin.png'
-import bullIcon from '@/assets/images/icons/bull.png'
-import whaleIcon from '@/assets/images/icons/whale.png'
+import bitcoinIcon from '@/assets/images/icons/bitcoin.svg'
+import bullIcon from '@/assets/images/icons/bull.svg'
+import whaleIcon from '@/assets/images/icons/whale.svg'
 
 // Sponsor logos
 import zeusLogo from '@/assets/images/bitcoin_block_party/logos/zeus.png'

@@ -129,8 +129,8 @@ import { reunion_db, reunion_storage } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { sendReunionApplications } from '/scripts/notifications.js'
 import festivall_emblem_white from '@/assets/images/festivall_emblem_white.png'
-import dj_icon from '@/assets/images/icons/dj.png'
-import vectors_icon from '@/assets/images/icons/vectors.png'
+import dj_icon from '@/assets/images/icons/dj.svg'
+import vectors_icon from '@/assets/images/icons/vectors.svg'
 
 const MIME_TO_EXT = {
   'image/png': 'png',

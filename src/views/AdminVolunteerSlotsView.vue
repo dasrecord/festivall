@@ -226,13 +226,13 @@ import {
   getDoc
 } from 'firebase/firestore'
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
-import frontgate_icon from '@/assets/images/icons/front_gate.png'
-import foodteam_icon from '@/assets/images/icons/food.png'
-import setupcrew_icon from '@/assets/images/icons/setup_crew.png'
-import stagecrew_icon from '@/assets/images/icons/stage_crew.png'
-import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.png'
-import arcadeattendant_icon from '@/assets/images/icons/arcade.png'
-import location_icon from '@/assets/images/icons/location.png'
+import frontgate_icon from '@/assets/images/icons/front_gate.svg'
+import foodteam_icon from '@/assets/images/icons/food.svg'
+import setupcrew_icon from '@/assets/images/icons/setup_crew.svg'
+import stagecrew_icon from '@/assets/images/icons/stage_crew.svg'
+import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.svg'
+import arcadeattendant_icon from '@/assets/images/icons/arcade.svg'
+import location_icon from '@/assets/images/icons/location.svg'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 export default {

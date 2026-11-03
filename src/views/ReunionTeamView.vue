@@ -5,52 +5,52 @@ import DetailsPanel from '@/components/DetailsPanel.vue'
 import CalltoAction from '@/components/CalltoAction.vue'
 
 import Chris from '@/assets/images/reunion_team/Chris.jpg'
-import land_icon from '@/assets/images/icons/land.png'
+import land_icon from '@/assets/images/icons/land.svg'
 
 import Brandon from '@/assets/images/reunion_team/Brandon.jpg'
-import flame_icon from '@/assets/images/icons/flame.png'
+import flame_icon from '@/assets/images/icons/flame_icon.svg'
 
 import Prasenjit from '@/assets/images/reunion_team/Prasenjit.jpg'
-import devops_icon from '@/assets/images/icons/devops.png'
+import devops_icon from '@/assets/images/icons/devops.svg'
 
 import Cory from '@/assets/images/reunion_team/Cory.jpg'
-import headphones_icon from '@/assets/images/icons/headphones.png'
+import headphones_icon from '@/assets/images/icons/headphones.svg'
 
 import Janicka from '@/assets/images/reunion_team/Janicka.jpg'
-import community_icon from '@/assets/images/icons/community.png'
+import community_icon from '@/assets/images/icons/community.svg'
 
 import Arthur from '@/assets/images/reunion_team/Arthur.jpg'
-import soundtech_icon from '@/assets/images/icons/soundtech.png'
+import soundtech_icon from '@/assets/images/icons/soundtech.svg'
 
 import Christina from '@/assets/images/reunion_team/Christina.jpg'
-import decorations_icon from '@/assets/images/icons/decorations.png'
+import decorations_icon from '@/assets/images/icons/decorations.svg'
 
 import Natalie from '@/assets/images/reunion_team/Natalie.jpg'
-import ethos_icon from '@/assets/images/icons/ethos.png'
+import ethos_icon from '@/assets/images/icons/ethos.svg'
 
 import Nish from '@/assets/images/reunion_team/Nish.jpg'
-import photography_icon from '@/assets/images/icons/photography.png'
+import photography_icon from '@/assets/images/icons/photography.svg'
 
 import Kayla from '@/assets/images/reunion_team/Kayla.jpg'
-import vectors_icon from '@/assets/images/icons/vectors.png'
+import vectors_icon from '@/assets/images/icons/vectors.svg'
 
 import Becca from '@/assets/images/reunion_team/Becca.jpg'
-import graphics_icon from '@/assets/images/icons/graphics.png'
+import graphics_icon from '@/assets/images/icons/graphics.svg'
 
 import Yvo from '@/assets/images/reunion_team/Yvo.jpg'
-import guitartech_icon from '@/assets/images/icons/guitartech.png'
+import guitartech_icon from '@/assets/images/icons/guitartech.svg'
 
 import Angela from '@/assets/images/reunion_team/Angela.jpg'
-import food_icon from '@/assets/images/icons/food.png'
+import food_icon from '@/assets/images/icons/food.svg'
 
 import Andy_and_Alexis from '@/assets/images/reunion_team/Andy_and_Alexis.jpg'
-import playground_icon from '@/assets/images/icons/playground.png'
+import playground_icon from '@/assets/images/icons/playground.svg'
 
 import Caitlin from '@/assets/images/reunion_team/Caitlin.jpg'
-import volunteer_icon from '@/assets/images/icons/volunteer.png'
+import volunteer_icon from '@/assets/images/icons/volunteer.svg'
 
 import Brandon_and_Liam from '@/assets/images/reunion_team/Brandon_and_Liam.jpg'
-import construction_icon from '@/assets/images/icons/construction.png'
+import construction_icon from '@/assets/images/icons/construction.svg'
 
 import reunion_emblem from '@/assets/images/reunion_emblem_white.png'
 import { analyticsMixin } from '@/mixins/analytics.js'
