@@ -1,16 +1,20 @@
 <template>
-  <div class="ticket-page" v-if="order">
+  <div class="ticket-page" :class="{ winter: isOffSeason }" v-if="order">
     <div class="ticket-header">
       <img :src="festivall_emblem_black" style="height: 38px; width: auto" alt="Festivall Emblem" />
       <div class="ticket-title">
-        <h1>Reunion Festival {{ REUNION_FESTIVAL.year }}</h1>
-        <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
-        <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
+        <h1>Reunion Festival {{ isOffSeason ? REUNION_FESTIVAL.dashboardYear : REUNION_FESTIVAL.year }}</h1>
+        <template v-if="!isOffSeason">
+          <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
+          <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
+        </template>
       </div>
       <img :src="frog_image" style="height: 52px; width: 52px" alt="Frog" />
     </div>
 
-    <div class="order-info" :class="{ 'promo-order-info': order.payment_type === 'promo' }">
+    <OffSeasonView v-if="isOffSeason" :order="order" />
+
+    <div v-if="!isOffSeason" class="order-info" :class="{ 'promo-order-info': order.payment_type === 'promo' }">
       <div class="ticket-identity">
         <span class="ticket-name">{{ order.fullname }}</span>
         <span class="ticket-badge" :class="{ 'promo-ticket-badge': order.payment_type === 'promo' }">
@@ -1011,7 +1015,7 @@
       @accepted="onWaiverAccepted"
     />
 
-    <div class="qr-code">
+    <div v-if="!isOffSeason || hasOneOffEventTicket" class="qr-code">
       <canvas ref="qrCanvas"></canvas>
     </div>
 
@@ -1069,6 +1073,7 @@ import VisualsPickerModal from '@/components/VisualsPickerModal.vue'
 import TravelInfoModal from '@/components/TravelInfoModal.vue'
 import OpenDecksModal from '@/components/OpenDecksModal.vue'
 import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
+import OffSeasonView from '@/components/offseason/OffSeasonView.vue'
 import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { useWaiverStatus } from '@/composables/useWaiverStatus'
@@ -1084,12 +1089,32 @@ export default {
     TravelInfoModal,
     OpenDecksModal,
     AttendeeNamingModal,
-    WaiverAcceptanceModal
+    WaiverAcceptanceModal,
+    OffSeasonView
   },
 
   setup() {
     const route = useRoute()
     const router = useRouter()
+
+    // Current-year tickets win; otherwise off-season falls back to last year's participants.
+    const ticketCollection = ref(REUNION_FESTIVAL.collections.participants)
+    const resolveTicketCollection = async (id_code) => {
+      const current = REUNION_FESTIVAL.collections.participants
+      if (!REUNION_FESTIVAL.isOffSeason) return current
+      const found = await getDocs(query(collection(reunion_db, current), where('id_code', '==', id_code)))
+      return found.empty ? REUNION_FESTIVAL.priorYearCollection : current
+    }
+    const isOffSeason = computed(
+      () =>
+        route.query.offseason === '1' ||
+        (REUNION_FESTIVAL.isOffSeason &&
+          ticketCollection.value === REUNION_FESTIVAL.priorYearCollection)
+    )
+    // Off-season QR is only for participants holding a ticket to a one-off event.
+    const hasOneOffEventTicket = computed(
+      () => (order.value?.one_off_event_tickets?.length ?? 0) > 0
+    )
 
     const goToShiftSignup = () => {
       if (order.value?.id_code) {
@@ -1222,7 +1247,7 @@ export default {
         }, { headers: { 'Content-Type': 'application/json' } })
 
         // Firestore update — write as PENDING, no increment yet
-        const participantRef = doc(reunion_db, REUNION_FESTIVAL.collections.participants, order.value.id_code)
+        const participantRef = doc(reunion_db, ticketCollection.value, order.value.id_code)
         const pendingEntry = {
           timestamp: new Date().toISOString(),
           meal_quantity: Number(meal_quantity),
@@ -1295,7 +1320,7 @@ export default {
     const calculateReferralEarnings = async (id_code) => {
       try {
         const referralQuery = query(
-          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
+          collection(reunion_db, ticketCollection.value),
           where('referral.referral_id_code', '==', id_code)
         )
 
@@ -1375,6 +1400,8 @@ export default {
           throw new Error('ID code is undefined')
         }
 
+        ticketCollection.value = await resolveTicketCollection(id_code)
+
         // Security check: require email verification (skip if admin is logged in via Firebase Auth)
         const isAdmin = !!festivall_auth.currentUser
         const storedAuth = sessionStorage.getItem(`verified_${id_code}`)
@@ -1389,7 +1416,7 @@ export default {
 
           // Verify email matches participant contact
           const verificationQuery = query(
-            collection(reunion_db, REUNION_FESTIVAL.collections.participants),
+            collection(reunion_db, ticketCollection.value),
             where('id_code', '==', id_code),
             where('contact.email', '==', email.toLowerCase().trim())
           )
@@ -1407,7 +1434,7 @@ export default {
 
         // Load participant by id_code with real-time listener
         const q = query(
-          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
+          collection(reunion_db, ticketCollection.value),
           where('id_code', '==', id_code)
         )
         
@@ -1469,6 +1496,7 @@ export default {
               meal_redemption_history: p.order?.meal_redemption_history || [],
               pending_meal_purchases: p.order?.pending_meal_purchases || [],
               // Roles & application data
+              one_off_event_tickets: p.one_off_event_tickets || [],
               applicant_types: p.roles?.applicant_types || [],
               payment_type: p.order?.payment_type || '',
               rates: p.application?.data?.rates || '',
@@ -1920,6 +1948,8 @@ export default {
       festivall_emblem_black,
       poster_footer,
       order,
+      isOffSeason,
+      hasOneOffEventTicket,
       qrCanvas,
       referralQrCanvas,
       generateQRCode,
@@ -2031,6 +2061,9 @@ strong {
   max-width: 100vw;
   height: auto;
   /* padding: 1rem 3rem; */
+}
+.ticket-page.winter {
+  background: linear-gradient(180deg, #f6fbff 0%, #dcebf6 100%);
 }
 .ticket-header {
   display: flex;

@@ -35,6 +35,21 @@ export const REUNION_FESTIVAL = {
     },
   },
 
+  // Off-season: prior-year participants see a lighter ticket page between festivals.
+  // override: true/false forces the mode; null follows the dates below.
+  offSeason: {
+    override: null,
+    startsAt: new Date('2026-09-08T00:00:00-06:00'),
+    endsAt: new Date('2027-08-01T00:00:00-06:00'),
+    twitchChannel: 'dasrecord',
+  },
+  get isOffSeason() {
+    const { override, startsAt, endsAt } = this.offSeason
+    if (typeof override === 'boolean') return override
+    const now = Date.now()
+    return now >= startsAt.getTime() && now < endsAt.getTime()
+  },
+
   // Ticket pricing info — update here each year
   pricing: {
     weekendPass: 200,
