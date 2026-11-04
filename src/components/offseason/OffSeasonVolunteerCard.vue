@@ -57,7 +57,7 @@ const goToSignup = () => {
   background: #2f5d7c;
   color: white;
   border: 0;
-  border-radius: 999px;
+  border-radius: 5px;
   padding: 0.4rem 1.1rem;
   font-weight: 700;
   cursor: pointer;

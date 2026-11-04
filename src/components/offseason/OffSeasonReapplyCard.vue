@@ -56,7 +56,7 @@ const fmt = (date) =>
   display: inline-block;
   background: #2f5d7c;
   color: white;
-  border-radius: 999px;
+  border-radius: 5px;
   padding: 0.4rem 1.1rem;
   font-weight: 700;
   text-decoration: none;

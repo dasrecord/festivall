@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import OsIcon from './OsIcon.vue'
 
 const props = defineProps({
   order: { type: Object, required: true }
@@ -53,8 +54,8 @@ const sets = computed(() =>
     </ul>
     <p v-else class="os-sub">No set times were recorded for {{ REUNION_FESTIVAL.dashboardYear }}.</p>
     <p v-if="mixUrl || website" class="links">
-      <a v-if="mixUrl" :href="mixUrl" target="_blank" rel="noopener">🎧 Mix / track</a>
-      <a v-if="website" :href="website" target="_blank" rel="noopener">🌐 Website</a>
+      <a v-if="mixUrl" :href="mixUrl" target="_blank" rel="noopener"><OsIcon name="mix_track" />Mix / track</a>
+      <a v-if="website" :href="website" target="_blank" rel="noopener"><OsIcon name="link" />Website</a>
     </p>
   </section>
 </template>

@@ -299,6 +299,7 @@ export const REUNION_FESTIVAL = {
       mask: { min: 1, max: 3 },
     },
   },
+  insiderTag: 'Backstage Pass',
 }
 
 // Budget targets per category — update each year once planning is confirmed

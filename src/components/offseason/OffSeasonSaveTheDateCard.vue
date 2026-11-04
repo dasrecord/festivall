@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import OsIcon from './OsIcon.vue'
 
 const DAY_MS = 86_400_000
 const daysToGo = computed(() =>
@@ -56,7 +57,7 @@ const downloadIcs = () => {
       <strong>{{ daysToGo }}</strong> day{{ daysToGo === 1 ? '' : 's' }} until Reunion {{ REUNION_FESTIVAL.year }}
     </p>
     <div class="actions">
-      <button type="button" @click="downloadIcs">📅 Add to calendar</button>
+      <button type="button" @click="downloadIcs"><OsIcon name="reminder" />Add to calendar</button>
       <a :href="googleUrl" target="_blank" rel="noopener">Google Calendar ↗</a>
     </div>
   </section>
@@ -78,7 +79,7 @@ const downloadIcs = () => {
   background: #2f5d7c;
   color: white;
   border: 0;
-  border-radius: 999px;
+  border-radius: 5px;
   padding: 0.4rem 1.1rem;
   font-weight: 700;
   cursor: pointer;

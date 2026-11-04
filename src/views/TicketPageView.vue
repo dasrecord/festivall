@@ -3,7 +3,11 @@
     <div class="ticket-header">
       <img :src="festivall_emblem_black" style="height: 38px; width: auto" alt="Festivall Emblem" />
       <div class="ticket-title">
-        <h1>Reunion Festival {{ isOffSeason ? REUNION_FESTIVAL.dashboardYear : REUNION_FESTIVAL.year }}</h1>
+        <h1>
+          Reunion Festival
+          <template v-if="isOffSeason"><OsIcon name="ticket" />{{ REUNION_FESTIVAL.insiderTag }}</template>
+          <template v-else>{{ REUNION_FESTIVAL.year }}</template>
+        </h1>
         <template v-if="!isOffSeason">
           <CountdownTimer v-if="order.ticket_type === 'Weekend Pass'" />
           <CountdownTimer v-if="order.ticket_type === 'Day Pass'" :targetDay="parseInt(order.selected_day.split(',')[1].split(' ')[2].split('t')[0], 10)" />
@@ -1074,6 +1078,7 @@ import TravelInfoModal from '@/components/TravelInfoModal.vue'
 import OpenDecksModal from '@/components/OpenDecksModal.vue'
 import AttendeeNamingModal from '@/components/AttendeeNamingModal.vue'
 import OffSeasonView from '@/components/offseason/OffSeasonView.vue'
+import OsIcon from '@/components/offseason/OsIcon.vue'
 import WaiverAcceptanceModal from '@/components/WaiverAcceptanceModal.vue'
 import { useLineupState } from '@/composables/useLineupState'
 import { useWaiverStatus } from '@/composables/useWaiverStatus'
@@ -1090,7 +1095,8 @@ export default {
     OpenDecksModal,
     AttendeeNamingModal,
     WaiverAcceptanceModal,
-    OffSeasonView
+    OffSeasonView,
+    OsIcon
   },
 
   setup() {

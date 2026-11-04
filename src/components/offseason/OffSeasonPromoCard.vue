@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import OsIcon from './OsIcon.vue'
 import {
   DEFAULT_SEASONAL_PROMOS,
   seasonalPromoFromData,
@@ -78,11 +79,11 @@ const daysLeft = computed(() => {
     <h2>Get your {{ REUNION_FESTIVAL.year }} tickets<template v-if="hasDiscount"> for {{ discountLabel }}</template></h2>
     <p class="os-sub">
       Thanks for being part of Reunion {{ REUNION_FESTIVAL.dashboardYear }}<template v-if="hasDiscount"> — your discount applies automatically</template>.
-      <template v-if="promo.prizeDescription && promo.promoType !== 'discount'">🎁 Every purchase also enters you to win: {{ promo.prizeDescription }}</template>
+      <template v-if="promo.prizeDescription && promo.promoType !== 'discount'"><OsIcon name="bonus" />Every purchase also enters you to win: {{ promo.prizeDescription }}</template>
     </p>
     <div class="row">
       <RouterLink class="cta" :to="ticketsLink" @click="savePrefill">Buy tickets{{ hasDiscount ? ' with discount' : '' }}</RouterLink>
-      <a v-if="flyerLink" class="print-link" :href="flyerLink" target="_blank" rel="noopener">🖨️ Print a flyer</a>
+      <a v-if="flyerLink" class="print-link" :href="flyerLink" target="_blank" rel="noopener"><OsIcon name="flyer" />Print a flyer</a>
     </div>
   </section>
 </template>
@@ -106,7 +107,7 @@ const daysLeft = computed(() => {
 .cta {
   display: inline-block;
   padding: 0.4rem 1.1rem;
-  border-radius: 999px;
+  border-radius: 5px;
   background: white;
   color: #2f5d7c;
   font-weight: 700;
