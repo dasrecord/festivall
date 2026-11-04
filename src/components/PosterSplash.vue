@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import { useBbpSchedule } from '@/composables/useBbpSchedule.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
@@ -62,7 +62,22 @@ function buildSplashLabel(item: ScheduleItem) {
 const { itinerary: liveItinerary } = useBbpSchedule()
 
 // ── Reunion Firestore data ────────────────────────────────────────────────────
-const { signedArtists, signedWorkshops } = useReunionPosterData()
+const { signedArtists: liveArtists, signedWorkshops: liveWorkshops } = useReunionPosterData()
+
+// Mock lineup so the layout can be judged before real artists are signed
+const MOCK_ARTISTS = ['Aurora Drift', 'Das Record', 'Neon Prairie', 'Sub Harmonic', 'Lunar Tide', 'The Wildflowers', 'Kosmic Kid', 'Dusty Bloom', 'Polar Echo', 'Fern & Fox']
+const MOCK_WORKSHOPS = ['Intro to Ableton', 'Fire Safety', 'Sunrise Yoga', 'Synth Basics']
+const usePlaceholders = REUNION_FESTIVAL.poster.usePlaceholders
+const signedArtists = computed(() =>
+  !liveArtists.value.length && usePlaceholders
+    ? MOCK_ARTISTS.map((act_name, i) => ({ id: `mock-a${i}`, act_name }))
+    : liveArtists.value
+)
+const signedWorkshops = computed(() =>
+  !liveWorkshops.value.length && usePlaceholders
+    ? MOCK_WORKSHOPS.map((workshop_title, i) => ({ id: `mock-w${i}`, workshop_title }))
+    : liveWorkshops.value
+)
 const { isAdmin } = useReunionAdmin()
 
 async function exportReunionPoster(format: 'png' | 'pdf' = 'png') {
@@ -316,6 +331,7 @@ onMounted(async () => {
     inlineSvgContent.value = await res.text()
     await nextTick()
     resetTransform()
+    scheduleFit()
   } catch {
     svgLoadError.value = true
     await nextTick()
@@ -323,7 +339,42 @@ onMounted(async () => {
   }
 })
 
+// Grow each reunion text block (in cqw, so it stays resolution-independent)
+// until it just fits its *_area box.
+const reunionInfoEl = ref<HTMLElement | null>(null)
+function fitBlock(box: HTMLElement) {
+  const measure = (box.querySelector('.fit-text') as HTMLElement) || box
+  const cs = getComputedStyle(box)
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+  const innerW = box.clientWidth - padX
+  const fits = () => measure === box
+    ? box.scrollWidth <= box.clientWidth + 0.5 && box.scrollHeight <= box.clientHeight + 0.5
+    : measure.scrollWidth <= innerW * 0.96 && measure.offsetHeight <= box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + 0.5
+  let lo = 0.5, hi = Number(box.dataset.fitMax) || 40
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2
+    box.style.fontSize = `${mid}cqw`
+    if (fits()) lo = mid
+    else hi = mid
+  }
+  box.style.fontSize = `${lo}cqw`
+}
+async function fitAll() {
+  await nextTick()
+  reunionInfoEl.value?.querySelectorAll<HTMLElement>('[data-fit]').forEach(fitBlock)
+}
+let fitRaf = 0
+function scheduleFit() {
+  cancelAnimationFrame(fitRaf)
+  fitRaf = requestAnimationFrame(() => {
+    fitAll()
+    document.fonts?.ready.then(fitAll)
+  })
+}
+watch([signedArtists, signedWorkshops], scheduleFit, { deep: true })
+
 onBeforeUnmount(() => {
+  cancelAnimationFrame(fitRaf)
   if (countdown) clearInterval(countdown)
 })
 </script>
@@ -331,7 +382,7 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <Transition name="poster-fade">
-      <div v-if="visible" class="poster-splash">
+      <div v-if="visible" class="poster-splash" :class="{ 'poster-splash--reunion': props.showReunionInfo }">
         <div
           ref="posterContainer"
           class="poster-container"
@@ -355,9 +406,14 @@ onBeforeUnmount(() => {
             <div v-if="!svgLoadError" class="poster-svg-host" v-html="inlineSvgContent" />
             <!-- Fallback if fetch fails -->
             <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
-            <div v-if="props.showReunionInfo" class="reunion-splash-info" :style="{
+            <div v-if="props.showReunionInfo" ref="reunionInfoEl" class="reunion-splash-info" :style="{
               '--r-primary':           REUNION_FESTIVAL.poster.colorPrimary,
               '--r-accent':            REUNION_FESTIVAL.poster.colorAccent,
+              '--r-pad-title': `${REUNION_FESTIVAL.poster.padding?.title?.y ?? 0}cqw ${REUNION_FESTIVAL.poster.padding?.title?.x ?? 0}cqw`,
+              '--r-pad-date': `${REUNION_FESTIVAL.poster.padding?.date?.y ?? 0}cqw ${REUNION_FESTIVAL.poster.padding?.date?.x ?? 0}cqw`,
+              '--r-pad-year': `${REUNION_FESTIVAL.poster.padding?.year?.y ?? 0}cqw ${REUNION_FESTIVAL.poster.padding?.year?.x ?? 0}cqw`,
+              '--r-pad-artists': `${REUNION_FESTIVAL.poster.padding?.artists?.y ?? 0}cqw ${REUNION_FESTIVAL.poster.padding?.artists?.x ?? 0}cqw`,
+              '--r-pad-workshops': `${REUNION_FESTIVAL.poster.padding?.workshops?.y ?? 0}cqw ${REUNION_FESTIVAL.poster.padding?.workshops?.x ?? 0}cqw`,
               '--r-fs-date-mobile':    REUNION_FESTIVAL.poster.fontSizesMobile.date,
               '--r-fs-year-mobile':    REUNION_FESTIVAL.poster.fontSizesMobile.year,
               '--r-fs-artists-mobile': REUNION_FESTIVAL.poster.fontSizesMobile.artists,
@@ -371,13 +427,14 @@ onBeforeUnmount(() => {
               '--r-fs-pricing-desktop': REUNION_FESTIVAL.poster.fontSizesDesktop.pricing,
               '--r-fs-ages-desktop':   REUNION_FESTIVAL.poster.fontSizesDesktop.ages,
             }">
-              <!-- <div class="reunion-date">{{ reunionDateStr }}</div> -->
-              <!-- <div class="reunion-year">{{ REUNION_FESTIVAL.year }}</div> -->
-              <div class="reunion-artists">
+              <div class="reunion-title" data-fit><span class="fit-text">The Reunion</span></div>
+              <div class="reunion-date" data-fit><span class="fit-text">{{ REUNION_FESTIVAL.dateRangeLabel }}</span></div>
+              <div class="reunion-year" data-fit><span class="fit-text">{{ REUNION_FESTIVAL.year }}</span></div>
+              <div class="reunion-artists" data-fit data-fit-max="6">
                 <span v-for="artist in signedArtists" :key="artist.id" class="reunion-artist-chip">{{ artist.act_name }}</span>
                 <span v-if="!signedArtists.length" class="reunion-placeholder">Artists to be announced</span>
               </div>
-              <div class="reunion-workshops">
+              <div class="reunion-workshops" data-fit data-fit-max="5">
                 <span v-for="ws in signedWorkshops" :key="ws.id" class="reunion-workshop-chip">{{ ws.workshop_title }}</span>
                 <span v-if="!signedWorkshops.length" class="reunion-placeholder">Workshops to be announced</span>
               </div>
@@ -410,7 +467,8 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div class="poster-hint" :class="{ 'poster-hint--bbp': props.showBitcoinBlockPartyInfo }">
+        <div class="poster-hint" :class="{ 'poster-hint--bbp': props.showBitcoinBlockPartyInfo, 'poster-hint--bar': props.showReunionInfo }">
+          <span v-if="props.showReunionInfo" class="poster-hint-progress" :style="{ transform: `scaleX(${Math.max(secondsLeft, 0) / 60})` }"></span>
           <span class="countdown">{{ secondsLeft }}</span>
           <span class="poster-hint-copy">
             <strong v-if="props.hintTitle">{{ props.hintTitle }}</strong>
@@ -457,12 +515,57 @@ onBeforeUnmount(() => {
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quasimoda';
+  src: url('/fonts/Quasimoda-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 .poster-splash {
   position: fixed;
   inset: 0;
   z-index: 9999;
   background: var(--bbp-black);
 }
+
+.poster-splash--reunion { --hint-h: 2.5rem; }
+.poster-splash--reunion .poster-container { bottom: var(--hint-h); }
 
 .poster-container {
   position: absolute;
@@ -491,8 +594,8 @@ onBeforeUnmount(() => {
   position: absolute;
   left: 0;
   top: 0;
-  width: min(100vw, calc(100dvh * 792 / 1224));
-  height: min(100dvh, calc(100vw * 1224 / 792));
+  width: min(100vw, calc((100dvh - var(--hint-h, 0px)) * 792 / 1224));
+  height: min(100dvh - var(--hint-h, 0px), calc(100vw * 1224 / 792));
   container-type: inline-size;
 }
 
@@ -502,109 +605,93 @@ onBeforeUnmount(() => {
   inset: 0;
   pointer-events: none;
   color: var(--r-primary);
-  font-family: 'Organda MN', sans-serif;
+  font-family: 'Quasimoda', 'Organda MN', sans-serif;
 }
 
-/* Date — rect x=260.266 y=179.585 w=432.216 h=62.641 (viewBox 948×1698) */
-.reunion-date {
+/* Boxes mirror the SVG's *_area groups (792 × 1224 viewBox); JS fits font-size to each box */
+.fit-text { white-space: nowrap; line-height: 1; }
+.reunion-title {
+  box-sizing: border-box;
+  padding: var(--r-pad-title, 0);
   position: absolute;
-  left: 27.45%; top: 10.57%; width: 45.59%; height: 3.69%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--r-fs-date-mobile);
-  font-weight: 700;
+  left: 0; top: 0; width: 100%; height: 15.37%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9cqw;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--r-primary);
+  overflow: hidden;
+}
+.reunion-date {
+  box-sizing: border-box;
+  padding: var(--r-pad-date, 0);
+  position: absolute;
+  left: 0; top: 15.37%; width: 100%; height: 7.84%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4.6cqw;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--r-primary);
   overflow: hidden;
 }
-
-@media (min-width: 768px) {
-  .reunion-date {
-    font-size: var(--r-fs-date-desktop);
-  }
-}
-
-/* Year — polygon bounds x=365–583 y=242–316 */
 .reunion-year {
+  box-sizing: border-box;
+  padding: var(--r-pad-year, 0);
   position: absolute;
-  left: 38.51%; top: 14.26%; width: 22.97%; height: 4.34%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--r-fs-year-mobile);
-  font-weight: 900;
+  left: 0; top: 23.21%; width: 100%; height: 12.08%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11cqw;
+  font-weight: 300;
   letter-spacing: 0.06em;
   color: var(--r-primary);
   overflow: hidden;
 }
-
-@media (min-width: 768px) {
-  .reunion-year {
-    font-size: var(--r-fs-year-desktop);
-  }
-}
-
-/* Artists — x=64.594 y=232.308 w=662.811 h=182.176 (viewBox 792×1224) */
 .reunion-artists {
+  box-sizing: border-box;
+  padding: var(--r-pad-artists, 0);
   position: absolute;
-  left: 8.16%; top: 18.98%; width: 83.69%; height: 14.89%;
+  left: 0; top: 35.29%; width: 100%; height: 21.51%;
   display: flex;
   flex-wrap: wrap;
   align-content: space-around;
   justify-content: center;
-  gap: 0rem 0rem;
   overflow: hidden;
-  padding: 0.25rem 0;
 }
 .reunion-artist-chip {
-  font-size: var(--r-fs-artists-mobile);
+  font-size: inherit;
   font-weight: 700;
-  line-height: 0.8;
+  line-height: 1;
   letter-spacing: 0.1em;
-  font-kerning: normal;
   text-transform: uppercase;
-  color: var(--r-primary);
+  color: var(--r-accent);
   white-space: nowrap;
-}
-
-@media (min-width: 768px) {
-  .reunion-artist-chip {
-    font-size: var(--r-fs-artists-desktop);
-  }
 }
 .reunion-artist-chip + .reunion-artist-chip::before {
   content: '·';
   opacity: 0.75;
 }
-
-/* Workshops — x=64.594 y=414.484 w=662.811 h=72.528 (viewBox 792×1224) */
 .reunion-workshops {
+  box-sizing: border-box;
+  padding: var(--r-pad-workshops, 0);
   position: absolute;
-  left: 8.16%; top: 33.86%; width: 83.69%; height: 5.93%;
+  left: 0; top: 56.8%; width: 100%; height: 20.5%;
   display: flex;
   flex-wrap: wrap;
   align-content: space-evenly;
   justify-content: center;
-  gap: 0.1rem 0.6rem;
+  gap: 0 0.6em;
   overflow: hidden;
-  padding: 0rem 0;
 }
 .reunion-workshop-chip {
-  font-size: var(--r-fs-workshops-mobile);
-  font-weight: 700;
-  line-height: 0.75;
+  font-size: inherit;
+  font-weight: 800;
+  line-height: 1;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--r-accent);
   white-space: nowrap;
-}
-
-@media (min-width: 768px) {
-  .reunion-workshop-chip {
-    font-size: var(--r-fs-workshops-desktop);
-  }
 }
 .reunion-workshop-chip + .reunion-workshop-chip::before {
   content: '·';
@@ -613,15 +700,9 @@ onBeforeUnmount(() => {
 }
 
 .reunion-placeholder {
-  font-size: var(--r-fs-workshops-mobile);
+  font-size: inherit;
   opacity: 0.45;
   font-style: italic;
-}
-
-@media (min-width: 768px) {
-  .reunion-placeholder {
-    font-size: var(--r-fs-workshops-desktop);
-  }
 }
 
 /* Pricing — rect x=127 y=931 w=276 h=149 */
@@ -790,7 +871,7 @@ onBeforeUnmount(() => {
 
 .poster-hint {
   position: fixed;
-  bottom: 15%;
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
@@ -817,6 +898,29 @@ onBeforeUnmount(() => {
   width: min(92vw, 480px);
   white-space: normal;
   box-shadow: 0 12px 40px color-mix(in srgb, var(--bbp-black) 45%, transparent);
+}
+
+.poster-hint--bar {
+  bottom: 0;
+  left: 0;
+  transform: none;
+  width: 100%;
+  height: var(--hint-h, 2.5rem);
+  box-sizing: border-box;
+  justify-content: center;
+  border-radius: 0;
+  padding: 0 1rem;
+  overflow: hidden;
+}
+.poster-hint--bar .poster-hint-copy { flex-direction: row; align-items: center; gap: 0.5rem; }
+.poster-hint-progress {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 3px;
+  background: var(--bbp-white);
+  opacity: 0.6;
+  transform-origin: left;
+  transition: transform 1s linear;
 }
 
 .poster-hint-copy {

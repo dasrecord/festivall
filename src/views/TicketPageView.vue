@@ -911,10 +911,10 @@
           <div
             v-if="REUNION_FESTIVAL.posterSplash.ticketPageEnabled"
             class="poster-tile"
-            @click="activePoster = poster2026"
+            @click="activePoster = poster2027"
           >
             <p>
-              <img :src="poster2026" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
+              <img :src="poster2027" style="height: 32px; width: auto; object-fit: contain" alt="Poster" />
               Poster
             </p>
           </div>
@@ -956,7 +956,7 @@
     <PosterSplash
       v-if="activePoster && REUNION_FESTIVAL.posterSplash.ticketPageEnabled"
       :src="activePoster"
-      :show-reunion-info="activePoster === poster2026"
+      :show-reunion-info="activePoster === poster2027"
       @dismissed="activePoster = null"
     />
 
@@ -1063,7 +1063,7 @@ import cleanupcrew_icon from '@/assets/images/icons/cleanup_crew.svg'
 import arcadeattendant_icon from '@/assets/images/icons/arcade.svg'
 import task_icon from '@/assets/images/icons/task_icon.svg'
 import bitcoin_icon from '@/assets/images/bitcoin.svg?url'
-import poster2026 from '@/assets/images/reunion_2026_poster_v2.svg?url'
+import poster2027 from '@/assets/images/reunion_2027_poster_v1.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import CountdownTimer from '@/components/CountdownTimer.vue'
@@ -1497,6 +1497,7 @@ export default {
               pending_meal_purchases: p.order?.pending_meal_purchases || [],
               // Roles & application data
               one_off_event_tickets: p.one_off_event_tickets || [],
+              scavenger_hunt: p.scavenger_hunt || null,
               applicant_types: p.roles?.applicant_types || [],
               payment_type: p.order?.payment_type || '',
               rates: p.application?.data?.rates || '',
@@ -2026,7 +2027,7 @@ export default {
       teamIcons,
       task_icon,
       activePoster,
-      poster2026,
+      poster2027,
       poster2025,
       poster2024,
     }

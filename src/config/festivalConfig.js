@@ -27,11 +27,12 @@ export const REUNION_FESTIVAL = {
 
   promotions: {
     seasonal: {
-      startsAt: new Date('2026-10-30T00:00:00-06:00'),
-      endsAt: new Date('2026-12-31T23:59:59-06:00'),
+      startsAt: new Date('2026-11-03T00:00:00-06:00'),
+      endsAt: new Date('2026-12-25T23:59:59-06:00'),
     },
     promoCodes: {
       FAMILYFRIENDLY27: { discountPercent: 25 },
+      MERRY27: { discountPercent: 25 },
     },
   },
 
@@ -40,7 +41,7 @@ export const REUNION_FESTIVAL = {
   offSeason: {
     override: null,
     startsAt: new Date('2026-09-08T00:00:00-06:00'),
-    endsAt: new Date('2027-08-01T00:00:00-06:00'),
+    endsAt: new Date('2027-01-01T00:00:00-06:00'),
     twitchChannel: 'dasrecord',
   },
   get isOffSeason() {
@@ -69,9 +70,20 @@ export const REUNION_FESTIVAL = {
 
   // Poster splash overlay colors — edit these two hexes to restyle the overlay
   poster: {
-    colorPrimary: '#aa3a24',   // artist names, pricing values, year
-    colorAccent:  '#092442',   // workshops, labels, dividers
+    usePlaceholders: true,   // show mock artists/workshops when none are signed yet
+    colorPrimary: '#000a59',   // artist names, pricing values, year (2027 art: deep navy)
+    colorAccent:  '#ffffff',   // workshops, labels, dividers (2027 art: deep violet)
     
+    // Inner padding of each poster text box, in % of poster width ({ x: left/right, y: top/bottom }).
+    // Text is auto-fitted to the space left inside the padding.
+    padding: {
+      title:     { x: 2, y: 0 },
+      date:      { x: 2, y: 0 },
+      year:      { x: 2, y: 0 },
+      artists:   { x: 4, y: 1 },
+      workshops: { x: 4, y: 1 },
+    },
+
     // Mobile font sizes (screens < 768px)
     fontSizesMobile: {
       date:      '0.8rem',
@@ -110,7 +122,7 @@ export const REUNION_FESTIVAL = {
       month: 'short',
       timeZone: 'America/Regina',
     })
-    return `${monthName} ${this.day}–${this.endDay}, ${this.year}`
+    return `${monthName} ${this.day}–${this.endDay}`
   },
 
   // Firestore collection names
@@ -173,16 +185,16 @@ export const REUNION_FESTIVAL = {
   },
 
   applicationPhases: {
-    artistApplicationsOpen: new Date('2026-01-01T00:00:00-06:00'),
-    artistApplicationsClose: new Date('2026-07-20T23:59:59-06:00'),
-    vendorApplicationsClose: new Date('2026-08-15T23:59:59-06:00'),
+    artistApplicationsOpen: new Date('2027-01-01T00:00:00-06:00'),
+    artistApplicationsClose: new Date('2027-05-31T23:59:59-06:00'),
+    vendorApplicationsClose: new Date('2027-06-30T23:59:59-06:00'),
   },
 
   // Volunteer team reveal phases — controls which teams appear in the application form
   volunteerPhases: {
-    phase1Start: new Date('2026-08-24T12:00:00-06:00'), // Setup Crew begins
-    phase1End: new Date('2026-06-15T23:59:59Z'),  // Phase 1: Setup Crew only
-    phase2End: new Date('2026-07-01T23:59:59Z'),  // Phase 2: Setup + Front Gate + Food Team + Arcade Attendant
+    phase1Start: new Date('2027-08-24T12:00:00-06:00'), // Setup Crew begins
+    phase1End: new Date('2027-03-15T23:59:59-06:00'),  // Phase 1: Setup Crew only (Jan 1 open)
+    phase2End: new Date('2027-04-30T23:59:59-06:00'),  // Phase 2: Setup + Front Gate + Food Team + Arcade Attendant
     // Phase 3: All teams visible after phase2End
   },
 

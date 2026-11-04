@@ -2,12 +2,18 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { reunion_db } from '@/firebase'
+import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import {
   DEFAULT_SEASONAL_PROMOS,
   seasonalPromoFromData,
-  seasonalPromoPath,
   type SeasonalPromo
 } from '@/config/seasonalPromos'
+
+const props = defineProps<{ order?: { id_code?: string; fullname?: string; email?: string; phone?: string } }>()
+const savePrefill = () => {
+  const { fullname, email, phone } = props.order ?? {}
+  sessionStorage.setItem('reunion_ticket_prefill', JSON.stringify({ fullname, email, phone }))
+}
 
 const promos = ref<SeasonalPromo[]>(DEFAULT_SEASONAL_PROMOS)
 
@@ -48,6 +54,15 @@ const discountLabel = computed(() => {
     ? `${promo.value.discountValue}% off`
     : `$${promo.value.discountValue} CAD off`
 })
+const ticketsLink = computed(() => ({
+  path: '/reuniontickets',
+  query: promo.value?.promoCode && hasDiscount.value ? { promo: promo.value.promoCode } : {}
+}))
+const flyerLink = computed(() => {
+  if (!promo.value?.promoCode || !hasDiscount.value || !props.order?.id_code) return ''
+  const params = new URLSearchParams({ ref: props.order.id_code, promo: promo.value.promoCode })
+  return `/reunion-2026-flyer.html?${params.toString()}`
+})
 const daysLeft = computed(() => {
   if (!promo.value?.endsAt) return null
   const ms = new Date(`${promo.value.endsAt}T23:59:59`).getTime() - Date.now()
@@ -57,17 +72,18 @@ const daysLeft = computed(() => {
 
 <template>
   <section v-if="promo" class="os-card promo-card">
-    <p class="eyebrow">Seasonal promotion</p>
-    <h2>{{ promo.name }}<template v-if="hasDiscount"> · {{ discountLabel }}</template></h2>
-    <p v-if="promo.description" class="os-sub">{{ promo.description }}</p>
-    <p v-if="promo.prizeDescription" class="prize">🎁 {{ promo.prizeDescription }}</p>
-    <p v-if="hasDiscount && promo.promoCode" class="code">
-      Code <strong>{{ promo.promoCode }}</strong>
+    <p class="eyebrow">
+      {{ promo.name }} special<template v-if="daysLeft !== null"> · {{ daysLeft }} day{{ daysLeft === 1 ? '' : 's' }} left</template>
     </p>
-    <p v-if="daysLeft !== null" class="os-sub">
-      {{ daysLeft }} day{{ daysLeft === 1 ? '' : 's' }} left
+    <h2>Get your {{ REUNION_FESTIVAL.year }} tickets<template v-if="hasDiscount"> for {{ discountLabel }}</template></h2>
+    <p class="os-sub">
+      Thanks for being part of Reunion {{ REUNION_FESTIVAL.dashboardYear }}<template v-if="hasDiscount"> — your discount applies automatically</template>.
+      <template v-if="promo.prizeDescription && promo.promoType !== 'discount'">🎁 Every purchase also enters you to win: {{ promo.prizeDescription }}</template>
     </p>
-    <RouterLink class="cta" :to="seasonalPromoPath(promo)">View offer</RouterLink>
+    <div class="row">
+      <RouterLink class="cta" :to="ticketsLink" @click="savePrefill">Buy tickets{{ hasDiscount ? ' with discount' : '' }}</RouterLink>
+      <a v-if="flyerLink" class="print-link" :href="flyerLink" target="_blank" rel="noopener">🖨️ Print a flyer</a>
+    </div>
   </section>
 </template>
 
@@ -76,18 +92,19 @@ const daysLeft = computed(() => {
   background: #2f5d7c;
   border: 1px solid #9cc7e3;
   border-radius: 10px;
-  padding: 0.9rem;
+  padding: 0.7rem 0.8rem;
   color: white;
 }
 .eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; color: #cfe6f5; }
-.os-card h2 { margin: 0.25rem 0 0.5rem; font-size: 1.15rem; }
-.os-sub { margin: 0.25rem 0; color: #e3f0f9; font-size: 0.9rem; }
+.os-card h2 { margin: 0.15rem 0 0.3rem; font-size: 1.05rem; }
+.os-sub { margin: 0 0 0.5rem; color: #e3f0f9; font-size: 0.82rem; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
 .prize { margin: 0.5rem 0; }
 .code { margin: 0.5rem 0; }
 .code strong { background: white; color: #1b2a36; border: 1px dashed #2f5d7c; padding: 2px 10px; border-radius: 6px; letter-spacing: 0.05em; }
+.print-link { color: white; font-size: 0.82rem; text-decoration: underline; }
 .cta {
   display: inline-block;
-  margin-top: 0.5rem;
   padding: 0.4rem 1.1rem;
   border-radius: 999px;
   background: white;

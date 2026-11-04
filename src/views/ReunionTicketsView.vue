@@ -166,7 +166,8 @@ if (typeof prefilledPromoCode === 'string') {
   promoCodeInput.value = prefilledPromoCode
 }
 
-const applyPromoCode = async () => {
+const applyPromoCode = async (options) => {
+  const keepWhenCartEmpty = options?.keepWhenCartEmpty === true
   promoMessage.value = ''
   appliedSeasonalPromo.value = null
   const code = promoCodeInput.value.trim()
@@ -217,6 +218,11 @@ const applyPromoCode = async () => {
 
     appliedSeasonalPromo.value = promo
     const discount = seasonalDiscountAmount(promo)
+    if (keepWhenCartEmpty && promo.promoType !== 'giveaway' && getCartTotals().subtotal === 0) {
+      promoMessage.value = `${promo.name} code applied — your discount shows once you choose tickets.`
+      calculateTotalPrice()
+      return
+    }
     if (promo.promoType !== 'giveaway' && discount <= 0) {
       appliedSeasonalPromo.value = null
       promoMessage.value = promo.minimumSpend
@@ -387,7 +393,9 @@ const calculateTotalPrice = () => {
   const totalPrice = getCheckoutFiatTotal()
   const promo = appliedSeasonalPromo.value
   const { discount } = getDiscountSummary()
-  if (promo && promo.promoType !== 'giveaway' && seasonalDiscountAmount(promo) <= 0) {
+  if (promo && promo.promoType !== 'giveaway' && getCartTotals().subtotal === 0) {
+    promoMessage.value = `${promo.name} code applied — your discount shows once you choose tickets.`
+  } else if (promo && promo.promoType !== 'giveaway' && seasonalDiscountAmount(promo) <= 0) {
     promoMessage.value = promo.minimumSpend
       ? `This code requires a minimum purchase of $${promo.minimumSpend.toFixed(2)} CAD.`
       : 'This code does not apply to the selected items.'
@@ -927,6 +935,21 @@ onMounted(() => {
   }
   if (typeof route.query.promo === 'string') {
     promoCodeInput.value = route.query.promo
+    applyPromoCode({ keepWhenCartEmpty: true })
+  }
+
+  // Contact details handed over from the off-season ticket page
+  try {
+    const stored = sessionStorage.getItem('reunion_ticket_prefill')
+    if (stored) {
+      const { fullname, email, phone } = JSON.parse(stored)
+      if (fullname) form.value.fullname = fullname
+      if (email) form.value.email = email
+      if (phone) form.value.phone = phone
+      sessionStorage.removeItem('reunion_ticket_prefill')
+    }
+  } catch {
+    sessionStorage.removeItem('reunion_ticket_prefill')
   }
 })
 </script>

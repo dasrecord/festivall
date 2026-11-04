@@ -1433,6 +1433,7 @@ export default {
 
     const openReunionPosterSplash = () => {
       sessionStorage.removeItem(`posterSplashShown_${REUNION_FESTIVAL.year}`)
+      sessionStorage.setItem('posterSplashPreview', '1')
     }
 
     const contractEmailBody = ref('')

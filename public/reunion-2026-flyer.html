@@ -730,6 +730,11 @@
     <input type="text" id="genLoc" placeholder="USask Campus" oninput="updateQR()" />
     <span class="hint">e.g. Broadway Café, Downtown Library, Midtown Mall</span>
   </label>
+  <label>
+    Promo Code
+    <input type="text" id="genPromo" maxlength="40" placeholder="FAMILYFRIENDLY27" oninput="updateQR()" />
+    <span class="hint">optional · printed on the flyer and applied at checkout</span>
+  </label>
   <div class="gen-url" id="genUrlDisplay">
     <strong>Generated URL</strong>
     https://festivall.ca/reuniontickets
@@ -800,6 +805,7 @@
       </div>
       <p class="cta-line">Scan to Buy</p>
       <div class="url" id="qrUrlLabel">festivall.ca/reuniontickets</div>
+      <div class="url" id="promoLine" style="display:none;"></div>
     </div>
 
   </div>
@@ -1027,11 +1033,13 @@ const commonLocations = [
   function updateQR() {
     const ref   = document.getElementById('genRef').value.trim();
     const loc   = document.getElementById('genLoc').value.trim();
+    const promo = document.getElementById('genPromo').value.trim();
 
     let path = 'https://festivall.ca/reuniontickets';
     if (ref) path += '/' + ref;
 
     const params = new URLSearchParams();
+    if (promo) params.set('promo', promo);
     params.set('utm_source', 'flyer');
     params.set('utm_medium', 'print');
     params.set('utm_campaign', 'reunion2026');
@@ -1046,6 +1054,9 @@ const commonLocations = [
 
     // Update printed URL label (simple path without parameters)
     document.getElementById('qrUrlLabel').innerHTML = 'festivall.ca/reuniontickets';
+    const promoLine = document.getElementById('promoLine');
+    promoLine.textContent = promo ? 'Use code ' + promo : '';
+    promoLine.style.display = promo ? '' : 'none';
 
     // Update generator URL display
     document.getElementById('genUrlDisplay').innerHTML =
@@ -1236,6 +1247,8 @@ const commonLocations = [
         if (batchRef) path += '/' + batchRef;
         
         const params = new URLSearchParams();
+        const batchPromo = document.getElementById('genPromo').value.trim();
+        if (batchPromo) params.set('promo', batchPromo);
         params.set('utm_source', 'flyer');
         params.set('utm_medium', 'print');
         params.set('utm_campaign', 'reunion2026');
@@ -1247,6 +1260,10 @@ const commonLocations = [
           encodeURIComponent(fullUrl);
         
         frontClone.querySelector('#qrUrlLabel').innerHTML = 'festivall.ca/reuniontickets';
+        const clonePromoLine = frontClone.querySelector('#promoLine');
+        clonePromoLine.textContent = batchPromo ? 'Use code ' + batchPromo : '';
+        clonePromoLine.style.display = batchPromo ? '' : 'none';
+        clonePromoLine.removeAttribute('id');
         
         // Clone back page
         const backClone = originalBack.cloneNode(true);
@@ -1286,6 +1303,16 @@ const commonLocations = [
   } catch (e) {}
 
   initLocations();
+
+  // Prefill from links like ?ref=AB3DE&promo=CODE&loc=Library
+  (function applyQueryParams() {
+    const q = new URLSearchParams(window.location.search);
+    const set = (id, value) => { if (value) document.getElementById(id).value = value; };
+    set('genRef', (q.get('ref') || '').slice(0, 5));
+    set('genPromo', q.get('promo'));
+    set('genLoc', q.get('loc'));
+    updateQR();
+  })();
 </script>
 
 </body>

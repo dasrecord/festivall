@@ -6,7 +6,7 @@ import { useHead } from '@vueuse/head'
 import PosterSplash from './components/PosterSplash.vue'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
-import poster2026 from '@/assets/images/reunion_2026_poster_v2.svg?url'
+import poster2027 from '@/assets/images/reunion_2027_poster_v1.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
 import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
 import bitcoinBlockPartyPoster from '@/assets/images/bitcoin_block_party/bitcoin_block_party_2026_bg.svg?url'
@@ -30,11 +30,14 @@ watch(
   () => route.path,
   (path) => {
     if (POSTER_ROUTES.includes(path)) {
-      const reunionSplashEnabled = path === '/reunion'
+      // The dashboard "Poster Page" link previews the splash even while the config flags are off
+      const preview = sessionStorage.getItem('posterSplashPreview') === '1'
+      if (preview) sessionStorage.removeItem('posterSplashPreview')
+      const reunionSplashEnabled = preview || (path === '/reunion'
         ? REUNION_FESTIVAL.posterSplash.landingPageEnabled
         : path === '/reuniontickets'
           ? REUNION_FESTIVAL.posterSplash.ticketPageEnabled
-          : REUNION_FESTIVAL.posterSplash.applicationPageEnabled
+          : REUNION_FESTIVAL.posterSplash.applicationPageEnabled)
 
       if (!reunionSplashEnabled) {
         showPoster.value = false
@@ -44,7 +47,7 @@ watch(
       }
 
       const shown = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0')
-      posterSrc.value = poster2026
+      posterSrc.value = poster2027
       posterHint.value = ''
       posterHintTitle.value = `REUNION ${REUNION_FESTIVAL.year}`
       posterHintBody.value = 'This year is going to be Iconic'
