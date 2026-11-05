@@ -38,11 +38,13 @@ export default {
         const normalizedIdCode = idCode.value.toLowerCase()
 
         // Check if the ID code exists in REUNION_FESTIVAL.collections.participants
-        const q = query(
-          collection(reunion_db, REUNION_FESTIVAL.collections.participants),
-          where('id_code', '==', normalizedIdCode)
-        )
-        const querySnapshot = await getDocs(q)
+        const findIn = (name) =>
+          getDocs(query(collection(reunion_db, name), where('id_code', '==', normalizedIdCode)))
+        let querySnapshot = await findIn(REUNION_FESTIVAL.collections.participants)
+        // Off-season: prior-year participants (e.g. 2026 artists) use their old codes
+        if (querySnapshot.empty && REUNION_FESTIVAL.isOffSeason) {
+          querySnapshot = await findIn(REUNION_FESTIVAL.priorYearCollection)
+        }
 
         if (!querySnapshot.empty) {
           const participantData = querySnapshot.docs[0].data()
@@ -66,7 +68,8 @@ export default {
           const isInKindParticipant = paymentType === 'inkind' || paymentType === 'In Kind' || (paymentType === '' && hasApplicantTypes)
           const contractSigned = participantData.contract?.signed === true
 
-          if (isInKindParticipant && !contractSigned) {
+          const isPriorYear = querySnapshot.docs[0].ref.parent.id === REUNION_FESTIVAL.priorYearCollection
+          if (isInKindParticipant && !contractSigned && !isPriorYear) {
             router.push({ name: 'ContractPage', params: { id_code: normalizedIdCode } })
           } else {
             router.push({ name: 'TicketPage', params: { id_code: normalizedIdCode } })
