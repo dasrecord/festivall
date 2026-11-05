@@ -14,7 +14,8 @@
     "generate-qrs": "node ./scripts/generate-qrs.js",
     "reunion-analytics": "node ./scripts/reunion-analytics.js",
     "check-etransfer": "node ./scripts/check-etransfer.js",
-    "start-live-bridge": "node ./scripts/live-bridge.js"
+    "start-live-bridge": "node ./scripts/live-bridge.js",
+    "generate-fonts": "node ./scripts/generate-fonts.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
