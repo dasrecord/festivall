@@ -6,6 +6,7 @@ import OsIcon from './OsIcon.vue'
 import OffSeasonPaintPad from './OffSeasonPaintPad.vue'
 import { reunion_db } from '@/firebase.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
+import { createStreamCalendar, formatStreamDate } from '@/utils/streamCalendar.js'
 
 const props = defineProps({
   order: { type: Object, required: true }
@@ -56,6 +57,25 @@ watch(() => props.order.id_code, (idCode, _, onCleanup) => {
 }, { immediate: true })
 
 const channel = REUNION_FESTIVAL.offSeason.twitchChannel
+const stream = REUNION_FESTIVAL.nextStream
+const streamDate = formatStreamDate(stream)
+const calendarError = ref(false)
+
+function downloadStreamCalendar() {
+  try {
+    const contents = createStreamCalendar(stream, channel)
+    const url = URL.createObjectURL(new Blob([contents], { type: 'text/calendar;charset=utf-8' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'festivall-livestream.ics'
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    calendarError.value = false
+  } catch (error) {
+    console.error('Could not create stream calendar event:', error)
+    calendarError.value = true
+  }
+}
 // Twitch requires the embedding hostname as `parent`
 const parent = window.location.hostname
 const playerSrc = computed(
@@ -156,7 +176,15 @@ async function transmit() {
 <template>
   <section class="os-card stream-card">
     <h2><OsIcon name="radio" />FESTIVALL LIVESTREAM</h2>
-    <h1>{{ REUNION_FESTIVAL.streamTitle }}</h1>
+    <h1>{{ stream.title }}</h1>
+    <div class="stream-schedule">
+      <time :datetime="stream.startsAt.toISOString()">{{ streamDate }}</time>
+      <button type="button" class="calendar-button" @click="downloadStreamCalendar">
+        <OsIcon name="reminder" /> Add to calendar
+      </button>
+    </div>
+    <p class="calendar-note">Reminders: 1 day and 4 hours before (calendar app permitting).</p>
+    <p v-if="calendarError" class="calendar-error" role="alert">Couldn’t create the calendar event. Please try again later.</p>
     <div class="player">
       <iframe :src="playerSrc" allowfullscreen title="Festivall live stream"></iframe>
     </div>
@@ -248,6 +276,13 @@ async function transmit() {
   color: #1b2a36;
 }
 .os-card h2 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+.os-card h1 { margin: 0.3rem 0; }
+.stream-schedule { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.8rem; color: #2f5d7c; font-weight: 600; }
+.calendar-button { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.7rem; border: 0; border-radius: 6px; background: #2f5d7c; color: white; font: inherit; font-size: 0.85rem; cursor: pointer; }
+.calendar-button:hover { background: #3b7298; }
+.calendar-button :deep(.os-icon) { width: 18px; height: 18px; margin: 0; }
+.calendar-note { margin: 0.35rem 0 0.65rem; color: #526a7c; font-size: 0.75rem; }
+.calendar-error { color: #a32020; font-size: 0.8rem; }
 .os-sub { margin: 0 0 0.75rem; color: #3d5466; font-size: 0.9rem; }
 .player { position: relative; aspect-ratio: 16 / 9; background: #0f1c26; border-radius: 10px; }
 .player iframe, .chat iframe { width: 100%; height: 100%; border: 0; border-radius: 10px; }

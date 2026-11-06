@@ -77,3 +77,12 @@ sends `badgeNumber` with each shout-out, or `null` when no badge is matched; it
 does not send a duration. TouchDesigner should multiply a matched badge by 10
 seconds and use 5 seconds for an unmatched shout-out. The bridge does not hide
 text on its own. Badge reads in the browser require appropriate Firestore rules.
+
+### Off-season livestream schedule
+
+Update `REUNION_FESTIVAL.nextStream` in `src/config/festivalConfig.js` for each
+stream. Set `startsAt` with the correct UTC offset, `durationMinutes`, `timeZone`
+(an IANA time zone such as `America/Regina`), and the title. The displayed date
+and downloadable calendar event use this schedule and the configured Twitch
+channel. The event includes display reminders one day and four hours before the
+start; calendar apps may handle imported reminders differently.

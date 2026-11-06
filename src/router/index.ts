@@ -255,18 +255,11 @@ const routes = [
     component: DasButtonsView,
     meta: { requiresAuth: true, showHeader: false }
   },
-
   {
-    path: '/nye',
-    name: 'nye',
+    path : '/livestream',
+    name: 'livestream',
     component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/dX5LAsHg' }
-  },
-  {
-    path: '/physicianreceipttracker',
-    name: 'physicianreceipttracker',
-    component: ExternalRedirect,
-    props: { url: 'https://dasrecord.typeform.com/to/s4jrTrXA' }
+    props: { url: 'https://twitch.tv/dasrecord' }
   },
   {
     path: '/placeholder',
