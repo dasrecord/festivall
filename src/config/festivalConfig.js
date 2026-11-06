@@ -300,6 +300,7 @@ export const REUNION_FESTIVAL = {
     },
   },
   insiderTag: 'Backstage Pass',
+  streamTitle: 'Next Stream Featuring Squirrly J [Nov 14, 2026]'
 }
 
 // Budget targets per category — update each year once planning is confirmed

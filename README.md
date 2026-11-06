@@ -44,3 +44,36 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Shout-out badges
+
+The badge sync combines `src/data/badge_history.csv` (2021–2024 aggregate counts)
+with all records in `orders_2025`, `applications_2025`, and `participants_2026`.
+Emails are trimmed and case-normalized, and each later year counts once per email.
+Document IDs are SHA-256 hashes of the normalized emails; plaintext emails are not
+stored in the badge collection. The hashes and ticket IDs are still sensitive data.
+Ticket IDs from the source records are associated with their email's badge. The
+bridge looks up the ID sent with the shout-out to find that badge; it does not
+send the participant's email to TouchDesigner. Historical entries without a ticket
+ID are retained, but cannot be matched to a shout-out until a later sync finds an
+associated source record. A changed email or ticket ID also requires another sync.
+2021–2022 history is incomplete and included where manually known.
+The CSV count must not include 2025 or 2026, which are added from Firestore.
+Records without a valid email are skipped and reported.
+
+With the reunion admin credential in the local `.env`, preview and then update
+the `participant_badges` collection:
+
+```sh
+npm run sync-badges
+npm run sync-badges -- --write
+```
+
+Re-run after source records change. The sync marks no-longer-present badge records
+inactive without deleting them. Protect this collection and the participant data
+with Firestore security rules; email matching and ticket ID codes are not authentication.
+The shout-out panel reads the badge associated with the ticket ID. The live bridge
+sends `badgeNumber` with each shout-out, or `null` when no badge is matched; it
+does not send a duration. TouchDesigner should multiply a matched badge by 10
+seconds and use 5 seconds for an unmatched shout-out. The bridge does not hide
+text on its own. Badge reads in the browser require appropriate Firestore rules.

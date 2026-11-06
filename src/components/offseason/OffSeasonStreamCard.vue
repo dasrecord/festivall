@@ -1,8 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import installedFonts from '@/data/fonts.json'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, query, serverTimestamp, where } from 'firebase/firestore'
 import OsIcon from './OsIcon.vue'
+import OffSeasonPaintPad from './OffSeasonPaintPad.vue'
 import { reunion_db } from '@/firebase.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
@@ -12,6 +13,47 @@ const props = defineProps({
 
 const fullname = computed(() => (props.order.fullname || '').trim())
 const firstName = computed(() => fullname.value.split(/\s+/)[0] || '')
+const badgeNumber = ref(null)
+const badgeStatus = ref('loading')
+
+watch(() => props.order.id_code, (idCode, _, onCleanup) => {
+  badgeNumber.value = null
+  if (typeof idCode !== 'string' || !idCode.trim()) {
+    badgeStatus.value = 'error'
+    console.error('Cannot look up shout-out badge: ticket ID is missing')
+    return
+  }
+  badgeStatus.value = 'loading'
+  const badgeQuery = query(
+    collection(reunion_db, 'participant_badges'),
+    where('idCodes', 'array-contains', idCode.trim())
+  )
+  const unsubscribe = onSnapshot(badgeQuery, (snapshot) => {
+    const active = snapshot.docs.filter((doc) => doc.data().active === true)
+    if (active.length > 1) {
+      console.error('Cannot display shout-out badge: multiple active matches')
+      badgeStatus.value = 'error'
+      return
+    }
+    if (!active.length) {
+      badgeNumber.value = null
+      badgeStatus.value = 'unmatched'
+      return
+    }
+    const badge = active[0].data().badgeNumber
+    if (!Number.isInteger(badge) || badge < 1 || badge > 6) {
+      console.error('Cannot display shout-out badge: invalid badge number')
+      badgeStatus.value = 'error'
+      return
+    }
+    badgeNumber.value = badge
+    badgeStatus.value = 'matched'
+  }, (error) => {
+    console.error('Could not load shout-out badge:', error)
+    badgeStatus.value = 'error'
+  })
+  onCleanup(unsubscribe)
+}, { immediate: true })
 
 const channel = REUNION_FESTIVAL.offSeason.twitchChannel
 // Twitch requires the embedding hostname as `parent`
@@ -113,19 +155,31 @@ async function transmit() {
 
 <template>
   <section class="os-card stream-card">
-    <h2><OsIcon name="radio" />Live from Festivall</h2>
+    <h2><OsIcon name="radio" />FESTIVALL LIVESTREAM</h2>
+    <h1>{{ REUNION_FESTIVAL.streamTitle }}</h1>
     <div class="player">
       <iframe :src="playerSrc" allowfullscreen title="Festivall live stream"></iframe>
     </div>
-    <details class="chat">
+    <details class="chat" open>
       <summary>Chat</summary>
       <iframe :src="chatSrc" title="Stream chat"></iframe>
     </details>
-    <form class="signal" @submit.prevent="transmit">
-      <div class="signal-head">
+    <details class="signal">
+      <summary class="signal-head">
         <span class="dot"></span><span>SEND A LIVE SHOUTOUT</span><span class="sub">appears in the livestream visuals</span>
-      </div>
+      </summary>
+      <form @submit.prevent="transmit">
       <div class="as">Sending as <strong>{{ firstName }}</strong></div>
+      <div class="badge-info" aria-live="polite">
+        <template v-if="badgeStatus === 'matched'">
+          <strong>BADGE {{ badgeNumber }}</strong>
+          <span>Your shout-out lasts {{ badgeNumber * 10 }} seconds</span>
+          <small>Based on {{ badgeNumber }} {{ badgeNumber === 1 ? 'year' : 'years' }} of recorded attendance</small>
+        </template>
+        <span v-else-if="badgeStatus === 'unmatched'">Shout-out duration: 5 seconds</span>
+        <span v-else-if="badgeStatus === 'loading'">Loading your badge…</span>
+        <span v-else class="err">Couldn’t load your badge. Please try again later.</span>
+      </div>
       <div class="opts">
         <div class="opt-row nowrap">
           <span class="opt-label">Font</span>
@@ -176,7 +230,9 @@ async function transmit() {
         <span v-else>&nbsp;</span>
         <span>{{ text.length }}/{{ MAX }}</span>
       </div>
-    </form>
+      </form>
+    </details>
+    <OffSeasonPaintPad :order="order" :color="color" />
     <a class="os-link" :href="`https://www.twitch.tv/${channel}`" target="_blank" rel="noopener">
       Open on Twitch ↗
     </a>
@@ -203,7 +259,11 @@ async function transmit() {
   margin-top: 0.7rem; padding: 0.8rem; border-radius: 10px;
   background: #0b141b; border: 1px solid #1f3646; color: #dbe9f3;
 }
-.signal-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; margin-bottom: 0.6rem; }
+.signal-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; cursor: pointer; list-style: none; }
+.signal-head::-webkit-details-marker { display: none; }
+.signal-head::after { content: '+'; margin-left: auto; font-size: 1.1rem; letter-spacing: 0; color: #3de0ff; }
+.signal[open] .signal-head { margin-bottom: 0.6rem; }
+.signal[open] .signal-head::after { content: '−'; }
 .signal-head .sub { margin-left: auto; letter-spacing: 0.02em; font-weight: 400; color: #6f8ba0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #3de0ff; box-shadow: 0 0 8px #3de0ff; }
 .signal input {
@@ -213,6 +273,9 @@ async function transmit() {
 .signal input:focus { border-color: #3de0ff; }
 .signal .as { font-size: 0.8rem; color: #6f8ba0; }
 .signal .as strong { color: #3de0ff; }
+.badge-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.65rem; margin-top: 0.6rem; color: #dbe9f3; font-size: 0.8rem; }
+.badge-info strong { color: #3de0ff; letter-spacing: 0.1em; }
+.badge-info small { flex-basis: 100%; color: #9fb6c7; }
 .signal .picker { width: 34px; height: 30px; padding: 0; border: 1px solid #1f3646; border-radius: 6px; background: none; cursor: pointer; }
 .signal .hex { width: 6.2rem; padding: 0.3rem 0.5rem; font-family: ui-monospace, monospace; font-size: 0.8rem; }
 .signal .hex.bad { border-color: #ff7a7a; }

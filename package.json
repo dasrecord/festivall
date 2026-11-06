@@ -15,7 +15,8 @@
     "reunion-analytics": "node ./scripts/reunion-analytics.js",
     "check-etransfer": "node ./scripts/check-etransfer.js",
     "start-live-bridge": "node ./scripts/live-bridge.js",
-    "generate-fonts": "node ./scripts/generate-fonts.js"
+    "generate-fonts": "node ./scripts/generate-fonts.js",
+    "sync-badges": "node ./scripts/sync-badges.js"
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
