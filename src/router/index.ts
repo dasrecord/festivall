@@ -7,6 +7,8 @@ import ReunionAmenitiesView from '../views/ReunionAmenitiesView.vue'
 import ReunionFamilyView from '@/views/ReunionFamilyView.vue'
 import SeasonalPromoView from '@/views/SeasonalPromoView.vue'
 import SeasonalPromoAdminView from '@/views/SeasonalPromoAdminView.vue'
+import LabelSheetEditorView from '@/views/LabelSheetEditorView.vue'
+import ReunionTrickOrTreatPosterView from '@/views/ReunionTrickOrTreatPosterView.vue'
 import ReunionTeamView from '@/views/ReunionTeamView.vue'
 import ReunionSoundsystemView from '@/views/ReunionSoundsystemView.vue'
 import ReunionLineupView from '@/views/ReunionLineupView.vue'
@@ -289,6 +291,18 @@ const routes = [
     name: 'reunionfamily',
     component: ReunionFamilyView,
     meta: { showHeader: true }
+  },
+  {
+    path: '/tools/label-editor',
+    name: 'label-sheet-editor',
+    component: LabelSheetEditorView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/reunion-trick-or-treat/poster',
+    name: 'reunion-trick-or-treat-poster',
+    component: ReunionTrickOrTreatPosterView,
+    meta: { showHeader: false }
   },
   {
     path: '/reunion-trick-or-treat',

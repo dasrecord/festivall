@@ -492,6 +492,9 @@ async function copyPromoCode() {
           <a :href="campaign.termsUrl" target="_blank" rel="noopener noreferrer">Read the official promotion terms</a>
         </p>
         <p class="footer-signoff">Made for families. Remembered together.</p>
+        <a class="poster-link" href="/reunion-trick-or-treat/poster">
+          Get the printable poster
+        </a>
       </footer>
     </div>
   </main>
@@ -1086,6 +1089,14 @@ h2 {
 .footer-signoff {
   color: var(--lime);
   letter-spacing: 0.05em;
+}
+
+.poster-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--cream);
+  font-weight: 700;
+  text-underline-offset: 3px;
 }
 
 @media (max-width: 700px) {
