@@ -7,6 +7,7 @@ import { WebSocketServer } from 'ws'
 import 'dotenv/config'
 import { execFileSync } from 'child_process'
 import { makeShoutoutMessage } from './shoutout-message.js'
+import { createReplaySession } from './live-replay.js'
 
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT
 if (!raw) {
@@ -38,22 +39,23 @@ const toTextMsg = (doc) => makeShoutoutMessage(doc, db, FONT_SET)
 
 // Replay the most recent entries to one client: reset, then oldest -> newest
 const BACKLOG = 20
-async function sendBacklog(ws) {
-  try {
-    const snap = await db.collection('live_inputs').orderBy('createdAt', 'desc').limit(BACKLOG).get()
-    const send = (o) => ws.readyState === 1 && ws.send(JSON.stringify(o))
-    const messages = await Promise.all(snap.docs.reverse().map(toTextMsg))
-    send({ type: 'reset' })
-    messages.forEach(send)
-  } catch (e) {
-    console.error('Backlog failed:', e.message)
-  }
+async function loadBacklog() {
+  const snap = await db.collection('live_inputs').orderBy('createdAt', 'desc').limit(BACKLOG).get()
+  return Promise.all(snap.docs.reverse().map(toTextMsg))
 }
+const sessions = new Map()
 wss.on('connection', (ws) => {
-  sendBacklog(ws)
+  const session = createReplaySession(
+    (message) => { if (ws.readyState === 1) ws.send(JSON.stringify(message)) },
+    loadBacklog,
+    (error) => console.error('Backlog failed:', error.message)
+  )
+  sessions.set(ws, session)
+  session.replay()
   ws.on('message', (data) => {
-    if (String(data).trim() === 'refresh') sendBacklog(ws)
+    if (String(data).trim() === 'refresh') session.replay()
   })
+  ws.on('close', () => sessions.delete(ws))
 })
 
 let liveTextQueue = Promise.resolve()
@@ -63,9 +65,9 @@ db.collection('live_inputs')
     snap.docChanges().forEach((c) => {
       if (c.type !== 'added') return
       liveTextQueue = liveTextQueue.then(async () => {
-        const msg = JSON.stringify(await toTextMsg(c.doc))
-        console.log(msg)
-        wss.clients.forEach((ws) => ws.readyState === 1 && ws.send(msg))
+        const msg = await toTextMsg(c.doc)
+        console.log(JSON.stringify(msg))
+        sessions.forEach((session) => session.live(msg))
       }).catch((error) => console.error('Shout-out badge lookup failed:', error.message))
     })
   }, (error) => console.error('Shout-out listener failed:', error.message))

@@ -78,6 +78,21 @@ does not send a duration. TouchDesigner should multiply a matched badge by 10
 seconds and use 5 seconds for an unmatched shout-out. The bridge does not hide
 text on its own. Badge reads in the browser require appropriate Firestore rules.
 
+The bridge marks its backlog messages with `replay: true`; live messages do not
+have that flag. Copy `scripts/touchdesigner-websocket-callbacks.py` into the
+WebSocket callbacks DAT and restart the bridge after updating either side.
+On connection, the callback clears `latest_text` and resets `shoutout_timer`.
+The replay fills `messages` without showing or timing historical shout-outs.
+Live messages update `latest_text` and the timer, then clear the text after
+badge × 10 seconds (or five seconds for an unmatched badge). A newer live
+message replaces the previous one. The `messages` table retains the history,
+so visual output should use `latest_text` or be gated by the timer rather than
+displaying the last table row directly.
+
+To clear saved output when a TouchDesigner project starts even before its
+WebSocket connects, add an Execute DAT with Start enabled and use its `onStart`
+callback to clear `latest_text` and initialize `shoutout_timer`.
+
 ### Off-season livestream schedule
 
 Update `REUNION_FESTIVAL.nextStream` in `src/config/festivalConfig.js` for each
