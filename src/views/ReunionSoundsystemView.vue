@@ -37,13 +37,14 @@ export default {
 <template>
   <div class="basic">
     <CountdownTimer />
-    <img
-      :src="reunion_emblem"
-      alt="reunion"
-      class="reunion-emblem"
-      style="max-width: 600px; height: auto; cursor: pointer"
-      @click="$router.push('/reunion')"
-    />
+    <RouterLink to="/reunion" aria-label="Reunion festival home">
+      <img
+        :src="reunion_emblem"
+        alt="Reunion"
+        class="reunion-emblem"
+        style="max-width: 600px; height: auto"
+      />
+    </RouterLink>
     <h2>Soundsystem <br /></h2>
     <h3>
       Our festival is proud to present a bespoke soundsystem built with highest quality components

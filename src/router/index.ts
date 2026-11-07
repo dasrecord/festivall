@@ -271,19 +271,19 @@ const routes = [
     path: '/reunion',
     name: 'reunion',
     component: ReunionView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/reunionamenities',
     name: 'reunionamenities',
     component: ReunionAmenitiesView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/reunionfamily',
     name: 'reunionfamily',
     component: ReunionFamilyView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/tools/label-editor',
@@ -329,13 +329,13 @@ const routes = [
     path: '/reunionteam',
     name: 'reunionteam',
     component: ReunionTeamView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/reunionsoundsystem',
     name: 'reunionsoundsystem',
     component: ReunionSoundsystemView,
-    meta: { showHeader: true }
+    meta: { showHeader: false }
   },
   {
     path: '/reunionapplication',

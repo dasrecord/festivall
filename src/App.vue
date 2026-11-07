@@ -17,6 +17,17 @@ const STORAGE_KEY = `posterSplashShown_${REUNION_FESTIVAL.year}`
 const BITCOIN_BLOCK_PARTY_STORAGE_KEY = 'bitcoinBlockPartyPosterSplashShown_2026'
 
 const route = useRoute()
+const isReunionRoute = computed(() => route.path.toLowerCase().startsWith('/reunion'))
+const isReunionEditorial = computed(() =>
+  ['reunionamenities', 'reunionfamily', 'reunionteam', 'reunionsoundsystem'].includes(String(route.name))
+)
+const isReunionCrew = computed(() =>
+  ['reunionsetupcrew', 'reunionfoodteam', 'reunionfrontgate', 'reunionstagecrew',
+    'reunioncleanupcrew', 'reunionarcadeattendant', 'reunion-volunteer-signup'].includes(String(route.name))
+)
+const isReunionForm = computed(() =>
+  ['reuniontickets', 'reuniontickets-id', 'reunionapplication', 'reunioncontact'].includes(String(route.name))
+)
 const showPoster = ref(false)
 const posterSrc = ref(poster2025)
 const posterHint = ref(`REUNION ${REUNION_FESTIVAL.year}<br>This year is going to be Iconic`)
@@ -119,7 +130,7 @@ useHead(computed(() => ({
 </script>
 
 <template>
-  <header v-show="$route.meta.showHeader">
+  <header v-show="$route.meta.showHeader" :class="{ 'reunion-site-header': isReunionRoute }">
     <div class="wrapper">
       <!-- <HelloWorld msg="FESTIV-ALL" /> -->
       <a href="/">
@@ -160,7 +171,10 @@ useHead(computed(() => ({
     :show-reunion-info="showReunionInfo"
     @dismissed="onPosterDismissed"
   />
-  <RouterView />
+  <div v-if="isReunionRoute" class="reunion-theme" :class="{ 'reunion-editorial': isReunionEditorial, 'reunion-crew': isReunionCrew, 'reunion-form': isReunionForm }">
+    <RouterView />
+  </div>
+  <RouterView v-else />
 </template>
 
 <style scoped>
@@ -211,6 +225,14 @@ nav a {
 
   border-radius: 5px;
   margin: 1px;
+}
+
+.reunion-site-header {
+  background: var(--reunion-bg);
+}
+
+.reunion-site-header nav a {
+  color: var(--reunion-accent);
 }
 
 @media (min-width: 1024px) {

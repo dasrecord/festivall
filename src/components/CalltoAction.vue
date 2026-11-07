@@ -29,6 +29,13 @@ export default {
       </h1>
     </RouterLink>
 
+    <RouterLink to="/reunionticket" class="link">
+      <h1 class="lineup">
+        <span style="color: white">Need to access your ticket?</span><br />
+        LOGIN HERE
+      </h1>
+    </RouterLink>
+
     <a href="https://instagram.com/reunion_festival">
       <h1 class="">
         <span style="color: white">Need our socials?</span><br />

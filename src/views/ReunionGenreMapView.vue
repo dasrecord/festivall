@@ -4,7 +4,7 @@
 
     <!-- ── Top bar ── -->
     <div class="gm-bar">
-      <RouterLink :to="backLink" class="gm-back">←</RouterLink>
+      <RouterLink :to="backLink" class="gm-back" :aria-label="route.query.id_code ? 'Back to your ticket' : 'Back to Reunion'">←</RouterLink>
       <span class="gm-title">The Sound of Reunion {{ REUNION_FESTIVAL.year }}</span>
 
       <!-- Search -->
@@ -306,10 +306,10 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig'
 
 const route = useRoute()
 
-// Navigate back to ticket page if coming from there, otherwise home
+// Return to the ticket when an ID code is present, otherwise to Reunion.
 const backLink = computed(() => {
   const idCode = route.query.id_code
-  return idCode ? `/reunionticket/${idCode}` : '/'
+  return idCode ? `/reunionticket/${idCode}` : '/reunion'
 })
 
 const INTRO_STORAGE_KEY = `reunion_genre_map_intro_seen_${REUNION_FESTIVAL.year}`

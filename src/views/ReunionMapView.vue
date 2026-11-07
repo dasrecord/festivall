@@ -1947,7 +1947,7 @@ onMounted(async () => {
 
 .map-backdrop {
   width: 100vw;
-  background-color: #000;
+  background-color: var(--reunion-bg);
 }
 
 .map-container {

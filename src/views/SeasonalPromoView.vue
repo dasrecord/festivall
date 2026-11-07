@@ -506,8 +506,8 @@ async function copyPromoCode() {
   min-height: 100vh;
   place-items: center;
   padding: 28px 20px;
-  background: #17231d;
-  color: #fff8ed;
+  background: var(--reunion-bg);
+  color: var(--reunion-text);
   text-align: center;
 }
 
@@ -526,15 +526,15 @@ async function copyPromoCode() {
 }
 
 .promo-unavailable a {
-  color: #d7ed9f;
+  color: var(--reunion-accent);
   font-weight: 700;
 }
 
 .treat-page {
-  --cream: #fff8ed;
-  --ink: #17231d;
-  --green: #405b3b;
-  --lime: #d7ed9f;
+  --cream: var(--reunion-text);
+  --ink: var(--reunion-bg);
+  --green: var(--reunion-surface-raised);
+  --lime: var(--reunion-accent-soft);
   --orange: #f79b50;
   position: relative;
   min-height: 100vh;
@@ -542,7 +542,7 @@ async function copyPromoCode() {
   padding: 28px 20px 36px;
   background:
     radial-gradient(ellipse at 50% 0%, rgba(80, 107, 69, 0.48), transparent 54%),
-    #17231d;
+    var(--reunion-bg);
   color: var(--cream);
   font-family: inherit;
 }
@@ -552,7 +552,7 @@ async function copyPromoCode() {
   --green: #245c4a;
   background:
     radial-gradient(ellipse at 50% 0%, rgba(52, 112, 84, 0.52), transparent 54%),
-    #17231d;
+    var(--reunion-bg);
 }
 
 .page-content {

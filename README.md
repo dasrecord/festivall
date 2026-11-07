@@ -21,6 +21,19 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+### Reunion theme
+
+The shared Reunion palette, fonts, and page-level styles live in
+[`src/assets/reunion-theme.css`](src/assets/reunion-theme.css). The route-scoped
+theme is applied in [`src/App.vue`](src/App.vue); festival dates and pricing
+remain in [`src/config/festivalConfig.js`](src/config/festivalConfig.js).
+Specialized screens can use the `--reunion-*` tokens while retaining their own
+status colors and layout. The homepage's icon categories live in
+[`src/data/reunionIconMarquees.js`](src/data/reunionIconMarquees.js).
+The team marquee and team-page portraits share
+[`src/data/reunionTeam.js`](src/data/reunionTeam.js); keep that roster aligned
+with the active team cards in the team page.
+
 ## Project Setup
 
 ```sh

@@ -223,7 +223,7 @@ onMounted(() => {
 }
 
 h2 {
-  color: var(--reunion-frog-green);
+  color: var(--reunion-accent);
   text-shadow: 0px 0px 5px rgb(255, 255, 255, 0.3);
   margin-bottom: 2rem;
 }
@@ -250,7 +250,7 @@ h2 {
 }
 
 .crew-header h3 {
-  color: var(--reunion-frog-green);
+  color: var(--reunion-accent);
   text-shadow: 0px 0px 5px rgb(255, 255, 255, 0.3);
   margin: 0;
   font-size: 1.2rem;
@@ -280,7 +280,7 @@ h2 {
 }
 
 a {
-  color: var(--reunion-frog-green);
+  color: var(--reunion-accent);
   text-decoration: none;
 }
 

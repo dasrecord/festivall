@@ -1,0 +1,136 @@
+@font-face {
+  font-family: 'Quasimoda Hairline';
+  src: url('/fonts/Quasimoda-HairLine.otf') format('opentype');
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+}
+
+.reunion-theme,
+.reunion-site-header {
+  --reunion-bg: #20271c;
+  --reunion-surface: #303b29;
+  --reunion-surface-raised: #414d34;
+  --reunion-surface-action: #293322;
+  --reunion-hero-glow: #5d6640;
+  --reunion-hero-mid: #353e2b;
+  --reunion-text: #f7f5eb;
+  --reunion-text-muted: #e0dfcd;
+  --reunion-paper: #f7f5eb;
+  --reunion-accent: #d3d5a5;
+  --reunion-accent-muted: #c9cba5;
+  --reunion-accent-soft: #d7d99f;
+  --reunion-accent-hover: #eeefc6;
+  --reunion-gold: #e4c67e;
+  --reunion-border: rgba(232, 229, 198, 0.2);
+  --reunion-border-strong: rgba(232, 229, 198, 0.3);
+  --reunion-glow: rgba(215, 217, 159, 0.12);
+  --reunion-display-font: 'Quasimoda Hairline', 'Helvetica Neue', sans-serif;
+  --reunion-body-font: Arial, sans-serif;
+  --reunion-page-gutter: clamp(1.25rem, 5vw, 5rem);
+}
+
+.reunion-theme {
+  width: 100vw;
+  min-width: 0;
+  min-height: 100vh;
+  background: var(--reunion-bg);
+  color: var(--reunion-text);
+  font-family: var(--reunion-body-font);
+}
+
+.reunion-theme .call-to-action {
+  width: min(100%, 700px);
+  border-color: var(--reunion-border-strong);
+}
+
+.reunion-theme .call-to-action h1,
+.reunion-theme .team-card {
+  border-color: var(--reunion-border-strong);
+  box-shadow: inset 0 0 50px var(--reunion-glow);
+}
+
+.reunion-theme .call-to-action a {
+  color: var(--reunion-accent-soft);
+}
+
+.reunion-theme.reunion-theme > .dark-theme,
+.reunion-crew.reunion-crew > .basic {
+  background-color: var(--reunion-bg);
+}
+
+.reunion-theme.reunion-theme > .dark-theme > .content,
+.reunion-crew.reunion-crew > .basic > .content,
+.reunion-form .application-form {
+  background-color: var(--reunion-surface);
+  border-color: var(--reunion-border-strong);
+}
+
+.reunion-theme > .dark-theme > .content > h1,
+.reunion-theme > .dark-theme > .content > h2,
+.reunion-crew > .basic > h1,
+.reunion-crew > .basic > .content > h1,
+.reunion-form .application-form > h2 {
+  color: var(--reunion-accent);
+  font-family: var(--reunion-display-font);
+  font-weight: 100;
+  letter-spacing: -0.035em;
+}
+
+.reunion-form .application-form {
+  max-width: 1000px;
+}
+
+.reunion-form .application-form input:not([type='checkbox']):not([type='radio']),
+.reunion-form .application-form select,
+.reunion-form .application-form textarea {
+  background-color: var(--reunion-paper);
+  color: var(--reunion-bg);
+}
+
+.reunion-form .application-form :is(input, select, textarea, button):focus-visible,
+.reunion-theme .call-to-action a:focus-visible {
+  outline: 2px solid var(--reunion-gold);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .reunion-theme .call-to-action a:hover {
+    background-color: var(--reunion-glow);
+  }
+}
+
+.reunion-editorial > .basic {
+  padding: clamp(1.5rem, 5vw, 4rem) var(--reunion-page-gutter);
+}
+
+.reunion-editorial > .basic > h2 {
+  margin: 1.5rem 0;
+  color: var(--reunion-accent);
+  font: 100 clamp(2.5rem, 5vw, 5rem)/1 var(--reunion-display-font);
+  letter-spacing: -0.04em;
+}
+
+.reunion-editorial > .basic > h3 {
+  max-width: 850px;
+  color: var(--reunion-text-muted);
+  font: 400 1rem/1.7 var(--reunion-body-font);
+}
+
+.reunion-editorial .basic a {
+  color: var(--reunion-accent);
+}
+
+@media print {
+  .reunion-theme {
+    width: auto;
+    min-height: 0;
+    background: transparent;
+  }
+}
+
+@media (hover: hover) {
+  .reunion-editorial .basic a:hover {
+    background-color: var(--reunion-glow);
+  }
+}

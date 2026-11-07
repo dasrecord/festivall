@@ -33,13 +33,14 @@ export default {
   <div class="basic">
     <CountdownTimer />
     <h1>
-      <img
-        :src="reunion_emblem"
-        alt="reunion"
-        class="reunion-emblem"
-        style="cursor: pointer; max-width: 600px"
-        @click="$router.push('/reunion')"
-      />
+      <RouterLink to="/reunion" aria-label="Reunion festival home">
+        <img
+          :src="reunion_emblem"
+          alt="Reunion"
+          class="reunion-emblem"
+          style="max-width: 600px"
+        />
+      </RouterLink>
       <br />
       <img :src="frogImage" alt="frog" class="frog-image" />
     </h1>

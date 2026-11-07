@@ -1,13 +1,14 @@
 <template>
   <div class="basic">
     <CountdownTimer />
-    <img
-      :src="reunion_emblem"
-      alt="reunion"
-      class="reunion-emblem"
-      style="max-width: 600px; height: auto; cursor: pointer"
-      @click="$router.push('/reunion')"
-    />
+    <RouterLink to="/reunion" aria-label="Reunion festival home">
+      <img
+        :src="reunion_emblem"
+        alt="Reunion"
+        class="reunion-emblem"
+        style="max-width: 600px; height: auto"
+      />
+    </RouterLink>
     <h2>About Our Festival</h2>
     <h3>
       The Reunion is Saskatchewan's only family friendly electronic music festival — and we've built
