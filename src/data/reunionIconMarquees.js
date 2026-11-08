@@ -46,7 +46,7 @@ const categories = [
   },
   {
     title: 'Games & discovery',
-    names: ['arcade', 'target', 'quiz', 'quest', 'riddle', 'cypher', 'sequence', 'thought_bubble']
+    names: ['arcade', 'target', 'quiz', 'quest', 'riddle', 'cypher', 'sequence', ]
   },
   {
     title: 'Festival philosophy',
@@ -121,12 +121,11 @@ const labels = {
   vectors: 'Visuals',
   arcade: 'Arcade',
   target: 'Nerf battle arena',
-  quiz: 'Puzzles',
+  quiz: 'Games',
   quest: 'Scavenger hunt',
   riddle: 'Riddles',
   cypher: 'Cyphers',
   sequence: 'Brain Teasers',
-  thought_bubble: 'Trivia Questions',
   community: 'Community',
   ethos: 'Our principles',
   profit: 'In-house philosophy'
