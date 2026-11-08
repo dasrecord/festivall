@@ -23,16 +23,16 @@ const categories = [
   {
     title: 'Tech features',
     names: [
-      'front_gate', 'grounds_map', 'lineup', 'ticket_scanner',
+      'front_gate', 'grounds_map', 'lineup', 
       'sms', 'radio', 'speakers', 'projector', 'photography', 'genre_map', 'devops',
-      'reminder', 'travel_info', 'budget', 'contract', 'inventory', 'receipt',
+      'reminder',  'budget', 'contract', 'inventory', 'receipt', 'ticket_scanner',
       'discounts', 'task_icon', 'bitcoin', 'mix_track', 'flyer'
     ]
   },
   {
     title: 'Inside your ticket',
     names: [
-      'ticket', 'my_shifts', 'bonus', 'compensation', 'link'
+      'ticket', 'my_shifts', 'bonus', 'compensation', 'link', 'travel_info',
     ]
   },
   {
@@ -80,7 +80,7 @@ const labels = {
   grounds_map: 'Interactive grounds map',
   lineup: 'Customizable schedule',
   ticket_scanner: 'Ticketing system',
-  sms: 'Text notifications',
+  sms: 'SMS notifications',
   radio: 'FM radio broadcast',
   speakers: 'Custom sound system',
   projector: 'Projection mapped visuals',
