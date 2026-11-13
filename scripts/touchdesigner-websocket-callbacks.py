@@ -3,7 +3,7 @@ import re
 
 COLUMNS = ['name', 'message', 'font', 'color', 'fx', 'badgeNumber']
 MAX_MESSAGES = 20
-PAINT_COLUMNS = ['user', 'name', 'color', 'x', 'y', 'end', 'time']
+PAINT_COLUMNS = ['user', 'name', 'color', 'x', 'y', 'end', 'time', 'r', 'g', 'b']
 MAX_PAINT_ROWS = 2000
 PULSE_EXPR = "1 - 0.55 * (0.5 + 0.5 * math.sin(absTime.seconds * 2 * math.pi / 1.6))"
 
@@ -49,6 +49,7 @@ def handle_paint(data):
     color = str(data.get('color', '#ffffff'))
     if not re.fullmatch(r'#[0-9a-fA-F]{6}', color):
         color = '#ffffff'
+    r, g, b = (int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
     points = data.get('points')
     if not isinstance(points, list):
         return
@@ -60,7 +61,8 @@ def handle_paint(data):
             continue
         table.appendRow([
             str(data.get('user', '')), str(data.get('name', '')), color,
-            point[0], point[1], 1 if (data.get('end') is True and i == last) else 0, now
+            point[0], point[1], 1 if (data.get('end') is True and i == last) else 0, now,
+            r, g, b
         ])
     while table.numRows > MAX_PAINT_ROWS + 1:
         table.deleteRow(1)

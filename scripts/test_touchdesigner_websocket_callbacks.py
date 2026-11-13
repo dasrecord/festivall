@@ -112,10 +112,11 @@ class CallbackTests(unittest.TestCase):
         self.callback['onConnect'](None)
         paint = self.network.op('paint_points')
         self.assertIsNotNone(paint)
-        self.assertEqual(paint.rows, [['user', 'name', 'color', 'x', 'y', 'end', 'time']])
+        self.assertEqual(paint.rows, [['user', 'name', 'color', 'x', 'y', 'end', 'time', 'r', 'g', 'b']])
         self.send(type='paint', user='123', name='A', color='#123456',
                   points=[[0.2, 0.3], [0.4, 0.5]], end=True)
-        self.assertEqual(paint.rows[-1], ['123', 'A', '#123456', '0.4', '0.5', '1', '12.5'])
+        self.assertEqual(paint.rows[-1], ['123', 'A', '#123456', '0.4', '0.5', '1', '12.5',
+                          str(0x12 / 255), str(0x34 / 255), str(0x56 / 255)])
         self.callback['onConnect'](None)
         self.assertIs(self.network.op('paint_points'), paint)
         self.assertEqual(len(paint.rows), 3)
