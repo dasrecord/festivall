@@ -95,6 +95,11 @@ The bridge marks its backlog messages with `replay: true`; live messages do not
 have that flag. Copy `scripts/touchdesigner-websocket-callbacks.py` into the
 WebSocket callbacks DAT and restart the bridge after updating either side.
 On connection, the callback clears `latest_text` and resets `shoutout_timer`.
+It also creates a `paint_points` Table DAT alongside the callbacks DAT if one
+doesn't already exist in that component or its parent. The table is initialized
+with `user`, `name`, `color`, `x`, `y`, `end`, and `time` columns; paint points
+arrive only while the bridge is connected and receives authorized paint strokes.
+Existing rows with the expected headers are preserved on reconnect.
 The replay fills `messages` without showing or timing historical shout-outs.
 Live messages update `latest_text` and the timer, then clear the text after
 badge × 10 seconds (or five seconds for an unmatched badge). A newer live

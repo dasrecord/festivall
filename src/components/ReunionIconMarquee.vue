@@ -118,4 +118,8 @@ h3 {
   .marquee-track { animation: none; }
   .marquee-set[aria-hidden='true'] { display: none; }
 }
+
+@media (max-width: 700px) {
+  .marquee-item { padding-top: 1.2rem; padding-bottom: 1.2rem; }
+}
 </style>

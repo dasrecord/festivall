@@ -33,13 +33,13 @@
       <br />
       <div class="links">
         <div class="link">
-          <RouterLink to="dasrecord" @click="trackLinkClick('artist_profile', 'Das Record Profile')"
+          <RouterLink to="/dasrecord" @click="trackLinkClick('artist_profile', 'Das Record Profile')"
             >LEARN MORE ABOUT ME</RouterLink
           >
         </div>
         <div class="link">
           <RouterLink
-            to="testimonials"
+            to="/testimonials"
             @click="trackLinkClick('testimonials', 'Client Testimonials')"
             >READ WHAT OTHERS HAVE TO SAY</RouterLink
           >
@@ -54,10 +54,10 @@
         </div>
       </div>
     </h2>
-    <div @click="trackSpotifyEngagement()">
+    <div class="spotify-player" @click="trackSpotifyEngagement()">
       <iframe
         class="spotify"
-        style="border-radius: 12px"
+        title="Das Record Spotify playlist"
         src="https://open.spotify.com/embed/playlist/2RXN8qyLntleaVvFNxQsQs?utm_source=generator&theme=0"
         width="100%"
         height="352"
@@ -252,8 +252,17 @@ h1,
   border-radius: 15px;
 }
 
+.spotify-player {
+  width: 100%;
+  max-width: 800px;
+  margin: 1.5rem auto;
+}
+
 .spotify {
-  margin-bottom: 0.5rem;
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
 }
 
 .playbills {

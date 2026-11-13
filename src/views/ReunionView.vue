@@ -416,17 +416,17 @@ h1 em, h2 em { color: var(--reunion-accent); font-style: normal; }
 @media (max-width: 700px) {
   .topline { min-height: 76px; }
   .topline-location { display: none; }
-  .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 4rem; }
+  .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 3.5rem; }
   .hero-copy { padding-bottom: 0; }
   h1 { font-size: clamp(4.5rem, 15vw, 7rem); }
-  .hero-art { width: min(100%, 420px); margin: 1rem auto; }
-  .hero-footer { flex-wrap: wrap; justify-content: center; padding: 1.25rem 0; text-align: center; }
+  .hero-art { width: min(100%, 420px); margin: 0.75rem auto; }
+  .hero-footer { flex-wrap: wrap; justify-content: center; padding: 1rem 0; text-align: center; }
   .hero-footer > span:first-child, .hero-footer > span:last-child { display: none; }
-  .marquee-section { padding-top: 5rem; }
-  .section-intro { padding-bottom: 3rem; }
-  .film-section { padding-top: 5rem; padding-bottom: 5rem; }
+  .marquee-section { padding-top: 4rem; }
+  .section-intro { padding-bottom: 2.5rem; }
+  .film-section { padding-top: 4rem; padding-bottom: 4rem; }
   .film-heading { display: block; }
-  .film-heading > p { margin-top: 1.5rem; }
-  .visit-section { grid-template-columns: 1fr; gap: 3rem; padding-top: 5rem; padding-bottom: 5rem; }
+  .film-heading > p { margin-top: 1.25rem; }
+  .visit-section { grid-template-columns: 1fr; gap: 2.5rem; padding-top: 4rem; padding-bottom: 4rem; }
 }
 </style>

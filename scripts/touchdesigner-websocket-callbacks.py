@@ -3,6 +3,8 @@ import re
 
 COLUMNS = ['name', 'message', 'font', 'color', 'fx', 'badgeNumber']
 MAX_MESSAGES = 20
+PAINT_COLUMNS = ['user', 'name', 'color', 'x', 'y', 'end', 'time']
+MAX_PAINT_ROWS = 2000
 PULSE_EXPR = "1 - 0.55 * (0.5 + 0.5 * math.sin(absTime.seconds * 2 * math.pi / 1.6))"
 
 
@@ -34,6 +36,36 @@ def messages_table():
     return table
 
 
+def paint_table():
+    table = find_operator('paint_points', tableDAT)
+    headers = [table[0, col].val for col in range(table.numCols)] if table.numRows else []
+    if headers != PAINT_COLUMNS:
+        table.clear()
+        table.appendRow(PAINT_COLUMNS)
+    return table
+
+
+def handle_paint(data):
+    color = str(data.get('color', '#ffffff'))
+    if not re.fullmatch(r'#[0-9a-fA-F]{6}', color):
+        color = '#ffffff'
+    points = data.get('points')
+    if not isinstance(points, list):
+        return
+    table = paint_table()
+    now = absTime.seconds
+    last = len(points) - 1
+    for i, point in enumerate(points):
+        if not (isinstance(point, list) and len(point) == 2):
+            continue
+        table.appendRow([
+            str(data.get('user', '')), str(data.get('name', '')), color,
+            point[0], point[1], 1 if (data.get('end') is True and i == last) else 0, now
+        ])
+    while table.numRows > MAX_PAINT_ROWS + 1:
+        table.deleteRow(1)
+
+
 def clear_display():
     me.store('shoutout_generation', me.fetch('shoutout_generation', 0) + 1)
     out = find_operator('latest_text')
@@ -46,6 +78,7 @@ def clear_display():
 
 def onConnect(dat: websocketDAT):
     clear_display()
+    paint_table()
     return
 
 
@@ -64,6 +97,9 @@ def onReceiveText(dat: websocketDAT, rowIndex: int, message: str):
         return
     if data.get('type') == 'reset':
         messages_table().clear(keepFirstRow=True)
+        return
+    if data.get('type') == 'paint':
+        handle_paint(data)
         return
     if data.get('type') not in (None, 'text'):
         return

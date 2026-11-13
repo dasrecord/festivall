@@ -8,6 +8,7 @@ import 'dotenv/config'
 import { execFileSync } from 'child_process'
 import { makeShoutoutMessage } from './shoutout-message.js'
 import { createReplaySession } from './live-replay.js'
+import { createShoutoutLimiter } from './shoutout-limiter.js'
 
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT
 if (!raw) {
@@ -58,12 +59,22 @@ wss.on('connection', (ws) => {
   ws.on('close', () => sessions.delete(ws))
 })
 
+const shoutoutLimiter = createShoutoutLimiter()
+setInterval(() => shoutoutLimiter.prune(), 600_000).unref()
+
 let liveTextQueue = Promise.resolve()
 db.collection('live_inputs')
   .where('createdAt', '>', Timestamp.now())
   .onSnapshot((snap) => {
     snap.docChanges().forEach((c) => {
       if (c.type !== 'added') return
+      const idCode = String(c.doc.data().id_code || '').trim()
+      const verdict = idCode ? shoutoutLimiter.check(idCode) : { ok: false, reason: 'no id_code' }
+      if (!verdict.ok) {
+        console.log(`Shout-out ${c.doc.id} dropped (${verdict.reason})`)
+        c.doc.ref.delete().catch(() => {}) // keeps it out of the replay backlog
+        return
+      }
       liveTextQueue = liveTextQueue.then(async () => {
         const msg = await toTextMsg(c.doc)
         console.log(JSON.stringify(msg))

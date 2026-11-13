@@ -62,6 +62,7 @@ class Callback:
 class Network:
     def __init__(self):
         self.table = Table()
+        self.created = {}
         self.output = SimpleNamespace(path='/output', par=SimpleNamespace(text='saved text'))
         self.timer = SimpleNamespace(par=SimpleNamespace(
             initialize=Pulse(), start=Pulse(), length=0
@@ -72,10 +73,15 @@ class Network:
         return {
             'messages': self.table, 'latest_text': self.output,
             'shoutout_timer': self.timer, 'latest_fx': self.flags
-        }.get(name)
+        }.get(name, self.created.get(name))
 
     def parent(self):
         return self
+
+    def create(self, operator_type, name):
+        table = Table()
+        self.created[name] = table
+        return table
 
 
 class CallbackTests(unittest.TestCase):
@@ -85,7 +91,8 @@ class CallbackTests(unittest.TestCase):
         self.scheduled = []
         globals_ = {
             'me': self.me, 'websocketDAT': object, 'tableDAT': object,
-            'constantCHOP': object, 'run': self.schedule
+            'constantCHOP': object, 'run': self.schedule,
+            'absTime': SimpleNamespace(seconds=12.5)
         }
         path = Path(__file__).with_name('touchdesigner-websocket-callbacks.py')
         self.callback = runpy.run_path(str(path), init_globals=globals_)
@@ -100,6 +107,18 @@ class CallbackTests(unittest.TestCase):
 
     def send(self, **data):
         self.callback['onReceiveText'](None, 0, json.dumps(data))
+
+    def test_connect_creates_paint_table_and_reconnect_preserves_points(self):
+        self.callback['onConnect'](None)
+        paint = self.network.op('paint_points')
+        self.assertIsNotNone(paint)
+        self.assertEqual(paint.rows, [['user', 'name', 'color', 'x', 'y', 'end', 'time']])
+        self.send(type='paint', user='123', name='A', color='#123456',
+                  points=[[0.2, 0.3], [0.4, 0.5]], end=True)
+        self.assertEqual(paint.rows[-1], ['123', 'A', '#123456', '0.4', '0.5', '1', '12.5'])
+        self.callback['onConnect'](None)
+        self.assertIs(self.network.op('paint_points'), paint)
+        self.assertEqual(len(paint.rows), 3)
 
     def test_replay_populates_history_without_showing_or_starting_timer(self):
         self.callback['onConnect'](None)
