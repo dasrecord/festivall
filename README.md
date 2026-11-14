@@ -60,6 +60,15 @@ npm run lint
 
 ### Shout-out badges
 
+Live shout-outs and the paint pad are separately enabled supporter features. Set
+`shoutout_access: true` on a participant's ticket for shout-outs and
+`paint_access: true` for the paint pad. The bridge checks the appropriate flag
+for live and replayed shout-outs and for paint strokes, caching access checks for
+30 seconds; restart the bridge after updating its code. Existing paint access
+does not automatically grant shout-out access. The bridge uses ticket IDs as
+identifiers, not authentication: protect participant records and live-input
+writes with appropriate Firestore security rules.
+
 The badge sync combines `src/data/badge_history.csv` (2021–2024 aggregate counts)
 with all records in `orders_2025`, `applications_2025`, and `participants_2026`.
 Emails are trimmed and case-normalized, and each later year counts once per email.

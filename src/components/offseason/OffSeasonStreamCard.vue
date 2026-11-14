@@ -148,6 +148,10 @@ const lastSent = ref(0)
 
 async function transmit() {
   const msg = text.value.trim()
+  if (props.order.shoutout_access !== true) {
+    status.value = 'locked'
+    return
+  }
   if (!msg || !props.order.id_code || !firstName.value || status.value === 'sending') return
   if (Date.now() - lastSent.value < COOLDOWN_MS) return
   status.value = 'sending'
@@ -194,9 +198,9 @@ async function transmit() {
     </details>
     <details class="signal">
       <summary class="signal-head">
-        <span class="dot"></span><span>SEND A LIVE SHOUTOUT</span><span class="sub">appears in the livestream visuals</span>
+        <span class="dot"></span><span>SEND A LIVE SHOUTOUT</span><span class="sub">supporter feature</span>
       </summary>
-      <form @submit.prevent="transmit">
+      <form v-if="order.shoutout_access === true" @submit.prevent="transmit">
       <div class="as">Sending as <strong>{{ firstName }}</strong></div>
       <div class="badge-info" aria-live="polite">
         <template v-if="badgeStatus === 'matched'">
@@ -259,6 +263,13 @@ async function transmit() {
         <span>{{ text.length }}/{{ MAX }}</span>
       </div>
       </form>
+      <div v-else class="locked">
+        <OsIcon name="off_limits" />
+        <div>
+          <strong>Live shout-outs are locked</strong>
+          <p>Unlocked for supporters who make a donation. Once the crew confirms yours, it appears here.</p>
+        </div>
+      </div>
     </details>
     <OffSeasonPaintPad :order="order" :color="color" />
     <a class="os-link" :href="`https://www.twitch.tv/${channel}`" target="_blank" rel="noopener">
@@ -300,6 +311,9 @@ async function transmit() {
 .signal[open] .signal-head { margin-bottom: 0.6rem; }
 .signal[open] .signal-head::after { content: '−'; }
 .signal-head .sub { margin-left: auto; letter-spacing: 0.02em; font-weight: 400; color: #6f8ba0; }
+.locked { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #9fb6c7; }
+.locked :deep(.os-icon) { width: 36px; height: 36px; margin: 0; flex: none; color: #6f8ba0; }
+.locked p { margin: 0.15rem 0 0; font-size: 0.78rem; color: #6f8ba0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #3de0ff; box-shadow: 0 0 8px #3de0ff; }
 .signal input {
   width: 100%; box-sizing: border-box; background: #101e28; border: 1px solid #1f3646;

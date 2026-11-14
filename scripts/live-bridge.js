@@ -9,6 +9,7 @@ import { execFileSync } from 'child_process'
 import { makeShoutoutMessage } from './shoutout-message.js'
 import { createReplaySession } from './live-replay.js'
 import { createShoutoutLimiter } from './shoutout-limiter.js'
+import { createSupporterAccess, filterSupporterShoutouts } from './supporter-access.js'
 
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT
 if (!raw) {
@@ -32,6 +33,8 @@ function installedFonts() {
 const FONT_FAMILIES = installedFonts()
 const FONT_SET = new Set(FONT_FAMILIES)
 const db = getFirestore()
+const hasShoutoutAccess = createSupporterAccess(db, 'shoutout_access')
+const hasPaintAccess = createSupporterAccess(db, 'paint_access')
 
 const wss = new WebSocketServer({ host: '127.0.0.1', port: 9980 })
 console.log('WebSocket on ws://127.0.0.1:9980')
@@ -42,7 +45,8 @@ const toTextMsg = (doc) => makeShoutoutMessage(doc, db, FONT_SET)
 const BACKLOG = 20
 async function loadBacklog() {
   const snap = await db.collection('live_inputs').orderBy('createdAt', 'desc').limit(BACKLOG).get()
-  return Promise.all(snap.docs.reverse().map(toTextMsg))
+  const docs = await filterSupporterShoutouts(snap.docs.reverse(), hasShoutoutAccess)
+  return Promise.all(docs.map(toTextMsg))
 }
 const sessions = new Map()
 wss.on('connection', (ws) => {
@@ -68,43 +72,27 @@ db.collection('live_inputs')
   .onSnapshot((snap) => {
     snap.docChanges().forEach((c) => {
       if (c.type !== 'added') return
-      const idCode = String(c.doc.data().id_code || '').trim()
-      const verdict = idCode ? shoutoutLimiter.check(idCode) : { ok: false, reason: 'no id_code' }
-      if (!verdict.ok) {
-        console.log(`Shout-out ${c.doc.id} dropped (${verdict.reason})`)
-        c.doc.ref.delete().catch(() => {}) // keeps it out of the replay backlog
-        return
-      }
       liveTextQueue = liveTextQueue.then(async () => {
+        const idCode = c.doc.data().id_code
+        if (!(await hasShoutoutAccess(idCode))) {
+          console.log(`Shout-out ${c.doc.id} dropped (supporter access required)`)
+          await c.doc.ref.delete()
+          return
+        }
+        const verdict = shoutoutLimiter.check(idCode.trim())
+        if (!verdict.ok) {
+          console.log(`Shout-out ${c.doc.id} dropped (${verdict.reason})`)
+          await c.doc.ref.delete()
+          return
+        }
         const msg = await toTextMsg(c.doc)
         console.log(JSON.stringify(msg))
         sessions.forEach((session) => session.live(msg))
-      }).catch((error) => console.error('Shout-out badge lookup failed:', error.message))
+      }).catch((error) => console.error(`Shout-out ${c.doc.id} processing failed:`, error.message))
     })
   }, (error) => console.error('Shout-out listener failed:', error.message))
 
 // ---- Paint pad (supporters only) ----
-// Access is enforced here: the ticket must have paint_access === true in Firestore.
-const ACCESS_TTL_MS = 30_000
-const accessCache = new Map() // id_code -> { ok, at }
-const thisYear = new Date().getFullYear()
-const TICKET_COLLECTIONS = [thisYear + 1, thisYear, thisYear - 1].map((y) => `participants_${y}`)
-
-async function hasPaintAccess(idCode) {
-  const hit = accessCache.get(idCode)
-  if (hit && Date.now() - hit.at < ACCESS_TTL_MS) return hit.ok
-  let ok = false
-  for (const name of TICKET_COLLECTIONS) {
-    const snap = await db.collection(name).where('id_code', '==', idCode).limit(1).get()
-    if (!snap.empty) {
-      ok = snap.docs[0].data().paint_access === true
-      break
-    }
-  }
-  accessCache.set(idCode, { ok, at: Date.now() })
-  return ok
-}
-
 const HEX = /^#[0-9a-fA-F]{6}$/
 const clamp01 = (n) => Math.min(1, Math.max(0, n))
 

@@ -1497,6 +1497,7 @@ export default {
               meal_tickets_remaining: p.order?.meal_tickets_remaining || 0,
               checked_in: p.order?.checked_in || false,
               paint_access: p.paint_access === true,
+              shoutout_access: p.shoutout_access === true,
               // Corrected field mapping for scanning history
               entrance_activity_history: p.order?.entrance_activity_history || [],
               last_entrance_activity: p.order?.last_entrance_activity || null,
