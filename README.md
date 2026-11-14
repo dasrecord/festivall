@@ -120,6 +120,16 @@ To clear saved output when a TouchDesigner project starts even before its
 WebSocket connects, add an Execute DAT with Start enabled and use its `onStart`
 callback to clear `latest_text` and initialize `shoutout_timer`.
 
+### Reunion poster archive
+
+The off-season ticket page's Through the years viewer uses the ordered list in
+`src/config/reunionPosterArchive.js`. Add new artwork there to extend the
+archive. The list also includes the front and back of the 2023 guest pass. The
+2027 entry is marked under construction and uses the current interactive poster
+overlay and its live festival data without mock names; preserve a year-specific
+finished poster or overlay before moving the current festival configuration
+forward so older posters remain accurate.
+
 ### Off-season livestream schedule
 
 Update `REUNION_FESTIVAL.nextStream` in `src/config/festivalConfig.js` for each

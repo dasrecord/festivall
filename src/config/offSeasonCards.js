@@ -3,8 +3,7 @@ const CARD_ORDER = [
   'promo',
   'stream',
   'reapply',
-  'volunteerHistory',
-  'setHistory',
+  'throughTheYears',
   'saveTheDate',
   'scavenger'
 ]
@@ -12,13 +11,12 @@ const CARD_ORDER = [
 // Always-open cards; everything else renders collapsed.
 export const PRIORITY_CARDS = ['promo', 'stream']
 
-const BASE_CARDS = ['promo', 'saveTheDate', 'scavenger', 'stream']
+const BASE_CARDS = ['promo', 'saveTheDate', 'scavenger', 'stream', 'throughTheYears']
 
 const ROLE_CARDS = {
-  Artist: ['reapply', 'setHistory'],
-  Workshop: ['reapply', 'setHistory'],
-  Vendor: ['reapply'],
-  Volunteer: ['volunteerHistory']
+  Artist: ['reapply'],
+  Workshop: ['reapply'],
+  Vendor: ['reapply']
 }
 
 export function offSeasonCardsFor(applicantTypes = []) {

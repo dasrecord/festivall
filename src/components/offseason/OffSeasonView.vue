@@ -2,12 +2,12 @@
 import { computed, ref, watch, onUnmounted } from 'vue'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { offSeasonCardsFor, PRIORITY_CARDS } from '@/config/offSeasonCards.js'
+import { REUNION_POSTER_ARCHIVE } from '@/config/reunionPosterArchive.js'
+import PosterSplash from '@/components/PosterSplash.vue'
 import OsIcon from './OsIcon.vue'
 import OffSeasonPromoCard from './OffSeasonPromoCard.vue'
 import OffSeasonStreamCard from './OffSeasonStreamCard.vue'
 import OffSeasonReapplyCard from './OffSeasonReapplyCard.vue'
-import OffSeasonVolunteerCard from './OffSeasonVolunteerCard.vue'
-import OffSeasonSetHistoryCard from './OffSeasonSetHistoryCard.vue'
 import OffSeasonSaveTheDateCard from './OffSeasonSaveTheDateCard.vue'
 import OffSeasonScavengerCard from './OffSeasonScavengerCard.vue'
 
@@ -18,8 +18,6 @@ const props = defineProps({
 const cardComponents = {
   promo: OffSeasonPromoCard,
   reapply: OffSeasonReapplyCard,
-  volunteerHistory: OffSeasonVolunteerCard,
-  setHistory: OffSeasonSetHistoryCard,
   saveTheDate: OffSeasonSaveTheDateCard,
   scavenger: OffSeasonScavengerCard,
   stream: OffSeasonStreamCard
@@ -27,19 +25,19 @@ const cardComponents = {
 
 const folds = {
   reapply: { icon: 'contract', title: 'Reapply for next year' },
-  volunteerHistory: { icon: 'volunteer', title: 'Volunteer history' },
-  setHistory: { icon: 'dj', title: 'Your performance history' },
+  throughTheYears: { icon: 'flyer', title: 'Through the years' },
   saveTheDate: { icon: 'reminder', title: 'Save the date' },
   scavenger: { icon: 'quest', title: 'Scavenger hunt' }
 }
 
 const cards = computed(() =>
-  offSeasonCardsFor(props.order.applicant_types).filter((key) => cardComponents[key])
+  offSeasonCardsFor(props.order.applicant_types).filter((key) => cardComponents[key] || key === 'throughTheYears')
 )
 const priorityCards = computed(() => cards.value.filter((k) => PRIORITY_CARDS.includes(k)))
 const foldCards = computed(() => cards.value.filter((k) => !PRIORITY_CARDS.includes(k)))
 
 const openKey = ref(null)
+const posterIndex = ref(0)
 const onKeydown = (e) => { if (e.key === 'Escape') openKey.value = null }
 watch(openKey, (key) => {
   document.body.style.overflow = key ? 'hidden' : ''
@@ -70,19 +68,34 @@ const firstName = computed(() => (props.order.fullname || '').split(' ')[0])
       class="full"
     />
     <div v-if="foldCards.length" class="status-bar">
-      <p v-for="key in foldCards" :key="key" class="status-btn" @click="openKey = key">
+      <button v-for="key in foldCards" :key="key" type="button" class="status-btn" @click="openKey = key">
         <OsIcon :name="folds[key].icon" />
         <strong>{{ folds[key].title }}</strong>
-      </p>
+      </button>
     </div>
     <Teleport to="body">
-      <div v-if="openKey" class="os-modal" @click.self="openKey = null">
+      <div v-if="openKey && openKey !== 'throughTheYears'" class="os-modal" @click.self="openKey = null">
         <div class="os-modal-content" role="dialog" aria-modal="true" :aria-label="folds[openKey].title">
           <button type="button" class="os-modal-close" aria-label="Close" @click="openKey = null"></button>
           <component :is="cardComponents[openKey]" :order="order" />
         </div>
       </div>
     </Teleport>
+    <PosterSplash
+      v-if="openKey === 'throughTheYears'"
+      :key="posterIndex"
+      :src="REUNION_POSTER_ARCHIVE[posterIndex].src"
+      :show-reunion-info="REUNION_POSTER_ARCHIVE[posterIndex].showReunionInfo === true"
+      archive
+      :archive-year="REUNION_POSTER_ARCHIVE[posterIndex].year"
+      :archive-label="REUNION_POSTER_ARCHIVE[posterIndex].label"
+      :under-construction="REUNION_POSTER_ARCHIVE[posterIndex].underConstruction === true"
+      :has-previous="posterIndex > 0"
+      :has-next="posterIndex < REUNION_POSTER_ARCHIVE.length - 1"
+      @previous="posterIndex--"
+      @next="posterIndex++"
+      @dismissed="openKey = null"
+    />
   </div>
 </template>
 
@@ -123,6 +136,7 @@ const firstName = computed(() => (props.order.fullname || '').split(' ')[0])
   color: white;
   text-align: center;
   cursor: pointer;
+  font-family: inherit;
   font-size: 0.95rem;
   transition: background 0.15s;
 }

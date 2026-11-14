@@ -1,7 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import OsIcon from './OsIcon.vue'
+import OffSeasonSupporterLocked from './OffSeasonSupporterLocked.vue'
 import { reunion_db } from '@/firebase.js'
 
 const props = defineProps({
@@ -117,11 +117,11 @@ function up() {
 </script>
 
 <template>
-  <div class="paint">
-    <div class="paint-head">
+  <details class="paint">
+    <summary class="paint-head">
       <span class="dot"></span><span>PAINT THE SCREEN</span>
       <span class="sub">supporter feature</span>
-    </div>
+    </summary>
     <div v-if="order.paint_access" class="pad-wrap">
       <canvas
         ref="canvas"
@@ -138,14 +138,8 @@ function up() {
         <span v-else>Drag to paint on the live visuals. Uses your color above.</span>
       </div>
     </div>
-    <div v-else class="locked">
-      <OsIcon name="off_limits" />
-      <div>
-        <strong>Paint mode is locked</strong>
-        <p>Unlocked for supporters who make a donation. Once the crew confirms yours, it appears here.</p>
-      </div>
-    </div>
-  </div>
+    <OffSeasonSupporterLocked v-else title="Paint mode is locked" />
+  </details>
 </template>
 
 <style scoped>
@@ -153,7 +147,11 @@ function up() {
   margin-top: 0.7rem; padding: 0.8rem; border-radius: 10px;
   background: #0b141b; border: 1px solid #1f3646; color: #dbe9f3;
 }
-.paint-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; margin-bottom: 0.6rem; }
+.paint-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; cursor: pointer; list-style: none; }
+.paint-head::-webkit-details-marker { display: none; }
+.paint-head::after { content: '+'; margin-left: auto; font-size: 1.1rem; letter-spacing: 0; color: #3de0ff; }
+.paint[open] .paint-head { margin-bottom: 0.6rem; }
+.paint[open] .paint-head::after { content: '−'; }
 .paint-head .sub { margin-left: auto; letter-spacing: 0.02em; font-weight: 400; color: #6f8ba0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #3de0ff; box-shadow: 0 0 8px #3de0ff; }
 .pad {
@@ -164,7 +162,4 @@ function up() {
 }
 .hint { margin-top: 0.35rem; font-size: 0.7rem; color: #6f8ba0; }
 .err { color: #ff7a7a; }
-.locked { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #9fb6c7; }
-.locked :deep(.os-icon) { width: 36px; height: 36px; margin: 0; flex: none; color: #6f8ba0; }
-.locked p { margin: 0.15rem 0 0; font-size: 0.78rem; color: #6f8ba0; }
 </style>

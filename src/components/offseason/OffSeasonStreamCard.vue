@@ -4,6 +4,7 @@ import installedFonts from '@/data/fonts.json'
 import { addDoc, collection, onSnapshot, query, serverTimestamp, where } from 'firebase/firestore'
 import OsIcon from './OsIcon.vue'
 import OffSeasonPaintPad from './OffSeasonPaintPad.vue'
+import OffSeasonSupporterLocked from './OffSeasonSupporterLocked.vue'
 import { reunion_db } from '@/firebase.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { createStreamCalendar, formatStreamDate } from '@/utils/streamCalendar.js'
@@ -263,13 +264,7 @@ async function transmit() {
         <span>{{ text.length }}/{{ MAX }}</span>
       </div>
       </form>
-      <div v-else class="locked">
-        <OsIcon name="off_limits" />
-        <div>
-          <strong>Live shout-outs are locked</strong>
-          <p>Unlocked for supporters who make a donation. Once the crew confirms yours, it appears here.</p>
-        </div>
-      </div>
+      <OffSeasonSupporterLocked v-else title="Live shout-outs are locked" />
     </details>
     <OffSeasonPaintPad :order="order" :color="color" />
     <a class="os-link" :href="`https://www.twitch.tv/${channel}`" target="_blank" rel="noopener">
@@ -305,15 +300,13 @@ async function transmit() {
   margin-top: 0.7rem; padding: 0.8rem; border-radius: 10px;
   background: #0b141b; border: 1px solid #1f3646; color: #dbe9f3;
 }
-.signal-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; cursor: pointer; list-style: none; }
+.signal-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.22em; font-weight: 700; list-style: none; }
+summary.signal-head { cursor: pointer; }
 .signal-head::-webkit-details-marker { display: none; }
-.signal-head::after { content: '+'; margin-left: auto; font-size: 1.1rem; letter-spacing: 0; color: #3de0ff; }
+summary.signal-head::after { content: '+'; margin-left: auto; font-size: 1.1rem; letter-spacing: 0; color: #3de0ff; }
 .signal[open] .signal-head { margin-bottom: 0.6rem; }
-.signal[open] .signal-head::after { content: '−'; }
+.signal[open] summary.signal-head::after { content: '−'; }
 .signal-head .sub { margin-left: auto; letter-spacing: 0.02em; font-weight: 400; color: #6f8ba0; }
-.locked { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #9fb6c7; }
-.locked :deep(.os-icon) { width: 36px; height: 36px; margin: 0; flex: none; color: #6f8ba0; }
-.locked p { margin: 0.15rem 0 0; font-size: 0.78rem; color: #6f8ba0; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #3de0ff; box-shadow: 0 0 8px #3de0ff; }
 .signal input {
   width: 100%; box-sizing: border-box; background: #101e28; border: 1px solid #1f3646;

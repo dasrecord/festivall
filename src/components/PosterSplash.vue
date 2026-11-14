@@ -19,14 +19,24 @@ const props = withDefaults(defineProps<{
   hintBody?: string
   showBitcoinBlockPartyInfo?: boolean
   showReunionInfo?: boolean
+  archive?: boolean
+  archiveYear?: number
+  archiveLabel?: string
+  underConstruction?: boolean
+  hasPrevious?: boolean
+  hasNext?: boolean
 }>(), {
   hint: 'REUNION 2026<br>This year is going to be Iconic',
   hintTitle: 'REUNION 2026',
   hintBody: 'This year is going to be Iconic',
   showBitcoinBlockPartyInfo: false,
   showReunionInfo: false,
+  archive: false,
+  underConstruction: false,
+  hasPrevious: false,
+  hasNext: false,
 })
-const emit = defineEmits<{ dismissed: [] }>()
+const emit = defineEmits<{ dismissed: [], previous: [], next: [] }>()
 
 const visible = ref(true)
 const secondsLeft = ref(60)
@@ -69,12 +79,12 @@ const MOCK_ARTISTS = ['Aurora Drift', 'Das Record', 'Neon Prairie', 'Sub Harmoni
 const MOCK_WORKSHOPS = ['Intro to Ableton', 'Fire Safety', 'Sunrise Yoga', 'Synth Basics']
 const usePlaceholders = REUNION_FESTIVAL.poster.usePlaceholders
 const signedArtists = computed(() =>
-  !liveArtists.value.length && usePlaceholders
+  !liveArtists.value.length && usePlaceholders && !props.archive
     ? MOCK_ARTISTS.map((act_name, i) => ({ id: `mock-a${i}`, act_name }))
     : liveArtists.value
 )
 const signedWorkshops = computed(() =>
-  !liveWorkshops.value.length && usePlaceholders
+  !liveWorkshops.value.length && usePlaceholders && !props.archive
     ? MOCK_WORKSHOPS.map((workshop_title, i) => ({ id: `mock-w${i}`, workshop_title }))
     : liveWorkshops.value
 )
@@ -237,7 +247,7 @@ function onMouseMove(e: MouseEvent) {
 }
 
 function onMouseUp(e: MouseEvent) {
-  if (isDragging.value && !dragMoved.value) {
+  if (!props.archive && isDragging.value && !dragMoved.value) {
     e.preventDefault()
     e.stopPropagation()
     dismiss()
@@ -301,7 +311,7 @@ function onTouchMove(e: TouchEvent) {
 
 function onTouchEnd(e: TouchEvent) {
   if (e.touches.length < 2) pinch.value.dist = 0
-  if (e.touches.length === 0 && !touchMoved.value) {
+  if (!props.archive && e.touches.length === 0 && !touchMoved.value) {
     e.preventDefault()
     e.stopPropagation()
     dismiss()
@@ -316,13 +326,15 @@ const dismiss = () => {
 }
 
 onMounted(async () => {
-  countdown = setInterval(() => {
-    secondsLeft.value--
-    if (secondsLeft.value <= 0) {
-      clearInterval(countdown!)
-      dismiss()
-    }
-  }, 1000)
+  if (!props.archive) {
+    countdown = setInterval(() => {
+      secondsLeft.value--
+      if (secondsLeft.value <= 0) {
+        clearInterval(countdown!)
+        dismiss()
+      }
+    }, 1000)
+  }
 
   try {
     if (!props.src.endsWith('.svg')) throw new Error('not svg')
@@ -382,7 +394,7 @@ onBeforeUnmount(() => {
 <template>
   <Teleport to="body">
     <Transition name="poster-fade">
-      <div v-if="visible" class="poster-splash" :class="{ 'poster-splash--reunion': props.showReunionInfo }">
+      <div v-if="visible" class="poster-splash" :class="{ 'poster-splash--reunion': props.showReunionInfo, 'poster-splash--archive': props.archive }" :role="props.archive ? 'dialog' : undefined" :aria-modal="props.archive ? 'true' : undefined" :aria-label="props.archive ? `Reunion ${props.archiveYear} ${props.archiveLabel}` : undefined">
         <div
           ref="posterContainer"
           class="poster-container"
@@ -405,7 +417,7 @@ onBeforeUnmount(() => {
             <!-- Inline SVG: crisp vector at any zoom level -->
             <div v-if="!svgLoadError" class="poster-svg-host" v-html="inlineSvgContent" />
             <!-- Fallback if fetch fails -->
-            <img v-else :src="props.src" class="poster-img-fallback" alt="Reunion Festival Poster" />
+            <img v-else :src="props.src" class="poster-img-fallback" :alt="props.archive ? `Reunion ${props.archiveYear} ${props.archiveLabel}` : 'Reunion Festival Poster'" />
             <div v-if="props.showReunionInfo" ref="reunionInfoEl" class="reunion-splash-info" :style="{
               '--r-primary':           REUNION_FESTIVAL.poster.colorPrimary,
               '--r-accent':            REUNION_FESTIVAL.poster.colorAccent,
@@ -467,7 +479,17 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div class="poster-hint" :class="{ 'poster-hint--bbp': props.showBitcoinBlockPartyInfo, 'poster-hint--bar': props.showReunionInfo }">
+        <div v-if="props.archive" class="poster-archive-controls">
+          <button type="button" :disabled="!props.hasPrevious" @click="emit('previous')">← Previous</button>
+          <div class="poster-archive-title">
+            <strong>Reunion {{ props.archiveYear }}</strong>
+            <span>{{ props.archiveLabel }}<template v-if="props.underConstruction"> · Under construction</template></span>
+            <span>Scroll or pinch to zoom</span>
+          </div>
+          <button type="button" :disabled="!props.hasNext" @click="emit('next')">Next →</button>
+          <button type="button" class="poster-archive-close" aria-label="Close poster archive" @click="dismiss">×</button>
+        </div>
+        <div v-else class="poster-hint" :class="{ 'poster-hint--bbp': props.showBitcoinBlockPartyInfo, 'poster-hint--bar': props.showReunionInfo }">
           <span v-if="props.showReunionInfo" class="poster-hint-progress" :style="{ transform: `scaleX(${Math.max(secondsLeft, 0) / 60})` }"></span>
           <span class="countdown">{{ secondsLeft }}</span>
           <span class="poster-hint-copy">
@@ -476,7 +498,7 @@ onBeforeUnmount(() => {
             <span v-else v-html="props.hint"></span>
           </span>
         </div>
-        <div v-if="isAdmin && props.showReunionInfo" class="poster-export-buttons">
+        <div v-if="isAdmin && props.showReunionInfo && !props.archive" class="poster-export-buttons">
           <button
             type="button"
             class="poster-export-button"
@@ -566,6 +588,36 @@ onBeforeUnmount(() => {
 
 .poster-splash--reunion { --hint-h: 2.5rem; }
 .poster-splash--reunion .poster-container { bottom: var(--hint-h); }
+.poster-splash--archive { --hint-h: 6rem; }
+.poster-splash--archive .poster-container { bottom: var(--hint-h); }
+
+.poster-archive-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--hint-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.35rem, 2vw, 1rem);
+  padding: 0.5rem;
+  background: #0f1c26;
+  color: #fff;
+}
+.poster-archive-controls button {
+  padding: 0.5rem;
+  border: 1px solid #9cc7e3;
+  border-radius: 6px;
+  background: #2f5d7c;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.poster-archive-controls button:disabled { opacity: 0.4; cursor: default; }
+.poster-archive-controls .poster-archive-close { font-size: 1.4rem; line-height: 1; }
+.poster-archive-title { display: grid; gap: 0.2rem; text-align: center; }
+.poster-archive-title span { font-size: 0.75rem; }
 
 .poster-container {
   position: absolute;
