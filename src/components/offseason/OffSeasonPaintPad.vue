@@ -1,13 +1,17 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import OffSeasonSupporterLocked from './OffSeasonSupporterLocked.vue'
 import { reunion_db } from '@/firebase.js'
+import { useReunionAdmin } from '@/composables/useReunionAdmin.js'
+import { sendAdminLiveInput } from '@/utils/adminLiveInput.js'
 
 const props = defineProps({
   order: { type: Object, required: true },
   color: { type: String, default: '#3de0ff' }
 })
+const { isAdmin } = useReunionAdmin()
+const canPaint = computed(() => props.order.paint_access === true || isAdmin.value)
 
 const W = 640
 const H = 360
@@ -26,9 +30,10 @@ let last = null
 
 const firstName = () => (props.order.fullname || '').trim().split(/\s+/)[0] || ''
 
-onMounted(() => {
-  if (!canvas.value) return
-  ctx = canvas.value.getContext('2d')
+watch(canvas, (element) => {
+  cancelAnimationFrame(raf)
+  ctx = element?.getContext('2d') || null
+  if (!ctx) return
   const fade = () => {
     ctx.globalCompositeOperation = 'destination-out'
     ctx.fillStyle = 'rgba(0, 0, 0, 0.07)'
@@ -37,7 +42,7 @@ onMounted(() => {
     raf = requestAnimationFrame(fade)
   }
   fade()
-})
+}, { flush: 'post' })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(raf)
@@ -67,15 +72,20 @@ function drawSegment(a, b) {
 }
 
 async function send(points, end) {
+  if (!canPaint.value || !points.length) return
   try {
-    await addDoc(collection(reunion_db, 'live_paint'), {
+    const input = {
       id_code: String(props.order.id_code),
       name: firstName().slice(0, 24),
       color: props.color,
       points: points.flat(),
-      end,
-      createdAt: serverTimestamp()
-    })
+      end
+    }
+    if (props.order.paint_access === true) {
+      await addDoc(collection(reunion_db, 'live_paint'), { ...input, createdAt: serverTimestamp() })
+    } else {
+      await sendAdminLiveInput('paint', input)
+    }
     error.value = false
   } catch (e) {
     console.error(e)
@@ -122,7 +132,7 @@ function up() {
       <span class="dot"></span><span>PAINT THE SCREEN</span>
       <span class="sub">supporter feature</span>
     </summary>
-    <div v-if="order.paint_access" class="pad-wrap">
+    <div v-if="canPaint" class="pad-wrap">
       <canvas
         ref="canvas"
         class="pad"

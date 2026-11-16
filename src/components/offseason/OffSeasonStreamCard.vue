@@ -8,11 +8,15 @@ import OffSeasonSupporterLocked from './OffSeasonSupporterLocked.vue'
 import { reunion_db } from '@/firebase.js'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { createStreamCalendar, formatStreamDate } from '@/utils/streamCalendar.js'
+import { useReunionAdmin } from '@/composables/useReunionAdmin.js'
+import { sendAdminLiveInput } from '@/utils/adminLiveInput.js'
 
 const props = defineProps({
   order: { type: Object, required: true }
 })
 
+const { isAdmin } = useReunionAdmin()
+const canShoutout = computed(() => props.order.shoutout_access === true || isAdmin.value)
 const fullname = computed(() => (props.order.fullname || '').trim())
 const firstName = computed(() => fullname.value.split(/\s+/)[0] || '')
 const badgeNumber = ref(null)
@@ -149,7 +153,7 @@ const lastSent = ref(0)
 
 async function transmit() {
   const msg = text.value.trim()
-  if (props.order.shoutout_access !== true) {
+  if (!canShoutout.value) {
     status.value = 'locked'
     return
   }
@@ -157,16 +161,20 @@ async function transmit() {
   if (Date.now() - lastSent.value < COOLDOWN_MS) return
   status.value = 'sending'
   try {
-    await addDoc(collection(reunion_db, 'live_inputs'), {
+    const input = {
       text: msg.slice(0, MAX),
       name: firstName.value.slice(0, 24),
       fullname: fullname.value.slice(0, 80),
       id_code: String(props.order.id_code),
       font: font.value,
       color: color.value,
-      fx: fx.value,
-      createdAt: serverTimestamp()
-    })
+      fx: fx.value
+    }
+    if (props.order.shoutout_access === true) {
+      await addDoc(collection(reunion_db, 'live_inputs'), { ...input, createdAt: serverTimestamp() })
+    } else {
+      await sendAdminLiveInput('text', input)
+    }
     lastSent.value = Date.now()
     text.value = ''
     status.value = 'sent'
@@ -201,7 +209,7 @@ async function transmit() {
       <summary class="signal-head">
         <span class="dot"></span><span>SEND A LIVE SHOUTOUT</span><span class="sub">supporter feature</span>
       </summary>
-      <form v-if="order.shoutout_access === true" @submit.prevent="transmit">
+      <form v-if="canShoutout" @submit.prevent="transmit">
       <div class="as">Sending as <strong>{{ firstName }}</strong></div>
       <div class="badge-info" aria-live="polite">
         <template v-if="badgeStatus === 'matched'">

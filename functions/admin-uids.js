@@ -1,0 +1,1 @@
+export const REUNION_ADMIN_UIDS = ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2']

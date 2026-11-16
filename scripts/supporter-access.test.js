@@ -98,3 +98,13 @@ test('replay retains only supporter messages in their original order', async () 
     throw new Error('database unavailable')
   }), /database unavailable/)
 })
+
+test('replay includes verified admin messages without granting unverified ones', async () => {
+  const docs = ['admin', 'forged', 'supporter'].map((id) => ({
+    id, data: () => ({ id_code: id })
+  }))
+  const filtered = await filterSupporterShoutouts(
+    docs, async (id) => id === 'supporter', (doc) => doc.id === 'admin'
+  )
+  assert.deepEqual(filtered, [docs[0], docs[2]])
+})

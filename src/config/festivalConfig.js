@@ -1,3 +1,5 @@
+import { REUNION_ADMIN_UIDS } from '../../functions/admin-uids.js'
+
 // Central festival date config — update here to reflect everywhere
 export const REUNION_FESTIVAL = {
   year: 2027,
@@ -7,7 +9,7 @@ export const REUNION_FESTIVAL = {
   endDay: 6,      // Monday end
 
   admins: ['Prasenjit', 'Brandon', 'Chris'],
-  adminUids: ['dAqoRFRNBGS8gXJ9gGAOMmIMIuO2', 'NRgqKErfmyOB8y5Xc6CNtL4Fcou2'],
+  adminUids: REUNION_ADMIN_UIDS,
 
   // Pre-built Date objects for programmatic use
   startDate: new Date('2027-09-03T12:00:00'),           // scanners & check-in (local time)
@@ -301,8 +303,8 @@ export const REUNION_FESTIVAL = {
   },
   insiderTag: 'Backstage Pass',
   nextStream: {
-    title: 'Next Stream Featuring Squirrly J',
-    startsAt: new Date('2026-11-14T19:00:00-06:00'),
+    title: 'Next Up: joiboi',
+    startsAt: new Date('2026-11-20T19:00:00-06:00'),
     durationMinutes: 180,
     timeZone: 'America/Regina',
   }

@@ -8,7 +8,7 @@ import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 import { BITCOIN_BLOCK_PARTY as BBP } from '@/config/bitcoinBlockPartyConfig.js'
 import poster2027 from '@/assets/images/reunion_2027_poster_v1.svg?url'
 import poster2025 from '@/assets/images/reunion_2025_poster_v2.svg?url'
-import poster2024 from '@/assets/images/reunion_2024_poster_v1.png?url'
+import poster2024 from '@/assets/images/reunion_2024_poster.png?url'
 import bitcoinBlockPartyPoster from '@/assets/images/bitcoin_block_party/bitcoin_block_party_2026_bg.svg?url'
 
 const POSTER_ROUTES = ['/reunion', '/reunionapplication', '/reuniontickets']

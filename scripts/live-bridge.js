@@ -6,10 +6,12 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 import { WebSocketServer } from 'ws'
 import 'dotenv/config'
 import { execFileSync } from 'child_process'
+import { randomUUID } from 'crypto'
 import { makeShoutoutMessage } from './shoutout-message.js'
 import { createReplaySession } from './live-replay.js'
 import { createShoutoutLimiter } from './shoutout-limiter.js'
 import { createSupporterAccess, filterSupporterShoutouts } from './supporter-access.js'
+import { verifyAdminLiveInput } from '../functions/admin-live-signature.js'
 
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT
 if (!raw) {
@@ -35,8 +37,13 @@ const FONT_SET = new Set(FONT_FAMILIES)
 const db = getFirestore()
 const hasShoutoutAccess = createSupporterAccess(db, 'shoutout_access')
 const hasPaintAccess = createSupporterAccess(db, 'paint_access')
+const adminSecret = process.env.LIVE_BRIDGE_ADMIN_SECRET
+if (!adminSecret) console.warn('LIVE_BRIDGE_ADMIN_SECRET is missing; admin live inputs will require supporter flags')
+const isAdminText = (doc) => verifyAdminLiveInput(adminSecret, 'text', doc)
+const isAdminPaint = (doc) => verifyAdminLiveInput(adminSecret, 'paint', doc)
 
 const wss = new WebSocketServer({ host: '127.0.0.1', port: 9980 })
+const paintSessionId = randomUUID()
 console.log('WebSocket on ws://127.0.0.1:9980')
 
 const toTextMsg = (doc) => makeShoutoutMessage(doc, db, FONT_SET)
@@ -45,11 +52,12 @@ const toTextMsg = (doc) => makeShoutoutMessage(doc, db, FONT_SET)
 const BACKLOG = 20
 async function loadBacklog() {
   const snap = await db.collection('live_inputs').orderBy('createdAt', 'desc').limit(BACKLOG).get()
-  const docs = await filterSupporterShoutouts(snap.docs.reverse(), hasShoutoutAccess)
+  const docs = await filterSupporterShoutouts(snap.docs.reverse(), hasShoutoutAccess, isAdminText)
   return Promise.all(docs.map(toTextMsg))
 }
 const sessions = new Map()
 wss.on('connection', (ws) => {
+  ws.send(JSON.stringify({ type: 'paint_session', id: paintSessionId }))
   const session = createReplaySession(
     (message) => { if (ws.readyState === 1) ws.send(JSON.stringify(message)) },
     loadBacklog,
@@ -74,7 +82,7 @@ db.collection('live_inputs')
       if (c.type !== 'added') return
       liveTextQueue = liveTextQueue.then(async () => {
         const idCode = c.doc.data().id_code
-        if (!(await hasShoutoutAccess(idCode))) {
+        if (!isAdminText(c.doc) && !(await hasShoutoutAccess(idCode))) {
           console.log(`Shout-out ${c.doc.id} dropped (supporter access required)`)
           await c.doc.ref.delete()
           return
@@ -107,7 +115,7 @@ db.collection('live_paint')
       if (typeof d.id_code !== 'string' || flat.length === 0 || flat.length % 2 || flat.length > 60) return
       if (!flat.every((n) => typeof n === 'number' && Number.isFinite(n))) return
       try {
-        if (!(await hasPaintAccess(d.id_code))) return
+        if (!isAdminPaint(c.doc) && !(await hasPaintAccess(d.id_code))) return
       } catch (e) {
         console.error('Access check failed:', e.message)
         return

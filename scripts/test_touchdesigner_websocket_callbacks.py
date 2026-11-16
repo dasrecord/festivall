@@ -113,13 +113,35 @@ class CallbackTests(unittest.TestCase):
         paint = self.network.op('paint_points')
         self.assertIsNotNone(paint)
         self.assertEqual(paint.rows, [['user', 'name', 'color', 'x', 'y', 'end', 'time', 'r', 'g', 'b']])
+        self.send(type='paint_session', id='bridge-1')
         self.send(type='paint', user='123', name='A', color='#123456',
                   points=[[0.2, 0.3], [0.4, 0.5]], end=True)
         self.assertEqual(paint.rows[-1], ['123', 'A', '#123456', '0.4', '0.5', '1', '12.5',
                           str(0x12 / 255), str(0x34 / 255), str(0x56 / 255)])
         self.callback['onConnect'](None)
+        self.send(type='paint_session', id='bridge-1')
         self.assertIs(self.network.op('paint_points'), paint)
         self.assertEqual(len(paint.rows), 3)
+
+    def test_new_bridge_session_clears_saved_paint_and_accepts_new_points(self):
+        self.callback['onConnect'](None)
+        self.send(type='paint_session', id='bridge-1')
+        self.send(type='paint', user='old', points=[[0.1, 0.2]])
+        paint = self.network.op('paint_points')
+        self.assertEqual(len(paint.rows), 2)
+
+        self.callback['onConnect'](None)
+        self.send(type='paint_session', id='bridge-2')
+        self.assertEqual(paint.rows, [['user', 'name', 'color', 'x', 'y', 'end', 'time', 'r', 'g', 'b']])
+        self.send(type='paint', user='new', points=[[0.3, 0.4]])
+        self.assertEqual(len(paint.rows), 2)
+        self.assertEqual(paint.rows[1][0], 'new')
+
+    def test_first_session_clears_paint_saved_before_session_tracking(self):
+        self.callback['onConnect'](None)
+        self.send(type='paint', user='old', points=[[0.1, 0.2]])
+        self.send(type='paint_session', id='bridge-1')
+        self.assertEqual(len(self.network.op('paint_points').rows), 1)
 
     def test_replay_populates_history_without_showing_or_starting_timer(self):
         self.callback['onConnect'](None)

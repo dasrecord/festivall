@@ -100,6 +100,15 @@ def onReceiveText(dat: websocketDAT, rowIndex: int, message: str):
     if data.get('type') == 'reset':
         messages_table().clear(keepFirstRow=True)
         return
+    if data.get('type') == 'paint_session':
+        session_id = data.get('id')
+        if not isinstance(session_id, str) or not session_id:
+            print('Invalid paint session: missing session ID')
+            return
+        if session_id != me.fetch('paint_session_id', None):
+            paint_table().clear(keepFirstRow=True)
+            me.store('paint_session_id', session_id)
+        return
     if data.get('type') == 'paint':
         handle_paint(data)
         return

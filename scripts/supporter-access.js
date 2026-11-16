@@ -23,7 +23,9 @@ export function createSupporterAccess(db, flag, { now = () => Date.now(), ttlMs 
   }
 }
 
-export async function filterSupporterShoutouts(docs, hasSupporterAccess) {
-  const allowed = await Promise.all(docs.map((doc) => hasSupporterAccess(doc.data().id_code)))
+export async function filterSupporterShoutouts(docs, hasSupporterAccess, isAdminInput = () => false) {
+  const allowed = await Promise.all(docs.map((doc) =>
+    isAdminInput(doc) || hasSupporterAccess(doc.data().id_code)
+  ))
   return docs.filter((_, index) => allowed[index])
 }

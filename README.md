@@ -69,6 +69,30 @@ does not automatically grant shout-out access. The bridge uses ticket IDs as
 identifiers, not authentication: protect participant records and live-input
 writes with appropriate Firestore security rules.
 
+Signed-in Reunion admins (the UIDs in `functions/admin-uids.js`) can also use
+both live features without changing ticket flags. When a ticket lacks the
+relevant flag, the website sends the admin's Festivall Firebase ID token to
+the Reunion `adminLiveInput` Cloud Function. The function verifies the token
+and admin UID, then signs the input for the bridge; the token is not stored in
+Firestore. Normal supporter access and shout-out rate limits still apply.
+
+The function is deployed separately from the website to the Reunion project:
+
+```sh
+npm ci --prefix functions
+firebase deploy --only functions:adminLiveInput --project reunionfestivall
+```
+
+`functions/.env.reunionfestivall` identifies the Festivall authentication
+project. The Reunion project's Secret Manager secret `LIVE_BRIDGE_ADMIN_SECRET`
+must match the value of the same variable in the live bridge's private `.env`.
+Keep that value secret and never commit it; restart the bridge after changing
+it. Changing the secret also invalidates older signed admin shout-outs in the
+replay. A new installation must create the secret in Secret Manager, configure
+the same value on the bridge host, and deploy the function. Cloud Functions,
+Cloud Run, and Secret Manager may incur charges. The existing hosting workflow
+deploys the website only, not the function.
+
 The badge sync combines `src/data/badge_history.csv` (2021–2024 aggregate counts)
 with all records in `orders_2025`, `applications_2025`, and `participants_2026`.
 Emails are trimmed and case-normalized, and each later year counts once per email.
@@ -108,7 +132,10 @@ It also creates a `paint_points` Table DAT alongside the callbacks DAT if one
 doesn't already exist in that component or its parent. The table is initialized
 with `user`, `name`, `color`, `x`, `y`, `end`, and `time` columns; paint points
 arrive only while the bridge is connected and receives authorized paint strokes.
-Existing rows with the expected headers are preserved on reconnect.
+Each bridge start begins a new paint session: connecting to it clears saved
+paint rows, while reconnecting to the same running bridge preserves them. This
+does not clear pixels held separately in a TouchDesigner Feedback TOP; reset
+that TOP separately if the paint network accumulates pixels there.
 The replay fills `messages` without showing or timing historical shout-outs.
 Live messages update `latest_text` and the timer, then clear the text after
 badge × 10 seconds (or five seconds for an unmatched badge). A newer live
