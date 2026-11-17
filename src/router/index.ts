@@ -29,6 +29,7 @@ import CodingWebDevView from '@/views/CodingWebDevView.vue'
 import TestimonialsView from '@/views/TestimonialsView.vue'
 import DasButtonsView from '@/views/DasButtonsView.vue'
 import DasRecordView from '@/views/DasRecordView.vue'
+import DasRecordTimelineView from '@/views/DasRecordTimelineView.vue'
 import WorkshopSignupView from '@/views/WorkshopSignupView.vue'
 import ReunionApplicationView from '@/views/ReunionApplicationView.vue'
 import ReunionTicketsView from '@/views/ReunionTicketsView.vue'
@@ -151,6 +152,12 @@ const routes = [
     path: '/dasrecord',
     name :'dasrecord',
     component: DasRecordView,
+    meta: { showHeader: false }
+  },
+  {
+    path: '/dasrecord/timeline',
+    name: 'dasrecord-timeline',
+    component: DasRecordTimelineView,
     meta: { showHeader: false }
   },
   { path: '/das-record', redirect: '/dasrecord' },

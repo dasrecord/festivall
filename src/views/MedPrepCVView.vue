@@ -82,6 +82,38 @@
         </div>
       </section>
 
+      <section id="career-timeline" class="cv-section">
+        <div class="career-timeline-heading">
+          <h2>Full Career Timeline <span v-if="careerTimelineEvents.length">{{ careerTimelineEvents.length }} milestones</span></h2>
+          <RouterLink to="/dasrecord/timeline">Explore the interactive timeline →</RouterLink>
+        </div>
+        <p v-if="careerTimelineError" class="entry-notes" role="alert">
+          {{ careerTimelineError }}
+        </p>
+        <p v-else-if="!careerTimelineEvents.length" class="entry-notes" aria-live="polite">
+          Loading the complete career history…
+        </p>
+        <div v-else class="career-history">
+          <details
+            v-for="event in careerTimelineEvents"
+            :key="event.id"
+            class="career-history-entry"
+          >
+            <summary>
+              <time>{{ event.date }}</time>
+              <strong>{{ event.headline }}</strong>
+            </summary>
+            <p v-if="event.text" class="entry-notes">{{ event.text }}</p>
+            <CareerMilestoneMedia :event="event" compact />
+          </details>
+        </div>
+        <a
+          href="/data/prasenjit-das-career-timeline.csv"
+          download="prasenjit-das-career-timeline.csv"
+          class="career-csv-link"
+        >Download the complete timeline data (CSV)</a>
+      </section>
+
       <!-- ACADEMIC HONORS -->
       <section v-if="academicHonors.length" id="honors" class="cv-section">
         <h2>Academic Honors & Achievements</h2>
@@ -233,8 +265,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useHead } from '@vueuse/head'
+import CareerMilestoneMedia from '@/components/CareerMilestoneMedia.vue'
+import { loadCareerTimeline, type CareerTimelineEvent } from '@/utils/loadCareerTimeline'
 
 useHead({
   title: 'CV — Dr. Prasenjit Das, MD | MedPrep',
@@ -637,6 +671,21 @@ const currentActivities = [
   { label: 'Festival organizer', detail: 'Reunion Festival — independent SK electronic music festival' },
 ]
 
+const careerTimelineEvents = ref<CareerTimelineEvent[]>([])
+const careerTimelineError = ref('')
+
+async function loadCareerHistory() {
+  try {
+    careerTimelineEvents.value = await loadCareerTimeline()
+    await nextTick()
+    const section = document.getElementById('career-timeline')
+    if (section) observer?.observe(section)
+  } catch (error) {
+    console.error('Unable to load the complete career history.', error)
+    careerTimelineError.value = 'The complete career history could not be loaded.'
+  }
+}
+
 // ── 8. LINKS / FURTHER READING ───────────────────────────────
 const links = [
   {
@@ -646,8 +695,8 @@ const links = [
   },
   {
     label: 'Interactive career timeline',
-    url: 'https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1KjYDRCbhGGFOsdqawJ5OowtHBn5JTEBEsayhtpIa23A&font=UnicaOne-Vollkorn&lang=en&initial_zoom=3&start_at_slide=75',
-    note: 'KnightLab timeline spanning education, music, medicine, and tech',
+    url: '/dasrecord/timeline',
+    note: 'Interactive timeline spanning education, music, medicine, and tech',
   },
   {
     label: 'Festivall.ca — umbrella site',
@@ -718,6 +767,7 @@ const sections = computed(() => [
   { id: 'summary',      label: 'Summary',     count: null,                          show: !!summary },
   { id: 'employment',   label: 'Employment',  count: employment.length,             show: employment.length > 0 },
   { id: 'education',    label: 'Education',   count: education.length,              show: education.length > 0 },
+  { id: 'career-timeline', label: 'Timeline', count: careerTimelineEvents.value.length, show: true },
   { id: 'honors',       label: 'Honors',      count: academicHonors.length,         show: academicHonors.length > 0 },
   { id: 'music-awards', label: 'Music',       count: musicalAwards.length,          show: musicalAwards.length > 0 },
   { id: 'artistic',     label: 'Artistic',    count: artisticQualifications.length, show: artisticQualifications.length > 0 },
@@ -752,6 +802,7 @@ onMounted(() => {
     const el = document.getElementById(s.id)
     if (el) observer.observe(el)
   }
+  void loadCareerHistory()
 })
 onBeforeUnmount(() => {
   observer?.disconnect()
@@ -1067,6 +1118,95 @@ onBeforeUnmount(() => {
 }
 .cv-list li a:hover {
   border-bottom-color: #c9a227;
+}
+
+.career-timeline-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.career-timeline-heading h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.career-timeline-heading h2 span {
+  color: #888;
+  font-family: sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.career-timeline-heading > a,
+.career-csv-link {
+  color: #d7bc77;
+  font-size: 0.82rem;
+  text-decoration-color: rgba(215, 188, 119, 0.45);
+  text-underline-offset: 0.2em;
+}
+
+.career-history {
+  margin-top: 1.25rem;
+  border-top: 1px solid #2a2a2a;
+}
+
+.career-history-entry {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.career-history-entry summary {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.career-history-entry summary::-webkit-details-marker {
+  display: none;
+}
+
+.career-history-entry summary::after {
+  grid-column: 2;
+  color: #c9a227;
+  content: '＋';
+  font-size: 0.78rem;
+  justify-self: end;
+}
+
+.career-history-entry[open] summary::after {
+  content: '−';
+}
+
+.career-history-entry summary time {
+  color: #c9a227;
+  font-family: sans-serif;
+  font-size: 0.78rem;
+}
+
+.career-history-entry summary strong {
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.career-history-entry > .entry-notes,
+.career-history-entry > .career-media {
+  margin: 0.7rem 0 0 calc(min(8rem, 20vw) + 0.75rem);
+}
+
+.career-csv-link {
+  display: inline-block;
+  margin-top: 1.1rem;
 }
 
 /* ─── Show history (compact accordion) ───────────────────── */
@@ -1517,6 +1657,28 @@ onBeforeUnmount(() => {
     color: #111 !important;
     border-bottom: none;
     text-decoration: none;
+  }
+  .career-history-entry:not([open]) > :not(summary) {
+    display: block !important;
+  }
+  .career-history-entry {
+    padding: 4pt 0;
+    border-color: #ccc;
+    page-break-inside: avoid;
+  }
+  .career-history-entry summary::after {
+    display: none;
+  }
+  .career-history-entry > .entry-notes {
+    color: #222 !important;
+    font-size: 9pt;
+  }
+  .career-history-entry > .career-media {
+    display: none !important;
+  }
+  .career-timeline-heading > a,
+  .career-csv-link {
+    display: none !important;
   }
   .entry-notes.inline-note {
     color: #444 !important;

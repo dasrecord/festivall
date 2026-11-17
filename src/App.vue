@@ -114,7 +114,7 @@ useHead({
 // Noindex all pages not in the public allowlist
 const PUBLIC_PATHS = [
   '/', '/about', '/reunion', '/blessedcoast', '/blessedcoastlineup',
-  '/fusecollective', '/dasrecord', '/synergistic', '/services', '/testimonials',
+  '/fusecollective', '/dasrecord', '/dasrecord/timeline', '/synergistic', '/services', '/testimonials',
   '/reunionlineup', '/reuniontickets', '/reunionapplication', '/reunionfaq', '/reunionamenities',
   '/reunion-trick-or-treat', '/reunion-trick-or-treat/poster',
   '/reunionfamily', '/reunionteam', '/reunionsoundsystem',

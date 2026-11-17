@@ -22,12 +22,9 @@
             skill is hitting a target that others cannot hit.<br />
             genius is hitting a target that others cannot see.
           </p>
-          <a
-            href="https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1KjYDRCbhGGFOsdqawJ5OowtHBn5JTEBEsayhtpIa23A&font=UnicaOne-Vollkorn&lang=en&initial_zoom=3&start_at_slide=75"
-            class="section-link"
-          >
+          <RouterLink to="/dasrecord/timeline" class="section-link">
             interactive timeline
-          </a>
+          </RouterLink>
         </div>
       </div>
     </div>
