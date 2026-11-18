@@ -79,6 +79,7 @@ import BitcoinBlockPartyPosterView from '@/views/BitcoinBlockPartyPosterView.vue
 import BitcoinQuizView from '@/views/BitcoinQuizView.vue'
 import BitcoinBlockPartyApplicationView from '@/views/BitcoinBlockPartyApplicationView.vue'
 import AdminBitcoinBlockPartyView from '@/views/AdminBitcoinBlockPartyView.vue'
+import AdminShortLinksView from '@/views/AdminShortLinksView.vue'
 import SongRequestView from '@/views/SongRequestView.vue'
 import { REUNION_FESTIVAL } from '@/config/festivalConfig.js'
 
@@ -683,6 +684,12 @@ const routes = [
     path: '/admin/bitcoinblockparty',
     name: 'bitcoin-block-party-admin',
     component: AdminBitcoinBlockPartyView,
+    meta: { requiresAuth: true, showHeader: false }
+  },
+  {
+    path: '/admin/short-links',
+    name: 'short-links-admin',
+    component: AdminShortLinksView,
     meta: { requiresAuth: true, showHeader: false }
   },
   {

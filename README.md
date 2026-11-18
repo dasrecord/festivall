@@ -58,6 +58,35 @@ npm run build
 npm run lint
 ```
 
+### Festivall vanity short links
+
+Signed-in Reunion admins can create and manage short links at
+[`/admin/short-links`](https://festivall.ca/admin/short-links). A link such as
+`festivall.ca/s/tickets` redirects to its HTTP or HTTPS destination. Links are
+stored in the Festivall Firestore project's `short_links` collection, and only
+the admin UIDs in `functions/admin-uids.js` can create, edit, list, or delete
+them. Public visitors can only resolve a link.
+
+Build the website, then deploy the redirect function and the Hosting rewrites:
+
+```sh
+npm run build
+firebase deploy --only functions:shortLinks,hosting --project festivall-6969
+```
+
+For local testing, run `npm run dev` and sign in with an existing Festivall
+admin account. Vite runs the same short-link handler with local storage in
+`.short-links.local` (ignored by Git), not Firestore. Test links use the local
+dev server's origin, persist across server restarts, and are not published to
+festivall.ca. Firebase Authentication still verifies real admin ID tokens.
+Restart the dev server after pulling changes to its middleware.
+
+The website's normal Hosting workflow does not deploy Cloud Functions. An
+HTML response from `/api/short-links` on the live site means the request is
+reaching the SPA instead of the function; verify that both the function and
+Hosting rewrites have been deployed. Cloud Functions, Cloud Run, and Firestore
+usage may incur charges.
+
 ### Shout-out badges
 
 Live shout-outs and the paint pad are separately enabled supporter features. Set

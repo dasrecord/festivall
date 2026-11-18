@@ -160,6 +160,10 @@
           Inventory
         </RouterLink>
 
+        <RouterLink to="/admin/short-links" class="scanner-link">
+          Short Links
+        </RouterLink>
+
         <RouterLink to="/reunionreceipttracker" class="scanner-link">
           <img :src="receipt_icon" alt="Receipt Tracker" class="action-icon" style="width: 30px" />
           Receipt Tracker

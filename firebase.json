@@ -11,6 +11,20 @@
     ],
     "rewrites": [
       {
+        "source": "/s/**",
+        "function": {
+          "functionId": "shortLinks",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/short-links",
+        "function": {
+          "functionId": "shortLinks",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

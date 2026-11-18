@@ -5,6 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { fileURLToPath, URL } from 'node:url'
 import dotenv from 'dotenv'
 import { resolve } from 'path'
+import { shortLinkDevPlugin } from './scripts/dev-short-links.js'
 
 dotenv.config({path: resolve(__dirname, '.env.festivall')})
 
@@ -13,6 +14,7 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
+    shortLinkDevPlugin(),
   ],
   resolve: {
     alias: {
